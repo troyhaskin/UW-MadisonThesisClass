@@ -165,9 +165,13 @@ pip-log.txt
 #############
 ## LaTeX 
 #############
-*.aux
-*.bbl
-*.blg
-*.log
-*.toc
+*.aux   # LaTeX auxliary file
+*.bbl   # bibliography file
+*.blg   # BibTeX log file
+*.log   # Generic log file
+*.toc   # Table of Contents file 
+*.lof   # List of figures file
+*.lot   # List of tables file
+*.tcp   # TeXnicCenter project options file
+*.tps   # Another TeXnicCenter project options file
 
