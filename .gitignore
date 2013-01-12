@@ -166,7 +166,7 @@ pip-log.txt
 ## LaTeX 
 #############
 *.aux
-.PDFMetaData.aux
+*.PDFMetaData.aux
 *.bbl
 *.blg
 *.log
