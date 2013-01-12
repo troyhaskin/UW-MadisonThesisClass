@@ -165,13 +165,13 @@ pip-log.txt
 #############
 ## LaTeX 
 #############
-.aux
-.bbl
-.blg
-.log
-.toc
-.lof
-.lot
-.tcp
-.tps
+*.aux
+*.bbl
+*.blg
+*.log
+*.toc
+*.lof
+*.lot
+*.tcp
+*.tps
 
