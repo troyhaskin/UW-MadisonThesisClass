@@ -47,7 +47,7 @@
 \newif\ifUWMad@NoMath             \UWMad@NoMathfalse
 \newif\ifUWMad@NoPDFMetaInfo      \UWMad@NoPDFMetaInfofalse
 \newif\ifUWMad@NoHyperlinking     \UWMad@NoHyperlinkingfalse
-\newif\ifUWMad@IsADissertation     \UWMad@IsADissertationtrue
+\newif\ifUWMad@IsADissertation    \UWMad@IsADissertationtrue
 
 % A command that will warn about certain options (mainly a4paper and twoside) but still
 % pass them to the Parent.
@@ -135,6 +135,13 @@
 \newcommand{\DefineNewCounter}[2]{
     \newcounter{#1}
     \setcounter{#1}{#2}
+}
+
+\newcommand{\GlobalNewIf}[1]{
+    \expandafter\newif\csname if#1Global\endcsname
+    \expandafter\def\csname if#1\endcsname{\csname if#1Global\endcsname}
+    \expandafter\def\csname#1true\endcsname {\expandafter\global\csname#1Globaltrue\endcsname}
+    \expandafter\def\csname#1false\endcsname{\expandafter\global\csname#1Globalfalse\endcsname}
 }
 
 
@@ -566,9 +573,6 @@
 % Command that writes the auxiliary file; it is called with \AtEndDocument such that
 % metadata can be defined anywhere in the document.
 \DeclareRobustCommand{\WriteOutMetaData}{
-
-    Got in here.
-
     \newwrite\HyperSetupWrite
     \immediate\openout\HyperSetupWrite=UWMad.PDFMetaData.aux
     \immediate\write\HyperSetupWrite{\noexpand\hypersetup {\MetaDataList}}

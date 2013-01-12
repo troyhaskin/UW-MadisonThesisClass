@@ -3,11 +3,14 @@
 \let\OldBackslash\backslash
 \renewcommand{\backslash}{\ensuremath{\OldBackslash}}
 
+\newcommand{\Cmd}[1]{\textcolor{PineGreen}{\textsf{\backslash\hspace{-0.2em}#1}}}
+
 \begin{document}
 
 This document is meant to test the package for errors.  
 If this file compiles with errors or warnings, some has gone awry.
 
 \input{Tests/Test_MetaData}
+\input{Tests/Test_GlobalNewIf}
 
 \end{document}
