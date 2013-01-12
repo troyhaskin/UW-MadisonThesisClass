@@ -462,9 +462,11 @@
 
     \@ifundefined{#2}
     {
-        \MakeCommand{#2}{#3}
-        \expandafter\newcommand\csname #2Append\endcsname[1]{\CSVAppend{#2}{##1}}
-        \expandafter\newcommand\csname #2Prepend\endcsname[1]{\CSVPrepend{#2}{##1}}
+        \begin{MakeGlobal}
+            \MakeCommand{#2}{#3}
+            \expandafter\newcommand\csname #2Append\endcsname[1]{\CSVAppend{#2}{##1}}
+            \expandafter\newcommand\csname #2Prepend\endcsname[1]{\CSVPrepend{#2}{##1}}
+        \end{MakeGlobal}
     }{
         \ifthenelse{\equal{#1}{}}
             {
@@ -482,11 +484,14 @@
 
     \@ifundefined{#1}
         {
-            \MakeCommand{#1}{#2}
-            \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
-            \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
+                \MakeCommand{#1}{#2}
+                \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
+                \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
         }{
-            \expandafter\edef\csname #1\endcsname{\csname #1\endcsname,#2}
+            %\begin{MakeGlobal}
+                \expandafter\let\expandafter\List\csname #1\endcsname
+                \expandafter\def\csname #1\endcsname{\List,#2}
+            %\end{MakeGlobal}
         }
 }
 
@@ -498,7 +503,7 @@
             \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
             \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
         }{
-            \expandafter\edef\csname #1\endcsname{#2,\csname #1\endcsname}
+            \expandafter\global\expandafter\protected@edef\csname #1\endcsname{#2,\csname #1\endcsname}
         }
 }
 
@@ -561,6 +566,9 @@
 % Command that writes the auxiliary file; it is called with \AtEndDocument such that
 % metadata can be defined anywhere in the document.
 \DeclareRobustCommand{\WriteOutMetaData}{
+
+    Got in here.
+
     \newwrite\HyperSetupWrite
     \immediate\openout\HyperSetupWrite=UWMad.PDFMetaData.aux
     \immediate\write\HyperSetupWrite{\noexpand\hypersetup {\MetaDataList}}
@@ -581,49 +589,34 @@
 %           Metadata Defining/Storing Commands (User's Interface)          %
 % ------------------------------------------------------------------------ %
 % These commands hold the actual information that will be displayed upon typesetting.
-% \newcommand{\TheTitle}      {}
-% \newcommand{\TheSubtitle}   {}
-% \newcommand{\TheAuthor}     {}
-% \newcommand{\TheDate}       {}
-% \newcommand{\TheDepartment} {}
-% \newcommand{\TheDegree}     {}
-% \newcommand{\TheSpecialty}  {}
-% \newcommand{\TheAdvisor}    {}
-% \newcommand{\TheUniversity} {}
-% \newcommand{\TheKeywords}   {}
-% \newcommand{\TheSubject}    {}
-% \newcommand{\TheProducer}   {}
-% \newcommand{\TheCreator}    {}
-% \newcommand{\Title}      [1] {\renewcommand{\TheTitle}      {#1\xspace}    \PushPDFMetaDataToList{pdftitle}    {#1}}
-% \newcommand{\Author}     [1] {\renewcommand{\TheAuthor}     {#1\xspace}    \PushPDFMetaDataToList{pdfauthor}   {#1}}
-% \newcommand{\Subject}    [1] {\renewcommand{\TheSubject}    {#1\xspace}    \PushPDFMetaDataToList{pdfsubject}  {#1}}
-% \newcommand{\Producer}   [1] {\renewcommand{\TheProducer}   {#1\xspace}    \PushPDFMetaDataToList{pdfproducer} {#1}}
-% \newcommand{\Creator}    [1] {\renewcommand{\TheCreator}    {#1\xspace}    \PushPDFMetaDataToList{pdfcreator}  {#1}}
-% \newcommand{\Keywords}   [1] {\renewcommand{\TheKeywords}   {#1\xspace}    \PushPDFMetaDataToList{pdfkeywords} {#1}}
-% \newcommand{\Subtitle}   [1] {\renewcommand{\TheSubtitle}   {#1\xspace}}
-% \newcommand{\Date}       [1] {\renewcommand{\TheDate}       {#1\xspace}}
-% \newcommand{\Department} [1] {\renewcommand{\TheDepartment} {#1\xspace}}
-% \newcommand{\Degree}     [1] {\renewcommand{\TheDegree}     {#1\xspace}}
-% \newcommand{\Specialty}  [1] {\renewcommand{\TheSpecialty}  {#1\xspace}}
-% \newcommand{\Advisor}    [1] {\renewcommand{\TheAdvisor}    {#1\xspace}}
-% \newcommand{\University} [1] {\renewcommand{\TheUniversity} {#1\xspace}}
-
+\newcommand{\TheTitle}      {}
+\newcommand{\TheSubtitle}   {}
+\newcommand{\TheAuthor}     {}
+\newcommand{\TheDate}       {}
+\newcommand{\TheDepartment} {}
+\newcommand{\TheDegree}     {}
+\newcommand{\TheSpecialty}  {}
+\newcommand{\TheAdvisor}    {}
+\newcommand{\TheUniversity} {}
+\newcommand{\TheKeywords}   {}
+\newcommand{\TheSubject}    {}
+\newcommand{\TheProducer}   {}
+\newcommand{\TheCreator}    {}
+\newcommand{\Title}      [1] {\renewcommand{\TheTitle}      {#1\xspace}    \PushPDFMetaDataToList{pdftitle}    {#1}}
+\newcommand{\Author}     [1] {\renewcommand{\TheAuthor}     {#1\xspace}    \PushPDFMetaDataToList{pdfauthor}   {#1}}
+\newcommand{\Subject}    [1] {\renewcommand{\TheSubject}    {#1\xspace}    \PushPDFMetaDataToList{pdfsubject}  {#1}}
+\newcommand{\Producer}   [1] {\renewcommand{\TheProducer}   {#1\xspace}    \PushPDFMetaDataToList{pdfproducer} {#1}}
+\newcommand{\Creator}    [1] {\renewcommand{\TheCreator}    {#1\xspace}    \PushPDFMetaDataToList{pdfcreator}  {#1}}
+\newcommand{\Keywords}   [1] {\renewcommand{\TheKeywords}   {#1\xspace}    \PushPDFMetaDataToList{pdfkeywords} {#1}}
+\newcommand{\Subtitle}   [1] {\renewcommand{\TheSubtitle}   {#1\xspace}}
+\newcommand{\Date}       [1] {\renewcommand{\TheDate}       {#1\xspace}}
+\newcommand{\Department} [1] {\renewcommand{\TheDepartment} {#1\xspace}}
+\newcommand{\Degree}     [1] {\renewcommand{\TheDegree}     {#1\xspace}}
+\newcommand{\Specialty}  [1] {\renewcommand{\TheSpecialty}  {#1\xspace}}
+\newcommand{\Advisor}    [1] {\renewcommand{\TheAdvisor}    {#1\xspace}}
+\newcommand{\University} [1] {\renewcommand{\TheUniversity} {#1\xspace}}
 
 % These commands are used to assign the information to the above commands
-\MakeNewSetAndStoreCommandPair{The}{Title}     {\xspace}{\PushPDFMetaDataToList{pdftitle}   {\TheTitle}}   {}
-\MakeNewSetAndStoreCommandPair{The}{Subject}   {\xspace}{\PushPDFMetaDataToList{pdfsubject} {\TheSubject}} {}
-\MakeNewSetAndStoreCommandPair{The}{Producer}  {\xspace}{\PushPDFMetaDataToList{pdfproducer}{\TheProducer}}{}
-\MakeNewSetAndStoreCommandPair{The}{Creator}   {\xspace}{\PushPDFMetaDataToList{pdfcreator} {\TheCreator}} {}
-\MakeNewSetAndStoreCommandPair{The}{Author}    {\xspace}{\PushPDFMetaDataToList{pdfauthor}  {\TheAuthor}}  {}
-\MakeNewSetAndStoreCommandPair{The}{Keywords}  {\xspace}{\PushPDFMetaDataToList{pdfkeywords}{\TheKeywords}}{}
-\MakeNewSetAndStoreCommandPair{The}{Subtitle}  {\xspace}{}{}
-\MakeNewSetAndStoreCommandPair{The}{Date}      {\xspace}{}{}
-\MakeNewSetAndStoreCommandPair{The}{Department}{\xspace}{}{}
-\MakeNewSetAndStoreCommandPair{The}{Degree}    {\xspace}{}{}
-\MakeNewSetAndStoreCommandPair{The}{Specialty} {\xspace}{}{}
-\MakeNewSetAndStoreCommandPair{The}{Advisor}   {\xspace}{}{}
-\MakeNewSetAndStoreCommandPair{The}{University}{\xspace}{}{}
-
 
 
 

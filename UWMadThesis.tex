@@ -1,8 +1,13 @@
 \documentclass[12pt]{WisconsinThesis}
 
+\let\OldBackslash\backslash
+\renewcommand{\backslash}{\ensuremath{\OldBackslash}}
 
 \begin{document}
 
-Hello, World.
+This document is meant to test the package for errors.  
+If this file compiles with errors or warnings, some has gone awry.
+
+\input{Tests/Test_MetaData}
 
 \end{document}
