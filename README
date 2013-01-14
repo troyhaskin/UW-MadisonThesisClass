@@ -1,0 +1,17 @@
+The WisconsinThesis LaTeX Class
+===============================
+
+**Maintainer:** Troy C. Haskin  
+**Email:**      git.troy@hask.in
+
+
+Purpose
+-------
+The University of Wisconsin-Madison has a number of requirements for a thesis to be properly formatted.
+This LaTeX class is written to abide by those requirements in a (hopefully) seamless manner to the user.
+Additionally, the class intends to provide a rich and powerful environment for writing long documents that are heavy of cross-referencing and mathematical formulas.
+
+The [`withesis` class on CTAN](http://www.ctan.org/tex-archive/macros/latex/contrib/withesis "withesis CTAN link") was written to perform this task, but it is rather old and doesn't follow many of the LaTeX2e class conventions of recent years.
+As such, the WisconsinThesis LaTeX Class is meant to supercede the `withesis` class.
+Lastly, the base class of the package is easily changed, and there is a hope that future releases will permit excellent 
+
