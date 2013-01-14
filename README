@@ -18,4 +18,5 @@ Development
 -----------
 Current development of all desire feature is still a work in progress, and with each additional feature, a test `*.tex` file is added to the tests directory.
 Once all desired features are input and tested to satisfaction, documentation will be produced through the `docstrip` utility.
+Important notes:
 

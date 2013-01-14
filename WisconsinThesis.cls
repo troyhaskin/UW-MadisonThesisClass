@@ -44,9 +44,9 @@
 
 % Declare ifs for option switches
 \newif\ifUWMad@FrontMatterCommands\UWMad@FrontMatterCommandsfalse
-\newif\ifUWMad@NoMath             \UWMad@NoMathfalse
+\newif\ifUWMad@IncludeMathCommands\UWMad@IncludeMathCommandstrue
 \newif\ifUWMad@NoPDFMetaInfo      \UWMad@NoPDFMetaInfofalse
-\newif\ifUWMad@NoHyperlinking     \UWMad@NoHyperlinkingfalse
+\newif\ifUWMad@EnableHyperlinking \UWMad@EnableHyperlinkingtrue
 \newif\ifUWMad@IsADissertation    \UWMad@IsADissertationtrue
 
 % A command that will warn about certain options (mainly a4paper and twoside) but still
@@ -60,9 +60,9 @@
 
 
 \DeclareOption{FrontMatterCommands}{\UWMad@FrontMatterCommandstrue}  %  Define Front Matter sectioning tools as commands instead of environments
-\DeclareOption{NoMath}             {\UWMad@NoMathtrue}               %  Do not include math related packages of commands
+\DeclareOption{NoMath}             {\UWMad@IncludeMathCommandsfalse} %  Do not include math related packages of commands
 \DeclareOption{NoPDFMeta}          {\UWMad@NoPDFMetatrue}            %  Do not write out PDF meta data for use in hyperref
-\DeclareOption{NoLinks}            {\UWMad@NoHyperlinkingtrue}       %  Do not use hyperlinking at all
+\DeclareOption{NoLinks}            {\UWMad@EnableHyperlinkingfalse}  %  Do not use hyperlinking at all
 \DeclareOption{Prelim}             {\UWMad@IsADissertationfalse}     %  This is a Prelim not a disseration
 
 % These options are caught and warned since they viloate the style guidelines.
@@ -93,6 +93,7 @@
 %                                          Package Loads                                          %
 % =============================================================================================== %
 \RequirePackage{fixltx2e}  % Provides fixes from the LaTeX Team that address certain issues
+%\RequirePackage{ifetex}    % Check for etex availablity
 \RequirePackage{array}
 \RequirePackage{graphicx}  % 
 \RequirePackage{subfig}    % Provides the ability to make figures wrappable
@@ -103,16 +104,13 @@
 \RequirePackage{xspace}    % Small module defining xspace (used for properly inserting a space at the end of a text 'storage' command
 \RequirePackage{caption}
 
-\ifUWMad@NoMath
-\else
+\ifUWMad@IncludeMathCommands
     \RequirePackage[intlimits,sumlimits]{amsmath}   % Provides AMS math fixes and features for math typesetting
     \RequirePackage{amssymb}   % Symbols
     \RequirePackage{amsfonts}  % Fonts
 \fi
 
-\ifUWMad@NoHyperlinking
-\else
-    %\RequirePackage{hyperref}  % Provides internal/external hyperlinking in PDFs
+\ifUWMad@EnableHyperlinking
     \RequirePackage{bookmark}  % Provides an improvement to hyperref
 \fi
 
@@ -123,15 +121,11 @@
 % =============================================================================================== %
 %                                          Utility Commands                                       %
 % =============================================================================================== %
-
-
-\InputIfFileExists{Class.Module.Programming}{}{
+\InputIfFileExists{WisconsinThesis.Module.Programming}{}{
    \ClassWarningNoLine{\UWMad@ClassName}{
-        Could not locate Programming module file.
+        Could not locate Programming module.
    }
 }
-
-\newenvironment{MakeGlobal}{\globaldefs=1}{\globaldefs=0}
 
 
 % \newcommand{\MakeCommand}[2]{

@@ -10,7 +10,9 @@
 This document is meant to test the package for errors.  
 If this file compiles with errors or warnings, some has gone awry.
 
-\input{Tests/Test_MetaData}
-\input{Tests/Test_GlobalNewIf}
+\IfCommandExists{ThisIsWrong112211221122}{This command exists.}{This command does not exist.}
+
+%\input{Tests/Test_MetaData}
+%\input{Tests/Test_GlobalNewIf}
 
 \end{document}
