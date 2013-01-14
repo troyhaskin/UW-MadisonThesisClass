@@ -124,25 +124,14 @@
 %                                          Utility Commands                                       %
 % =============================================================================================== %
 
+
+\InputIfFileExists{Class.Module.Programming}{}{
+   \ClassWarningNoLine{\UWMad@ClassName}{
+        Could not locate Programming module file.
+   }
+}
+
 \newenvironment{MakeGlobal}{\globaldefs=1}{\globaldefs=0}
-
-% This is a convenience command used to define a new length and set its initial value
-\newcommand{\DefineNewLength}[2]{
-    \newlength{#1}
-    \setlength{#1}{#2}
-}
-
-\newcommand{\DefineNewCounter}[2]{
-    \newcounter{#1}
-    \setcounter{#1}{#2}
-}
-
-\newcommand{\GlobalNewIf}[1]{
-    \expandafter\newif\csname if#1Global\endcsname
-    \expandafter\def\csname if#1\endcsname{\csname if#1Global\endcsname}
-    \expandafter\def\csname#1true\endcsname {\expandafter\global\csname#1Globaltrue\endcsname}
-    \expandafter\def\csname#1false\endcsname{\expandafter\global\csname#1Globalfalse\endcsname}
-}
 
 
 % \newcommand{\MakeCommand}[2]{
@@ -457,62 +446,6 @@
     \chapter
 }
 
-
-
-
-
-% =============================================================================================== %
-%                                        CSV Creation Commands                                    %
-% =============================================================================================== %
-
-\newcommand{\CSVMake}[3][]{ % #1 = List name, #2 = Token to push on to right
-
-    \@ifundefined{#2}
-    {
-        \begin{MakeGlobal}
-            \MakeCommand{#2}{#3}
-            \expandafter\newcommand\csname #2Append\endcsname[1]{\CSVAppend{#2}{##1}}
-            \expandafter\newcommand\csname #2Prepend\endcsname[1]{\CSVPrepend{#2}{##1}}
-        \end{MakeGlobal}
-    }{
-        \ifthenelse{\equal{#1}{}}
-            {
-                \typeout{*** CSV Note: Creation ignored since list already exists. ***}
-            }{
-                \typeout{*** CSV Note: Overwriting already-created list. ***}
-                \ReMakeCommand{#2}{#3}
-                \expandafter\renewcommand\csname #2Append\endcsname[1]{\CSVAppend{#2}{##1}}
-                \expandafter\renewcommand\csname #2Prepend\endcsname[1]{\CSVPrepend{#2}{##1}}
-            }
-    }
-}
-
-\newcommand{\CSVAppend}[2]{ % #1 = List name, #2 = Token to push on to right
-
-    \@ifundefined{#1}
-        {
-                \MakeCommand{#1}{#2}
-                \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
-                \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
-        }{
-            %\begin{MakeGlobal}
-                \expandafter\let\expandafter\List\csname #1\endcsname
-                \expandafter\def\csname #1\endcsname{\List,#2}
-            %\end{MakeGlobal}
-        }
-}
-
-\newcommand{\CSVPrepend}[2]{ % #1 = List name, #2 = Token to push on to left
-
-    \@ifundefined{#1}
-        {
-            \MakeCommand{#1}{#2}
-            \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
-            \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
-        }{
-            \expandafter\global\expandafter\protected@edef\csname #1\endcsname{#2,\csname #1\endcsname}
-        }
-}
 
 
 
@@ -1186,148 +1119,6 @@
         \fi
     \fi
 }
-
-
-
-% ===================================================================================== %
-%                                      For-Loop Definition                              %
-% ===================================================================================== %
-
-% Initilaze the recursive command (see usage below) ----------------------
-\newcommand{\ForLoopRecursion}{}
-
-% Define the loop counter ------------------------------------------------
-\newcounter{ForLoopCounter}
-\setcounter{ForLoopCounter}{0}
-
-% Iterator command -------------------------------------------------------
-\newcommand{\UWMadFor}[4][1]{
-% Arguments
-%   #1 = increment (optional)
-%   #2 = start value
-%   #3 = end value
-%   #4 = <code>
-
-    % Redefine the command used for recursion
-    \renewcommand{\ForLoopRecursion}{
-        #4                                          % Excute <code>
-        \addtocounter{ForLoopCounter}{#1}           % Increment the counter
-        \UWMadFor[#1]{\value{ForLoopCounter}}{#3}{#4}    % Recurse
-    }
-
-    % Set the counter to the start value 
-    % After the recursion begins, #2 is the current value of the counter and not the start value.
-    \setcounter{ForLoopCounter}{#2}
-    
-    % Switch to deal with positive vs. negative increments (decrements).
-    \ifnum #1 > 0                                           % If positive increment
-        \IfLessThanEqualTo{\value{ForLoopCounter}}{#3}{     % Execute while the LoopCounter is less than or equal to the end value
-            \ForLoopRecursion
-        }{}
-    \else                                                    % If negative increment
-        \IfGreaterThanEqualTo{\value{ForLoopCounter}}{#3}{   % Execute while the LoopCounter is greater than or equal to the end value
-            \ForLoopRecursion
-        }{}
-    \fi
-}
-
-
-% ===================================================================================== %
-%                                Array Building Commands                                %
-% ===================================================================================== %
-
-\DefineNewCounter{ArrayWorkCounter}{0}
-\newcommand{\ArrayStartSuffix}    {ArrayStart}
-\newcommand{\ArrayEndSuffix}      {ArrayEnd}
-\newcommand{\ArrayPositionSuffix} {ArrayPosition}
-\newcommand{\ArrayCountSuffix}    {ArrayCount}
-
-\newcommand{\ArrayMake}[1]{% #1 = Array name
-
-    \MakeCommand{#1\ArrayPositionSuffix}{#1\ArrayPositionSuffix}
-
-    \DefineNewCounter{#1\ArrayPositionSuffix} {0}
-    \DefineNewCounter{#1\ArrayStartSuffix}    {1}
-    \DefineNewCounter{#1\ArrayEndSuffix}      {0}
-    \DefineNewCounter{#1\ArrayCountSuffix}    {0}
-
-}
-
-\newcommand{\ArrayPosition}[1]{% #1 = Array name
-    #1\ArrayPositionSuffix
-}
-
-\newcommand{\ArrayCount}[1]{% #1 = Array name
-    #1\ArrayCountSuffix
-}
-
-\newcommand{\ArrayPositionValue}[1]{% #1 = Array name
-    \value{\ArrayPosition{#1}}
-}
-
-\newcommand{\ArrayCountValue}[1]{% #1 = Array name
-    \value{\ArrayCount{#1}}
-}
-
-\newcommand{\ArrayClear}[1]{% #1 = Array name
-    \For[1]{1}{\value{#1\ArrayEndSuffix}}{
-        \ReMakeCommand{#1\roman{ForLoopCounter}}{\relax}
-    }
-    \ReMakeCommand{#1\ArrayPositionSuffix}{\relax}
-    \setcounter{#1\ArrayPositionSuffix} {0}
-    \setcounter{#1\ArrayStartSuffix}    {1}
-    \setcounter{#1\ArrayEndSuffix}      {0}
-    \setcounter{#1\ArrayCountSuffix}    {0}
-}
-
-
-
-\newcommand{\ArrayPush}[2]{% #1 = Array name, #2 value to push
-
-    % increment counter
-    \addtocounter{#1\ArrayCountSuffix}    {1}
-    \addtocounter{#1\ArrayEndSuffix}      {1}
-
-    % Naming scheme for the Array commands
-    \protected@edef\PushCommand{#1\roman{#1\ArrayEndSuffix}}
-    
-    % Making the Array commands
-    \@ifundefined{\PushCommand}{
-        \MakeCommand{\PushCommand}{#2}
-    }{
-        \ReMakeCommand{\PushCommand}{#2}
-    }
-}
-
-\newcommand{\ArrayPop}[1]{% #1 = Array name
-    \ifnum\value{#1\ArrayCountSuffix}>0
-        \csname #1\roman{#1\ArrayEndSuffix}\endcsname
-        \addtocounter{#1\ArrayCountSuffix}    {-1}
-        \addtocounter{#1\ArrayEndSuffix}      {-1}
-    \fi
-}
-
-\newcommand{\ArrayPopAndStore}[2]{% #1 = Array name, #2 name of command to store the popped value
-    \ifnum\value{#1\ArrayCountSuffix}>0
-        \protected@edef\PoppedValue{\csname #1\roman{#1\ArrayPositionSuffix}\endcsname}
-        \MakeCommand{#2}{\PoppedValue}
-        \addtocounter{#1\ArrayCountSuffix}    {-1}
-        \addtocounter{#1\ArrayEndSuffix}      {-1}
-    \fi
-}
-
-\newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Array position to get
-    \IfGreaterThanEqualTo{#2}{\value{#1\ArrayStartSuffix}}{
-        \IfGreaterThanEqualTo{\value{#1\ArrayEndSuffix}}{#2}{
-            \setcounter{ArrayWorkCounter}{#2}
-            \csname #1\roman{ArrayWorkCounter}\endcsname
-        }{2}
-    }{3}
-    
-}
-
-
-
 
 
 
