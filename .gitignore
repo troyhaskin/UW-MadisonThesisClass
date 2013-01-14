@@ -173,6 +173,5 @@ pip-log.txt
 *.toc
 *.lof
 *.lot
-*.tcp
 *.tps
 
