@@ -17,7 +17,8 @@
     \setcounter{#1}{#2}
 }
 
-% If-switch changes only have block level scope by default.  That is, a \newif switch
+% If-switch changes only have block level scope by default.  That is, a \newif that is switched within a block
+% reverts to its pre-block state upon exit.  This command creates an if-switch set that has global scope.
 \newcommand{\GlobalNewIf}[1]{
     \expandafter\newif\csname if#1Global\endcsname
     \expandafter\def\csname if#1\endcsname{\csname if#1Global\endcsname}
@@ -26,6 +27,8 @@
 }
 
 
+% A simple command that acts like LaTeX's \@ifundefined, but I like the eTeX conditional more (in looks and implementation).
+% Since it is eTeX, this command will allow for a switch to \@ifundefined if problems arise from non-eTeX users in the future.
 \newcommand{\IfCommandExists}[3]{
     \ifcsname#1\endcsname
         #2
@@ -34,7 +37,13 @@
     \fi
 }
 
+% A environment that allows for global defintions.
 \newenvironment{MakeGlobal}{\globaldefs=1}{\globaldefs=0}
+
+
+% Dynamic command creators.
+\newcommand{\MakeCommand}[2]{\expandafter\newcommand\csname #1\endcsname{#2}}
+\newcommand{\ReMakeCommand}[2]{\expandafter\renewcommand\csname #1\endcsname{#2}}
 
 
 

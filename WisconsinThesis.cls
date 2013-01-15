@@ -136,8 +136,6 @@
 %     \expandafter\renewcommand\csname #1\endcsname{#2}
 % }
 %
-\newcommand{\MakeCommand}[2]{\expandafter\newcommand\csname #1\endcsname{#2}}
-\newcommand{\ReMakeCommand}[2]{\expandafter\renewcommand\csname #1\endcsname{#2}}
 
 \DeclareRobustCommand{\UWMad@ClassMessage}[1]{
    \typeout{Class \UWMad@ClassName\space Message: #1}
@@ -383,68 +381,7 @@
 
 
 
-% =============================================================================================== %
-%                            Front Matter Environment/Command Definitions                         %
-% =============================================================================================== %
-\DefineNewCounter{FrontMatterCount}{0}
 
-\DeclareRobustCommand{\UWMad@FrontMatterRegister}[1]{
-    \addcontentsline{toc}{chapter}{#1}
-    \stepcounter{FrontMatterCount}
-}
-
-\ifUWMad@FrontMatterCommands
-    % Preliminary page commands
-        \DeclareRobustCommand{\dedications}    [1][Dedications]    {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \DeclareRobustCommand{\acknowledgments}[1][Acknowledgments]{\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \DeclareRobustCommand{\abstract}       [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \DeclareRobustCommand{\umiabstract}    [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \DeclareRobustCommand{\preface}        [1][Preface]        {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-\else
-    % Preliminary page environments
-        \newenvironment  {dedications}    [1][Dedications]    {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \newenvironment  {acknowledgments}[1][Acknowledgments]{\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \renewenvironment{abstract}       [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \newenvironment  {umiabstract}    [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \newenvironment  {preface}        [1][Preface]        {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-\fi
-
-
-% Register the Table of Contents to the Table of Contents
-\renewcommand{\contentsname}{Table of Contents}
-\let\TableOfContentsDefault\tableofcontents
-\renewcommand{\tableofcontents}{
-    {
-        \setstretch{1.0}
-        \phantomsection
-        \UWMad@FrontMatterRegister{\contentsname}
-        \TableOfContentsDefault
-        %\UWMad@FrontMatterRegister{\contentsname}
-        \clearpage
-    }
-}
-
-% Register the List of Tables to the Table of Contents
-\let\ListOfTablesDefault\listoftables
-\renewcommand{\listoftables}{
-    {
-        \setstretch{1.0}
-        \ListOfTablesDefault
-        \UWMad@FrontMatterRegister{\listtablename}
-        \clearpage
-    }
-}
-
-% Register the List of Figures to the Table of Contents
-\let\ListOfFiguresDefault\listoffigures
-\renewcommand{\listoffigures}{
-    {
-        \setstretch{1.0}
-        \ListOfFiguresDefault
-        \UWMad@FrontMatterRegister{\listfigurename}
-        \clearpage
-    }
-}
 
 
 
@@ -503,226 +440,26 @@
 
 
 % =============================================================================================== %
-%                                      License Page                                               %
+%                                     LicensePage Module                                          %
 % =============================================================================================== %
-
-% Author command that will display 'The Author' if \TheAuthor is empty
-\newcommand{\TheLicenseAuthor}{
-    \ifthenelse{\equal{\TheAuthor}{}}
-        {The Author}
-        {\TheAuthor}
+\InputIfFileExists{WisconsinThesis.Module.LicensePage}{}{
+   \ClassWarningNoLine{\UWMad@ClassName}{
+        Could not locate LicensePage module.
+   }
 }
-
-% Full Copyright
-\newcommand{\CopyrightTemplate}{
-    \large
-    \copyright\ \ Copyright by \TheLicenseAuthor(\the\year)\\
-    All Rights Reserved
-}
-
-\newcommand{\MakeCopyright}{
-    \LicensePage{CopyrightTemplate}
-}
-
-
-% --------------------------------------------------------------- %
-%                  Creative Commons Licenses                      %
-% --------------------------------------------------------------- %
-% Creative Commans URL and desired portings
-\newcommand{\CreativeCommonsPorting}{Unported\xspace}
-\newcommand{\CreativeCommons}{}
-\newcommand{\CreativeCommonsFrontOfURL}{http://creativecommons.org/licenses/}
-\newcommand{\CreativeCommonsBackOfURL} {/3.0/}
-\newcommand{\CreativeCommonsURL}[1]{
-    \CreativeCommonsFrontOfURL#1\CreativeCommonsBackOfURL
-}
-
-
-\newif\ifUWMad@CCAttribution  \UWMad@CCAttributionfalse
-\newif\ifUWMad@CCNonCommercial\UWMad@CCNonCommercialfalse
-\newif\ifUWMad@CCShareAlike   \UWMad@CCShareAlikefalse
-\newif\ifUWMad@CCNoDerivatives\UWMad@CCNoDerivativesfalse
-
-\newcommand{\Attribution}   {\UWMad@CCAttributiontrue}
-\newcommand{\NonCommercial} {\UWMad@CCNonCommercialtrue}
-\newcommand{\ShareAlike}    {\UWMad@CCShareAliketrue}
-\newcommand{\NoDerivatives} {\UWMad@CCNoDerivativestrue}
-
-
-\newcommand{\CreativeCommonsModuleBuild}{
-    \ifUWMad@CCAttribution
-        \newcommand{\TheCreativeCommonsLink}{by}
-        \newcommand{\TheCreativeCommonsWords}{Attribution}
-    \fi
-    
-    \ifUWMad@CCNonCommercial
-        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-nc}
-        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-NonCommercial}
-    \fi
-        
-    \ifUWMad@CCShareAlike
-        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-sa}
-        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-ShareAlike}
-    \fi 
-        
-    \ifUWMad@CCNoDerivatives
-        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-nd}
-        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-NoDerivs}
-    \fi
-    
-}
-
-
-
-% CC: Template for Creative Commons License
-\newcommand{\CreativeCommonsTemplate}{
-    \large
-    \TheLicenseAuthor has licensed this work under a \\
-    \href{\CreativeCommonsURL{\TheCreativeCommonsLink}}{Creative Commons \TheCreativeCommonsWords\xspace 3.0 \CreativeCommonsPorting License}\\
-    \the\year
-}
-
-\newcommand{\MakeCreativeCommons}{
-    \CreativeCommonsModuleBuild
-    \LicensePage{CreativeCommonsTemplate}
-}
-
-% CC: Attribution
-\newcommand{\CreativeCommonsBY}{
-    \Attribution
-    \MakeCreativeCommons
-}
-
-% CC: Attribution and Non-commercial
-\newcommand{\CreativeCommonsBYNC}{
-    \Attribution\NonCommercial
-    \MakeCreativeCommons
-}
-
-% CC: Attribution, Non-commercial, and Share-Alike
-\newcommand{\CreativeCommonsBYNCSA}{
-    \Attribution\NonCommercial\ShareAlike
-    \MakeCreativeCommons
-}
-
-% CC: Attribution and Share-Alike
-\newcommand{\CreativeCommonsBYSA}{
-    \Attribution\ShareAlike
-    \MakeCreativeCommons
-}
-
-
-% Create an alias for \CopyrightAllRightsReserved
-\let\Copyright\CopyrightAllRightsReserved
-
-\DeclareRobustCommand{\LicensePage}[1]{
-    \thispagestyle{empty}                                   % No page number displayed
-    \def\UWMad@RequestedLicense{#1}                         % Initialize the requested license command
-    
-    \ifthenelse{\equal{\UWMad@RequestedLicense}{copyright}} % If the user supplied 'copyright' as a License Request
-        {\def\UWMad@RequestedLicense{Copyright}}            % it will be switched to 'Copyright' as \copyright IS
-        {}                                                  % defined as the copyright symbol inherently.
-    
-    \null\vfill                                             % Fill the page with elastic whitespace
-    \begin{center}
-        \ifx \UWMad@RequestedLicense \UWMad@Undefined       % Checks if the license requested has a command
-            \UWMad@RequestedLicense                         % If not, the input is echoed
-        \else
-            \csname\UWMad@RequestedLicense\endcsname        % If yes, the license command is excuted.
-        \fi
-    \end{center}
-    \clearpage                                              % Clear the page
-}
-
-
-
-
-
-
-\newcommand{\AddToCHeaderStyle}[2][-0.35em]{
-    \hspace{#1}#2\rule{0pt}{1em}
-}
-
-\DeclareRobustCommand{\AddToCHeader}[2][part]{
-    \addtocontents{toc}{\protect\contentsline{#1}{\AddToCHeaderStyle{#2}}{}{}}
-}
-
-
 
 
 
 % =============================================================================================== %
-%                                     Math Commands                                               %
+%                                     Math Module                                                 %
 % =============================================================================================== %
-
-
-% ---------------------------------------------------------------------------- %
-%                                Square Root Tail                              %
-% ---------------------------------------------------------------------------- %
-\DeclareRobustCommand{\NthRootInTeX}[2]{\root #1 \of {#2\:\!}}
-
-\DeclareRobustCommand{\SquareRootCore}[2]{
-    \setbox0=\hbox{\ensuremath{\NthRootInTeX{#1}{#2}}}
-    \dimen0=\ht0
-    \advance\dimen0-0.2\ht0
-    \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}
-    {\box0\lower0.47pt\box2}
-}
-
-\DeclareRobustCommand{\Sqrt}[2][]{
-    \mathchoice{\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
+\InputIfFileExists{WisconsinThesis.Module.Math}{}{
+   \ClassWarningNoLine{\UWMad@ClassName}{
+        Could not locate Math module.
+   }
 }
 
 
-
-% ---------------------------------------------------------------------------- %
-%                              Derivative Commands                             %
-% ---------------------------------------------------------------------------- %
-\newcommand{\bigdiffn}[4]{\dfrac{#1{}^{#4}}{#1 #3{}^{#4}} \left[ #2 \right]}
-\newcommand{\gendiffn}[4]{\dfrac{#1{}^{#4} #2}{#1 #3{}^{#4}}}
-
-\newcommand{\diff}[3][d]{
-    \ifthenelse{\equal{p}{#1}}{
-        \gendiffn{\partial}{#2}{#3}{}
-    }{
-        \ifthenelse{\equal{b}{#1}}{
-            \bigdiffn{d}{#2}{#3}{}
-        }{
-            \ifthenelse{\equal{bp}{#1}}{
-                \bigdiffn{\partial}{#2}{#3}{}
-            }{
-                \gendiffn{d}{#2}{#3}{}
-            }
-        }
-    }
-}
-
-\newcommand{\diffn}[4][d]{
-    \ifthenelse{\equal{p}{#1}}{
-        \gendiffn{\partial}{#2}{#3}{#4}
-    }{
-        \ifthenelse{\equal{b}{#1}}{
-            \bigdiffn{#2}{#3}{#4}
-        }{
-            \ifthenelse{\equal{bp}{#1}}{
-                \bigdiffn{\partial}{#2}{#3}{#4}
-            }{
-                \gendiffn{#1}{#2}{#3}{#4}
-            }
-        }
-    }
-}
-
-\newcommand{\bigdiff}   [2] {\diff[b]{#1}{#2}}
-\newcommand{\pdiff}     [2] {\diff[p]{#1}{#2}}
-\newcommand{\bigpdiff}  [2] {\diff[bp]{#1}{#2}}
-\let\frac\dfrac
-\newcommand{\subs}      [2][]{\ensuremath{{}_{#1\text{\scriptsize #2}}}}
-\newcommand{\sups}      [2][]{\ensuremath{{}^{#1\text{\scriptsize #2}}}}
-\newcommand{\oneo}      [1]  {\ensuremath{\frac{1}{#1}}}
 
 
 % =============================================================================================== %

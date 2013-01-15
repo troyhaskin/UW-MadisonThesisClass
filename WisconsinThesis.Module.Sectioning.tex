@@ -1,5 +1,5 @@
 % =============================================================================================== %
-%                        WisconsinThesis Class: Programming Module                                %
+%                        WisconsinThesis Class: Sectioning Module                                 %
 % =============================================================================================== %
 
 
@@ -202,6 +202,7 @@
 
 
 
+
 % =========================================================================== %
 %                          New Appendix Command                               %
 % =========================================================================== %
@@ -236,5 +237,94 @@
     \stepcounter{appendix}
     \chapter
 }
+
+
+
+
+
+% =========================================================================== %
+%              Front Matter Environment/Command Definitions                   %
+% =========================================================================== %
+\DefineNewCounter{FrontMatterCount}{0}
+
+\DeclareRobustCommand{\UWMad@FrontMatterRegister}[1]{
+    \addcontentsline{toc}{chapter}{#1}
+    \stepcounter{FrontMatterCount}
+}
+
+\ifUWMad@FrontMatterCommands
+    % Preliminary page commands
+        \DeclareRobustCommand{\dedications}    [1][Dedications]    {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
+        \DeclareRobustCommand{\acknowledgments}[1][Acknowledgments]{\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
+        \DeclareRobustCommand{\abstract}       [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
+        \DeclareRobustCommand{\umiabstract}    [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
+        \DeclareRobustCommand{\preface}        [1][Preface]        {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
+\else
+    % Preliminary page environments
+        \newenvironment  {dedications}    [1][Dedications]    {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
+        \newenvironment  {acknowledgments}[1][Acknowledgments]{\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
+        \renewenvironment{abstract}       [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
+        \newenvironment  {umiabstract}    [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
+        \newenvironment  {preface}        [1][Preface]        {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
+\fi
+
+
+
+
+
+% =========================================================================== %
+%                 List of Contents, Tables, and Figures                       %
+% =========================================================================== %
+% Register the Table of Contents to the Table of Contents
+\renewcommand{\contentsname}{Table of Contents}
+\let\TableOfContentsDefault\tableofcontents
+\renewcommand{\tableofcontents}{
+    {
+        \setstretch{1.0}
+        \phantomsection
+        \UWMad@FrontMatterRegister{\contentsname}
+        \TableOfContentsDefault
+        %\UWMad@FrontMatterRegister{\contentsname}
+        \clearpage
+    }
+}
+
+% Register the List of Tables to the Table of Contents
+\let\ListOfTablesDefault\listoftables
+\renewcommand{\listoftables}{
+    {
+        \setstretch{1.0}
+        \ListOfTablesDefault
+        \UWMad@FrontMatterRegister{\listtablename}
+        \clearpage
+    }
+}
+
+% Register the List of Figures to the Table of Contents
+\let\ListOfFiguresDefault\listoffigures
+\renewcommand{\listoffigures}{
+    {
+        \setstretch{1.0}
+        \ListOfFiguresDefault
+        \UWMad@FrontMatterRegister{\listfigurename}
+        \clearpage
+    }
+}
+
+
+
+
+
+% =========================================================================== %
+%                 Table of Contents 'Headers' (i.e., Parts)                   %
+% =========================================================================== %
+\newcommand{\AddToCHeaderStyle}[2][-0.35em]{
+    \hspace{#1}#2\rule{0pt}{1em}
+}
+
+\DeclareRobustCommand{\AddToCHeader}[2][part]{
+    \addtocontents{toc}{\protect\contentsline{#1}{\AddToCHeaderStyle{#2}}{}{}}
+}
+
 
 

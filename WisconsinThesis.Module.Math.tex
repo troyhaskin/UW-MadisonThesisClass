@@ -1,0 +1,71 @@
+% =============================================================================================== %
+%                                     Math Module                                                 %
+% =============================================================================================== %
+
+% ---------------------------------------------------------------------------- %
+%                                Square Root Tail                              %
+% ---------------------------------------------------------------------------- %
+\DeclareRobustCommand{\NthRootInTeX}[2]{\root #1 \of {#2\:\!}}
+
+\DeclareRobustCommand{\SquareRootCore}[2]{
+    \setbox0=\hbox{\ensuremath{\NthRootInTeX{#1}{#2}}}
+    \dimen0=\ht0
+    \advance\dimen0-0.2\ht0
+    \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}
+    {\box0\lower0.47pt\box2}
+}
+
+\DeclareRobustCommand{\Sqrt}[2][]{
+    \mathchoice{\SquareRootCore{#1}{#2}}
+               {\SquareRootCore{#1}{#2}}
+               {\SquareRootCore{#1}{#2}}
+               {\SquareRootCore{#1}{#2}}
+}
+
+
+
+% ---------------------------------------------------------------------------- %
+%                              Derivative Commands                             %
+% ---------------------------------------------------------------------------- %
+\newcommand{\bigdiffn}[4]{\dfrac{#1{}^{#4}}{#1 #3{}^{#4}} \left[ #2 \right]}
+\newcommand{\gendiffn}[4]{\dfrac{#1{}^{#4} #2}{#1 #3{}^{#4}}}
+
+\newcommand{\diff}[3][d]{
+    \ifthenelse{\equal{p}{#1}}{
+        \gendiffn{\partial}{#2}{#3}{}
+    }{
+        \ifthenelse{\equal{b}{#1}}{
+            \bigdiffn{d}{#2}{#3}{}
+        }{
+            \ifthenelse{\equal{bp}{#1}}{
+                \bigdiffn{\partial}{#2}{#3}{}
+            }{
+                \gendiffn{d}{#2}{#3}{}
+            }
+        }
+    }
+}
+
+\newcommand{\diffn}[4][d]{
+    \ifthenelse{\equal{p}{#1}}{
+        \gendiffn{\partial}{#2}{#3}{#4}
+    }{
+        \ifthenelse{\equal{b}{#1}}{
+            \bigdiffn{#2}{#3}{#4}
+        }{
+            \ifthenelse{\equal{bp}{#1}}{
+                \bigdiffn{\partial}{#2}{#3}{#4}
+            }{
+                \gendiffn{#1}{#2}{#3}{#4}
+            }
+        }
+    }
+}
+
+\newcommand{\bigdiff}   [2] {\diff[b]{#1}{#2}}
+\newcommand{\pdiff}     [2] {\diff[p]{#1}{#2}}
+\newcommand{\bigpdiff}  [2] {\diff[bp]{#1}{#2}}
+\let\frac\dfrac
+\newcommand{\subs}      [2][]{\ensuremath{{}_{#1\text{\scriptsize #2}}}}
+\newcommand{\sups}      [2][]{\ensuremath{{}^{#1\text{\scriptsize #2}}}}
+\newcommand{\oneo}      [1]  {\ensuremath{\frac{1}{#1}}}
