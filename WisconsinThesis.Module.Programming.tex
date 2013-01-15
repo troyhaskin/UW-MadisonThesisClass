@@ -37,11 +37,52 @@
     \fi
 }
 
+
+% <= Command - no equivalent in TeX
+\newcommand{\IfGreaterThanEqualTo}[4]{
+    \ifnum#1>#2
+        #3
+    \else
+        \ifnum#1=#2
+            #3
+        \else
+            #4
+        \fi
+    \fi
+}
+
+% >= Command - no equivalent in TeX
+\newcommand{\IfLessThanEqualTo}[4]{
+    \ifnum#1<#2
+        #3
+    \else
+        \ifnum#1=#2
+            #3
+        \else
+            #4
+        \fi
+    \fi
+}
+
+
 % A environment that allows for global defintions.
 \newenvironment{MakeGlobal}{\globaldefs=1}{\globaldefs=0}
 
 
+
 % Dynamic command creators.
+%
+% There are structured versions with proper programming whitespace;
+% the 'compactified' versions are coded such that no spurious whitespace is added.
+%
+%   \newcommand{\MakeCommand}[2]{
+%       \expandafter\newcommand\csname #1\endcsname{#2}
+%   }
+% 
+%   \newcommand{\ReMakeCommand}[2]{
+%       \expandafter\renewcommand\csname #1\endcsname{#2}
+%   }
+%
 \newcommand{\MakeCommand}[2]{\expandafter\newcommand\csname #1\endcsname{#2}}
 \newcommand{\ReMakeCommand}[2]{\expandafter\renewcommand\csname #1\endcsname{#2}}
 
