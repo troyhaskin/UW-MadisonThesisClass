@@ -134,173 +134,32 @@
     }
 }
 
-
-
 % =============================================================================================== %
-%                                     Programming Module                                          %
+%                                   Module Loader Commands                                        %
 % =============================================================================================== %
-\InputIfFileExists{WisconsinThesis.Module.Programming}{}{
-   \UWMad@ClassWarning{Could not locate Programming module.}
+\newcommand{\ModulePrefix}{WisconsinThesis.Module.}
+\newcommand{\ModuleSuffix}{}
+
+\DeclareRobustCommand{\LoadIfModuleExists}[1]{
+    
+    \edef\TheModule{\ModulePrefix#1\ModuleSuffix}
+    
+    \InputIfFileExists{\TheModule}{}{
+        \UWMad@ClassWarning{Could not locate #1 module.}
+    }
 }
 
 
-
 % =============================================================================================== %
-%                                          Page Layout                                            %
+%                                     Module Loads                                                %
 % =============================================================================================== %
-\geometry{
-    margin      = 1.0in,        % Define: margins
-    includehead = true,         % Option: Include header height in the margin calculations
-    paper       = letterpaper   % Define: paper size (8.5in x 11 in.)
-}
-
-\creflabelformat{equation}{#2#1#3}
-
-\captionsetup[table]{
-    format=hang,
-    labelsep=colon,
-    justification=justified,
-    labelfont={sl},
-    textfont=sl,
-    font={sc,small,stretch=1.1},
-    width=0.9\textwidth,
-    position=above,
-    skip=0.25em
-}
-
-\captionsetup[figure]{
-    format=hang,
-    labelsep=colon,
-    justification=justified,
-    labelfont={sl},
-    textfont=sl,
-    font={small,stretch=1.1},
-    width=0.9\textwidth,
-    position=above,
-    skip=0.5em
-}
-
-
-\definecolor{UWMadGreen}{rgb}{0,0.7,0}
-% Default hyperref behavior that is *not* PDF Metadata
-\hypersetup{
-    colorlinks         = true       ,  % Makes links colored and not boxed
-    linkcolor          = blue       ,  % link color to blue
-    citecolor          = UWMadGreen ,  % cite color
-    urlcolor           = violet     ,  % URL color
-    pdfdisplaydoctitle = true       ,  % Show title instead of filename
-    pdfview            = {FitH}     ,  % Should (but does not always) put the PDF zoom to pade width upon open
-    pdfstartview       = {FitH}     ,  % Should (but does not always) put the PDF zoom to pade width upon open
-    pdfpagelayout      = OneColumn  ,
-    plainpages         = false      ,  % Makes Hyperref follow the page numbering styles in the link definitions 
-    hypertexnames      = true       ,  % Makes Hyperref used 'intuitive' choices for its link anchors
-    bookmarksopenlevel = 3          ,  % Will expand the bookmark structure down to the subsubsection level
-    bookmarksopen      = true       ,  % Opens the bookmark menu
-    unicode
-}
-
-
-\pagestyle{myheadings}        % Set: Place page number in the upper-right corner of the page
-\pagenumbering{roman}         % Set: Page numbering defaults to roman (this switches to arabic upon first unstarred \chapter{} )
-\doublespacing                % Set: Doublespace the document
-\setlength{\parindent}{ 0pt}  % Set: No paragraph indentation
-\setlength{\parskip}  {10pt}  % Set: Separation between paragraphs
-\setlength{\headsep}  {15pt}  % Set: Distance between bottom of header and top of page body
-
-
-
-
-% =============================================================================================== %
-%                                          Sectioning Module                                      %
-% =============================================================================================== %
-\InputIfFileExists{WisconsinThesis.Module.Sectioning}{}{
-   \UWMad@ClassWarning{Could not locate Sectioning module.}
-}
-
-
-
-% =============================================================================================== %
-%                                  PDFDataAndMetadata Module                                      %
-% =============================================================================================== %
-\InputIfFileExists{WisconsinThesis.Module.PDFDataAndMetadata}{}{
-   \UWMad@ClassWarning{Could not locate PDFDataAndMetadata module.}
-}
-
-
-
-
-
-
-% =============================================================================================== %
-%                                      Thesis Committee Commands                                  %
-% =============================================================================================== %
-
-% Member counter
-\DefineNewCounter{CommitteeMemberCount}{0}
-
-
-% Pushes Committee Members' names and descriptions into the proper storage commands
-%   Notes: 
-%       o   The commands' \TheCommitteeNames and \TheCommitteeDescriptions arguments are wrapped in { } to protect commas supplied in both by the user.
-%       o   The names and descriptions will be popped by a ##display command name## below in a FIFO sense.
-%
-\newcommand{\CommitteeMember}[2]{
-
-    % If statement that handles if the member popped is the first or not.
-        \ifthenelse{\arabic{CommitteeMemberCount}=0}
-        {
-        % The first use initializes the Names and Descriptions commands
-            \CSVMake{TheCommitteeNames}       {{#1}}
-            \CSVMake{TheCommitteeDescriptions}{{#2}}
-        }{ 
-        % Subsequent uses append the new data to the initialized commands in a CSV list.
-            \TheCommitteeNamesAppend{{#1}}
-            \TheCommitteeDescriptionsAppend{{#2}}
-        }
-        % Step the counter
-        \stepcounter{CommitteeMemberCount}
-
-}
-
-
-
-%%% =============================================================================================== %
-%%%                                       Nomenclature Commands                                     %
-%%% =============================================================================================== %
-%%
-%%% Member counter
-%%\DefineNewCounter{NomenclatureCount}{0}
-%%
-%%
-%%% Pushes Committee Members' names and descriptions into the proper storage commands
-%%%   Notes: 
-%%%       o   The commands' \TheCommitteeNames and \TheCommitteeDescriptions arguments are wrapped in { } to protect commas supplied in both by the user.
-%%%       o   The names and descriptions will be popped by a ##display command name## below in a FIFO sense.
-%%%
-%%\newcommand{\Nomenclature}[2]{
-%%
-%%    % If statement that handles if the member popped is the first or not.
-%%      \ifthenelse{\arabic{NomenclatureCount}=0}
-%%      {
-%%      % The first use initializes the Names and Descriptions commands
-%%          \CSVMake{TheNomenclatureNames}       {{#1}}
-%%          \CSVMake{TheNomenclatureDescriptions}{{#2}}
-%%      }{
-%%      % Subsequent uses appends the new data to the initialized commands into a CSV list.
-%%          \TheNomenclatureNamesAppend       {{#1}}
-%%          \TheNomenclatureDescriptionsAppend{{#2}}
-%%      }
-%%      % Step the counter
-%%      \stepcounter{NomenclatureCount}
-%%
-%%}
-
-
-
-
-
-
-
+\LoadIfModuleExists{Programming}
+\LoadIfModuleExists{LayoutAndStyle}
+\LoadIfModuleExists{Sectioning}
+\LoadIfModuleExists{PDFDataAndMetadata}
+\LoadIfModuleExists{LicensePage}
+\LoadIfModuleExists{Math}
+\LoadIfModuleExists{RelativeDirectoryInput}
 
 
 
@@ -352,36 +211,6 @@
     \end{center}
     \clearpage
 }
-
-
-
-
-
-% =============================================================================================== %
-%                                     LicensePage Module                                          %
-% =============================================================================================== %
-\InputIfFileExists{WisconsinThesis.Module.LicensePage}{}{
-   \UWMad@ClassWarning{Could not locate LicensePage module.}
-}
-
-
-
-% =============================================================================================== %
-%                                     Math Module                                                 %
-% =============================================================================================== %
-\InputIfFileExists{WisconsinThesis.Module.Math}{}{
-   \UWMad@ClassWarning{Could not locate Math module.}
-}
-
-
-
-% =============================================================================================== %
-%                                RelativeDirectoryInput Module                                    %
-% =============================================================================================== %
-\InputIfFileExists{WisconsinThesis.Module.RelativeDirectoryInput}{}{
-   \UWMad@ClassWarning{Could not locate RelativeDirectoryInput module.}
-}
-
 
 
 % ===================================================================================== %
