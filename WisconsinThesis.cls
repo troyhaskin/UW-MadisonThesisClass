@@ -118,13 +118,267 @@
 
 
 
+%% =============================================================================================== %
+%%                                        Programming Module                                       %
+%% =============================================================================================== %
+%\InputIfFileExists{WisconsinThesis.Module.Programming}{}{
+%   \ClassWarningNoLine{\UWMad@ClassName}{
+%        Could not locate Programming module.
+%   }
+%}
 % =============================================================================================== %
-%                                          Utility Commands                                       %
+%                        WisconsinThesis Class: Programming Module                                %
 % =============================================================================================== %
-\InputIfFileExists{WisconsinThesis.Module.Programming}{}{
-   \ClassWarningNoLine{\UWMad@ClassName}{
-        Could not locate Programming module.
-   }
+
+
+% This is a convenience command used to define a new length and set its initial value.
+% A thin abstraction that declares and intializes dimensions.
+\newcommand{\DefineNewLength}[2]{
+    \newlength{#1}
+    \setlength{#1}{#2}
+}
+
+% This is a convenience command used to define a new counter and set its initial value.
+% A thin abstraction that declares and intializes lengths.
+\newcommand{\DefineNewCounter}[2]{
+    \newcounter{#1}
+    \setcounter{#1}{#2}
+}
+
+% If-switch changes only have block level scope by default.  That is, a \newif switch
+\newcommand{\GlobalNewIf}[1]{
+    \expandafter\newif\csname if#1Global\endcsname
+    \expandafter\def\csname if#1\endcsname{\csname if#1Global\endcsname}
+    \expandafter\def\csname#1true\endcsname {\expandafter\global\csname#1Globaltrue\endcsname}
+    \expandafter\def\csname#1false\endcsname{\expandafter\global\csname#1Globalfalse\endcsname}
+}
+
+
+\newcommand{\IfCommandExists}[3]{
+    \ifcsname#1\endcsname
+        #2
+    \else 
+        #3
+    \fi
+}
+
+\newenvironment{MakeGlobal}{\globaldefs=1}{\globaldefs=0}
+
+
+
+
+% =========================================================================== %
+%                          CSV Creation Commands                              %
+% =========================================================================== %
+
+\newcommand{\CSVMake}[3][]{ % #1 = List name, #2 = Token to push on to right
+
+    \@ifundefined{#2}
+    {
+        \begin{MakeGlobal}
+            \MakeCommand{#2}{#3}
+            \expandafter\newcommand\csname #2Append\endcsname[1]{\CSVAppend{#2}{##1}}
+            \expandafter\newcommand\csname #2Prepend\endcsname[1]{\CSVPrepend{#2}{##1}}
+        \end{MakeGlobal}
+    }{
+        \ifthenelse{\equal{#1}{}}
+            {
+                \typeout{*** CSV Note: Creation ignored since list already exists. ***}
+            }{
+                \typeout{*** CSV Note: Overwriting already-created list. ***}
+                \ReMakeCommand{#2}{#3}
+                \expandafter\renewcommand\csname #2Append\endcsname[1]{\CSVAppend{#2}{##1}}
+                \expandafter\renewcommand\csname #2Prepend\endcsname[1]{\CSVPrepend{#2}{##1}}
+            }
+    }
+}
+
+\newcommand{\CSVAppend}[2]{ % #1 = List name, #2 = Token to push on to right
+
+    \@ifundefined{#1}
+        {
+                \MakeCommand{#1}{#2}
+                \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
+                \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
+        }{
+            %\begin{MakeGlobal}
+                \expandafter\let\expandafter\List\csname #1\endcsname
+                \expandafter\def\csname #1\endcsname{\List,#2}
+            %\end{MakeGlobal}
+        }
+}
+
+\newcommand{\CSVPrepend}[2]{ % #1 = List name, #2 = Token to push on to left
+
+    \@ifundefined{#1}
+        {
+            \MakeCommand{#1}{#2}
+            \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
+            \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
+        }{
+            \expandafter\global\expandafter\protected@edef\csname #1\endcsname{#2,\csname #1\endcsname}
+        }
+}
+
+
+
+
+
+
+% =========================================================================== %
+%                            For-Loop Definition                              %
+% =========================================================================== %
+
+
+% Initilaze the recursive command (see usage below) ----------------------
+\newcommand{\ForLoopRecursion}{}
+
+% Define the loop counter ------------------------------------------------
+\newcounter{ForLoopCounter}
+\setcounter{ForLoopCounter}{0}
+
+% Iterator command -------------------------------------------------------
+\newcommand{\UWMadFor}[4][1]{
+% Arguments
+%   #1 = increment (optional)
+%   #2 = start value
+%   #3 = end value
+%   #4 = <code>
+
+    % Redefine the command used for recursion
+    \renewcommand{\ForLoopRecursion}{
+        #4                                          % Excute <code>
+        \addtocounter{ForLoopCounter}{#1}           % Increment the counter
+        \UWMadFor[#1]{\value{ForLoopCounter}}{#3}{#4}    % Recurse
+    }
+
+    % Set the counter to the start value 
+    % After the recursion begins, #2 is the current value of the counter and not the start value.
+    \setcounter{ForLoopCounter}{#2}
+    
+    % Switch to deal with positive vs. negative increments (decrements).
+    \ifnum #1 > 0                                           % If positive increment
+        \IfLessThanEqualTo{\value{ForLoopCounter}}{#3}{     % Execute while the LoopCounter is less than or equal to the end value
+            \ForLoopRecursion
+        }{}
+    \else                                                    % If negative increment
+        \IfGreaterThanEqualTo{\value{ForLoopCounter}}{#3}{   % Execute while the LoopCounter is greater than or equal to the end value
+            \ForLoopRecursion
+        }{}
+    \fi
+}
+
+
+
+
+
+% =========================================================================== %
+%                      Array Building Commands                                %
+% =========================================================================== %
+
+\DefineNewCounter{ArrayWorkCounter}{0}
+\newcommand{\ArrayStartSuffix}    {ArrayStart}
+\newcommand{\ArrayEndSuffix}      {ArrayEnd}
+\newcommand{\ArrayPositionSuffix} {ArrayPosition}
+\newcommand{\ArrayCountSuffix}    {ArrayCount}
+
+\newcommand{\ArrayMake}[1]{% #1 = Array name
+
+    \MakeCommand{#1\ArrayPositionSuffix}{#1\ArrayPositionSuffix}
+
+    \DefineNewCounter{#1\ArrayPositionSuffix} {0}
+    \DefineNewCounter{#1\ArrayStartSuffix}    {1}
+    \DefineNewCounter{#1\ArrayEndSuffix}      {0}
+    \DefineNewCounter{#1\ArrayCountSuffix}    {0}
+
+}
+
+\newcommand{\ArrayPosition}[1]{% #1 = Array name
+    #1\ArrayPositionSuffix
+}
+
+\newcommand{\ArrayCount}[1]{% #1 = Array name
+    #1\ArrayCountSuffix
+}
+
+\newcommand{\ArrayPositionValue}[1]{% #1 = Array name
+    \value{\ArrayPosition{#1}}
+}
+
+\newcommand{\ArrayCountValue}[1]{% #1 = Array name
+    \value{\ArrayCount{#1}}
+}
+
+\newcommand{\ArrayClear}[1]{% #1 = Array name
+    \For[1]{1}{\value{#1\ArrayEndSuffix}}{
+        \ReMakeCommand{#1\roman{ForLoopCounter}}{\relax}
+    }
+    \ReMakeCommand{#1\ArrayPositionSuffix}{\relax}
+    \setcounter{#1\ArrayPositionSuffix} {0}
+    \setcounter{#1\ArrayStartSuffix}    {1}
+    \setcounter{#1\ArrayEndSuffix}      {0}
+    \setcounter{#1\ArrayCountSuffix}    {0}
+}
+
+
+
+\newcommand{\ArrayPush}[2]{% #1 = Array name, #2 value to push
+
+    % increment counter
+    \addtocounter{#1\ArrayCountSuffix}    {1}
+    \addtocounter{#1\ArrayEndSuffix}      {1}
+
+    % Naming scheme for the Array commands
+    \protected@edef\PushCommand{#1\roman{#1\ArrayEndSuffix}}
+    
+    % Making the Array commands
+    \@ifundefined{\PushCommand}{
+        \MakeCommand{\PushCommand}{#2}
+    }{
+        \ReMakeCommand{\PushCommand}{#2}
+    }
+}
+
+\newcommand{\ArrayPop}[1]{% #1 = Array name
+    \ifnum\value{#1\ArrayCountSuffix}>0
+        \csname #1\roman{#1\ArrayEndSuffix}\endcsname
+        \addtocounter{#1\ArrayCountSuffix}    {-1}
+        \addtocounter{#1\ArrayEndSuffix}      {-1}
+    \fi
+}
+
+\newcommand{\ArrayPopAndStore}[2]{% #1 = Array name, #2 name of command to store the popped value
+    \ifnum\value{#1\ArrayCountSuffix}>0
+        \protected@edef\PoppedValue{\csname #1\roman{#1\ArrayPositionSuffix}\endcsname}
+        \MakeCommand{#2}{\PoppedValue}
+        \addtocounter{#1\ArrayCountSuffix}    {-1}
+        \addtocounter{#1\ArrayEndSuffix}      {-1}
+    \fi
+}
+
+\newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Array position to get
+    \IfGreaterThanEqualTo{#2}{\value{#1\ArrayStartSuffix}}{
+        \IfGreaterThanEqualTo{\value{#1\ArrayEndSuffix}}{#2}{
+            \setcounter{ArrayWorkCounter}{#2}
+            \csname #1\roman{ArrayWorkCounter}\endcsname
+        }{2}
+    }{3}
+    
+}
+
+
+
+
+
+% =========================================================================== %
+%                Hash (Associative Arrays) Creation Commands                  %
+% =========================================================================== %
+\newcommand{\HashMake}[1]{% #1 = Hash name
+    \MakeCommand{#1\ArrayPositionSuffix}{#1\ArrayPositionSuffix}
+}
+
+\newcommand{\HashSet}[3]{% #1 = hash name, #2 = key name, #3 = value
+    \ReMakeCommand{#1@#2}{#3}
 }
 
 
@@ -192,14 +446,254 @@
 
 
 
+%% =============================================================================================== %
+%%                                          Sectioning Module                                      %
+%% =============================================================================================== %
+%\InputIfFileExists{WisconsinThesis.Module.Sectioning}{}{
+%   \ClassWarningNoLine{\UWMad@ClassName}{
+%        Could not locate Sectioning module.
+%   }
+%}
 % =============================================================================================== %
-%                                          Sectioning Module                                      %
+%                        WisconsinThesis Class: Programming Module                                %
 % =============================================================================================== %
-\InputIfFileExists{WisconsinThesis.Module.Sectioning}{}{
-   \ClassWarningNoLine{\UWMad@ClassName}{
-        Could not locate Sectioning module.
-   }
+
+
+% =========================================================================== %
+%                        Redefined Chapter Head Command                       %
+% =========================================================================== %
+%
+%   LaTeX's standard Report Class is used as a base; however, the chapter heading
+%   customization leaves something to be desired.  So, in this section,
+%   \@makechapterhead is redefined with defined lengths and styles available to the 
+%   users to redfine at their own risk.
+%
+%   Terms for this section:
+%       Chapter ID:     A combination of text that identifies what follows is a numbered chapter (e.g. "Chapter 1")
+%       Chapter Title:  Text supplied by the user that names the numbered chapter (e.g., "Differential Calculus")
+%       Chapter Head:   A styled combination of a Chapter ID and a Chapter Title at the beginning of a chapter.
+%
+%   Lengths:
+%       \ChapterHeadVSpaceStart:    Vertical space between top of set-able area (i.e., a page) to the start of chapter head.
+%       \ChapterHeadIDTitleSkip:    Vertical space between the Chapter ID and Chapter Title
+%       \ChapterHeadVSpaceEnd:      Vertical space between end of chapter head and the chapter text.
+%       \ChapterHeadParIndent:      Horizontal indentation of chapter ID and chapter Title
+%
+%
+
+% Lengths for spacing the chapter head as desired.
+\DefineNewLength{\ChapterHeadVSpaceStart}  { 40pt}         % Set: Distance between top of text body and top of Chapter Head
+\DefineNewLength{\ChapterHeadVSpaceEnd}    { 20pt}         % Set: Distance between bottom of Chapter Head and top of chapter content
+\DefineNewLength{\ChapterHeadParIndent}    {  0pt}         % Set: Indentation of Chapter Head
+\DefineNewLength{\ChapterHeadIDTitleSkip}  {-1.1\parskip}  % Set: Distance between Chapter ID and Chapter Title
+
+
+% Styles for the chapter head
+\newcommand{\ChapterHeadJustification}  {\raggedright}
+\newcommand{\ChapterHeadFont}           {\normalfont}
+\newcommand{\ChapterHeadID}             {\@chapapp\space\thechapter}
+\newcommand{\ChapterHeadStyleID}   [1]  {\large{\textbf{#1}}}
+\newcommand{\ChapterHeadStyleTitle}[1]  {\LARGE{\textbf{#1}}}
+
+% Replacement command for \@makechapterhead
+\DeclareRobustCommand{\ChapterHead@MakeNormal}[1]{
+    {   
+        \setlength{\topskip}{\ChapterHeadVSpaceStart}   %  Set:  Vertical whitespace between the top of the page and the Chapter Head
+        \parindent \ChapterHeadParIndent                %  Set:  Chapter Head indentation from the left margin
+                   \ChapterHeadJustification            %  Set:  Chapter Head justification
+                   \ChapterHeadFont                     %  Set:  Chapter Head font
+        \ifnum \c@secnumdepth > \m@ne                   %  Test: Is the SectionDepth counter is above -1
+            \ChapterHeadStyleID{\ChapterHeadID}         %  True: Set: the Chapter ID with the above style
+            \par\nobreak                                %        Set: End the paragraph and forbid breaking before the next paragraph
+            \vskip \ChapterHeadIDTitleSkip              %        Set: Adds vertical space between the Chapter ID and the Chapter Title
+        \fi                                             %  
+        \interlinepenalty\@M                            %  Define: A penalty declaration of 10,000 for page breaking before the Chapter Title
+        \ChapterHeadStyleTitle{#1}                      %  Set:    Chapter Title with the above style
+        \par\nobreak                                    %  Set:    End the paragraph and forbid breaking before the next paragraph
+        \addtolength{\ChapterHeadVSpaceEnd}{-\parskip}  %  Set:    Temporary correction to the spacing to account for a large \parskip
+        \vskip \ChapterHeadVSpaceEnd                    %  Set:    Add vertical space between the Chapter Title and the following set text
+    }
 }
+
+
+% Replacement command for \@makeschapterhead (the starred chapter chapter head)
+\DeclareRobustCommand{\ChapterHead@MakeStarred}[1]{
+    {   \setlength{\topskip}{\ChapterHeadVSpaceStart}   %  Adds vertical whitespace between the top of the page and the Chapter Head
+        \parindent \ChapterHeadParIndent                %  Defines the Chapter Head indentation from the left margin
+                   \ChapterHeadJustification            %  Defines the Chapter Head justification
+                   \ChapterHeadFont                     %  Defines the Chapter Head font
+        \interlinepenalty\@M                            %  A penalty declaration of 10,000 for page breaking the Chapter ID and Chapter Title
+        \ChapterHeadStyleTitle{#1}                      %  Sets the Chapter Title with the above style
+        \par\nobreak                                    %  Ends the paragraph (\par) and forbids putting a break before the next paragraph (\nobreak)
+        \addtolength{\ChapterHeadVSpaceEnd}{-\parskip}  %  A local temporary correction to the spacing to account for a large \parskip
+        \vskip \ChapterHeadVSpaceEnd                    %  Adds vertical space (technically, glue) between the Chapter Title and the following set text
+    }
+}
+
+
+% Overwrite the default commands
+\let\@makechapterhead\ChapterHead@MakeNormal
+\let\@makeschapterhead\ChapterHead@MakeStarred
+
+
+
+
+
+% =========================================================================== %
+%                    Redefinition of Chapter Commands                         %
+% =========================================================================== %
+%
+%   The \chapter command has also been redefined to use the \thispagestyle{myheadings}
+%   command to be in compliance with the page number thesis guidelines of UW-Madison.
+%
+%   The \@chapter command (which is called for unstarred \chapter{} uses) is also redfined
+%   such that upon the first unstarred use of \chapter, the page numbering is switched to arabic.
+%
+%   A fair amount of the macro code is taken directly from the original \defs of \chapter 
+%   and \@chapter in report.cls ("2007/10/19 v1.4h Standard LaTeX document class") with additional 
+%   comments.
+%
+
+\DeclareRobustCommand{\chapter}{
+    \if@openright\cleardoublepage\else\clearpage\fi %  Double-skips if the 'openright' option is used.
+    \global\@topnum\z@                              %  Prevents figures from being place at the top of the page
+    \thispagestyle{myheadings}                      %  Places the page number in the upper-right corner
+    \@afterindentfalse                              %  Turns off indentation of the first paragraph following the chapter head.
+    \secdef\@chapter\@schapter                      %  Runs commands for the unstarred (\@chapter) and starred (\@schapter) uses of \chapter
+}
+
+
+\def\@chapter[#1]#2{
+
+    \ifnum \value{chapter}=0                       % Test:  Is this the first chapter?
+        \pagenumbering{arabic}                     % True:  Switch to arabic page numbers 
+    \fi
+
+    \ifnum \c@secnumdepth >\m@ne                   % Test: Is the SectionDepth counter is above -1
+        \refstepcounter{chapter}                   % True: Define: Add one to chapter counter
+        \typeout{\@chapapp\space\thechapter.}      %       Type:   Chapter ID
+        \addcontentsline{toc}{chapter}             %       Write:  Add a contentsline line to the ToC file at the chapter level
+        {\protect\numberline{\thechapter}#1}       %               Write out chapter number and title
+    \else                                          % False:
+        \addcontentsline{toc}{chapter}{#1}         %       Write:  Add a contentsline line with Chapter Title only
+    \fi
+    \chaptermark{#1}                               % Set: For \pagestyle{myheadings} this just gobbles the argument
+    \addtocontents{lof}{\protect\addvspace{10\p@}} % Write: To LoF
+    \addtocontents{lot}{\protect\addvspace{10\p@}} % Write: To LoT
+    \if@twocolumn
+        \@topnewpage[\@makechapterhead{#2}]        % Set: The Chapter Head on a new page
+    \else
+        \@makechapterhead{#2}                      % Set: The Chapter Head
+        \@afterheading                             % Set:
+    \fi
+}
+
+
+
+
+
+% =========================================================================== %
+%             Redefined Sectioning Commands (i.e., \parskip clean-up)         %
+% =========================================================================== %
+%
+%   The default commands for sectioning do not account for a large parskip (i.e., if parskip
+%   is set large, the spacing between a section's Head and the first pargraph will be large).
+%   The redefinitions below use the default sectioning commands and forcibly removes the 
+%   added \parskip space.  Therefore, the vertical space between the section title and the 
+%   first paragraph will remain constant.
+%
+%   \chapter is not included here because that is handled into the above redefinitions
+%   of the \chapter and \@makechapterhead commands.
+%
+
+% Copy the default commands into aliases.
+\let  \SectionDefault        \section
+\let  \SubSectionDefault     \subsection
+\let  \SubSubSectionDefault  \subsubsection
+\let  \ParagraphDefault      \paragraph
+\let  \SubParagraphDefault   \subparagraph
+
+
+
+% Redefine \section
+\DeclareRobustCommand{\section}[2][]{
+    \ifthenelse{\equal{#1}{}}           % Test:   Is the first (optional) input empty?
+        {\SectionDefault[#2]{#2}}       % True:   Use the non-optional
+        {\SectionDefault[#1]{#2}}       % False:  Use the optional argument
+    \vspace*{-\parskip}                 % Set:    Remove the whitespace added by the non-zero \parskip
+}
+
+% Redefine \subsection
+\DeclareRobustCommand{\subsection}[2][]{
+    \ifthenelse{\equal{#1}{}}           % Test:   Is the first (optional) input empty?
+        {\SubSectionDefault[#2]{#2}}    % True:   Use the non-optional
+        {\SubSectionDefault[#1]{#2}}    % False:  Use the optional argument
+    \vspace*{-\parskip}                 % Set:    Remove the whitespace added by the non-zero \parskip
+}
+
+% Redefine \subsubsection
+\DeclareRobustCommand{\subsubsection}[2][]{
+    \ifthenelse{\equal{#1}{}}           % Test:   Is the first (optional) input empty?
+        {\SubSubSectionDefault[#2]{#2}} % True:   Use the non-optional
+        {\SubSubSectionDefault[#1]{#2}} % False:  Use the optional argument
+    \vspace*{-\parskip}                 % Set:    Remove the whitespace added by the non-zero \parskip
+}
+
+% Redefine \paragraph
+\DeclareRobustCommand{\paragraph}[2][]{
+    \ifthenelse{\equal{#1}{}}           % Test:   Is the first (optional) input empty?
+        {\ParagraphDefault[#2]{#2}}     % True:   Use the non-optional
+        {\ParagraphDefault[#1]{#2}}     % False:  Use the optional argument
+    \vspace*{-\parskip}                 % Set:    Remove the whitespace added by the non-zero \parskip
+}
+
+% Redefine \subparagraph
+\DeclareRobustCommand{\subparagraph}[2][]{
+    \ifthenelse{\equal{#1}{}}           % Test:   Is the first (optional) input empty?
+        {\SubParagraphDefault[#2]{#2}}  % True:   Use the non-optional
+        {\SubParagraphDefault[#1]{#2}}  % False:  Use the optional argument
+    \vspace*{-\parskip}                 % Set:    Remove the whitespace added by the non-zero \parskip
+}
+
+
+
+
+% =========================================================================== %
+%                          New Appendix Command                               %
+% =========================================================================== %
+
+% Appendix counter
+\DefineNewCounter{appendix}    {0}  %  New appendix counter used in \Chapter@Appendix
+
+%
+%   This command initializes the \appendix commands (this was originally the 
+%   \appendix command, but that will be replaced as a \chapter alias).
+%
+%   The following taken directly from the \appendix definition in report.cls 
+%   ("2007/10/19 v1.4h Standard LaTeX document class") and nothing in the expansion
+%   has changed.
+%
+\newcommand{\AppendixInitializer}{
+    \par
+    \setcounter{section}{0}            %
+    \def\@chapapp{\appendixname}       %
+    \def\thechapter{\Alph{appendix}}
+}
+
+
+%
+%   This command redefines the \appendix to act as a chapter alias.
+%
+\renewcommand{\appendix}{
+    \ifnum \value{appendix}=0
+        \AppendixInitializer
+    \fi
+    
+    \stepcounter{appendix}
+    \chapter
+}
+
+
 
 
 
