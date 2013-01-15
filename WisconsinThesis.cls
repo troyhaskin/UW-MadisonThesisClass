@@ -136,15 +136,8 @@
 %     \expandafter\renewcommand\csname #1\endcsname{#2}
 % }
 %
-% \newcommand{\MakeNewSetAndStoreCommandPair}[3][]{
-%     \MakeCommand{#2#3}{#1}
-%     \expandafter\newcommand\csname#3\endcsname[2][]{
-%         \ReMakeCommand{#2#3}{##2##1}
-%     }
-% }
 \newcommand{\MakeCommand}[2]{\expandafter\newcommand\csname #1\endcsname{#2}}
 \newcommand{\ReMakeCommand}[2]{\expandafter\renewcommand\csname #1\endcsname{#2}}
-\newcommand{\MakeNewSetAndStoreCommandPair}[5]{\MakeCommand{#1#2}{#5}\expandafter\newcommand\csname#2\endcsname[1]{\ReMakeCommand{#1#2}{##1#3}#4}}
 
 \DeclareRobustCommand{\UWMad@ClassMessage}[1]{
    \typeout{Class \UWMad@ClassName\space Message: #1}
