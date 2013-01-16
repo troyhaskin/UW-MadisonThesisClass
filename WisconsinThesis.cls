@@ -129,8 +129,8 @@
 
 % Official class warning typeout
 \DeclareRobustCommand{\UWMad@ClassWarning}[1]{
-   \ClassWarning{\UWMad@ClassName}{
-        #1
+   \ClassWarning{\UWMad@ClassName}{%
+        #1%
     }
 }
 
@@ -244,20 +244,33 @@
     \fi
 }
 
-\newcommand{\NomenclaturePrint}[3]{ % #1 = Nomenclature name, #2 = Symbol array name, #3 = Description array name
-        \ifnum\value{#2\ArrayCountSuffix}>0
-            \setlength{\SymbolWidth}{\WidestSymbol+1em}
-            \setlength{\DescriptionWidth}{\textwidth-\SymbolWidth-\EntryLeftPad}
-            \setlength{\DescriptionWidth}{0.90\DescriptionWidth}
-    %
-            \begin{spacing}{1.1}
-                \begin{tabular}{p{\EntryLeftPad} p{\SymbolWidth} p{\DescriptionWidth}}
-                    \multicolumn{3}{l}{#1}\\[1em]
-                    \UWMadFor[1]{1}{\value{#2\ArrayCountSuffix}}{
-                        &\ArrayGet{#2}{\value{ForLoopCounter}}&\ArrayGet{#3}{\value{ForLoopCounter}}\\
-                    }
-                \end{tabular}
-            \end{spacing}
+\newcommand{\NomenclaturePrint}[3]{% #1 = Nomenclature name, #2 = Symbol array name, #3 = Description array name
+        \ifnum\ArrayCountValue{#2}>0
+            \setlength{\SymbolWidth}{\WidestSymbol}
+            \addtolength{\SymbolWidth}{+1em}
+            %
+            \setlength  {\DescriptionWidth}{\textwidth}
+            \addtolength{\DescriptionWidth}{-\SymbolWidth}
+            \addtolength{\DescriptionWidth}{-\EntryLeftPad}
+            \setlength  {\DescriptionWidth}{0.90\DescriptionWidth}
+            #1
+            \UWMadFor[1]{\ArrayStartValue{#2}}{\ArrayEndValue{#2}}{
+                \hspace{\EntryLeftPad}
+                \begin{minipage}[t]{\SymbolWidth}
+                    \ArrayGet{#2}{ForLoopCounter}
+                \end{minipage}
+                \begin{minipage}[t]{\DescriptionWidth}
+                    \ArrayGet{#3}{ForLoopCounter}
+                \end{minipage}
+
+            }
+            %\begin{spacing}{1.1}
+            %    \begin{tabular}{p{\EntryLeftPad} p{\SymbolWidth} p{\DescriptionWidth}}
+            %        \UWMadFor[1]{\ArrayStartValue{#2}}{\ArrayEndValue{#2}}{
+            %             & \ArrayGet{#2}{ForLoopCounter} & \ArrayGet{#3}{ForLoopCounter}  \\
+            %        }
+            %    \end{tabular}
+            %\end{spacing}
         \fi
 }
 
@@ -282,7 +295,6 @@
     \ArrayMake{NomenclatureSymbol}
     \ArrayMake{NomenclatureDescription}
     \let\item\Add
-
 }{
     \ifUWMad@PrintTheNomenclature
         \setlength{\NomenclatureTitleSkip}{0em}
@@ -331,7 +343,7 @@
 }{
 
     \ifUWMad@PrintTheNomenclature
-        \ifnum\value{NomenclatureSymbol\ArrayCountSuffix}=0
+        \ifnum\ArrayCountValue{NomenclatureSymbol}=0
             \MakeNomenclatureTitle{\NomenclatureTitle}
         \else
             \setlength{\NomenclatureTitleSkip}{0em}
