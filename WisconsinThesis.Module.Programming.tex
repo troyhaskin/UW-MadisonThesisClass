@@ -17,7 +17,8 @@
     \setcounter{#1}{#2}
 }
 
-% If-switch changes only have block level scope by default.  That is, a \newif switch
+% If-switch changes only have block level scope by default.  That is, a \newif that is switched within a block
+% reverts to its pre-block state upon exit.  This command creates an if-switch set that has global scope.
 \newcommand{\GlobalNewIf}[1]{
     \expandafter\newif\csname if#1Global\endcsname
     \expandafter\def\csname if#1\endcsname{\csname if#1Global\endcsname}
@@ -26,15 +27,86 @@
 }
 
 
-\newcommand{\IfCommandExists}[3]{
-    \ifcsname#1\endcsname
+% A simple command that acts like LaTeX's \@ifundefined, but I like the eTeX conditional more (in looks and implementation).
+% Since it is eTeX, this command will allow for a switch to \@ifundefined if problems arise from non-eTeX users in the future.
+\newcommand{\IfCommandExists}[3]{%
+    \ifcsname#1\endcsname%
+        #2%
+    \else%
+        #3%
+    \fi%
+}%
+
+
+% <= Command - no equivalent in TeX
+\newcommand{\IfGreaterThanEqualTo}[4]{
+    \ifnum#1>#2
+        #3
+    \else
+        \ifnum#1=#2
+            #3
+        \else
+            #4
+        \fi
+    \fi
+}
+
+% >= Command - no equivalent in TeX
+\newcommand{\IfLessThanEqualTo}[4]{
+    \ifnum#1<#2
+        #3
+    \else
+        \ifnum#1=#2
+            #3
+        \else
+            #4
+        \fi
+    \fi
+}
+
+
+% Command combo testing for an empty argument
+\newcommand{\UWMad@Empty}{}
+\newcommand{\IfEmpty}[3]{
+    \ifx #1 \UwMad@Empty
         #2
-    \else 
+    \else
         #3
     \fi
 }
 
+\newcommand{\IfMatch}[4]{% #1 = left compare, #2 = right compare, #3 = true code, #4 = false code
+    \ifx #1 #2
+        #3
+    \else
+        #4
+    \fi
+}
+
+
+% A environment that allows for global defintions.
 \newenvironment{MakeGlobal}{\globaldefs=1}{\globaldefs=0}
+
+
+ \newcommand{\Trim}[1]{\ignorespaces#1\unskip} 
+
+
+
+% Dynamic command creators.
+%
+% There are structured versions with proper programming whitespace;
+% the 'compactified' versions are coded such that no spurious whitespace is added.
+%
+%   \newcommand{\MakeCommand}[2]{
+%       \expandafter\newcommand\csname #1\endcsname{#2}
+%   }
+% 
+%   \newcommand{\ReMakeCommand}[2]{
+%       \expandafter\renewcommand\csname #1\endcsname{#2}
+%   }
+%
+\newcommand{\MakeCommand}[2]{\expandafter\newcommand\csname #1\endcsname{#2}}
+\newcommand{\ReMakeCommand}[2]{\expandafter\renewcommand\csname #1\endcsname{#2}}
 
 
 
@@ -149,47 +221,63 @@
 % =========================================================================== %
 
 \DefineNewCounter{ArrayWorkCounter}{0}
-\newcommand{\ArrayStartSuffix}    {ArrayStart}
-\newcommand{\ArrayEndSuffix}      {ArrayEnd}
-\newcommand{\ArrayPositionSuffix} {ArrayPosition}
-\newcommand{\ArrayCountSuffix}    {ArrayCount}
+\newcommand{\ArraySuffix}         {ARRAY}
+\newcommand{\ArraySuffixStart}    {\ArraySuffix{START}}
+\newcommand{\ArraySuffixEnd}      {\ArraySuffix{END}}
+\newcommand{\ArraySuffixPosition} {\ArraySuffix{POSITION}}
+\newcommand{\ArraySuffixCount}    {\ArraySuffix{COUNT}}
 
 \newcommand{\ArrayMake}[1]{% #1 = Array name
 
-    \MakeCommand{#1\ArrayPositionSuffix}{#1\ArrayPositionSuffix}
+    \MakeCommand{#1\ArraySuffixPosition}{#1\ArraySuffixPosition}
 
-    \DefineNewCounter{#1\ArrayPositionSuffix} {0}
-    \DefineNewCounter{#1\ArrayStartSuffix}    {1}
-    \DefineNewCounter{#1\ArrayEndSuffix}      {0}
-    \DefineNewCounter{#1\ArrayCountSuffix}    {0}
+    \DefineNewCounter{#1\ArraySuffixPosition} {0}
+    \DefineNewCounter{#1\ArraySuffixStart}    {1}
+    \DefineNewCounter{#1\ArraySuffixEnd}      {0}
+    \DefineNewCounter{#1\ArraySuffixCount}    {0}
 
 }
 
 \newcommand{\ArrayPosition}[1]{% #1 = Array name
-    #1\ArrayPositionSuffix
-}
-
-\newcommand{\ArrayCount}[1]{% #1 = Array name
-    #1\ArrayCountSuffix
+    #1\ArraySuffixPosition%
 }
 
 \newcommand{\ArrayPositionValue}[1]{% #1 = Array name
-    \value{\ArrayPosition{#1}}
+    \value{\ArrayPosition{#1}}%
+}
+
+\newcommand{\ArrayCount}[1]{% #1 = Array name
+    #1\ArraySuffixCount%
 }
 
 \newcommand{\ArrayCountValue}[1]{% #1 = Array name
     \value{\ArrayCount{#1}}
 }
 
+\newcommand{\ArrayStart}[1]{% #1 = Array name
+    #1\ArraySuffixStart%
+}
+\newcommand{\ArrayStartValue}[1]{% #1 = Array name
+    \value{\ArrayStart{#1}}%
+}
+
+\newcommand{\ArrayEnd}[1]{% #1 = Array name
+    #1\ArraySuffixEnd%
+}
+\newcommand{\ArrayEndValue}[1]{% #1 = Array name
+    \value{\ArrayEnd{#1}}%
+}
+
+
 \newcommand{\ArrayClear}[1]{% #1 = Array name
-    \For[1]{1}{\value{#1\ArrayEndSuffix}}{
+    \UWMadFor[1]{1}{\value{#1\ArraySuffixEnd}}{
         \ReMakeCommand{#1\roman{ForLoopCounter}}{\relax}
     }
-    \ReMakeCommand{#1\ArrayPositionSuffix}{\relax}
-    \setcounter{#1\ArrayPositionSuffix} {0}
-    \setcounter{#1\ArrayStartSuffix}    {1}
-    \setcounter{#1\ArrayEndSuffix}      {0}
-    \setcounter{#1\ArrayCountSuffix}    {0}
+    \ReMakeCommand{#1\ArraySuffixPosition}{\relax}
+    \setcounter{#1\ArraySuffixPosition} {0}
+    \setcounter{#1\ArraySuffixStart}    {1}
+    \setcounter{#1\ArraySuffixEnd}      {0}
+    \setcounter{#1\ArraySuffixCount}    {0}
 }
 
 
@@ -197,11 +285,11 @@
 \newcommand{\ArrayPush}[2]{% #1 = Array name, #2 value to push
 
     % increment counter
-    \addtocounter{#1\ArrayCountSuffix}    {1}
-    \addtocounter{#1\ArrayEndSuffix}      {1}
+    \addtocounter{#1\ArraySuffixCount}    {1}
+    \addtocounter{#1\ArraySuffixEnd}      {1}
 
     % Naming scheme for the Array commands
-    \protected@edef\PushCommand{#1\roman{#1\ArrayEndSuffix}}
+    \protected@edef\PushCommand{#1\roman{#1\ArraySuffixEnd}}
     
     % Making the Array commands
     \@ifundefined{\PushCommand}{
@@ -212,26 +300,26 @@
 }
 
 \newcommand{\ArrayPop}[1]{% #1 = Array name
-    \ifnum\value{#1\ArrayCountSuffix}>0
-        \csname #1\roman{#1\ArrayEndSuffix}\endcsname
-        \addtocounter{#1\ArrayCountSuffix}    {-1}
-        \addtocounter{#1\ArrayEndSuffix}      {-1}
+    \ifnum\value{#1\ArraySuffixCount}>0
+        \csname #1\roman{#1\ArraySuffixEnd}\endcsname
+        \addtocounter{#1\ArraySuffixCount}    {-1}
+        \addtocounter{#1\ArraySuffixEnd}      {-1}
     \fi
 }
 
 \newcommand{\ArrayPopAndStore}[2]{% #1 = Array name, #2 name of command to store the popped value
-    \ifnum\value{#1\ArrayCountSuffix}>0
-        \protected@edef\PoppedValue{\csname #1\roman{#1\ArrayPositionSuffix}\endcsname}
+    \ifnum\value{#1\ArraySuffixCount}>0
+        \protected@edef\PoppedValue{\csname #1\roman{#1\ArraySuffixPosition}\endcsname}
         \MakeCommand{#2}{\PoppedValue}
-        \addtocounter{#1\ArrayCountSuffix}    {-1}
-        \addtocounter{#1\ArrayEndSuffix}      {-1}
+        \addtocounter{#1\ArraySuffixCount}    {-1}
+        \addtocounter{#1\ArraySuffixEnd}      {-1}
     \fi
 }
 
 \newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Array position to get
-    \IfGreaterThanEqualTo{#2}{\value{#1\ArrayStartSuffix}}{
-        \IfGreaterThanEqualTo{\value{#1\ArrayEndSuffix}}{#2}{
-            \setcounter{ArrayWorkCounter}{#2}
+    \IfGreaterThanEqualTo{\value{#2}}{\ArrayStartValue{#1}}{
+        \IfGreaterThanEqualTo{\ArrayEndValue{#1}}{\value{#2}}{
+            \setcounter{ArrayWorkCounter}{\value{#2}}
             \csname #1\roman{ArrayWorkCounter}\endcsname
         }{2}
     }{3}
@@ -245,13 +333,47 @@
 % =========================================================================== %
 %                Hash (Associative Arrays) Creation Commands                  %
 % =========================================================================== %
+\newcommand{\HashSuffix}{HASH}
+
 \newcommand{\HashMake}[1]{% #1 = Hash name
-    \MakeCommand{#1\ArrayPositionSuffix}{#1\ArrayPositionSuffix}
+    \IfCommandExists{#1\HashSuffix}{
+        \UWMad@ClassWarning{Hash '#1' already exists.}
+    }{
+        \DefineNewCounter{#1\HashSuffix}{0}
+        \MakeCommand{#1\HashSuffix}{}
+        \ArrayMake{#1\HashSuffix}
+    }
 }
 
 \newcommand{\HashSet}[3]{% #1 = hash name, #2 = key name, #3 = value
-    \ReMakeCommand{#1@#2}{#3}
+
+    \IfCommandExists{#1\HashSuffix}{}{
+        \HashMake{#1}   % If it doesn't exist, make it.
+    }
+
+    \IfCommandExists{#1#2\HashSuffix}{
+        \ReMakeCommand{#1#2\HashSuffix}{#3} % Only need to remake the command.
+    }{
+        \ArrayPush{#1\HashSuffix}{#2}                           % Push key to Array storing all keys for this hash
+        \def\ThisHashKeysIndex{\ArrayPosition{#1\HashSuffix}}   % Local: index in Array associated with the key
+        \def\ThisHashKeysSuffix{\Roman{\ThisHashKeysIndex}}     % Local: Suffix appended to look-up command for this key
+        
+        \MakeCommand{#1#2\ThisHashKeysSuffix}{\HashKeyToIndex}  % Command storing the keys index in the array
+        \MakeCommand{#1#2\HashSuffix}{#3}                       % Command storing the value assoicated with the key
+    }
 }
+
+\newcommand{\HashGet}[2]{% #1 = hash name, #2 = key name
+    \IfCommandExists{#1\HashSuffix}{%
+        \IfCommandExists{#1#2\HashSuffix}{%
+            \csname#1#2\HashSuffix\endcsname%
+        }{%
+            \UWMad@ClassWarning{There is no key '#2' set for hash '#1'}%
+        }%
+    }{%
+        \UWMad@ClassWarning{Hash '#1' does not exist}%
+    }%
+}%
 
 
 
