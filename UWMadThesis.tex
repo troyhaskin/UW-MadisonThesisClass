@@ -3,7 +3,7 @@
 \let\OldBackslash\backslash
 \renewcommand{\backslash}{\ensuremath{\OldBackslash}}
 
-\newcommand{\Cmd}[1]{\textcolor{PineGreen}{\textsf{\backslash\hspace{-0.2em}#1}}}
+\newcommand{\Cmd}[1]{\textcolor{PineGreen}{\texttt{\backslash\hspace{-0.15em}#1}}}
 
 \begin{document}
 
@@ -12,8 +12,22 @@
                  this said description with that of the associated symbol.}
     \Add{Symbol}{This is a rather long and ridiculous description designed to test the alignment of 
                  this said description with that of the associated symbol.}
+    \Add{$T$}   {This is a math nomenclature example.}
+    \Add{\rho}  {This is an \Cmd{ensuremath} check.}
 \end{Nomenclature}
 
+\show\NomenclatureSymbolARRAY
+
+\begin{Nomenclature}
+    \Add{Symbol}{This is a rather long and ridiculous description designed to test the alignment of 
+                 this said description with that of the associated symbol.}
+    \Add{Symbol}{This is a rather long and ridiculous description designed to test the alignment of 
+                 this said description with that of the associated symbol.}
+    \Add{$T$}   {This is a math nomenclature example.}
+    \Add{\rho}  {This is an \Cmd{ensuremath} check.}
+\end{Nomenclature}
+
+\show\csname
 
 %\rule{1pt}{\HeightDescription}
 %\input{Tests/Test_MetaData}

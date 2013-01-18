@@ -84,6 +84,8 @@
 }
 
 
+
+
 % A environment that allows for global defintions.
 \newenvironment{MakeGlobal}{\globaldefs=1}{\globaldefs=0}
 
@@ -108,6 +110,16 @@
 \newcommand{\MakeCommand}[2]{\expandafter\newcommand\csname #1\endcsname{#2}}
 \newcommand{\ReMakeCommand}[2]{\expandafter\renewcommand\csname #1\endcsname{#2}}
 
+\newcommand{\MakeCommandGlobal}[2]{\begin{MakeGlobal}\MakeCommand{#1}{#2}\end{MakeGlobal}}
+
+
+\newcommand{\MakeCommandUndefined}[1]{% #1 = Command name
+    \begin{MakeGlobal}\expandafter\let\csname#1\endcsname\UWMad@Undefined\end{MakeGlobal}
+}
+
+\newcommand{\MakeCounterUndefined}[1]{% #1 = Counter name
+    \MakeCommandUndefined{c@#1}
+}
 
 
 
@@ -167,140 +179,62 @@
 
 
 
-
-
-% =========================================================================== %
-%                            For-Loop Definition                              %
-% =========================================================================== %
-
-
-% Initilaze the recursive command (see usage below) ----------------------
-\newcommand{\ForLoopRecursion}{}
-
-% Define the loop counter ------------------------------------------------
-\newcounter{ForLoopCounter}
-\setcounter{ForLoopCounter}{0}
-
-% Iterator command -------------------------------------------------------
-\newcommand{\UWMadFor}[4][1]{
-% Arguments
-%   #1 = increment (optional)
-%   #2 = start value
-%   #3 = end value
-%   #4 = <code>
-
-    % Redefine the command used for recursion
-    \renewcommand{\ForLoopRecursion}{
-        #4                                          % Excute <code>
-        \addtocounter{ForLoopCounter}{#1}           % Increment the counter
-        \UWMadFor[#1]{\value{ForLoopCounter}}{#3}{#4}    % Recurse
-    }
-
-    % Set the counter to the start value 
-    % After the recursion begins, #2 is the current value of the counter and not the start value.
-    \setcounter{ForLoopCounter}{#2}
-    
-    % Switch to deal with positive vs. negative increments (decrements).
-    \ifnum #1 > 0                                           % If positive increment
-        \IfLessThanEqualTo{\value{ForLoopCounter}}{#3}{     % Execute while the LoopCounter is less than or equal to the end value
-            \ForLoopRecursion
-        }{}
-    \else                                                    % If negative increment
-        \IfGreaterThanEqualTo{\value{ForLoopCounter}}{#3}{   % Execute while the LoopCounter is greater than or equal to the end value
-            \ForLoopRecursion
-        }{}
-    \fi
-}
-
-
-
-
-
 % =========================================================================== %
 %                      Array Building Commands                                %
 % =========================================================================== %
 
 \DefineNewCounter{ArrayWorkCounter}{0}
 \newcommand{\ArraySuffix}         {ARRAY}
-\newcommand{\ArraySuffixStart}    {\ArraySuffix{START}}
-\newcommand{\ArraySuffixEnd}      {\ArraySuffix{END}}
-\newcommand{\ArraySuffixPosition} {\ArraySuffix{POSITION}}
-\newcommand{\ArraySuffixCount}    {\ArraySuffix{COUNT}}
+\newcommand{\ArraySuffixStart}    {\ArraySuffix START   }  
+\newcommand{\ArraySuffixEnd}      {\ArraySuffix END     } 
+\newcommand{\ArraySuffixPosition} {\ArraySuffix POSITION} 
+\newcommand{\ArraySuffixCount}    {\ArraySuffix COUNT   } 
 
 \newcommand{\ArrayMake}[1]{% #1 = Array name
-
-    \MakeCommand{#1\ArraySuffixPosition}{#1\ArraySuffixPosition}
-
+    \MakeCommandGlobal{#1\ArraySuffix}        {#1\ArraySuffix}
     \DefineNewCounter{#1\ArraySuffixPosition} {0}
     \DefineNewCounter{#1\ArraySuffixStart}    {1}
     \DefineNewCounter{#1\ArraySuffixEnd}      {0}
     \DefineNewCounter{#1\ArraySuffixCount}    {0}
-
 }
 
-\newcommand{\ArrayPosition}[1]{% #1 = Array name
-    #1\ArraySuffixPosition%
-}
 
-\newcommand{\ArrayPositionValue}[1]{% #1 = Array name
-    \value{\ArrayPosition{#1}}%
-}
+% Counter names for a given array
+\newcommand{\ArrayPosition}[1]{#1\ArraySuffixPosition} % #1 = ArrayName
+\newcommand{\ArrayStart}   [1]{#1\ArraySuffixStart}    % #1 = ArrayName
+\newcommand{\ArrayEnd}     [1]{#1\ArraySuffixEnd}      % #1 = ArrayName
+\newcommand{\ArrayCount}   [1]{#1\ArraySuffixCount}    % #1 = ArrayName
 
-\newcommand{\ArrayCount}[1]{% #1 = Array name
-    #1\ArraySuffixCount%
-}
-
-\newcommand{\ArrayCountValue}[1]{% #1 = Array name
-    \value{\ArrayCount{#1}}
-}
-
-\newcommand{\ArrayStart}[1]{% #1 = Array name
-    #1\ArraySuffixStart%
-}
-\newcommand{\ArrayStartValue}[1]{% #1 = Array name
-    \value{\ArrayStart{#1}}%
-}
-
-\newcommand{\ArrayEnd}[1]{% #1 = Array name
-    #1\ArraySuffixEnd%
-}
-\newcommand{\ArrayEndValue}[1]{% #1 = Array name
-    \value{\ArrayEnd{#1}}%
-}
+% Counter values for a given array
+\newcommand{\ArrayValuePosition}[1]{\value{#1\ArraySuffixPosition}} % #1 = Array name
+\newcommand{\ArrayValueStart}   [1]{\value{#1\ArraySuffixStart}}    % #1 = Array name
+\newcommand{\ArrayValueEnd}     [1]{\value{#1\ArraySuffixEnd}}      % #1 = Array name
+\newcommand{\ArrayValueCount}   [1]{\value{#1\ArraySuffixCount}}    % #1 = Array name
 
 
 \newcommand{\ArrayClear}[1]{% #1 = Array name
-    \UWMadFor[1]{1}{\value{#1\ArraySuffixEnd}}{
-        \ReMakeCommand{#1\roman{ForLoopCounter}}{\relax}
+    \ForEach{#1}{
+        \MakeCommandUndefined{#1\roman{ForLoopCounter}}
     }
-    \ReMakeCommand{#1\ArraySuffixPosition}{\relax}
-    \setcounter{#1\ArraySuffixPosition} {0}
-    \setcounter{#1\ArraySuffixStart}    {1}
-    \setcounter{#1\ArraySuffixEnd}      {0}
-    \setcounter{#1\ArraySuffixCount}    {0}
+    \MakeCommandUndefined{#1\ArraySuffix}
+    \MakeCounterUndefined{#1\ArraySuffixPosition}
+    \MakeCounterUndefined{#1\ArraySuffixStart} 
+    \MakeCounterUndefined{#1\ArraySuffixEnd}   
+    \MakeCounterUndefined{#1\ArraySuffixCount} 
 }
-
-
 
 \newcommand{\ArrayPush}[2]{% #1 = Array name, #2 value to push
 
-    % increment counter
-    \addtocounter{#1\ArraySuffixCount}    {1}
-    \addtocounter{#1\ArraySuffixEnd}      {1}
+    % increment counters
+    \addtocounter{#1\ArraySuffixCount}{1}
+    \addtocounter{#1\ArraySuffixEnd}  {1}
 
-    % Naming scheme for the Array commands
-    \protected@edef\PushCommand{#1\roman{#1\ArraySuffixEnd}}
-    
-    % Making the Array commands
-    \@ifundefined{\PushCommand}{
-        \MakeCommand{\PushCommand}{#2}
-    }{
-        \ReMakeCommand{\PushCommand}{#2}
-    }
+    % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
+    \MakeCommand{#1\roman{#1\ArraySuffixEnd}}{#2}
 }
 
 \newcommand{\ArrayPop}[1]{% #1 = Array name
-    \ifnum\value{#1\ArraySuffixCount}>0
+    \ifnum\ArrayValueCount{#1}>0
         \csname #1\roman{#1\ArraySuffixEnd}\endcsname
         \addtocounter{#1\ArraySuffixCount}    {-1}
         \addtocounter{#1\ArraySuffixEnd}      {-1}
@@ -316,14 +250,16 @@
     \fi
 }
 
-\newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Array position to get
-    \IfGreaterThanEqualTo{\value{#2}}{\ArrayStartValue{#1}}{
-        \IfGreaterThanEqualTo{\ArrayEndValue{#1}}{\value{#2}}{
-            \setcounter{ArrayWorkCounter}{\value{#2}}
-            \csname #1\roman{ArrayWorkCounter}\endcsname
-        }{2}
-    }{3}
-    
+\newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Counter Name for index
+    \IfGreaterThanEqualTo{\value{#2}}{\ArrayValueStart{#1}}{%
+        \IfLessThanEqualTo{\value{#2}}{\ArrayValueEnd{#1}}{%
+            \csname#1\roman{#2}\endcsname%
+        }{%
+            \UWMad@ClassWarning{Index to Array '#1' is outside its bounds.}%
+        }%
+    }{%
+        \UWMad@ClassWarning{Index to Array '#1' is below its bounds.}%
+    }%
 }
 
 
@@ -375,6 +311,72 @@
     }%
 }%
 
+
+
+
+
+
+
+
+% =========================================================================== %
+%                            For-Loop Definition                              %
+% =========================================================================== %
+
+
+% Initilaze the recursive command (see usage below) ----------------------
+\newcommand{\ForLoopRecursion}{}
+
+% Define the loop counter ------------------------------------------------
+\newcounter{ForLoopCounter}
+\setcounter{ForLoopCounter}{0}
+
+% Iterator command -------------------------------------------------------
+\newcommand{\For}[4][1]{%
+    % Arguments
+    %   #1 = increment (optional)
+    %   #2 = start value
+    %   #3 = end value
+    %   #4 = <code>
+    % Redefine the command used for recursion
+    \renewcommand{\ForLoopRecursion}{%
+        #4%                                         % Excute <code>
+        \addtocounter{ForLoopCounter}{#1}%          % Increment the counter
+        \For[#1]{\value{ForLoopCounter}}{#3}{#4}%   % Recurse
+    }%
+    %
+    % Set the counter to the start value 
+    % After the recursion begins, #2 is the current value of the counter and not the start value.
+    \setcounter{ForLoopCounter}{#2}%
+    %
+    % Switch to deal with positive vs. negative increments (decrements).
+    \ifnum #1 > 0                                           % If positive increment
+        \IfLessThanEqualTo{\value{ForLoopCounter}}{#3}{     % Execute while the LoopCounter is less than or equal to the end value
+            \ForLoopRecursion%
+        }{}%
+    \else%                                                   % If negative increment
+        \IfGreaterThanEqualTo{\value{ForLoopCounter}}{#3}{   % Execute while the LoopCounter is greater than or equal to the end value
+            \ForLoopRecursion%
+        }{}%
+    \fi%
+}
+
+
+\newcommand{\ForEach}[3][1]{
+% Arguments
+%   #1 = increment (optional)
+%   #2 = Array/Hash name
+%   #3 = <code>
+    %
+    \IfCommandExists{#2\ArraySuffix}{%
+        \For[#1]{\ArrayValueStart{#2}}{\ArrayValueEnd{#2}}{#3}%
+    }{%
+        \IfCommandExists{#2\HashSuffix}{%
+            \For[#1]{\ArrayValueStart{#2\HashSuffix}}{\ArrayValueEnd{#2\HashSuffix}}{#3}%
+        }{%
+            \UWMad@ClassWarning{Could not find Array or Hash named '#2'}%
+        }%
+    }%
+}
 
 
 

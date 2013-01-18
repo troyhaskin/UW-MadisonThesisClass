@@ -122,16 +122,14 @@
 % =============================================================================================== %
 
 % Generic message typeout
-\DeclareRobustCommand{\UWMad@ClassMessage}[1]{
+\DeclareRobustCommand{\UWMad@ClassMessage}[1]{%
    \typeout{Class \UWMad@ClassName\space Message: #1}
 }
 
 
 % Official class warning typeout
 \DeclareRobustCommand{\UWMad@ClassWarning}[1]{
-   \ClassWarning{\UWMad@ClassName}{%
-        #1%
-    }
+   \ClassWarning{\UWMad@ClassName}{#1}
 }
 
 % =============================================================================================== %
@@ -244,45 +242,46 @@
     \fi
 }
 
+\newcommand{\NomenclatureEntry}[2]{%
+    \setstretch{1.1}%
+    \hspace{\EntryLeftPad}%
+    \begin{minipage}[t]{\SymbolWidth}%
+        #1%
+    \end{minipage}%
+    \begin{minipage}[t]{\DescriptionWidth}%
+        #2%
+    \end{minipage}
+    \vskip0em
+}
+\show\dotfill
 \newcommand{\NomenclaturePrint}[3]{% #1 = Nomenclature name, #2 = Symbol array name, #3 = Description array name
-        \ifnum\ArrayCountValue{#2}>0
+        \ifnum\ArrayValueCount{#2}>0
             \setlength{\SymbolWidth}{\WidestSymbol}
             \addtolength{\SymbolWidth}{+1em}
             %
             \setlength  {\DescriptionWidth}{\textwidth}
             \addtolength{\DescriptionWidth}{-\SymbolWidth}
             \addtolength{\DescriptionWidth}{-\EntryLeftPad}
-            \setlength  {\DescriptionWidth}{0.90\DescriptionWidth}
+            \setlength  {\DescriptionWidth}{0.98\DescriptionWidth}
             #1
-            \UWMadFor[1]{\ArrayStartValue{#2}}{\ArrayEndValue{#2}}{
-                \hspace{\EntryLeftPad}
-                \begin{minipage}[t]{\SymbolWidth}
-                    \ArrayGet{#2}{ForLoopCounter}
-                \end{minipage}
-                \begin{minipage}[t]{\DescriptionWidth}
-                    \ArrayGet{#3}{ForLoopCounter}
-                \end{minipage}
-
+            \ForEach[1]{#2}{%
+                \NomenclatureEntry%
+                {\ArrayGet{#2}{ForLoopCounter}}%
+                {\ArrayGet{#3}{ForLoopCounter}}%
             }
-            %\begin{spacing}{1.1}
-            %    \begin{tabular}{p{\EntryLeftPad} p{\SymbolWidth} p{\DescriptionWidth}}
-            %        \UWMadFor[1]{\ArrayStartValue{#2}}{\ArrayEndValue{#2}}{
-            %             & \ArrayGet{#2}{ForLoopCounter} & \ArrayGet{#3}{ForLoopCounter}  \\
-            %        }
-            %    \end{tabular}
-            %\end{spacing}
         \fi
 }
 
 
-\newcommand{\Add}{}
+%\newcommand{\Add}{}
 
-\newcommand{\MakeNomenclatureTitle}[1]{
+\newcommand{\NomenclatureTitleChapter}[1]{
     \ifx \UWMad@NomenclatureTitleMade \UWMad@Undefined
         \chapter*{#1}\UWMad@FrontMatterRegister{#1}     % Couldn't get any of the conditionals to behave globally
         \global\def\UWMad@NomenclatureTitleMade{}       % So I instituted this hack.
     \fi
 }
+
 
 % Nomenclature environment ----------------------------------------------------
 \newenvironment{Nomenclature}[1][Nomenclature]{
@@ -290,18 +289,21 @@
     \newcommand{\NomenclatureTitle}{#1}
     \setlength{\parindent}{0pt}
 
-    \renewcommand{\Add}[2]{\GeneralAdd{NomenclatureSymbol}{NomenclatureDescription}{##1}{##2}}
-
     \ArrayMake{NomenclatureSymbol}
     \ArrayMake{NomenclatureDescription}
+    \newcommand{\Add}[2]{\GeneralAdd{NomenclatureSymbol}{NomenclatureDescription}{##1}{##2}}
+
     \let\item\Add
+    \let\Entry\Add
 }{
     \ifUWMad@PrintTheNomenclature
         \setlength{\NomenclatureTitleSkip}{0em}
         \setlength{\NomenclaturePrintSkip}{1em}
-        \NomenclaturePrint{\MakeNomenclatureTitle{\NomenclatureTitle}}{NomenclatureSymbol}{NomenclatureDescription}
+        \NomenclaturePrint{\NomenclatureTitleChapter{\NomenclatureTitle}}{NomenclatureSymbol}{NomenclatureDescription}
         \setlength{\WidestSymbol}{0pt}
     \fi
+    \ArrayClear{NomenclatureSymbol}
+    \ArrayClear{NomenclatureDescription}
 }
 
 \newcommand{\UWMad@Acronym}{Acronym}
@@ -343,7 +345,7 @@
 }{
 
     \ifUWMad@PrintTheNomenclature
-        \ifnum\ArrayCountValue{NomenclatureSymbol}=0
+        \ifnum\ArrayValueCount{NomenclatureSymbol}=0
             \MakeNomenclatureTitle{\NomenclatureTitle}
         \else
             \setlength{\NomenclatureTitleSkip}{0em}
