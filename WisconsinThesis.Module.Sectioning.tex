@@ -208,7 +208,7 @@
 % =========================================================================== %
 
 % Appendix counter
-\DefineNewCounter{appendix}    {0}  %  New appendix counter used in \Chapter@Appendix
+\DefineNewCounter{appendix}{0}  %  New appendix counter used in \Chapter@Appendix
 
 %
 %   This command initializes the \appendix commands (this was originally the 
@@ -218,11 +218,11 @@
 %   ("2007/10/19 v1.4h Standard LaTeX document class") and nothing in the expansion
 %   has changed.
 %
-\newcommand{\AppendixInitializer}{
-    \par
-    \setcounter{section}{0}            %
-    \def\@chapapp{\appendixname}       %
-    \def\thechapter{\Alph{appendix}}
+\newcommand{\AppendixInitializer}{%
+    \par%
+    \setcounter{section}{0}%
+    \def\@chapapp{\appendixname}%
+    \def\thechapter{\Alph{appendix}}%
 }
 
 
@@ -245,11 +245,11 @@
 % =========================================================================== %
 %              Front Matter Environment/Command Definitions                   %
 % =========================================================================== %
-\DefineNewCounter{FrontMatterCount}{0}
+\DefineNewCounter{FrontMatter}{0}
 
 \DeclareRobustCommand{\UWMad@FrontMatterRegister}[1]{
     \addcontentsline{toc}{chapter}{#1}
-    \stepcounter{FrontMatterCount}
+    \stepcounter{FrontMatter}
 }
 
 \ifUWMad@FrontMatterCommands
@@ -278,38 +278,43 @@
 % Register the Table of Contents to the Table of Contents
 \renewcommand{\contentsname}{Table of Contents}
 \let\TableOfContentsDefault\tableofcontents
-\renewcommand{\tableofcontents}{
-    {
-        \setstretch{1.0}
-        \phantomsection
-        \UWMad@FrontMatterRegister{\contentsname}
-        \TableOfContentsDefault
-        %\UWMad@FrontMatterRegister{\contentsname}
+\renewcommand{\tableofcontents}{%
+    {%
+        \setstretch{1.05}%
+        \phantomsection%
+        \UWMad@FrontMatterRegister{\contentsname}%
+        \TableOfContentsDefault%
         \clearpage
     }
 }
+\let\TableOfContents\tableofcontents
+
 
 % Register the List of Tables to the Table of Contents
 \let\ListOfTablesDefault\listoftables
-\renewcommand{\listoftables}{
-    {
-        \setstretch{1.0}
-        \ListOfTablesDefault
-        \UWMad@FrontMatterRegister{\listtablename}
-        \clearpage
+\renewcommand{\listoftables}{%
+    {%
+        \setstretch{1.05}%
+        \ListOfTablesDefault%
+        \UWMad@FrontMatterRegister{\listtablename}%
+        \clearpage%
     }
 }
+\let\ListOfTables\listoftables
+
 
 % Register the List of Figures to the Table of Contents
 \let\ListOfFiguresDefault\listoffigures
-\renewcommand{\listoffigures}{
-    {
-        \setstretch{1.0}
-        \ListOfFiguresDefault
-        \UWMad@FrontMatterRegister{\listfigurename}
-        \clearpage
+\renewcommand{\listoffigures}{%
+    {%
+        \setstretch{1.05}%
+        \ListOfFiguresDefault%
+        \UWMad@FrontMatterRegister{\listfigurename}%
+        \clearpage%
     }
 }
+\let\ListOfFigures\listoffigures
+
 
 
 
