@@ -211,19 +211,23 @@
 }
 
 
+
+
 % ===================================================================================== %
 %                               Nomenclature Environment                                %
 % ===================================================================================== %
 
-\DefineNewLength{\WidestSymbol}{0pt}            % Will have the value of the widest symbol for spacing
-\DefineNewLength{\WidestSymbolTest}{0pt}        % Used to test for the widest symbol
+\DefineNewLength{\WidestSymbol}         {0pt}        % Will have the value of the widest symbol for spacing
+\DefineNewLength{\WidestSymbolTest}     {0pt}        % Used to test for the widest symbol
 \DefineNewLength{\NomenclatureTitleSkip}{1em}        % Used for title spacing
 \DefineNewLength{\NomenclaturePrintSkip}{1em}        % Used for spacing after nomenclature is printed
 \DefineNewLength{\SymbolWidth}          {0em}
 \DefineNewLength{\DescriptionWidth}     {0em}
 \DefineNewLength{\EntryLeftPad}         {0.2em}
-\DefineNewCounter{SubNomenclatureCounter}{0}    % Number of Subnomenclatures
+\DefineNewCounter{SubNomenclature}      {0}    % Number of Subnomenclatures
 
+\GlobalNewIf{UWMad@MainNomenclatureNotPrinted}
+\UWMad@MainNomenclatureNotPrintedtrue
 \newif\ifUWMad@PrintTheNomenclature\UWMad@PrintTheNomenclaturetrue
 
 \newcommand{\DoNoPrintTheNomenclature}{
@@ -232,14 +236,17 @@
     \end{MakeGlobal}
 }
 
-\newcommand{\GeneralAdd}[4]{ % #1 = Symbol array name, #2 = Description array name, #3 = symbol, #4 = description
-    \ArrayPush{#1}{#3}
-    \ArrayPush{#2}{#4}
-     
-    \settowidth{\WidestSymbolTest}{#3}
+\newcommand{\UpdateWidestSymbol}[1]{
+    \settowidth{\WidestSymbolTest}{#1}
     \ifdim\WidestSymbol<\WidestSymbolTest
         \setlength{\WidestSymbol}{\WidestSymbolTest}
     \fi
+}
+
+\newcommand{\GeneralAdd}[4]{ % #1 = Symbol array name, #2 = Description array name, #3 = symbol, #4 = description
+    \ArrayPush{#1}{#3}
+    \ArrayPush{#2}{#4}
+    \UpdateWidestSymbol{#3}
 }
 
 \newcommand{\NomenclatureEntry}[2]{%
@@ -253,7 +260,7 @@
     \end{minipage}
     \vskip0em
 }
-\show\dotfill
+
 \newcommand{\NomenclaturePrint}[3]{% #1 = Nomenclature name, #2 = Symbol array name, #3 = Description array name
         \ifnum\ArrayValueCount{#2}>0
             \setlength{\SymbolWidth}{\WidestSymbol}
@@ -272,9 +279,6 @@
         \fi
 }
 
-
-%\newcommand{\Add}{}
-
 \newcommand{\NomenclatureTitleChapter}[1]{
     \ifx \UWMad@NomenclatureTitleMade \UWMad@Undefined
         \chapter*{#1}\UWMad@FrontMatterRegister{#1}     % Couldn't get any of the conditionals to behave globally
@@ -282,13 +286,12 @@
     \fi
 }
 
+\newcommand{\NomenclatureName}{Nomenclature}
 
 % Nomenclature environment ----------------------------------------------------
-\newenvironment{Nomenclature}[1][Nomenclature]{
+\newenvironment{Nomenclature}{
     
-    \newcommand{\NomenclatureTitle}{#1}
     \setlength{\parindent}{0pt}
-
     \ArrayMake{NomenclatureSymbol}
     \ArrayMake{NomenclatureDescription}
     \newcommand{\Add}[2]{\GeneralAdd{NomenclatureSymbol}{NomenclatureDescription}{##1}{##2}}
@@ -299,7 +302,7 @@
     \ifUWMad@PrintTheNomenclature
         \setlength{\NomenclatureTitleSkip}{0em}
         \setlength{\NomenclaturePrintSkip}{1em}
-        \NomenclaturePrint{\NomenclatureTitleChapter{\NomenclatureTitle}}{NomenclatureSymbol}{NomenclatureDescription}
+        \NomenclaturePrint{\NomenclatureTitleChapter{\NomenclatureName}}{NomenclatureSymbol}{NomenclatureDescription}
         \setlength{\WidestSymbol}{0pt}
     \fi
     \ArrayClear{NomenclatureSymbol}
@@ -321,10 +324,10 @@
 % SubNomenclature environment ----------------------------------------------------
 \newenvironment{SubNomenclature}[1][SubNomenclature]{
     
-    \addtocounter{SubNomenclatureCounter}{1}
-    \def\ThisSubNomenclature           {SubNomenclature\roman{SubNomenclatureCounter}}
-    \def\ThisSubNomenclatureSymbol     {SubNomenclature\roman{SubNomenclatureCounter}Symbol}
-    \def\ThisSubNomenclatureDescription{SubNomenclature\roman{SubNomenclatureCounter}Description}
+    \addtocounter{SubNomenclature}{1}
+    \def\ThisSubNomenclature           {SubNomenclature\roman{SubNomenclature}}
+    \def\ThisSubNomenclatureSymbol     {SubNomenclature\roman{SubNomenclature}Symbol}
+    \def\ThisSubNomenclatureDescription{SubNomenclature\roman{SubNomenclature}Description}
     \def\ThisSubNomenclatureTitle      {#1}
     
     \setlength{\parindent}{0pt}
