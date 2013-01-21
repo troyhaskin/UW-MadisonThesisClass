@@ -311,7 +311,12 @@
     \newcommand{\NomenclatureSectionLevel}{#1}
     \ArrayMake{NomenclatureSymbol}
     \ArrayMake{NomenclatureDescription}
-    \newcommand{\Add}[2]{\GeneralAdd{NomenclatureSymbol}{NomenclatureDescription}{##1}{##2}}
+    \newcommand{\Add}[2]
+        {\GeneralAdd
+            {NomenclatureSymbol}
+            {NomenclatureDescription}
+            {##1}{##2}
+        }
     \let\item\Add
     \let\Entry\Add
 }{%
@@ -389,9 +394,7 @@
         }%
         {SubNomenclatureSymbol}
         {SubNomenclatureDescription}%
-    \begin{MakeGlobal}%
-        \setlength{\WidestSymbol}{0pt}%
-    \end{MakeGlobal}%
+    \global\setlength{\WidestSymbol}{0pt}%
     \ArrayClear{SubNomenclatureSymbol}%
     \ArrayClear{SubNomenclatureDescription}%
     \let\Add\MainAdd%
