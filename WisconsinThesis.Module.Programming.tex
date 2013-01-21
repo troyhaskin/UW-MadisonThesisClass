@@ -185,10 +185,10 @@
 
 \DefineNewCounter{ArrayWorkCounter}{0}
 \newcommand{\ArraySuffix}         {ARRAY}
-\newcommand{\ArraySuffixStart}    {\ArraySuffix START   }  
-\newcommand{\ArraySuffixEnd}      {\ArraySuffix END     } 
-\newcommand{\ArraySuffixPosition} {\ArraySuffix POSITION} 
-\newcommand{\ArraySuffixCount}    {\ArraySuffix COUNT   } 
+\newcommand{\ArraySuffixStart}    {\ArraySuffix START   }
+\newcommand{\ArraySuffixEnd}      {\ArraySuffix END     }
+\newcommand{\ArraySuffixPosition} {\ArraySuffix POSITION}
+\newcommand{\ArraySuffixCount}    {\ArraySuffix COUNT   }
 
 \newcommand{\ArrayMake}[1]{% #1 = Array name
     \MakeCommandGlobal{#1\ArraySuffix}        {#1\ArraySuffix}
@@ -221,6 +221,16 @@
     \MakeCounterUndefined{#1\ArraySuffixStart} 
     \MakeCounterUndefined{#1\ArraySuffixEnd}   
     \MakeCounterUndefined{#1\ArraySuffixCount} 
+}
+
+\newcommand{\ArrayReset}[1]{% #1 = Array name
+    \ForEach{#1}{
+        \MakeCommandUndefined{#1\roman{ForLoopCounter}}
+    }
+    \setcounter{#1\ArraySuffixPosition} {0}
+    \setcounter{#1\ArraySuffixStart}    {1}
+    \setcounter{#1\ArraySuffixEnd}      {0}
+    \setcounter{#1\ArraySuffixCount}    {0}
 }
 
 \newcommand{\ArrayPush}[2]{% #1 = Array name, #2 value to push

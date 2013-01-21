@@ -7,24 +7,23 @@
 
 \begin{document}
 
-\begin{Nomenclature}
-    \Add{Symbol}{This is a rather long and ridiculous description designed to test the alignment of 
-                 this said description with that of the associated symbol.}
-    \Add{Symbol}{This is a rather long and ridiculous description designed to test the alignment of 
-                 this said description with that of the associated symbol.}
-    \Add{$T$}   {This is a math nomenclature example.}
-    \Add{\rho}  {This is an \Cmd{ensuremath} check.}
-\end{Nomenclature}
-
-\show\GeneralAdd
+\show\setstretch
 
 \begin{Nomenclature}
     \Add{Symbol}{This is a rather long and ridiculous description designed to test the alignment of 
                  this said description with that of the associated symbol.}
-    \Add{Symbol}{This is a rather long and ridiculous description designed to test the alignment of 
-                 this said description with that of the associated symbol.}
     \Add{$T$}   {This is a math nomenclature example.}
     \Add{\rho}  {This is an \Cmd{ensuremath} check.}
+
+    \begin{SubNomenclature}{Acronyms (A SubNomenclature)}
+        \Add{TCP}{Transmissions Control Protocol}
+        \Add{FEM}{Finite Element Method}
+    \end{SubNomenclature}
+    \rule{0.99\textwidth}{0.1em}
+    \Add{\Omega}{   A post-SubNomenclature entry.
+                    \emph{The above rule is not automatically generated.}
+                    This isn't a particularly useful feature and should be avoided for clarity and is only supported in case an entry is accidentally added after a SubNomenclature.}
+    \Add{Symbol} {Post-SubNomenclature \Cmd{WidestSymbol} test.}
 \end{Nomenclature}
 
 
