@@ -39,29 +39,29 @@
 
 
 % <= Command - no equivalent in TeX
-\newcommand{\IfGreaterThanEqualTo}[4]{
-    \ifnum#1>#2
-        #3
-    \else
-        \ifnum#1=#2
-            #3
-        \else
-            #4
-        \fi
-    \fi
+\newcommand{\IfGreaterThanEqualTo}[4]{%
+    \ifnum#1>#2%
+        #3%
+    \else%
+        \ifnum#1=#2%
+            #3%
+        \else%
+            #4%
+        \fi%
+    \fi%
 }
 
 % >= Command - no equivalent in TeX
-\newcommand{\IfLessThanEqualTo}[4]{
-    \ifnum#1<#2
-        #3
-    \else
-        \ifnum#1=#2
-            #3
-        \else
-            #4
-        \fi
-    \fi
+\newcommand{\IfLessThanEqualTo}[4]{%
+    \ifnum#1<#2%
+        #3%
+    \else%
+        \ifnum#1=#2%
+            #3%
+        \else%
+            #4%
+        \fi%
+    \fi%
 }
 
 

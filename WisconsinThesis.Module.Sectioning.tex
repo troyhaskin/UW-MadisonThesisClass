@@ -29,7 +29,7 @@
 \DefineNewLength{\ChapterHeadVSpaceStart}  { 40pt}  % Set: Distance between top of text body and top of Chapter Head
 \DefineNewLength{\ChapterHeadVSpaceEnd}    { 20pt}  % Set: Distance between bottom of Chapter Head and top of chapter content
 \DefineNewLength{\ChapterHeadParIndent}    {  0pt}  % Set: Indentation of Chapter Head
-\DefineNewLength{\ChapterHeadIDTitleSkip}  {  1em}  % Set: Distance between Chapter ID and Chapter Title
+\DefineNewLength{\ChapterHeadIDTitleSkip}  {-10pt}  % Set: Distance between Chapter ID and Chapter Title
 
 
 % Styles for the chapter head
@@ -263,6 +263,42 @@
 \DeclareRobustCommand{\AddToCHeader}[2][part]{
     \addtocontents{toc}{\protect\contentsline{#1}{\AddToCHeaderStyle{#2}}{}{}}
 }
+
+
+% =========================================================================== %
+%                 Table of Contents 'Headers' (i.e., Parts)                   %
+% =========================================================================== %
+\HashMake{LevelToSection}    
+\HashSet {LevelToSection}{-1}{part}          
+\HashSet {LevelToSection}{0} {chapter}       
+\HashSet {LevelToSection}{1} {section}       
+\HashSet {LevelToSection}{2} {subsection}    
+\HashSet {LevelToSection}{3} {subsubsection} 
+\HashSet {LevelToSection}{4} {paragraph}     
+\HashSet {LevelToSection}{5} {subparagraph} 
+\HashMake{SectionToLevel}
+\HashSet{SectionToLevel}{part}          {-1}
+\HashSet{SectionToLevel}{chapter}       {0}
+\HashSet{SectionToLevel}{section}       {1}
+\HashSet{SectionToLevel}{subsection}    {2}
+\HashSet{SectionToLevel}{subsubsection} {3}
+\HashSet{SectionToLevel}{paragraph}     {4}
+\HashSet{SectionToLevel}{subparagraph}  {5}
+
+\newcommand{\LevelToSection}[1]{% #1 = Level number
+    \HashGet{LevelToSection}{#1}%
+}
+
+\newcommand{\SectionToLevel}[1]{% #1 = section
+    \HashGet{SectionToLevel}{#1}%
+}
+
+
+
+
+
+
+
 
 
 
