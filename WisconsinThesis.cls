@@ -139,9 +139,9 @@
 \newcommand{\ModuleSuffix}{}
 
 \DeclareRobustCommand{\LoadIfModuleExists}[1]{
-    
+
     \edef\TheModule{\ModulePrefix#1\ModuleSuffix}
-    
+
     \InputIfFileExists{\TheModule}{}{
         \UWMad@ClassWarning{Could not locate #1 module.}
     }
@@ -158,6 +158,7 @@
 \LoadIfModuleExists{LicensePage}
 \LoadIfModuleExists{Math}
 \LoadIfModuleExists{RelativeDirectoryInput}
+\LoadIfModuleExists{Nomenclature}
 
 
 
@@ -209,199 +210,6 @@
     \end{center}
     \clearpage
 }
-
-
-
-
-% ===================================================================================== %
-%                               Nomenclature Environment                                %
-% ===================================================================================== %
-
-\DefineNewLength{\WidestSymbol}         {0pt}        % Will have the value of the widest symbol for spacing
-\DefineNewLength{\WidestSymbolTest}     {0pt}        % Used to test for the widest symbol
-\DefineNewLength{\NomenclatureTitleSkip}{1em}        % Used for title spacing
-\DefineNewLength{\NomenclaturePrintSkip}{1em}        % Used for spacing after nomenclature is printed
-\DefineNewLength{\SymbolWidth}          {0em}
-\DefineNewLength{\DescriptionWidth}     {0em}
-\DefineNewLength{\EntryMarginLeft}      {1em}
-\DefineNewLength{\EntryMarginBottom}    {0.25em}
-\DefineNewLength{\SymbolMarginRight}    {0.75em}
-\DefineNewCounter{SubNomenclature}      {0}    % Number of Subnomenclatures
-
-\newif\ifUWMad@PrintTheNomenclature\UWMad@PrintTheNomenclaturetrue
-%
-% Global version of the above
-\GlobalNewIf{UWMad@PrintMainNomenclature}
-\UWMad@PrintMainNomenclaturefalse
-%
-%
-\GlobalNewIf{UWMad@PrintMainNomenclatureTitle}
-\UWMad@PrintMainNomenclatureTitlefalse
-
-\newcommand*{\UpdateWidestSymbol}[1]{
-    \settowidth{\WidestSymbolTest}{#1}
-    \ifdim\WidestSymbol<\WidestSymbolTest
-        \setlength{\WidestSymbol}{\WidestSymbolTest}
-    \fi
-}
-
-\newcommand{\GeneralAdd}[4]{ % #1 = Symbol array name, #2 = Description array name, #3 = symbol, #4 = description
-    \ArrayPush{#1}{#3}
-    \ArrayPush{#2}{#4}
-    \UpdateWidestSymbol{#3}
-}
-
-\newcommand{\NomenclatureEntry}[2]{%
-    \setstretch{1.1}%
-    \hspace{\EntryMarginLeft}%
-    \begin{minipage}[t]{\SymbolWidth}%
-        #1%
-    \end{minipage}%
-    \begin{minipage}[t]{\DescriptionWidth}%
-        #2%
-    \end{minipage}%
-    \vskip\EntryMarginBottom
-}
-
-\newcommand{\NomenclaturePrint}[3]{% #1 = Nomenclature name, 
-                                   % #2 = Symbol array name, 
-                                   % #3 = Description array name
-                                   %
-        \ifnum\ArrayValueCount{#2}>0%
-            %
-            % Define Symbol minipage width
-            \setlength  {\SymbolWidth}{\WidestSymbol}%
-            \addtolength{\SymbolWidth}{\SymbolMarginRight}%
-            %
-            % Define Description minipage width
-            \setlength  {\DescriptionWidth}{\textwidth}%
-            \addtolength{\DescriptionWidth}{-\SymbolWidth}%
-            \addtolength{\DescriptionWidth}{-\EntryMarginLeft}%
-            \setlength  {\DescriptionWidth}{0.98\DescriptionWidth}%
-            %
-            % Print the passed Nomenclature name (which is possibly styled)
-            #1
-            \ForEach[1]{#2}{%
-                \NomenclatureEntry%
-                {\ArrayGet{#2}{ForLoopCounter}}%
-                {\ArrayGet{#3}{ForLoopCounter}}%
-            }%
-        \fi%
-}
-
-\newcommand{\MainNomenclatureTitle}[2]{%
-    \ifUWMad@PrintMainNomenclatureTitle%
-        \csname#1\endcsname*{#2}%
-        \UWMad@FrontMatterRegister[#1]{#2}% % Couldn't get any of the conditionals to behave globally
-    \fi%
-}
-\newcommand{\SubNomenclatureTitle}[2]{%
-    \csname#1\endcsname*{#2}%
-    \UWMad@FrontMatterRegister[#1]{#2}% % Couldn't get any of the conditionals to behave globally
-}
-
-
-\newcommand{\TheNomenclatureName}{Nomenclature}
-\newcommand{\NomenclatureName}[1]{\renewcommand{\NomenclatureName}{#1}}
-
-% Nomenclature environment ----------------------------------------------------
-\newenvironment{Nomenclature}[1][chapter]{
-    \UWMad@PrintMainNomenclaturetrue
-    \UWMad@PrintMainNomenclatureTitletrue
-    \newcommand{\NomenclatureSectionLevel}{#1}
-    \ArrayMake{NomenclatureSymbol}
-    \ArrayMake{NomenclatureDescription}
-    \newcommand{\Add}[2]
-        {\GeneralAdd
-            {NomenclatureSymbol}
-            {NomenclatureDescription}
-            {##1}{##2}
-        }
-    \let\item\Add
-    \let\Entry\Add
-}{%
-    \setlength{\NomenclatureTitleSkip}{0em}%
-    \setlength{\NomenclaturePrintSkip}{1em}%
-    \NomenclaturePrint%
-        {\MainNomenclatureTitle%
-            {\NomenclatureSectionLevel}%
-            {\TheNomenclatureName}%
-        }%
-        {NomenclatureSymbol}%
-        {NomenclatureDescription}%
-    \setlength{\WidestSymbol}{0pt}%
-    \ArrayClear{NomenclatureSymbol}%
-    \ArrayClear{NomenclatureDescription}%
-    \UWMad@PrintMainNomenclaturefalse%
-    \UWMad@PrintMainNomenclatureTitlefalse
-}
-
-
-% SubNomenclature environment ----------------------------------------------------
-\newenvironment{SubNomenclature}[2][section]{%
-    \newcommand{\SubNomenclatureSectionLevel}{#1}%
-    \addtocounter{SubNomenclature}           {+1}%
-    \newcommand*{\TheSubNomenclatureName}    {#2}%
-    \ArrayMake{SubNomenclatureSymbol}%
-    \ArrayMake{SubNomenclatureDescription}%
-    %
-    \ifUWMad@PrintMainNomenclature% % This means we're in a Nomenclature Environment
-        % Save defintions from Main
-        \let\MainAdd\Add%
-        \let\MainItem\item%
-        \let\MainEntry\Entry%
-        %
-        % Print the main Nomenclature
-        \setlength{\NomenclatureTitleSkip}{0em}%
-        \setlength{\NomenclaturePrintSkip}{1em}%
-        \NomenclaturePrint%
-            {\MainNomenclatureTitle%
-                {\NomenclatureSectionLevel}%
-                {\TheNomenclatureName}%
-            }%
-            {NomenclatureSymbol}%
-            {NomenclatureDescription}%
-        \setlength{\WidestSymbol}{0pt}%
-        \ArrayReset{NomenclatureSymbol}%
-        \ArrayReset{NomenclatureDescription}%
-        \UWMad@PrintMainNomenclatureTitlefalse
-        %
-        % Put in new definitions
-        \renewcommand{\Add}[2]%
-            {\GeneralAdd%
-                {SubNomenclatureSymbol}%
-                {SubNomenclatureDescription}%
-                {##1}{##2}%
-            }%
-    \else
-        \newcommand{\Add}[2]%
-            {\GeneralAdd%
-                {SubNomenclatureSymbol}%
-                {SubNomenclatureDescription}%
-                {##1}{##2}%
-            }%
-    \fi
-    \let\item\Add%
-    \let\Entry\Add%
-}{%
-    \setlength{\parindent}{0pt}
-    \setlength{\NomenclatureTitleSkip}{-0.4em}%
-    \setlength{\NomenclaturePrintSkip}{2em}%
-    \NomenclaturePrint%
-        {\SubNomenclatureTitle%
-            {\SubNomenclatureSectionLevel}%
-            {\TheSubNomenclatureName}%
-        }%
-        {SubNomenclatureSymbol}
-        {SubNomenclatureDescription}%
-    \global\setlength{\WidestSymbol}{0pt}%
-    \ArrayClear{SubNomenclatureSymbol}%
-    \ArrayClear{SubNomenclatureDescription}%
-    \let\Add\MainAdd%
-    \let\item\MainItem%
-    \let\Entry\MainEntry%
-}
-
 
 
 \newcommand{\UWMad@Acronym}{Acronym}
