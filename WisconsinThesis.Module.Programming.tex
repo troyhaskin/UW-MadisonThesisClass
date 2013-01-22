@@ -68,7 +68,7 @@
 % Command combo testing for an empty argument
 \newcommand{\UWMad@Empty}{}
 \newcommand{\IfEmpty}[3]{
-    \ifx #1 \UwMad@Empty
+    \if #1 \UWMad@Empty
         #2
     \else
         #3
@@ -76,11 +76,11 @@
 }
 
 \newcommand{\IfMatch}[4]{% #1 = left compare, #2 = right compare, #3 = true code, #4 = false code
-    \ifx #1 #2
-        #3
-    \else
-        #4
-    \fi
+    \if #1 #2%
+        #3%
+    \else%
+        #4%
+    \fi%
 }
 
 
@@ -212,7 +212,7 @@
 \newcommand{\ArrayValueCount}   [1]{\value{#1\ArraySuffixCount}}    % #1 = Array name
 
 
-\newcommand{\ArrayClear}[1]{% #1 = Array name
+\newcommand{\ArrayDelete}[1]{% #1 = Array name
     \ForEach{#1}{
         \MakeCommandUndefined{#1\roman{ForLoopCounter}}
     }
