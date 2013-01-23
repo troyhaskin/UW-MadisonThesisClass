@@ -36,7 +36,7 @@
 \newcommand{\ChapterHeadJustification}  {\raggedright}
 \newcommand{\ChapterHeadFont}           {\normalfont}
 \newcommand{\ChapterHeadID}             {\@chapapp\space\thechapter}
-\newcommand{\ChapterHeadStyleID}   [1]  {\large{\textbf{#1}}}
+\newcommand{\ChapterHeadStyleID}   [1]  {\LARGE{\textbf{#1}}}
 \newcommand{\ChapterHeadStyleTitle}[1]  {\Huge{\textbf{#1}}}
 
 % Replacement command for \@makechapterhead
@@ -295,7 +295,17 @@
 
 
 
-
+% =========================================================================== %
+%      Paragraphs and Subparagraphs are Layed out like subsubsections         %
+% =========================================================================== %
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+                                    {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                    {1.5ex \@plus .2ex}%
+                                    {\normalfont\normalsize\bfseries}}
+\renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
+                                    {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                    {1.5ex \@plus .2ex}%
+                                    {\normalfont\normalsize\bfseries}}
 
 
 
