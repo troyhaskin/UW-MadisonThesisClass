@@ -2,26 +2,25 @@
 %                                  Nomenclature Module                                  %
 % ===================================================================================== %
 
+
+% =========================================================================== %
+%                       Entry Independent Commands                            %
+% =========================================================================== %
 \DefineNewLength{\UWMad@Widest}         {0pt}        % Will have the value of the widest symbol for spacing
 \DefineNewLength{\UWMad@WidestTest}     {0pt}        % Used to test for the widest symbol
 \DefineNewLength{\NomenclatureTitleSkip}{0em}        % Used for title spacing
 \DefineNewLength{\NomenclaturePrintSkip}{1em}        % Used for spacing after nomenclature is printed
-\DefineNewLength{\SymbolWidth}          {0em}
-\DefineNewLength{\DescriptionWidth}     {0em}
 \DefineNewLength{\EntryMarginLeft}      {1em}
 \DefineNewLength{\EntryMarginBottom}    {0.25em}
-\DefineNewLength{\SymbolMarginRight}    {0.75em}
-\DefineNewCounter{SubNomenclature}      {0}    % Number of Subnomenclatures
 
-\newif\ifUWMad@PrintTheNomenclature\UWMad@PrintTheNomenclaturetrue
-%
-% Global version of the above
-\GlobalNewIf{UWMad@PrintMainNomenclature}
-\UWMad@PrintMainNomenclaturefalse
-%
-%
-\GlobalNewIf{UWMad@PrintMainNomenclatureTitle}
-\UWMad@PrintMainNomenclatureTitlefalse
+\DefineNewCounter{NomenclatureMaximumNesting}   {0}  % Number of Subnomenclatures
+%\DefineNewCounter{NomenclatureSectioningLevel}{0}  % Sectioning Level for the top-level Nomenclature environment
+\newcount\NomenclatureNestingLevel %
+\newcount\NomenclatureSectioningLevel %
+
+\newif\ifMakeNomenclatureStarred\MakeNomenclatureStarredtrue
+\let\MakeNomenclatureStarred\MakeNomenclatureStarredtrue
+\let\MakeNomenclatureNotStarred\MakeNomenclatureStarredfalse
 
 \newcommand*{\UWMad@UpdateWidest}[1]{
     \settowidth{\UWMad@WidestTest}{#1}
@@ -29,17 +28,63 @@
         \setlength{\UWMad@Widest}{\UWMad@WidestTest}
     \fi
 }
-
+%
+%
 \newcommand{\TheNomenclatureName}{Nomenclature}
-\newcommand{\NomenclatureName}[1]{\renewcommand{\NomenclatureName}{#1}}
-
-
-\newcommand{\NomenclatureNameStyle}[2]{%
-    \IfEmpty{#2}%
+\newcommand{\NomenclatureName}[1]
+    {\renewcommand{\TheNomenclatureName}{#1}}
+%
+\newcommand{\TheNomenclatureGroupName}{}
+\newcommand{\NomenclatureGroupName}[1]
+    {\renewcommand{\TheNomenclatureGroupName}{#1}}
+%
+%
+\newcommand{\NomenclatureNameStyle}
+    {\ifdefempty{\TheNomenclatureGroupName}%
         {}%
-        {\csname#1\endcsname*{#2}%
-        \UWMad@FrontMatterRegister[#1]{#2}%
-        }%
+        {\ifMakeNomenclatureStarred%
+            \csname\TheCurrentSectioningCommand\endcsname*%
+                {\TheNomenclatureGroupName}%
+            \UWMad@FrontMatterRegister%
+                [\TheCurrentSectioningCommand]%
+                {\TheNomenclatureGroupName}
+         \else%
+            \csname\TheCurrentSectioningCommand\endcsname%
+                {\TheNomenclatureGroupName}%
+         \fi}}
+%
+%
+\newcommand{\TheCurrentSectioningCommand}{}
+\newcommand{\CurrentSectioningCommand}[1]
+    {\renewcommand{\TheCurrentSectioningCommand}{#1}}
+
+
+% =========================================================================== %
+%                       Entry Dependent Commands                              %
+% =========================================================================== %
+\DefineNewLength{\SymbolWidth}          {0em}
+\DefineNewLength{\DescriptionWidth}     {0em}
+\DefineNewLength{\SymbolDescriptionPad} {0.75em}
+
+
+\newcommand{\UpdateAddCommand}%
+    {}
+%
+\newcommand{\TheSymbolArrayName}{}
+\newcommand{\TheDescriptionArrayName}{}
+\newcommand{\SymbolArrayName}[1]     {\renewcommand{\TheSymbolArrayName}{#1}}
+\newcommand{\DescriptionArrayName}[1]{\renewcommand{\TheDescriptionArrayName}{#1}}
+
+\newcommand{\SetTheWidths}{%
+    % Define Symbol minipage width
+    \setlength  {\SymbolWidth}{\UWMad@Widest}%
+    \addtolength{\SymbolWidth}{\SymbolDescriptionPad}%
+    %
+    % Define Description minipage width
+    \setlength  {\DescriptionWidth}{\textwidth}%
+    \addtolength{\DescriptionWidth}{-\SymbolWidth}%
+    \addtolength{\DescriptionWidth}{-\EntryMarginLeft}%
+    \setlength  {\DescriptionWidth}{0.99\DescriptionWidth}%
 }
 
 \newcommand{\NomenclatureEntry}[2]{%
@@ -54,33 +99,22 @@
     \vskip\EntryMarginBottom%
 }
 
-\newcommand{\SetTheWidths}{%
-    % Define Symbol minipage width
-    \setlength  {\SymbolWidth}{\UWMad@Widest}%
-    \addtolength{\SymbolWidth}{\SymbolMarginRight}%
-    %
-    % Define Description minipage width
-    \setlength  {\DescriptionWidth}{\textwidth}%
-    \addtolength{\DescriptionWidth}{-\SymbolWidth}%
-    \addtolength{\DescriptionWidth}{-\EntryMarginLeft}%
-    \setlength  {\DescriptionWidth}{0.98\DescriptionWidth}%
+\newcommand{\NomenclatureArrayIterator}{
+    \ForEach[1]{\TheSymbolArrayName}%
+        {\NomenclatureEntry%
+            {\ArrayGet
+                {\TheSymbolArrayName}
+                {ForLoopCounter}}%
+            {\ArrayGet
+                {\TheDescriptionArrayName}
+                {ForLoopCounter}}}%
 }
 
-\newcommand{\NomenclaturePrint}[4]{% #1 = Sectioning level for the title,
-                                   % #2 = Nomenclature title,
-                                   % #3 = Symbol array name, 
-                                   % #4 = Description array name
-                                   %
-    \ifnum\ArrayValueCount{#3}>0%
-        % Set widths
-        \SetTheWidths
-        % Print the passed Nomenclature name (which is possibly styled)
-        \NomenclatureNameStyle{#1}{#2}%
-        \ForEach[1]{#3}%
-            {\NomenclatureEntry%
-                {\ArrayGet{#3}{ForLoopCounter}}%
-                {\ArrayGet{#4}{ForLoopCounter}}%
-            }%
+\newcommand{\NomenclaturePrint}{%
+    \NomenclatureNameStyle%         Print the name of the current group
+    \ifnum\ArrayValueCount{\TheSymbolArrayName}>0%
+        \SetTheWidths%              Set the widths of the minipages
+        \NomenclatureArrayIterator% Iterate over the entries
     \fi%
 }
 
@@ -89,28 +123,28 @@
 %           Nomenclature Environment Initializer and Finalizer                %
 % =========================================================================== %
 \newcommand{\NomenclatureInitializer}{
-    \ArrayMake{NomenclatureSymbol}
-    \ArrayMake{NomenclatureDescription}
+    \SymbolArrayName
+        {NomenclatureSymbol}
+    \DescriptionArrayName
+        {NomenclatureDescription}
+    \ArrayMake
+        {\TheSymbolArrayName}
+    \ArrayMake
+        {\TheDescriptionArrayName}
     \newcommand{\Add}[2]
-        {\ArrayPush{NomenclatureSymbol}{##1}
-         \ArrayPush{NomenclatureDescription}{##2}
-         \UWMad@UpdateWidest{##1}
-        }
+        {\ArrayPush{\TheSymbolArrayName}{##1}
+         \ArrayPush{\TheDescriptionArrayName}{##2}
+         \UWMad@UpdateWidest{##1}}
+    \let\item\Add
+    \let\Item\Add
+    \let\Entry\Add
 }
 
-\newcommand{\NomenclatureFinalizer}[1][\ArrayDelete]{%
-    \ifUWMad@PrintMainNomenclatureTitle%
-    \else%
-        \let\TheNomenclatureName\UWMad@Empty%
-    \fi%
-    \NomenclaturePrint%
-        {\NomenclatureSectionLevel}%
-        {\TheNomenclatureName}%
-        {NomenclatureSymbol}%
-        {NomenclatureDescription}%
-    #1{NomenclatureSymbol}%             Typically, \ArrayDelete or \ArrayReset
-    #1{NomenclatureDescription}%        Typically, \ArrayDelete or \ArrayReset
-    \setlength{\UWMad@Widest}{0pt}%
+\newcommand{\NomenclatureFinalizer}[1]{%
+    \NomenclaturePrint%                     Print the current group's symbols and descriptions
+    #1{\TheSymbolArrayName}%                Garbage Collection: \ArrayDelete or \ArrayReset
+    #1{\TheDescriptionArrayName}%           Garbage Collection: \ArrayDelete or \ArrayReset
+    \global\setlength{\UWMad@Widest}{0pt}%  Set the widest symbol to 0 for future lists
 }
 
 
@@ -119,66 +153,49 @@
 % =========================================================================== %
 
 % Nomenclature environment ----------------------------------------------------
-\newenvironment{Nomenclature}[1][chapter]{
-    \UWMad@PrintMainNomenclaturetrue
-    \UWMad@PrintMainNomenclatureTitletrue
-    \newcommand{\NomenclatureSectionLevel}{#1}
-    \NomenclatureInitializer
-    \let\item\Add
-    \let\Entry\Add
-}{%
-    \NomenclatureFinalizer[\ArrayDelete]%
-    \UWMad@PrintMainNomenclaturefalse%
-    \UWMad@PrintMainNomenclatureTitlefalse%
-}
+\newenvironment{Nomenclature}[1][chapter]%
+    {%
+        \stepcounter{NomenclatureMaximumNesting} % This is the main Group
+        \CurrentSectioningCommand{#1}
+        \NomenclatureSectioningLevel=\SectionToLevel{#1}
+        \NomenclatureNestingLevel=1
+        \NomenclatureGroupName{\TheNomenclatureName}
+        \NomenclatureInitializer}
+    {%
+        \ifnum\theNomenclatureMaximumNesting>1%
+            \NomenclatureGroupName{}%
+        \fi%
+        \NomenclatureFinalizer{\ArrayDelete}%
+        \setcounter{NomenclatureMaximumNesting}{0}}
 
 
-% SubNomenclature environment ----------------------------------------------------
-\newenvironment{SubNomenclature}[2][section]{%
-    \newcommand{\SubNomenclatureSectionLevel}{#1}%
-    \addtocounter{SubNomenclature}           {+1}%
-    \newcommand*{\TheSubNomenclatureName}    {#2}%
-    \ArrayMake{SubNomenclatureSymbol}%
-    \ArrayMake{SubNomenclatureDescription}%
-    %
-    \ifUWMad@PrintMainNomenclature% % This means we're in a Nomenclature Environment
-        % Save defintions from Main
-        \let\MainAdd\Add%
-        \let\MainItem\item%
-        \let\MainEntry\Entry%
+\newenvironment{Group}[1]% #1 = Group Name
+    {%
+        \NomenclatureFinalizer{\ArrayReset}%
         %
-        % Print the main Nomenclature before the subnomenclature
-        \NomenclatureFinalizer[\ArrayReset]
-        \UWMad@PrintMainNomenclatureTitlefalse
+        \ifnum \NomenclatureNestingLevel
+        \advance \NomenclatureNestingLevel 1 %
+        \ifnum \theNomenclatureMaximumNesting < \NomenclatureNestingLevel
+            \stepcounter{NomenclatureMaximumNesting}
+        \fi
         %
-        % Put in new definitions
-        \renewcommand{\Add}[2]%
-            {\ArrayPush{SubNomenclatureSymbol}{##1}%
-             \ArrayPush{SubNomenclatureDescription}{##2}%
-             \UWMad@UpdateWidest{##1}%
-            }%
-    \else%
-        \newcommand{\Add}[2]%
-            {\ArrayPush{SubNomenclatureSymbol}{##1}%
-             \ArrayPush{SubNomenclatureDescription}{##2}%
-             \UWMad@UpdateWidest{##1}%
-            }%
-    \fi%
-    \let\item\Add%
-    \let\Entry\Add%
-}{%
-    \setlength{\NomenclatureTitleSkip}{-0.4em}%
-    \setlength{\NomenclaturePrintSkip}{2em}%
-    \NomenclaturePrint%
-        {\SubNomenclatureSectionLevel}%
-        {\TheSubNomenclatureName}%
-        {SubNomenclatureSymbol}%
-        {SubNomenclatureDescription}%
-    \global\setlength{\UWMad@Widest}{0pt}%
-    \ArrayDelete{SubNomenclatureSymbol}%
-    \ArrayDelete{SubNomenclatureDescription}%
-    \let\Add\MainAdd%
-    \let\item\MainItem%
-    \let\Entry\MainEntry%
-}
+        \ifstrempty{#1}%
+            {\NomenclatureGroupName{}}%
+            {\NomenclatureGroupName{#1}%
+             \advance \NomenclatureSectioningLevel 1}%
+        %
+        \CurrentSectioningCommand%
+            {\LevelToSection%
+                {\number\NomenclatureSectioningLevel}}}%
+    {%
+        \UWMad@ClassMessage{\number\NomenclatureNestingLevel\space\space\theNomenclatureMaximumNesting}%
+        \ifnum \NomenclatureNestingLevel<\theNomenclatureMaximumNesting%
+            \NomenclatureGroupName{}%
+        \fi%
+        \NomenclatureFinalizer{\ArrayReset}%
+        \ifnum \NomenclatureNestingLevel=2%
+            \setcounter{NomenclatureMaximumNesting}{1}%
+        \fi%
+        }%
+
 

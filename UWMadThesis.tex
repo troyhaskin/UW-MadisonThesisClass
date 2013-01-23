@@ -7,26 +7,40 @@
 
 \begin{document}
 
+\makeatletter
+
+\NomenclatureName{Nomenclature Tests}
+\MakeNomenclatureNotStarred
 \begin{Nomenclature}
     \Add{Symbol}{This is a rather long and ridiculous description designed to test the alignment of 
                  this said description with that of the associated symbol.}
-    \Add{$T$}   {This is a math nomenclature example.}
-    \Add{\rho}  {This is an \Cmd{ensuremath} check.}
+    \Item{$T$}   {This is a math nomenclature example.}
+    \item{\rho}  {This is an \Cmd{ensuremath} check.}
 
-    \begin{SubNomenclature}[subsection]{Acronyms (A SubNomenclature)}
-        \Add{TCP}{Transmissions Control Protocol}
-        \Add{FEM}{Finite Element Method}
-    \end{SubNomenclature}
-    \rule{0.99\textwidth}{0.1em}
-    \Add{\Omega}{   A post-SubNomenclature entry.
-                    \emph{The above rule is not automatically generated.}
-                    This is a feature that should be avoided for clarity and is only supported in case an entry is accidentally added after a SubNomenclature.}
-    \Add{Symbol} {Post-SubNomenclature symbol width test.}
+    \begin{Group}{} % Unnamed Group 1
+        \Add{FDM}{Finite Difference Method}
+        \begin{Group}{Named Group 1}
+            \Item{FVM}{Finite Volume Method}
+            \begin{Group}{} % Unnamed Group 2
+                \item{FEM}{Finite Element Method}
+                \begin{Group}{Named Group 2}
+                    \Entry{BEM}{Boundary Element Method}
+                    \begin{Group}{Named Group 3}
+                        \Add{SCM}{Schur Complement Method}
+                    \end{Group}
+                \end{Group}
+            \end{Group}
+        \end{Group}
+    \end{Group}
+
+    \begin{Group}{Named Group 3}
+        \Add{SCM}{Schur Complement Method}
+    \end{Group}
 \end{Nomenclature}
 
-
+\makeatother
 %\input{Tests/Test_MetaData}
 %\input{Tests/Test_GlobalNewIf}
-\input{Tests/Test_Programming}
+%\input{Tests/Test_Programming}
 
 \end{document}
