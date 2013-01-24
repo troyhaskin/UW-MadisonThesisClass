@@ -17,6 +17,39 @@
     \setcounter{#1}{#2}
 }
 
+
+% =========================================================================== %
+%                    New Counter System: Local and Global                     %
+% =========================================================================== %
+\newcommand{\DefineNewLocalCounter}[2]{
+    \expandafter\newcount\csname#1\endcsname
+    \csname#1\endcsname=#2
+}
+\newcommand{\DefineNewGlobalCounter}[2]{
+    \newcounter{#1}
+    \setcounter{#1}{#2}
+}
+\newcommand{\IfCounterIsGlobal}[3]{
+    \ifltxcounter{#1}%  LaTeX counters are global counters
+        {#2}
+        {\ifcscounter{#1}
+            {#3}
+            {\UWMad@ClassWarning{There is not local or global counter '#1'}}}
+}
+\newcommand{\StepCounter}[1]{
+    \IfCounterIsGlobal{#1}
+        {\stepcounter{#1}}
+        {\expandafter\advance\csname#1\endcsname 1}
+}
+\newcommand{\AddToCounter}[2]{
+    \IfCounterIsGlobal{#1}
+        {\addtocounter{#1}{#2}}
+        {\expandafter\advance\csname#1\endcsname #2}
+}
+
+
+
+
 % If-switch changes only have block level scope by default.  That is, a \newif that is switched within a block
 % reverts to its pre-block state upon exit.  This command creates an if-switch set that has global scope.
 \newcommand{\GlobalNewIf}[1]{%
