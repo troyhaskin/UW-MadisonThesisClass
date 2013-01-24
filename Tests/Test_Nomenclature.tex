@@ -1,0 +1,57 @@
+
+\chapter{Nomenclature Tests}
+
+\MakeNomenclatureNotStarred
+\NomenclatureName{Unstarred Nomenclature}
+\begin{Nomenclature}[section]
+    \Add{Symbol}  {Description. This is a rather long and ridiculous description designed to test the alignment of 
+                 this description with that of the associated symbol and following entries.}
+    \Item{sym}    {Short desc.}
+
+    \begin{Group}{Subscripts} % Unnamed Group 1
+        \item{$\ell$}{Liquid state of substance}
+        \Entry{$g$}{Gas state of substance}
+    \end{Group}
+    \begin{Group}{Superscripts} % Unnamed Group 1
+        \Add{$k$}{The $k$-th item in a set}
+    \end{Group}
+    \begin{Group}{Roman} % Unnamed Group 1
+        \Entry{$h$}{Enthalpy}
+    \end{Group}
+    \begin{Group}{Greek} % Unnamed Group 1
+        \begin{Group}{} % Lower case
+            \Show\TheNomenGroupName
+            \Add{\alpha}{Void fraction.}
+        \end{Group}
+        \begin{Group}{} % Upper Case
+            \Add{\Omega}{Volume.}
+        \end{Group}
+    \end{Group}
+\end{Nomenclature}
+
+\MakeNomenclatureStarred
+\NomenclatureName{Starred Nomenclature}
+\begin{Nomenclature}[section]
+    \Add{Symbol}{Description. This is a rather long and ridiculous description designed to test the alignment of 
+                 this description with that of the associated symbol and following entries.}
+    \Item{PDE}   {Partial Differential Equation}
+
+    \begin{Group}{PDE Solution Methods}
+        \begin{Group}{Spatial Discretizations}
+            \Add{FDM}{Finite Difference Method}
+            \Item{FVM}{Finite Volume Method}
+            \item{FEM}{Finite Element Method}
+            \Entry{BEM}{Boundary Element Method}
+        \end{Group}
+        \begin{Group}{Time Integrators}
+            \begin{Group}{Explicit}
+                \Add{EE}{Explicit Euler}
+                \Add{AB}{Adams-Bashforth}
+            \end{Group}
+            \begin{Group}{Implicit}
+                \Add{IE}{Implicit Euler}
+                \Add{CN}{Crank-Nicolson}
+            \end{Group}
+        \end{Group}
+    \end{Group}
+\end{Nomenclature}

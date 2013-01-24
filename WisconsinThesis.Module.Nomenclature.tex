@@ -1,5 +1,5 @@
 % ===================================================================================== %
-%                                  Nomenclature Module                                  %
+%                                  Nomen Module                                  %
 % ===================================================================================== %
 
 
@@ -8,19 +8,20 @@
 % =========================================================================== %
 \DefineNewLength{\UWMad@Widest}         {0pt}        % Will have the value of the widest symbol for spacing
 \DefineNewLength{\UWMad@WidestTest}     {0pt}        % Used to test for the widest symbol
-\DefineNewLength{\NomenclatureTitleSkip}{0em}        % Used for title spacing
-\DefineNewLength{\NomenclaturePrintSkip}{1em}        % Used for spacing after nomenclature is printed
+\DefineNewLength{\NomenTitleSkip}{0em}        % Used for title spacing
+\DefineNewLength{\NomenPrintSkip}{1em}        % Used for spacing after Nomen is printed
 \DefineNewLength{\EntryMarginLeft}      {1em}
 \DefineNewLength{\EntryMarginBottom}    {0.25em}
 
-\DefineNewCounter{NomenclatureMaximumNesting}   {0}  % Number of Subnomenclatures
-%\DefineNewCounter{NomenclatureSectioningLevel}{0}  % Sectioning Level for the top-level Nomenclature environment
-\newcount\NomenclatureNestingLevel %
-\newcount\NomenclatureSectioningLevel %
+\DefineNewCounter{NomenMaxNest}   {0}  % Number of SubNomens
+\DefineNewCounter{GroupSiblingCount}{0}  % Number of SubNomens
+%\DefineNewCounter{NomenSectionLevel}{0}  % Sectioning Level for the top-level Nomen environment
+\newcount\NomenNestLevel%
+\newcount\NomenSectionLevel%
 
-\newif\ifMakeNomenclatureStarred\MakeNomenclatureStarredtrue
-\let\MakeNomenclatureStarred\MakeNomenclatureStarredtrue
-\let\MakeNomenclatureNotStarred\MakeNomenclatureStarredfalse
+\newif\ifUWMad@MakeNomenclatureStarred\UWMad@MakeNomenclatureStarredtrue
+\let\MakeNomenclatureStarred\UWMad@MakeNomenclatureStarredtrue
+\let\MakeNomenclatureNotStarred\UWMad@MakeNomenclatureStarredfalse
 
 \newcommand*{\UWMad@UpdateWidest}[1]{
     \settowidth{\UWMad@WidestTest}{#1}
@@ -34,23 +35,23 @@
 \newcommand{\NomenclatureName}[1]
     {\renewcommand{\TheNomenclatureName}{#1}}
 %
-\newcommand{\TheNomenclatureGroupName}{}
-\newcommand{\NomenclatureGroupName}[1]
-    {\renewcommand{\TheNomenclatureGroupName}{#1}}
+\newcommand{\TheNomenGroupName}{}
+\newcommand{\NomenGroupName}[1]
+    {\renewcommand{\TheNomenGroupName}{#1}}
 %
 %
 \newcommand{\NomenclatureNameStyle}
-    {\ifdefempty{\TheNomenclatureGroupName}%
+    {\ifdefempty{\TheNomenGroupName}%
         {}%
-        {\ifMakeNomenclatureStarred%
+        {\ifUWMad@MakeNomenclatureStarred%
             \csname\TheCurrentSectioningCommand\endcsname*%
-                {\TheNomenclatureGroupName}%
+                {\TheNomenGroupName}%
             \UWMad@FrontMatterRegister%
                 [\TheCurrentSectioningCommand]%
-                {\TheNomenclatureGroupName}
+                {\TheNomenGroupName}
          \else%
             \csname\TheCurrentSectioningCommand\endcsname%
-                {\TheNomenclatureGroupName}%
+                {\TheNomenGroupName}%
          \fi}}
 %
 %
@@ -87,7 +88,7 @@
     \setlength  {\DescriptionWidth}{0.99\DescriptionWidth}%
 }
 
-\newcommand{\NomenclatureEntry}[2]{%
+\newcommand{\NomenEntry}[2]{%
     \setstretch{1.1}%
     \hspace{\EntryMarginLeft}%
     \begin{minipage}[t]{\SymbolWidth}%
@@ -99,9 +100,9 @@
     \vskip\EntryMarginBottom%
 }
 
-\newcommand{\NomenclatureArrayIterator}{
+\newcommand{\NomenArrayIterator}{
     \ForEach[1]{\TheSymbolArrayName}%
-        {\NomenclatureEntry%
+        {\NomenEntry%
             {\ArrayGet
                 {\TheSymbolArrayName}
                 {ForLoopCounter}}%
@@ -110,23 +111,23 @@
                 {ForLoopCounter}}}%
 }
 
-\newcommand{\NomenclaturePrint}{%
+\newcommand{\NomenPrint}{%
     \NomenclatureNameStyle%         Print the name of the current group
     \ifnum\ArrayValueCount{\TheSymbolArrayName}>0%
         \SetTheWidths%              Set the widths of the minipages
-        \NomenclatureArrayIterator% Iterate over the entries
+        \NomenArrayIterator% Iterate over the entries
     \fi%
 }
 
 
 % =========================================================================== %
-%           Nomenclature Environment Initializer and Finalizer                %
+%                 Nomen Environment Initializer and Finalizer                 %
 % =========================================================================== %
-\newcommand{\NomenclatureInitializer}{
+\newcommand{\NomenInitializer}{
     \SymbolArrayName
-        {NomenclatureSymbol}
+        {NomenSymbol}
     \DescriptionArrayName
-        {NomenclatureDescription}
+        {NomenDescription}
     \ArrayMake
         {\TheSymbolArrayName}
     \ArrayMake
@@ -140,8 +141,8 @@
     \let\Entry\Add
 }
 
-\newcommand{\NomenclatureFinalizer}[1]{%
-    \NomenclaturePrint%                     Print the current group's symbols and descriptions
+\newcommand{\NomenFinalizer}[1]{%
+    \NomenPrint%                     Print the current group's symbols and descriptions
     #1{\TheSymbolArrayName}%                Garbage Collection: \ArrayDelete or \ArrayReset
     #1{\TheDescriptionArrayName}%           Garbage Collection: \ArrayDelete or \ArrayReset
     \global\setlength{\UWMad@Widest}{0pt}%  Set the widest symbol to 0 for future lists
@@ -149,53 +150,63 @@
 
 
 % =========================================================================== %
-%          Subnomenclature Environment Initializer and Finalizer              %
+%          SubNomen Environment Initializer and Finalizer              %
 % =========================================================================== %
 
-% Nomenclature environment ----------------------------------------------------
+% Nomen environment ----------------------------------------------------
 \newenvironment{Nomenclature}[1][chapter]%
     {%
-        \stepcounter{NomenclatureMaximumNesting} % This is the main Group
+        \stepcounter{NomenMaxNest} % This is the main Group
         \CurrentSectioningCommand{#1}
-        \NomenclatureSectioningLevel=\SectionToLevel{#1}
-        \NomenclatureNestingLevel=1
-        \NomenclatureGroupName{\TheNomenclatureName}
-        \NomenclatureInitializer}
+        \NomenSectionLevel=\SectionToLevel{#1}
+        \NomenNestLevel=1
+        \NomenGroupName{\TheNomenclatureName}
+        \NomenInitializer
+        \NomenclatureNameStyle
+        \NomenGroupName{}}
     {%
-        \ifnum\theNomenclatureMaximumNesting>1%
-            \NomenclatureGroupName{}%
-        \fi%
-        \NomenclatureFinalizer{\ArrayDelete}%
-        \setcounter{NomenclatureMaximumNesting}{0}}
+        %\ifnum\theNomenMaxNest>1%
+        %    \NomenGroupName{}%
+        %\fi%
+        \NomenFinalizer{\ArrayDelete}%
+        \setcounter{NomenMaxNest}{0}}
 
 
-\newenvironment{Group}[1]% #1 = Group Name
-    {%
-        \NomenclatureFinalizer{\ArrayReset}%
-        %
-        \ifnum \NomenclatureNestingLevel
-        \advance \NomenclatureNestingLevel 1 %
-        \ifnum \theNomenclatureMaximumNesting < \NomenclatureNestingLevel
-            \stepcounter{NomenclatureMaximumNesting}
+
+\newcommand{\GroupNestHandler}{
+    \IfCommandExists{UWMad@Group\theGroupSiblingCount\the\NomenNestLevel}
+        {\stepcounter{GroupSiblingCount}
+            \GroupNestHandler}
+        {\csdef%
+            {UWMad@GroupNumber\the\NomenNestLevel}%
+            {UWMad@GroupNumber\the\NomenNestLevel}
+         \ifnum \NomenNestLevel > \theNomenMaxNest
+            \stepcounter{NomenMaxNest}
         \fi
-        %
-        \ifstrempty{#1}%
-            {\NomenclatureGroupName{}}%
-            {\NomenclatureGroupName{#1}%
-             \advance \NomenclatureSectioningLevel 1}%
-        %
-        \CurrentSectioningCommand%
-            {\LevelToSection%
-                {\number\NomenclatureSectioningLevel}}}%
-    {%
-        \UWMad@ClassMessage{\number\NomenclatureNestingLevel\space\space\theNomenclatureMaximumNesting}%
-        \ifnum \NomenclatureNestingLevel<\theNomenclatureMaximumNesting%
-            \NomenclatureGroupName{}%
-        \fi%
-        \NomenclatureFinalizer{\ArrayReset}%
-        \ifnum \NomenclatureNestingLevel=2%
-            \setcounter{NomenclatureMaximumNesting}{1}%
-        \fi%
-        }%
+        \advance \NomenNestLevel 1}
+        \setcounter{GroupSiblingCount}{0}
+}
+
+\newenvironment{Group}[1]{% #1 = Group Name
+    \GroupNestHandler%
+    \NomenFinalizer{\ArrayReset}%
+    %
+    \ifstrempty{#1}%
+        {\NomenGroupName{}}%
+        {\NomenGroupName{#1}%
+         \advance \NomenSectionLevel 1}%
+    %
+    \CurrentSectioningCommand%
+        {\LevelToSection%
+            {\number\NomenSectionLevel}}
+}{%
+    \ifnum \NomenNestLevel<\theNomenMaxNest%
+        \NomenGroupName{}%
+    \fi%
+    \NomenFinalizer{\ArrayReset}%
+    \ifnum \NomenNestLevel=2%
+        \setcounter{NomenMaxNest}{1}%
+    \fi
+}%
 
 
