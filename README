@@ -28,3 +28,4 @@ The eTeX engine is assumed. Explicit consideration for systems without eTeX will
 However, since LaTeX3 is expected to be the successor of LaTeX2e, eTeX will hopefully become a universal default and no (if few) problems are expected.
 Although TeX will be defaulted to when LaTeX is lacking, eTeX will be used when it is deemed sufficintly superior to a TeX version.  Instances of eTeX usage will be noted here:  
 * `Programming::\IfCommandExists` &ndash; eTeX `\ifcsname#1\endcsname` used.
+* `Programming::\GlobalNewIf`
