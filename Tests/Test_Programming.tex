@@ -53,20 +53,38 @@
         }
         
     \subsection{\Cmd{ForEach} loops}
-        \HashMake{ForEachCheck}
-        \HashSet{ForEachCheck}{Key One}{1}
-        \HashSet{ForEachCheck}{Key Two}{2}
-        \HashSet{ForEachCheck}{Key Three}{3}
-        \ForEach[1]{ForEachCheck}{
+    
+        \subsubsection{Hash Test}
+        \HashMake{Hash}
+        \HashSet{Hash}{Key One}{1}
+        \HashSet{Hash}{Key Two}{2}
+        \HashSet{Hash}{Key Three}{3}
+        \ForEach[1]{Hash}{
             Outer Loop: 
-            \HashGetKeyByIndex  {ForEachCheck}{ForLoopCounter} equals 
-            \HashGetValueByIndex{ForEachCheck}{ForLoopCounter}
+            \HashGetKeyByIndex  {Hash}{ForLoopCounter} equals 
+            \HashGetValueByIndex{Hash}{ForLoopCounter}
             
             {
-            \ForEach[1]{ForEachCheck}{
+            \ForEach[1]{Hash}{
                 \hspace{3em}Inner Loop:
-                \HashGetKeyByIndex  {ForEachCheck}{ForLoopCounter} equals 
-                \HashGetValueByIndex{ForEachCheck}{ForLoopCounter}
+                \HashGetKeyByIndex  {Hash}{ForLoopCounter} equals 
+                \HashGetValueByIndex{Hash}{ForLoopCounter}
+                
+            }
+            }
+        }
+        
+        \subsubsection{Array Test}
+        \ArrayMake{Array}
+        \ArrayPush{Array}{1}
+        \ArrayPush{Array}{2}
+        \ArrayPush{Array}{3}
+        \ForEach[1]{Array}{
+            Outer Loop: \ArrayGet{Array}{ForLoopCounter}
+            
+            {
+            \ForEach[1]{Array}{
+                \hspace{3em}Inner Loop: \ArrayGet{Array}{ForLoopCounter}
                 
             }
             }
