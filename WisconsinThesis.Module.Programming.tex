@@ -19,11 +19,11 @@
 
 % If-switch changes only have block level scope by default.  That is, a \newif that is switched within a block
 % reverts to its pre-block state upon exit.  This command creates an if-switch set that has global scope.
-\newcommand{\GlobalNewIf}[1]{
-    \expandafter\newif\csname if#1Global\endcsname
-    \expandafter\def\csname if#1\endcsname{\csname if#1Global\endcsname}
-    \expandafter\def\csname#1true\endcsname {\expandafter\global\csname#1Globaltrue\endcsname}
-    \expandafter\def\csname#1false\endcsname{\expandafter\global\csname#1Globalfalse\endcsname}
+\newcommand{\GlobalNewIf}[1]{%
+    \csgdef{#1true}%
+        {\global\cslet{if#1}{\iftrue}}
+    \csgdef{#1false}%
+        {\global\cslet{if#1}{\iffalse}}
 }
 
 
@@ -34,6 +34,13 @@
         #2%
     \else%
         #3%
+    \fi%
+}%
+\newcommand{\IfCommandDoesNotExists}[3]{%
+    \ifcsname#1\endcsname%
+        #3%
+    \else%
+        #2%
     \fi%
 }%
 
@@ -65,13 +72,14 @@
 }
 
 
-% Command combo testing for an empty argument
-\newcommand{\UWMad@Empty}{}
+% Command combo testing for an empty string or command
 \newcommand{\IfEmpty}[3]{%
-    \ifdefempty{#1}{#2}
+    \ifdefempty{#1}
+        {#2}
         {\ifstrempty{#1}
             {#2}
-            {#3}}
+            {#3}
+        }
 }
 
 \newcommand{\IfMatch}[4]{% #1 = left compare, #2 = right compare, #3 = true code, #4 = false code
@@ -88,6 +96,12 @@
 % A environment that allows for global defintions.
 \newenvironment{MakeGlobal}{\globaldefs=1}{\globaldefs=0}
 
+\def\Show#1{
+    {
+    \edef\ExpandedArgument{#1}
+    \show\ExpandedArgument
+    }
+}
 
  \newcommand{\Trim}[1]{\ignorespaces#1\unskip} 
 
@@ -261,15 +275,31 @@
 
 \newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Counter Name for index
     \IfGreaterThanEqualTo{\value{#2}}{\ArrayValueStart{#1}}{%
-        \IfLessThanEqualTo{\value{#2}}{\ArrayValueEnd{#1}}{%
-            \csname#1\roman{#2}\endcsname%
-        }{%
-            \UWMad@ClassWarning{Index to Array '#1' is outside its bounds.}%
-        }%
+        \IfLessThanEqualTo{\value{#2}}{\ArrayValueEnd{#1}}
+            {\csname#1\roman{#2}\endcsname}
+            {\UWMad@ClassWarning{Index to Array '#1' is outside its bounds.}}%
     }{%
         \UWMad@ClassWarning{Index to Array '#1' is below its bounds.}%
     }%
 }
+
+\newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = Counter, % #3 = True code, % #4 = False code
+    \IfCommandExists{#1\roman{#2}}%
+        {#3}%
+        {#4}%
+}%
+
+\newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = Index or Counter, % #3 = True code, % #4 = False code
+    \IfCommandExists{#1\roman{#2}}%
+        {#4}%
+        {#3}%
+}%
+
+\newcommand{\IfArrayExists}[3]{% #1 = Array name, #2 = True code, #3 = False code
+    \IfCommandExists{#1\ArraySuffix}%
+        {#2}%
+        {#3}%
+}%
 
 
 
