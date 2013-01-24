@@ -7,25 +7,10 @@
 
 \begin{document}
 
-\ArrayMake{First}
-\ArrayPush{First}{FirstArray-1}
-\ArrayPush{First}{FirstArray-2}
-\ArrayPush{First}{FirstArray-3}
-\ArrayMake{Second}
-\ArrayPush{Second}{SecondArray-1}
-\ArrayPush{Second}{SecondArray-2}
-\ArrayPush{Second}{SecondArray-3}
-
-\ForEach[1]{First}{
-    \ArrayGet{First}{ForLoopCounter}
-    \ForEach[1]{Second}{
-        \ArrayGet{Second}{ForLoopCounter}
-    }
-}
-
 %\input{Tests/Test_MetaData}
 %\input{Tests/Test_GlobalNewIf}
 %\input{Tests/Test_Nomenclature}
-%\input{Tests/Test_Programming}
+\input{Tests/Test_Programming}
+%\input{Tests/Test_Sectioning}
 
 \end{document}

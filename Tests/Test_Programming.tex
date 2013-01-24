@@ -1,24 +1,74 @@
 \chapter{Programming Module Tests}
 
-\section{Testing Level-Section Commands}
-    \subsection{\Cmd{LevelToSection} Command Test}
-    \begin{tabular}{lll}
-        Passing level -1 & returns `\LevelToSection{-1}'&  should be `part'          \\
-        Passing level  0 & returns `\LevelToSection{0}' &  should be `chapter'       \\
-        Passing level  1 & returns `\LevelToSection{1}' &  should be `section'       \\
-        Passing level  2 & returns `\LevelToSection{2}' &  should be `subsection'    \\
-        Passing level  3 & returns `\LevelToSection{3}' &  should be `subsubsection' \\
-        Passing level  4 & returns `\LevelToSection{4}' &  should be `paragraph'     \\
-        Passing level  5 & returns `\LevelToSection{5}' &  should be `subparagraph'
-    \end{tabular}
+\section{Counter System Tests}
 
-    \subsection{\Cmd{SectionToLevel} Command Test}
-    \begin{tabular}{lll}
-        Passing section part            & returns `\SectionToLevel{part}'           &  should be `-1'   \\
-        Passing section chapter         & returns `\SectionToLevel{chapter}'        &  should be `0'    \\
-        Passing section section         & returns `\SectionToLevel{section}'        &  should be `1'    \\
-        Passing section subsection      & returns `\SectionToLevel{subsection}'     &  should be `2'    \\
-        Passing section subsubsection   & returns `\SectionToLevel{subsubsection}'  &  should be `3'    \\
-        Passing section paragraph       & returns `\SectionToLevel{paragraph}'      &  should be `4'    \\
-        Passing section subparagraph    & returns `\SectionToLevel{subparagraph}'   &  should be `5'
-    \end{tabular}
+    \DefineNewLocalCounter{NewLocalCounter}{1}
+    \DefineNewGlobalCounter{NewGlobalCounter}{10}
+    The counter has a value of \CounterValue{NewLocalCounter}.\\
+    The counter has a value of \CounterValue{NewGlobalCounter}.
+
+    {
+    \StepCounter{NewLocalCounter}
+    \StepCounter{NewGlobalCounter}
+    This is a new scope, and both counters  have been stepped.
+
+    The stepped local  counter value is \CounterValue{NewLocalCounter}.\\
+    The stepped global counter value is \CounterValue{NewGlobalCounter}.
+    }
+
+    Back to the main scope.
+
+    The local  counter has a value of \CounterValue{NewLocalCounter}.\\
+    The global counter has a value of \CounterValue{NewGlobalCounter}.
+    
+    {
+    \AddToCounter{NewLocalCounter}{5}
+    \AddToCounter{NewGlobalCounter}{5}
+    This is a new scope, and both counters have been incremented by 5.
+
+    The local  counter has a value of \CounterValue{NewLocalCounter}.\\
+    The global counter has a value of \CounterValue{NewGlobalCounter}.
+    }
+    
+    Back to the main scope.
+
+    The local  counter has a value of \CounterValue{NewLocalCounter}.\\
+    The global counter has a value of \CounterValue{NewGlobalCounter}.
+    
+
+
+\section{Nested loops}
+{\singlespacing
+
+    \subsection{\Cmd{For} loops}
+        \For[1]{1}{3}{
+            Outer Loop: \the\ForLoopCounter
+            
+            {
+            \For[1]{1}{3}{
+                \hspace{3em}Inner Loop: \the\ForLoopCounter
+                
+            }
+            }
+        }
+        
+    \subsection{\Cmd{ForEach} loops}
+        \HashMake{ForEachCheck}
+        \HashSet{ForEachCheck}{Key One}{1}
+        \HashSet{ForEachCheck}{Key Two}{2}
+        \HashSet{ForEachCheck}{Key Three}{3}
+        \ForEach[1]{ForEachCheck}{
+            Outer Loop: 
+            \HashGetKeyByIndex  {ForEachCheck}{ForLoopCounter} equals 
+            \HashGetValueByIndex{ForEachCheck}{ForLoopCounter}
+            
+            {
+            \ForEach[1]{ForEachCheck}{
+                \hspace{3em}Inner Loop:
+                \HashGetKeyByIndex  {ForEachCheck}{ForLoopCounter} equals 
+                \HashGetValueByIndex{ForEachCheck}{ForLoopCounter}
+                
+            }
+            }
+        }
+}
