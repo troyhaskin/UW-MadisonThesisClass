@@ -76,41 +76,42 @@
         }
         
     \subsection{\Cmd{ForEach} loops}
-    
+        
+        \subsubsection{Array Test}
+            \ArrayMake{Array}
+            \ArrayPush{Array}{1}
+            \ArrayPush{Array}{2}
+            \ArrayPush{Array}{3}
+            \ForEach[1]{Array}{
+                Outer Loop: \ArrayGet{Array}{ForLoopCounter}
+                
+                {
+                    \ForEach[1]{Array}{
+                        \hspace{3em}Inner Loop: \ArrayGet{Array}{ForLoopCounter}
+                        
+                    }
+                }
+            }
+        
         \subsubsection{Hash Test}
         \HashMake{Hash}
         \HashSet{Hash}{Key One}{1}
         \HashSet{Hash}{Key Two}{2}
         \HashSet{Hash}{Key Three}{3}
+        
         \ForEach[1]{Hash}{
             Outer Loop: 
-            \HashGetKeyByIndex  {Hash}{ForLoopCounter} equals 
-            \HashGetValueByIndex{Hash}{ForLoopCounter}
+            The key 
+            \HashGetKeyByIndex{Hash}{ForLoopCounter} is set to
+            \HashGetValueByIndex{Hash}{ForLoopCounter}.
             
             {
-            \ForEach[1]{Hash}{
-                \hspace{3em}Inner Loop:
-                \HashGetKeyByIndex  {Hash}{ForLoopCounter} equals 
-                \HashGetValueByIndex{Hash}{ForLoopCounter}
-                
-            }
-            }
-        }
-        \HashDelete{Hash}
-        
-        \subsubsection{Array Test}
-        \ArrayMake{Array}
-        \ArrayPush{Array}{1}
-        \ArrayPush{Array}{2}
-        \ArrayPush{Array}{3}
-        \ForEach[1]{Array}{
-            Outer Loop: \ArrayGet{Array}{ForLoopCounter}
-            
-            {
-            \ForEach[1]{Array}{
-                \hspace{3em}Inner Loop: \ArrayGet{Array}{ForLoopCounter}
-                
-            }
+                \ForEach[1]{Hash}{
+                    \hspace{3em}Inner Loop:
+                    \HashGetKeyByIndex{Hash}{ForLoopCounter} is set to
+                    \HashGetValueByIndex{Hash}{ForLoopCounter}.
+                    
+                }
             }
         }
 }
