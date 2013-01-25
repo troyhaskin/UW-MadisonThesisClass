@@ -95,7 +95,7 @@
     \fi%
 }%
 \newcommand{\IfCommandDoesNotExists}[3]{%
-    \ifcsname#1\endcsname %
+    \ifcsname#1\endcsname%
         #3%
     \else%
         #2%
@@ -105,10 +105,10 @@
 
 % <= Command - no equivalent in TeX
 \newcommand{\IfGreaterThanEqualTo}[4]{%
-    \ifnum#1>#2 %
+    \ifnum#1>#2%
         #3%
     \else%
-        \ifnum#1=#2 %
+        \ifnum#1=#2%
             #3%
         \else%
             #4%
@@ -118,10 +118,10 @@
 
 % >= Command - no equivalent in TeX
 \newcommand{\IfLessThanEqualTo}[4]{%
-    \ifnum#1<#2 %
+    \ifnum#1<#2%
         #3%
     \else%
-        \ifnum#1=#2 %
+        \ifnum#1=#2%
             #3%
         \else%
             #4%
@@ -184,11 +184,11 @@
 
 
 \newcommand{\MakeCommandUndefined}[1]{% #1 = Command name
-    \global\undef{#1}%
+    \global\csundef{#1}%
 }
 
 \newcommand{\MakeCounterUndefined}[1]{% #1 = Counter name
-    \MakeCommandUndefined{c@#1}
+    \MakeCommandUndefined{#1}
 }
 
 
@@ -196,55 +196,45 @@
 % =========================================================================== %
 %                          CSV Creation Commands                              %
 % =========================================================================== %
+\newcommand{\CSVSuffix}{CSV LIST}
 
-\newcommand{\CSVMake}[3][]{ % #1 = List name, #2 = Token to push on to right
+\newcommand{\IfCSVExists}[3]{%
+    \IfCommandExists{#1\CSVSuffix}%
+    {#2}%
+    {#3}%
+}
 
-    \@ifundefined{#2}
-    {
-        \begin{MakeGlobal}
-            \MakeCommand{#2}{#3}
-            \expandafter\newcommand\csname #2Append\endcsname[1]{\CSVAppend{#2}{##1}}
-            \expandafter\newcommand\csname #2Prepend\endcsname[1]{\CSVPrepend{#2}{##1}}
-        \end{MakeGlobal}
-    }{
-        \ifthenelse{\equal{#1}{}}
-            {
-                \typeout{*** CSV Note: Creation ignored since list already exists. ***}
-            }{
-                \typeout{*** CSV Note: Overwriting already-created list. ***}
-                \ReMakeCommand{#2}{#3}
-                \expandafter\renewcommand\csname #2Append\endcsname[1]{\CSVAppend{#2}{##1}}
-                \expandafter\renewcommand\csname #2Prepend\endcsname[1]{\CSVPrepend{#2}{##1}}
-            }
-    }
+\newcommand{\CSVMake}[1]{ % #1 = List name, #2 = Token to push on to right
+    \IfCSVExists{#1}
+        {\UWMad@ClassWarning{CSV '#1' already exists.}}
+        {\MakeCommand{#1\CSVSuffix}{}}
 }
 
 \newcommand{\CSVAppend}[2]{ % #1 = List name, #2 = Token to push on to right
-
-    \@ifundefined{#1}
-        {
-                \MakeCommand{#1}{#2}
-                \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
-                \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
-        }{
-            %\begin{MakeGlobal}
-                \expandafter\let\expandafter\List\csname #1\endcsname
-                \expandafter\def\csname #1\endcsname{\List,#2}
-            %\end{MakeGlobal}
-        }
+     \IfCSVExists{#1}
+        {\ifcsempty{#1\CSVSuffix}
+            {\protected@csxdef{#1\CSVSuffix}{#2}}
+            {\protected@csxdef{#1\CSVSuffix}{\csuse{#1\CSVSuffix},#2}}}
+        {\CSVMake{#1}
+         \CSVAppend{#1}{#2}}
 }
 
 \newcommand{\CSVPrepend}[2]{ % #1 = List name, #2 = Token to push on to left
-
-    \@ifundefined{#1}
-        {
-            \MakeCommand{#1}{#2}
-            \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
-            \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
-        }{
-            \expandafter\global\expandafter\protected@edef\csname #1\endcsname{#2,\csname #1\endcsname}
-        }
+     \IfCSVExists{#1}
+        {\ifcsempty{#1\CSVSuffix}
+            {\protected@csxdef{#1\CSVSuffix}{#2}}
+            {\protected@csxdef{#1\CSVSuffix}{#2,\csuse{#1\CSVSuffix}}}}
+        {\CSVMake{#1}
+         \CSVPrepend{#1}{#2}}
 }
+
+\newcommand{\CSVGet}[1]{% #1 = List name, #2 = Token to push on to left
+     \IfCSVExists{#1}%
+        {\csuse{#1\CSVSuffix}}%
+        {}%
+}
+
+
 
 
 
@@ -298,7 +288,7 @@
 
 \newcommand{\ArrayDelete}[1]{% #1 = Array name
     \ForEach{#1}{
-        \MakeCommandUndefined{#1\ArraySuffix\CounterValue{ForLoop}}
+        \MakeCommandUndefined{#1\ArraySuffix\CounterValue{ForLoopCounter}}
     }
     \MakeCommandUndefined{#1\ArraySuffix}
     \MakeCounterUndefined{#1\ArraySuffixPosition}
@@ -309,7 +299,7 @@
 
 \newcommand{\ArrayReset}[1]{% #1 = Array name
     \ForEach{#1}{
-        \MakeCommandUndefined{#1\ArraySuffix\CounterValue{ForLoop}}
+        \MakeCommandUndefined{#1\ArraySuffix\CounterValue{ForLoopCounter}}
     }
     \SetCounter{#1\ArraySuffixPosition} {0}
     \SetCounter{#1\ArraySuffixStart}    {1}
@@ -440,6 +430,18 @@
 }%
 
 
+\newcommand{\HashDelete}[1]{% #1 = hash name, #2 = index value
+    \IfCommandExists{#1\HashSuffix}%
+        {\ForEach[1]{#1}{%
+            \MakeCommandUndefined{#1\HashGetKeyByIndex{#1}{ForLoopCounter}\HashSuffix}%
+         }%
+         \ArrayDelete{#1\HashSuffixKeys}%
+         \MakeCommandUndefined{#1\HashSuffix}}%
+        {\UWMad@ClassWarning{Hash '#1' does not exist.}}%
+}%
+
+
+
 
 
 
@@ -476,7 +478,7 @@
     \SetCounter{ForLoopCounter}{#2}%
     %
     % Switch to deal with positive vs. negative increments (decrements).
-    \ifnum #1 > 0                                           % If positive increment
+    \ifnum #1 > 0%                                    % If positive increment
         \IfLessThanEqualTo{\ForLoopCounter}{#3}{%     % Execute while the LoopCounter is less than or equal to the end value
             \ForLoopRecursion%
         }{}%
