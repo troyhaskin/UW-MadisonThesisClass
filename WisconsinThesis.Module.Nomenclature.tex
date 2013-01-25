@@ -157,9 +157,14 @@
 % Nomen environment ----------------------------------------------------
 \newenvironment{NewNomenclature}[1][chapter]{%
     \SetCounter{NomenNestLevel}{0}% zeroth-ly nested
-    \ArrayMake{Nomenclature\CounterValue{NomenNestLevel}}
     
-    \ArrayPush{}
+    \SymbolArrayName{NomenSymbol\CounterValue{NomenNestLevel}}
+    \DescriptionArrayName{NomenDescription\CounterValue{NomenNestLevel}}
+    \MakeCommand{ThisNomenArrayName}{Nomenclature\CounterValue{NomenNestLevel}}
+    \ArrayMake{\ThisNomenArrayName}
+    
+    
+    \ArrayCommandPush{\ThisNomenArrayName}{}
     
     %\stepcounter{NomenMaxNest} % This is the main Group
     %\CurrentSectioningCommand{#1}
