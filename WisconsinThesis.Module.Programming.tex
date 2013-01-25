@@ -177,7 +177,7 @@
         {\UWMad@ClassWarning{Command '#1' is undefined; could not define.}}%
 }
 \newcommand{\MakeFullyExpandedCommand}[2]{%
-    \csxdef{#1}{#2}
+    \csxdef{#1}{#2}%
 }
 
 \newcommand{\MakeCommandGlobal}[2]{\begin{MakeGlobal}\MakeCommand{#1}{#2}\end{MakeGlobal}}
@@ -265,10 +265,10 @@
 \newcommand{\ArrayEnd}     [1]{#1\ArraySuffixEnd}      % #1 = ArrayName
 \newcommand{\ArrayCount}   [1]{#1\ArraySuffixCount}    % #1 = ArrayName
 % Counter names for a given array
-\newcommand{\ArrayNumberPosition}[1]{\csuse{#1\ArraySuffixPosition}} % #1 = ArrayName
-\newcommand{\ArrayNumberStart}   [1]{\csuse{#1\ArraySuffixStart}}    % #1 = ArrayName
-\newcommand{\ArrayNumberEnd}     [1]{\csuse{#1\ArraySuffixEnd}}      % #1 = ArrayName
-\newcommand{\ArrayNumberCount}   [1]{\csuse{#1\ArraySuffixCount}}    % #1 = ArrayName
+\newcommand{\ArrayNumberPosition}[1]{\csname#1\ArraySuffixPosition\endcsname}  % #1 = ArrayName
+\newcommand{\ArrayNumberStart}   [1]{\csname#1\ArraySuffixStart\endcsname}    % #1 = ArrayName
+\newcommand{\ArrayNumberEnd}     [1]{\csname#1\ArraySuffixEnd\endcsname}      % #1 = ArrayName
+\newcommand{\ArrayNumberCount}   [1]{\csname#1\ArraySuffixCount\endcsname}    % #1 = ArrayName
 % Decrementers
 \newcommand{\ArrayDecrementPosition}[1]{\AddToCounter{\ArrayPosition{#1}}{-1}}
 \newcommand{\ArrayDecrementStart}   [1]{\AddToCounter{\ArrayStart   {#1}}{-1}}
@@ -292,9 +292,9 @@
     }
     \MakeCommandUndefined{#1\ArraySuffix}
     \MakeCounterUndefined{#1\ArraySuffixPosition}
-    \MakeCounterUndefined{#1\ArraySuffixStart} 
-    \MakeCounterUndefined{#1\ArraySuffixEnd}   
-    \MakeCounterUndefined{#1\ArraySuffixCount} 
+    \MakeCounterUndefined{#1\ArraySuffixStart}
+    \MakeCounterUndefined{#1\ArraySuffixEnd}
+    \MakeCounterUndefined{#1\ArraySuffixCount}
 }
 
 \newcommand{\ArrayReset}[1]{% #1 = Array name
@@ -337,31 +337,19 @@
 }
 
 \newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Counter Name for index
-    \IfGreaterThanEqualTo{\value{#2}}{\ArrayValueStart{#1}}{%
-        \IfLessThanEqualTo{\value{#2}}{\ArrayValueEnd{#1}}
-            {\csname#1\roman{#2}\endcsname}
-            {\UWMad@ClassWarning{Index to Array '#1' is outside its bounds.}}%
-    }{%
-        \UWMad@ClassWarning{Index to Array '#1' is below its bounds.}%
-    }%
+    \IfArrayIndexDefined{#1}{#2}%
+        {\csname#1\ArraySuffix\the\csuse{#2}\endcsname}%
+        {\UWMad@ClassWarning{Index for array '#1' is undefined.}}%
 }
 
 \newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = Counter, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\roman{#2}}%
-    \IfArrayIndexDefined{#1}{#2}
-        {\csname#1\ArraySuffix\CounterValue{#2}\endcsname}%
-        {\UWMad@ClassWarning{Index to Array '#1' is outside its bounds.}}%
-}
-
-\newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = Counter, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix\CounterValue{#2}}%
+    \IfCommandExists{#1\ArraySuffix\the\csuse{#2}}%
         {#3}%
         {#4}%
-}%
+}
 
 \newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = Index or Counter, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\roman{#2}}%
-    \IfCommandExists{#1\ArraySuffix\CounterValue{#2}}%
+    \IfCommandExists{#1\ArraySuffix\the\csuse{#2}}%
         {#4}%
         {#3}%
 }%
@@ -382,41 +370,39 @@
 \newcommand{\HashSuffix}{HASH}
 \newcommand{\HashSuffixKeys}{\HashSuffix KEYS}
 
+\newcommand{\IfHashExists}[3]{%
+    \IfCommandExists{#1\HashSuffix}%
+        {#2}%
+        {#3}%
+}
+
 \newcommand{\HashMake}[1]{% #1 = Hash name
-    \IfCommandExists{#1\HashSuffix}{
-        \UWMad@ClassWarning{Hash '#1' already exists.}
-    }{
-        %\DefineNewLocalCounter{#1\HashSuffix}{0}
-        \MakeCommand{#1\HashSuffix}{}
-        \ArrayMake{#1\HashSuffixKeys}
-    }
+    \IfHashExists{#1}
+        {\UWMad@ClassWarning{Hash '#1' already exists.}}
+        {\MakeCommand{#1\HashSuffix}{}
+         \ArrayMake{#1\HashSuffixKeys}}
 }
 
 \newcommand{\HashSet}[3]{% #1 = hash name, #2 = key name, #3 = value
 
-    \IfCommandExists{#1\HashSuffix}{}{
+    \IfHashExists{#1}{}{
         \HashMake{#1}   % If it doesn't exist, make it.
     }
 
-    \IfCommandExists{#1#2\HashSuffix}{
-        \ReMakeCommand{#1#2\HashSuffix}{#3}%    Only need to remake the command.
-    }{
-        \ArrayPush{#1\HashSuffixKeys}{#2}%      Push key to Array storing all keys for this hash
-        \MakeCommand{#1#2\HashSuffix}{#3}%      Command storing the value assoicated with the key
-        \MakeFullyExpandedCommand{Key}{#2}
+    \MakeFullyExpandedCommand{Key}{#2}
 
-    \IfCommandExists{#1\Key\HashSuffix}{
-        \ReMakeCommand{#1\Key\HashSuffix}{#3}%    Only need to remake the command.
+    \IfCommandExists{#1\HashSuffix\Key}{
+        \ReMakeCommand{#1\HashSuffix\Key}{#3}%    Only need to remake the command.
     }{
         \ArrayPush{#1\HashSuffixKeys}{\Key}%      Push key to Array storing all keys for this hash
-        \MakeCommand{#1\Key\HashSuffix}{#3}%      Command storing the value assoicated with the key
+        \MakeCommand{#1\HashSuffix\Key}{#3}%      Command storing the value assoicated with the key
     }
 }
 
 \newcommand{\HashGet}[2]{% #1 = hash name, #2 = key name
     \IfCommandExists{#1\HashSuffix}{%
-        \IfCommandExists{#1#2\HashSuffix}{%
-            \csuse{#1#2\HashSuffix}%
+        \IfCommandExists{#1\HashSuffix#2}{%
+            \csuse{#1\HashSuffix#2}%
         }{%
             \UWMad@ClassWarning{There is no key '#2' set for hash '#1'}%
         }%
@@ -426,20 +412,18 @@
 }%
 
 \newcommand{\IfHashKeyExists}[4]{%
-    \IfCommandExists{#1#2\HashSuffix}%
+    \IfCommandExists{#1\HashSuffix#2}%
         {#3}%
         {#4}%
 }
 
 
 \newcommand{\HashGetKeyByIndex}[2]{% #1 = hash name, #2 = index value
-    \IfCommandExists{#1\HashSuffix}{%
-        \IfArrayIndexDefined{#1\HashSuffixKeys}{#2}%
+    \IfHashExists{#1}%
+        {\IfArrayIndexDefined{#1\HashSuffixKeys}{#2}%
             {\ArrayGet{#1\HashSuffixKeys}{#2}}%
-            {\UWMad@ClassWarning{Index '#2' is invalid for Hash '#1'.}}%
-    }{%
-        \UWMad@ClassWarning{Hash '#1' does not exist}%
-    }%
+            {\UWMad@ClassWarning{Index '#2' is invalid for Hash '#1'.}}}%
+        {\UWMad@ClassWarning{Hash '#1' does not exist}}%
 }%
 
 \newcommand{\HashGetValueByIndex}[2]{% #1 = hash name, #2 = index value
@@ -459,25 +443,6 @@
 
 
 
-\newcommand{\HashGetKeyByIndex}[2]{% #1 = hash name, #2 = index value
-    \IfCommandExists{#1\HashSuffix}{%
-        \ArrayGet{#1\HashSuffixKeys}{#2}
-    }{%
-        \UWMad@ClassWarning{Hash '#1' does not exist}%
-    }%
-}%
-
-\newcommand{\HashGetValueByIndex}[2]{% #1 = hash name, #2 = index value
-    \IfCommandExists{#1\HashSuffix}{%
-        \IfCommandExists{#1#2\HashSuffix}{%
-            \HashGet{\ArrayGet{#1\HashSuffixKeys}{#2}}%
-        }{%
-            \UWMad@ClassWarning{There is no key '#2' set for hash '#1'}%
-        }%
-    }{%
-        \UWMad@ClassWarning{Hash '#1' does not exist}%
-    }%
-}%
 
 
 
