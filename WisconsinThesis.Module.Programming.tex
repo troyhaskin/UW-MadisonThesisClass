@@ -132,12 +132,12 @@
 
 % Command combo testing for an empty string or command
 \newcommand{\IfEmpty}[3]{%
-    \ifdefempty{#1}
-        {#2}
-        {\ifstrempty{#1}
-            {#2}
-            {#3}
-        }
+    \ifdefempty{#1}%
+        {#2}%
+        {\ifstrempty{#1}%
+            {#2}%
+            {#3}%
+        }%
 }
 
 \newcommand{\IfMatch}[4]{% #1 = left compare, #2 = right compare, #3 = true code, #4 = false code
@@ -314,16 +314,26 @@
     \ArrayIncrementEnd  {#1}
 
     % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
-    \MakeFullyExpandedCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}
+    \MakeFullyExpandedCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}%
+}
+
+\newcommand{\ArrayCommandPush}[2]{% #1 = Array name, #2 value to push
+
+    % increment counters
+    \ArrayIncrementCount{#1}
+    \ArrayIncrementEnd  {#1}
+
+    % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
+    \MakeCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}%
 }
 
 \newcommand{\ArrayPop}[1]{% #1 = Array name
-    \ifnum\ArrayCount{#1}>0%
+    \ifnum\ArrayNumberCount{#1}>0%
         \csuse{#1\ArraySuffix\ArrayValueEnd{#1}}%
         % decrement counters
-        \ArrayDecrementCount{#1}
-        \ArrayDecrementEnd  {#1}
-    \fi
+        \ArrayDecrementCount{#1}%
+        \ArrayDecrementEnd  {#1}%
+    \fi%
 }
 
 \newcommand{\ArrayPopAndStore}[2]{% #1 = Array name, #2 name of command to store the popped value
@@ -464,6 +474,7 @@
 
 % Iterator command -------------------------------------------------------
 \newcommand{\For}[4][1]{%
+    {
     % Arguments
     %   #1 = increment (optional)
     %   #2 = start value
@@ -490,6 +501,7 @@
             \ForLoopRecursion%
         }{}%
     \fi%
+    }
 }
 
 
