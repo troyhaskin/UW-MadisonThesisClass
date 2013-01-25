@@ -3,57 +3,6 @@
 % ============================================ %
 \chapter{Meta-Data Command Tests}
 
-This chapter tests the packages built-in meta-data commands (e.g., \backslash{}Title).
-These commands are not directly fragile but do update fragile commands.
-
-\section{Title}
-
-Testing \backslash{title}:
-
-\hfill
-\let\PageWidth\linewidth
-\addtolength{\PageWidth}{-0.95em}
-\begin{minipage}{\PageWidth}
-    
-    
-%    \MetaDataList
-    
-    \Title{This is a Title}
-    Did the \backslash{}Title command define \backslash{}TheTitle? \TheTitle
-    
-    \show\MetaDataList
-    
-    \Title{This is a New Title}
-    Did the \backslash{}Title command redefine \backslash{}TheTitle? \TheTitle
-    
-    \MetaDataList
-    
-\end{minipage}
-
-
-
-\section{Author}
-
-Testing \backslash{Author}:
-
-\hspace{1em}
-\let\PageWidth\linewidth
-\addtolength{\PageWidth}{-0.95em}
-\begin{minipage}{\PageWidth}
-    
-    
-%    \MetaDataList
-    
-    \Author{This is a Author}
-    Did the \backslash{}Author command define \backslash{}TheAuthor? \TheAuthor
-    
-    \show\MetaDataList
-    
-    \Author{This is a New Author}
-    Did the \backslash{}Author command redefine \backslash{}TheAuthor? \TheAuthor
-    
-    \MetaDataList
-    
-\end{minipage}
-
-    \MetaDataList
+\Title{This is the Title}
+\Author{Troy C. Haskin, Jr.}
+\Subject{Subject}

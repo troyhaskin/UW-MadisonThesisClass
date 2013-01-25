@@ -17,6 +17,64 @@
     \setcounter{#1}{#2}
 }
 
+
+% =========================================================================== %
+%                    New Counter System: Local and Global                     %
+% =========================================================================== %
+\newcommand{\UWMad@CounterSuffixLocal} {LOCAL COUNTER}
+\newcommand{\UWMad@CounterSuffixGlobal}{GLOBAL COUNTER}
+
+%   Declare a new local counter (meaning that changes to its value only 
+%   persist for the current group/scope) using the TeX \newcount
+\newcommand{\DefineNewLocalCounter}[2]{
+    \csgdef{#1\UWMad@CounterSuffixLocal}{}
+    \expandafter\newcount\csname#1\endcsname
+    \csname#1\endcsname=#2
+}
+
+%   Declare a new global counter (meaning that changes to its value 
+%   persist for all groups/scopes) using the LaTeX \newcounter
+\newcommand{\DefineNewGlobalCounter}[2]{
+    \csgdef{#1\UWMad@CounterSuffixGlobal}{}
+    \expandafter\newcount\csname#1\endcsname
+    \csname#1\endcsname=#2
+}
+
+%   Use the etoolbox commands to determine if the counter name
+%   passed is a local (TeX) or global (LaTeX) counter
+\newcommand{\LocalGlobalHandler}[1]{%
+    \IfCommandExists{#1\UWMad@CounterSuffixGlobal}%
+        {\let\UWMad@PreCounter\global}%
+        {\IfCommandExists{#1\UWMad@CounterSuffixLocal}%
+            {\let\UWMad@PreCounter\relax}%
+            {\UWMad@ClassWarning{There is not local or global counter '#1'}}}%
+}
+
+%   Increment the counter by #2 basedermine if the counter name
+%   passed is a local (TeX) or global (LaTeX) counter
+\newcommand{\AddToCounter}[2]{
+    \LocalGlobalHandler{#1}%
+    \UWMad@PreCounter\expandafter\advance\csname#1\endcsname #2%
+}
+
+%   Increment the counter by 1 basedermine if the counter name
+%   passed is a local (TeX) or global (LaTeX) counter
+\newcommand{\StepCounter}[1]{%
+    \AddToCounter{#1}{1}%
+}
+
+\newcommand{\SetCounter}[2]{
+    \LocalGlobalHandler{#1}%
+    \expandafter\UWMad@PreCounter\csname#1\endcsname #2%
+}
+
+\newcommand{\CounterValue}[1]{%
+    \the\csname#1\endcsname%
+}
+
+
+
+
 % If-switch changes only have block level scope by default.  That is, a \newif that is switched within a block
 % reverts to its pre-block state upon exit.  This command creates an if-switch set that has global scope.
 \newcommand{\GlobalNewIf}[1]{%
@@ -108,30 +166,29 @@
 
 
 % Dynamic command creators.
-%
-% There are structured versions with proper programming whitespace;
-% the 'compactified' versions are coded such that no spurious whitespace is added.
-%
-%   \newcommand{\MakeCommand}[2]{
-%       \expandafter\newcommand\csname #1\endcsname{#2}
-%   }
-% 
-%   \newcommand{\ReMakeCommand}[2]{
-%       \expandafter\renewcommand\csname #1\endcsname{#2}
-%   }
-%
-\newcommand{\MakeCommand}[2]{\expandafter\newcommand\csname #1\endcsname{#2}}
-\newcommand{\ReMakeCommand}[2]{\expandafter\renewcommand\csname #1\endcsname{#2}}
+\newcommand{\MakeCommand}[2]{%
+    \IfCommandExists{#1}%
+        {\UWMad@ClassWarning{Command '#1' is already defined; could not redefine.}}%
+        {\csgdef{#1}{#2}}%
+}
+\newcommand{\ReMakeCommand}[2]{
+    \IfCommandExists{#1}%
+        {\csgdef{#1}{#2}}%
+        {\UWMad@ClassWarning{Command '#1' is undefined; could not define.}}%
+}
+\newcommand{\MakeFullyExpandedCommand}[2]{%
+    \csxdef{#1}{#2}
+}
 
 \newcommand{\MakeCommandGlobal}[2]{\begin{MakeGlobal}\MakeCommand{#1}{#2}\end{MakeGlobal}}
 
 
 \newcommand{\MakeCommandUndefined}[1]{% #1 = Command name
-    \begin{MakeGlobal}\expandafter\let\csname#1\endcsname\UWMad@Undefined\end{MakeGlobal}
+    \global\csundef{#1}%
 }
 
 \newcommand{\MakeCounterUndefined}[1]{% #1 = Counter name
-    \MakeCommandUndefined{c@#1}
+    \MakeCommandUndefined{#1}
 }
 
 
@@ -139,55 +196,45 @@
 % =========================================================================== %
 %                          CSV Creation Commands                              %
 % =========================================================================== %
+\newcommand{\CSVSuffix}{CSV LIST}
 
-\newcommand{\CSVMake}[3][]{ % #1 = List name, #2 = Token to push on to right
+\newcommand{\IfCSVExists}[3]{%
+    \IfCommandExists{#1\CSVSuffix}%
+    {#2}%
+    {#3}%
+}
 
-    \@ifundefined{#2}
-    {
-        \begin{MakeGlobal}
-            \MakeCommand{#2}{#3}
-            \expandafter\newcommand\csname #2Append\endcsname[1]{\CSVAppend{#2}{##1}}
-            \expandafter\newcommand\csname #2Prepend\endcsname[1]{\CSVPrepend{#2}{##1}}
-        \end{MakeGlobal}
-    }{
-        \ifthenelse{\equal{#1}{}}
-            {
-                \typeout{*** CSV Note: Creation ignored since list already exists. ***}
-            }{
-                \typeout{*** CSV Note: Overwriting already-created list. ***}
-                \ReMakeCommand{#2}{#3}
-                \expandafter\renewcommand\csname #2Append\endcsname[1]{\CSVAppend{#2}{##1}}
-                \expandafter\renewcommand\csname #2Prepend\endcsname[1]{\CSVPrepend{#2}{##1}}
-            }
-    }
+\newcommand{\CSVMake}[1]{ % #1 = List name, #2 = Token to push on to right
+    \IfCSVExists{#1}
+        {\UWMad@ClassWarning{CSV '#1' already exists.}}
+        {\MakeCommand{#1\CSVSuffix}{}}
 }
 
 \newcommand{\CSVAppend}[2]{ % #1 = List name, #2 = Token to push on to right
-
-    \@ifundefined{#1}
-        {
-                \MakeCommand{#1}{#2}
-                \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
-                \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
-        }{
-            %\begin{MakeGlobal}
-                \expandafter\let\expandafter\List\csname #1\endcsname
-                \expandafter\def\csname #1\endcsname{\List,#2}
-            %\end{MakeGlobal}
-        }
+     \IfCSVExists{#1}
+        {\ifcsempty{#1\CSVSuffix}
+            {\protected@csxdef{#1\CSVSuffix}{#2}}
+            {\protected@csxdef{#1\CSVSuffix}{\csuse{#1\CSVSuffix},#2}}}
+        {\CSVMake{#1}
+         \CSVAppend{#1}{#2}}
 }
 
 \newcommand{\CSVPrepend}[2]{ % #1 = List name, #2 = Token to push on to left
-
-    \@ifundefined{#1}
-        {
-            \MakeCommand{#1}{#2}
-            \expandafter\newcommand\csname #1Append\endcsname[1]{\CSVAppend{#1}{##1}}
-            \expandafter\newcommand\csname #1Prepend\endcsname[1]{\CSVPrepend{#1}{##1}}
-        }{
-            \expandafter\global\expandafter\protected@edef\csname #1\endcsname{#2,\csname #1\endcsname}
-        }
+     \IfCSVExists{#1}
+        {\ifcsempty{#1\CSVSuffix}
+            {\protected@csxdef{#1\CSVSuffix}{#2}}
+            {\protected@csxdef{#1\CSVSuffix}{#2,\csuse{#1\CSVSuffix}}}}
+        {\CSVMake{#1}
+         \CSVPrepend{#1}{#2}}
 }
+
+\newcommand{\CSVGet}[1]{% #1 = List name, #2 = Token to push on to left
+     \IfCSVExists{#1}%
+        {\csuse{#1\CSVSuffix}}%
+        {}%
+}
+
+
 
 
 
@@ -204,11 +251,11 @@
 \newcommand{\ArraySuffixCount}    {\ArraySuffix COUNT   }
 
 \newcommand{\ArrayMake}[1]{% #1 = Array name
-    \MakeCommandGlobal{#1\ArraySuffix}        {#1\ArraySuffix}
-    \DefineNewCounter{#1\ArraySuffixPosition} {0}
-    \DefineNewCounter{#1\ArraySuffixStart}    {1}
-    \DefineNewCounter{#1\ArraySuffixEnd}      {0}
-    \DefineNewCounter{#1\ArraySuffixCount}    {0}
+    \MakeCommandGlobal{#1\ArraySuffix}             {#1\ArraySuffix}
+    \DefineNewGlobalCounter{#1\ArraySuffixPosition} {0}
+    \DefineNewGlobalCounter{#1\ArraySuffixStart}    {1}
+    \DefineNewGlobalCounter{#1\ArraySuffixEnd}      {0}
+    \DefineNewGlobalCounter{#1\ArraySuffixCount}    {0}
 }
 
 
@@ -217,17 +264,31 @@
 \newcommand{\ArrayStart}   [1]{#1\ArraySuffixStart}    % #1 = ArrayName
 \newcommand{\ArrayEnd}     [1]{#1\ArraySuffixEnd}      % #1 = ArrayName
 \newcommand{\ArrayCount}   [1]{#1\ArraySuffixCount}    % #1 = ArrayName
-
-% Counter values for a given array
-\newcommand{\ArrayValuePosition}[1]{\value{#1\ArraySuffixPosition}} % #1 = Array name
-\newcommand{\ArrayValueStart}   [1]{\value{#1\ArraySuffixStart}}    % #1 = Array name
-\newcommand{\ArrayValueEnd}     [1]{\value{#1\ArraySuffixEnd}}      % #1 = Array name
-\newcommand{\ArrayValueCount}   [1]{\value{#1\ArraySuffixCount}}    % #1 = Array name
+% Counter names for a given array
+\newcommand{\ArrayNumberPosition}[1]{\csuse{#1\ArraySuffixPosition}} % #1 = ArrayName
+\newcommand{\ArrayNumberStart}   [1]{\csuse{#1\ArraySuffixStart}}    % #1 = ArrayName
+\newcommand{\ArrayNumberEnd}     [1]{\csuse{#1\ArraySuffixEnd}}      % #1 = ArrayName
+\newcommand{\ArrayNumberCount}   [1]{\csuse{#1\ArraySuffixCount}}    % #1 = ArrayName
+% Decrementers
+\newcommand{\ArrayDecrementPosition}[1]{\AddToCounter{\ArrayPosition{#1}}{-1}}
+\newcommand{\ArrayDecrementStart}   [1]{\AddToCounter{\ArrayStart   {#1}}{-1}}
+\newcommand{\ArrayDecrementEnd}     [1]{\AddToCounter{\ArrayEnd     {#1}}{-1}}
+\newcommand{\ArrayDecrementCount}   [1]{\AddToCounter{\ArrayCount   {#1}}{-1}}
+% Incrementers
+\newcommand{\ArrayIncrementPosition}[1]{\AddToCounter{\ArrayPosition{#1}}{+1}}
+\newcommand{\ArrayIncrementStart}   [1]{\AddToCounter{\ArrayStart   {#1}}{+1}}
+\newcommand{\ArrayIncrementEnd}     [1]{\AddToCounter{\ArrayEnd     {#1}}{+1}}
+\newcommand{\ArrayIncrementCount}   [1]{\AddToCounter{\ArrayCount   {#1}}{+1}}
+% Numerical values
+\newcommand{\ArrayValuePosition}[1]{\CounterValue{#1\ArraySuffixPosition}} % #1 = Array name
+\newcommand{\ArrayValueStart}   [1]{\CounterValue{#1\ArraySuffixStart}}    % #1 = Array name
+\newcommand{\ArrayValueEnd}     [1]{\CounterValue{#1\ArraySuffixEnd}}      % #1 = Array name
+\newcommand{\ArrayValueCount}   [1]{\CounterValue{#1\ArraySuffixCount}}    % #1 = Array name
 
 
 \newcommand{\ArrayDelete}[1]{% #1 = Array name
     \ForEach{#1}{
-        \MakeCommandUndefined{#1\roman{ForLoopCounter}}
+        \MakeCommandUndefined{#1\ArraySuffix\CounterValue{ForLoopCounter}}
     }
     \MakeCommandUndefined{#1\ArraySuffix}
     \MakeCounterUndefined{#1\ArraySuffixPosition}
@@ -238,38 +299,40 @@
 
 \newcommand{\ArrayReset}[1]{% #1 = Array name
     \ForEach{#1}{
-        \MakeCommandUndefined{#1\roman{ForLoopCounter}}
+        \MakeCommandUndefined{#1\ArraySuffix\CounterValue{ForLoopCounter}}
     }
-    \setcounter{#1\ArraySuffixPosition} {0}
-    \setcounter{#1\ArraySuffixStart}    {1}
-    \setcounter{#1\ArraySuffixEnd}      {0}
-    \setcounter{#1\ArraySuffixCount}    {0}
+    \SetCounter{#1\ArraySuffixPosition} {0}
+    \SetCounter{#1\ArraySuffixStart}    {1}
+    \SetCounter{#1\ArraySuffixEnd}      {0}
+    \SetCounter{#1\ArraySuffixCount}    {0}
 }
 
 \newcommand{\ArrayPush}[2]{% #1 = Array name, #2 value to push
 
     % increment counters
-    \addtocounter{#1\ArraySuffixCount}{1}
-    \addtocounter{#1\ArraySuffixEnd}  {1}
+    \ArrayIncrementCount{#1}
+    \ArrayIncrementEnd  {#1}
 
     % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
-    \MakeCommand{#1\roman{#1\ArraySuffixEnd}}{#2}
+    \MakeFullyExpandedCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}
 }
 
 \newcommand{\ArrayPop}[1]{% #1 = Array name
-    \ifnum\ArrayValueCount{#1}>0
-        \csname #1\roman{#1\ArraySuffixEnd}\endcsname
-        \addtocounter{#1\ArraySuffixCount}    {-1}
-        \addtocounter{#1\ArraySuffixEnd}      {-1}
+    \ifnum\ArrayCount{#1}>0%
+        \csuse{#1\ArraySuffix\ArrayValueEnd{#1}}%
+        % decrement counters
+        \ArrayDecrementCount{#1}
+        \ArrayDecrementEnd  {#1}
     \fi
 }
 
 \newcommand{\ArrayPopAndStore}[2]{% #1 = Array name, #2 name of command to store the popped value
-    \ifnum\value{#1\ArraySuffixCount}>0
-        \protected@edef\PoppedValue{\csname #1\roman{#1\ArraySuffixPosition}\endcsname}
-        \MakeCommand{#2}{\PoppedValue}
-        \addtocounter{#1\ArraySuffixCount}    {-1}
-        \addtocounter{#1\ArraySuffixEnd}      {-1}
+    \ifnum\ArrayCount{#1}>0%
+        \MakeFullyExpandedCommand{#2}%
+            {\csuse{#1\ArraySuffix\ArrayValueEnd{#1}}}
+        % decrement counters
+        \ArrayDecrementCount{#1}
+        \ArrayDecrementEnd  {#1}
     \fi
 }
 
@@ -285,12 +348,20 @@
 
 \newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = Counter, % #3 = True code, % #4 = False code
     \IfCommandExists{#1\roman{#2}}%
+    \IfArrayIndexDefined{#1}{#2}
+        {\csname#1\ArraySuffix\CounterValue{#2}\endcsname}%
+        {\UWMad@ClassWarning{Index to Array '#1' is outside its bounds.}}%
+}
+
+\newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = Counter, % #3 = True code, % #4 = False code
+    \IfCommandExists{#1\ArraySuffix\CounterValue{#2}}%
         {#3}%
         {#4}%
 }%
 
 \newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = Index or Counter, % #3 = True code, % #4 = False code
     \IfCommandExists{#1\roman{#2}}%
+    \IfCommandExists{#1\ArraySuffix\CounterValue{#2}}%
         {#4}%
         {#3}%
 }%
@@ -315,7 +386,7 @@
     \IfCommandExists{#1\HashSuffix}{
         \UWMad@ClassWarning{Hash '#1' already exists.}
     }{
-        \DefineNewCounter{#1\HashSuffix}{0}
+        %\DefineNewLocalCounter{#1\HashSuffix}{0}
         \MakeCommand{#1\HashSuffix}{}
         \ArrayMake{#1\HashSuffixKeys}
     }
@@ -332,13 +403,20 @@
     }{
         \ArrayPush{#1\HashSuffixKeys}{#2}%      Push key to Array storing all keys for this hash
         \MakeCommand{#1#2\HashSuffix}{#3}%      Command storing the value assoicated with the key
+        \MakeFullyExpandedCommand{Key}{#2}
+
+    \IfCommandExists{#1\Key\HashSuffix}{
+        \ReMakeCommand{#1\Key\HashSuffix}{#3}%    Only need to remake the command.
+    }{
+        \ArrayPush{#1\HashSuffixKeys}{\Key}%      Push key to Array storing all keys for this hash
+        \MakeCommand{#1\Key\HashSuffix}{#3}%      Command storing the value assoicated with the key
     }
 }
 
 \newcommand{\HashGet}[2]{% #1 = hash name, #2 = key name
     \IfCommandExists{#1\HashSuffix}{%
         \IfCommandExists{#1#2\HashSuffix}{%
-            \csname#1#2\HashSuffix\endcsname%
+            \csuse{#1#2\HashSuffix}%
         }{%
             \UWMad@ClassWarning{There is no key '#2' set for hash '#1'}%
         }%
@@ -346,6 +424,39 @@
         \UWMad@ClassWarning{Hash '#1' does not exist}%
     }%
 }%
+
+\newcommand{\IfHashKeyExists}[4]{%
+    \IfCommandExists{#1#2\HashSuffix}%
+        {#3}%
+        {#4}%
+}
+
+
+\newcommand{\HashGetKeyByIndex}[2]{% #1 = hash name, #2 = index value
+    \IfCommandExists{#1\HashSuffix}{%
+        \IfArrayIndexDefined{#1\HashSuffixKeys}{#2}%
+            {\ArrayGet{#1\HashSuffixKeys}{#2}}%
+            {\UWMad@ClassWarning{Index '#2' is invalid for Hash '#1'.}}%
+    }{%
+        \UWMad@ClassWarning{Hash '#1' does not exist}%
+    }%
+}%
+
+\newcommand{\HashGetValueByIndex}[2]{% #1 = hash name, #2 = index value
+    \HashGet{#1}{\HashGetKeyByIndex{#1}{#2}}%
+}%
+
+
+\newcommand{\HashDelete}[1]{% #1 = hash name, #2 = index value
+    \IfCommandExists{#1\HashSuffix}%
+        {\ForEach[1]{#1}{%
+            \MakeCommandUndefined{#1\HashGetKeyByIndex{#1}{ForLoopCounter}\HashSuffix}%
+         }%
+         \ArrayDelete{#1\HashSuffixKeys}%
+         \MakeCommandUndefined{#1\HashSuffix}}%
+        {\UWMad@ClassWarning{Hash '#1' does not exist.}}%
+}%
+
 
 
 \newcommand{\HashGetKeyByIndex}[2]{% #1 = hash name, #2 = index value
@@ -384,8 +495,7 @@
 \newcommand{\ForLoopRecursion}{}
 
 % Define the loop counter ------------------------------------------------
-\newcounter{ForLoopCounter}
-\setcounter{ForLoopCounter}{0}
+\DefineNewLocalCounter{ForLoopCounter}{0}
 
 % Iterator command -------------------------------------------------------
 \newcommand{\For}[4][1]{%
@@ -397,21 +507,21 @@
     % Redefine the command used for recursion
     \renewcommand{\ForLoopRecursion}{%
         #4%                                         % Excute <code>
-        \addtocounter{ForLoopCounter}{#1}%          % Increment the counter
-        \For[#1]{\value{ForLoopCounter}}{#3}{#4}%   % Recurse
+        \AddToCounter{ForLoopCounter}{#1}%          % Increment the counter
+        \For[#1]{\CounterValue{ForLoopCounter}}{#3}{#4}%   % Recurse
     }%
     %
     % Set the counter to the start value 
     % After the recursion begins, #2 is the current value of the counter and not the start value.
-    \setcounter{ForLoopCounter}{#2}%
+    \SetCounter{ForLoopCounter}{#2}%
     %
     % Switch to deal with positive vs. negative increments (decrements).
-    \ifnum #1 > 0                                           % If positive increment
-        \IfLessThanEqualTo{\value{ForLoopCounter}}{#3}{     % Execute while the LoopCounter is less than or equal to the end value
+    \ifnum #1 > 0%                                    % If positive increment
+        \IfLessThanEqualTo{\ForLoopCounter}{#3}{%     % Execute while the LoopCounter is less than or equal to the end value
             \ForLoopRecursion%
         }{}%
     \else%                                                   % If negative increment
-        \IfGreaterThanEqualTo{\value{ForLoopCounter}}{#3}{   % Execute while the LoopCounter is greater than or equal to the end value
+        \IfGreaterThanEqualTo{\ForLoopCounter}{#3}{%   % Execute while the LoopCounter is greater than or equal to the end value
             \ForLoopRecursion%
         }{}%
     \fi%
@@ -425,10 +535,10 @@
 %   #3 = <code>
     %
     \IfCommandExists{#2\ArraySuffix}{%
-        \For[#1]{\ArrayValueStart{#2}}{\ArrayValueEnd{#2}}{#3}%
+        \For[#1]{\ArrayNumberStart{#2}}{\ArrayNumberEnd{#2}}{#3}%
     }{%
         \IfCommandExists{#2\HashSuffix}{%
-            \For[#1]{\ArrayValueStart{#2\HashSuffix}}{\ArrayValueEnd{#2\HashSuffix}}{#3}%
+            \For[#1]{\ArrayNumberStart{#2\HashSuffixKeys}}{\ArrayNumberEnd{#2\HashSuffixKeys}}{#3}%
         }{%
             \UWMad@ClassWarning{Could not find Array or Hash named '#2'}%
         }%

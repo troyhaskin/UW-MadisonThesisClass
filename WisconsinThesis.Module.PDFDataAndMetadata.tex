@@ -14,41 +14,27 @@
 %   
 
 % Used to determine is the list was created
-\newif\ifUWMad@MetaDataListInitialized\UWMad@MetaDataListInitializedfalse
 
 
 % Command used to append the data to the CSV list.  It is called in the 
 % metadata commands below
 \newcommand{\PushPDFMetaDataToList}[2]{
-    \ifUWMad@MetaDataListInitialized             % Test:    Is the list created?
-        \MetaDataListAppend{#1={#2}}             % True:    Append the data
-    \else                                        % False:
-        \CSVMake{MetaDataList}{#1={#2}}          %          Create the list.
-        \UWMad@MetaDataListInitializedtrue       %          Switch to true.
-    \fi
+    \CSVAppend{MetaDataList}{#1={#2}}        % True:    Append the data
 }
 
 
-% If the auxiliary file exists, just import it.
+% If the auxiliary file exists, import it.
 \InputIfFileExists{UWMad.PDFMetaData.aux}{}{}
 
-
-% Command that writes the auxiliary file; it is called with \AtEndDocument such that
-% metadata can be defined anywhere in the document.
-\DeclareRobustCommand{\WriteOutMetaData}{
-    \newwrite\HyperSetupWrite
-    \immediate\openout\HyperSetupWrite=UWMad.PDFMetaData.aux
-    \immediate\write\HyperSetupWrite{\noexpand\hypersetup {\MetaDataList}}
-    \immediate\closeout\HyperSetupWrite
-}
-
-
 % End-of-Document Commands
-\AtEndDocument{
-    \@ifundefined{MetaDataList}
-        {}
-        {\WriteOutMetaData}
-}
+\AtEndDocument{%
+    \IfCSVExists{MetaDataList}%
+        {\newwrite\HyperSetupWrite%
+         \immediate\openout\HyperSetupWrite=UWMad.PDFMetaData.aux%
+         \immediate\write\HyperSetupWrite{\noexpand\hypersetup{\CSVGet{MetaDataList}}}%
+         \immediate\closeout\HyperSetupWrite}%
+        {}%
+}%
 
 
 
