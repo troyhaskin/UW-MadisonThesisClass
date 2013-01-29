@@ -10,22 +10,32 @@
 
 Hello, world.
 
-\MakeExpHash{Hash}
+\HashMake{Hash}
 
-\MakeExpHashSet{Hash}{Key Zero}{\gdef\HELLO{Hello, there.}}
-\MakeExpHashSet{Hash}{Key One} {The value of key 'Key One' is 1.}
-
-\IfCommandExists{HELLO}
-    {It is defined.}
-    {It is undefined.}
-
-\MakeExpHashGet{Hash}{Key Zero}
+\HashSet{Hash}{Key Zero}{\gdef\HELLO{Hello, there.}}
+\HashSet{Hash}{Key One  } {The value of key 'Key One' is 1.}
 
 \IfCommandExists{HELLO}
     {It is defined.}
     {It is undefined.}
 
-The value of the hash `Hash' has been set.  The value set is ``\MakeExpHashGet{Hash}{Key One}''.  This is a much easier system.
+\HashGet{Hash}{Key Zero}
+
+\IfCommandExists{HELLO}
+    {It is defined.}
+    {It is undefined.}
+
+The value of the hash `Hash' has been set.  The value set is ``\HashGet{Hash}{Key One}''.  This is a much easier system.
+
+\HashUnset{Hash}{Key One}
+
+\HashGet{Hash}{Key One}
+
+\HashDelete{Hash}
+
+\IfCommandExists{prop_if_exist:cTF}
+    {It is defined.}
+    {It is undefined.}
 
 %\input{Tests/Test_Nomenclature}
 %\input{Tests/Test_Programming}

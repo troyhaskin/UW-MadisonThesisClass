@@ -92,9 +92,11 @@
 % =============================================================================================== %
 %                                          Package Loads                                          %
 % =============================================================================================== %
+\RequirePackage{expl3}     %
+\RequirePackage{xparse}    %
 \RequirePackage{etoolbox}  %
 \RequirePackage{fixltx2e}  % Provides fixes from the LaTeX Team that address certain issues
-\RequirePackage{array}
+\RequirePackage{array}     %
 \RequirePackage{graphicx}  % 
 \RequirePackage{subfig}    % Provides the ability to make figures wrappable
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor} % Provides enhanced color support

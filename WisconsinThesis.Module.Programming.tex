@@ -373,87 +373,126 @@
 
 
 
-
 % =========================================================================== %
-%                Hash (Associative Arrays) Creation Commands                  %
+%                 Hashes (Associative Arrays) with LaTeX3                     %
 % =========================================================================== %
-\newcommand{\HashSuffix}{HASH}
-\newcommand{\HashSuffixKeys}{\HashSuffix KEYS}
-
-\newcommand{\IfHashExists}[3]{%
-    \IfCommandExists{#1\HashSuffix}%
-        {#2}%
-        {#3}%
-}
-
-\newcommand{\HashMake}[1]{% #1 = Hash name
-    \IfHashExists{#1}
-        {\UWMad@ClassWarning{Hash '#1' already exists.}}
-        {\MakeCommand{#1\HashSuffix}{}
-         \ArrayMake{#1\HashSuffixKeys}}
-}
-
-\newcommand{\HashSet}[3]{% #1 = hash name, #2 = key name, #3 = value
-
-    \IfHashExists{#1}{}{
-        \HashMake{#1}   % If it doesn't exist, make it.
-    }
-
-    \MakeFullyExpandedCommand{Key}{#2}
-
-    \IfCommandExists{#1\HashSuffix\Key}{
-        \ReMakeCommand{#1\HashSuffix\Key}{#3}%    Only need to remake the command.
-    }{
-        \ArrayPush{#1\HashSuffixKeys}{\Key}%      Push key to Array storing all keys for this hash
-        \MakeCommand{#1\HashSuffix\Key}{#3}%      Command storing the value assoicated with the key
-    }
-}
-
-\newcommand{\HashGet}[2]{% #1 = hash name, #2 = key name
-    \IfCommandExists{#1\HashSuffix}{%
-        \IfCommandExists{#1\HashSuffix#2}{%
-            \csuse{#1\HashSuffix#2}%
-        }{%
-            \UWMad@ClassWarning{There is no key '#2' set for hash '#1'}%
-        }%
-    }{%
-        \UWMad@ClassWarning{Hash '#1' does not exist}%
-    }%
-}%
-
-\newcommand{\IfHashKeyExists}[4]{%
-    \IfCommandExists{#1\HashSuffix#2}%
-        {#3}%
-        {#4}%
-}
 
 
-\newcommand{\HashGetKeyByIndex}[2]{% #1 = hash name, #2 = index value
-    \IfHashExists{#1}%
-        {\IfArrayIndexDefined{#1\HashSuffixKeys}{#2}%
-            {\ArrayGet{#1\HashSuffixKeys}{#2}}%
-            {\UWMad@ClassWarning{Index '#2' is invalid for Hash '#1'.}}}%
-        {\UWMad@ClassWarning{Hash '#1' does not exist}}%
-}%
+% ************ LaTeX3 ON ************ %
+\ExplSyntaxOn
 
-\newcommand{\HashGetValueByIndex}[2]{% #1 = hash name, #2 = index value
-    \HashGet{#1}{\HashGetKeyByIndex{#1}{#2}}%
-}%
+\DeclareDocumentCommand{\HashMake}{m}%
+    {\prop_new:c {g_UWMad_Hash_#1}}
+
+\DeclareDocumentCommand{\HashSet}{mmm}%
+    {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
+      {\prop_gput:cnn   {g_UWMad_Hash_#1}{#2}{#3}}%
+        {\HashMake{#1}%
+         \prop_gput:cnn {g_UWMad_Hash_#1}{#2}{#3}}}
+
+\DeclareDocumentCommand{\HashGet}{mm}%
+    {\prop_if_exist:cTF  {g_UWMad_Hash_#1}%
+        {\prop_get:cnNTF {g_UWMad_Hash_#1} {#2} \l_UWMad_Hash_Value_tl%
+            {\l_UWMad_Hash_Value_tl}%
+            {}}%
+        {}}
+
+\DeclareDocumentCommand{\HashUnset}{mm}%
+    {\prop_if_exist:cTF    {g_UWMad_Hash_#1}%
+        {\prop_get:cnNTF   {g_UWMad_Hash_#1} {#2} \l_UWMad_Hash_Value_tl%
+            {\prop_gdel:cn {g_UWMad_Hash_#1} {#2}}
+            {}}}
+
+\DeclareDocumentCommand{\HashDelete}{m}%
+    {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
+        {\prop_gclear:c {g_UWMad_Hash_#1}%
+         \cs_undefine:c {g_UWMad_Hash_#1}}
+        {}}
+
+\ExplSyntaxOff
+% ************ LaTeX3 OFF *********** %
 
 
-\newcommand{\HashDelete}[1]{% #1 = hash name, #2 = index value
-    \IfCommandExists{#1\HashSuffix}%
-        {\ForEach[1]{#1}{%
-            \MakeCommandUndefined{#1\HashGetKeyByIndex{#1}{ForLoopCounter}\HashSuffix}%
-         }%
-         \ArrayDelete{#1\HashSuffixKeys}%
-         \MakeCommandUndefined{#1\HashSuffix}}%
-        {\UWMad@ClassWarning{Hash '#1' does not exist.}}%
-}%
-
-
-
-
+% *************************************************************************** %
+% *********************** LaTeX2e Code (deprecated) ************************* %
+% *************************************************************************** %
+%
+% % =========================================================================== %
+% %                Hash (Associative Arrays) Creation Commands                  %
+% % =========================================================================== %
+% \newcommand{\HashSuffix}{HASH}
+% \newcommand{\HashSuffixKeys}{\HashSuffix KEYS}
+%
+% \newcommand{\IfHashExists}[3]{%
+%     \IfCommandExists{#1\HashSuffix}%
+%         {#2}%
+%         {#3}%
+% }
+%
+% \newcommand{\HashMake}[1]{% #1 = Hash name
+%     \IfHashExists{#1}
+%         {\UWMad@ClassWarning{Hash '#1' already exists.}}
+%         {\MakeCommand{#1\HashSuffix}{}
+%          \ArrayMake{#1\HashSuffixKeys}}
+% }
+%
+% \newcommand{\HashSet}[3]{% #1 = hash name, #2 = key name, #3 = value
+%
+%     \IfHashExists{#1}{}{
+%         \HashMake{#1}   % If it doesn't exist, make it.
+%     }
+%
+%     \MakeFullyExpandedCommand{Key}{#2}
+%
+%     \IfCommandExists{#1\HashSuffix\Key}{
+%         \ReMakeCommand{#1\HashSuffix\Key}{#3}%    Only need to remake the command.
+%     }{
+%         \ArrayPush{#1\HashSuffixKeys}{\Key}%      Push key to Array storing all keys for this hash
+%         \MakeCommand{#1\HashSuffix\Key}{#3}%      Command storing the value assoicated with the key
+%     }
+% }
+%
+% \newcommand{\HashGet}[2]{% #1 = hash name, #2 = key name
+%     \IfCommandExists{#1\HashSuffix}{%
+%         \IfCommandExists{#1\HashSuffix#2}{%
+%             \csuse{#1\HashSuffix#2}%
+%         }{%
+%             \UWMad@ClassWarning{There is no key '#2' set for hash '#1'}%
+%         }%
+%     }{%
+%         \UWMad@ClassWarning{Hash '#1' does not exist}%
+%     }%
+% }%
+%
+% \newcommand{\IfHashKeyExists}[4]{%
+%     \IfCommandExists{#1\HashSuffix#2}%
+%         {#3}%
+%         {#4}%
+% }
+%
+%
+% \newcommand{\HashGetKeyByIndex}[2]{% #1 = hash name, #2 = index value
+%     \IfHashExists{#1}%
+%         {\IfArrayIndexDefined{#1\HashSuffixKeys}{#2}%
+%             {\ArrayGet{#1\HashSuffixKeys}{#2}}%
+%             {\UWMad@ClassWarning{Index '#2' is invalid for Hash '#1'.}}}%
+%         {\UWMad@ClassWarning{Hash '#1' does not exist}}%
+% }%
+%
+% \newcommand{\HashGetValueByIndex}[2]{% #1 = hash name, #2 = index value
+%     \HashGet{#1}{\HashGetKeyByIndex{#1}{#2}}%
+% }%
+%
+%
+% \newcommand{\HashDelete}[1]{% #1 = hash name, #2 = index value
+%     \IfCommandExists{#1\HashSuffix}%
+%         {\ForEach[1]{#1}{%
+%             \MakeCommandUndefined{#1\HashGetKeyByIndex{#1}{ForLoopCounter}\HashSuffix}%
+%          }%
+%          \ArrayDelete{#1\HashSuffixKeys}%
+%          \MakeCommandUndefined{#1\HashSuffix}}%
+%         {\UWMad@ClassWarning{Hash '#1' does not exist.}}%
+% }%
 
 
 
