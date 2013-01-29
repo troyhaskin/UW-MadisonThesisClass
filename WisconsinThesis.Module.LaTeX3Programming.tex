@@ -4,7 +4,7 @@
 
 
 \cs_new:Npn: \MakeExpHash #1
-    { \prop_new:N \csname g_UWMad_Hash_#1 \endcsname}
+    { \expandafter\prop_new:N \csname g_UWMad_Hash_#1 \endcsname}
 
 
 
