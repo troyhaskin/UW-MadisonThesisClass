@@ -152,8 +152,8 @@
 % =============================================================================================== %
 %                                     Module Loads                                                %
 % =============================================================================================== %
-\LoadIfModuleExists{Programming}
 \LoadIfModuleExists{LaTeX3Programming}
+\LoadIfModuleExists{Programming}
 \LoadIfModuleExists{LayoutAndStyle}
 \LoadIfModuleExists{Sectioning}
 \LoadIfModuleExists{PDFDataAndMetadata}

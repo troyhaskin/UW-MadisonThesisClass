@@ -8,6 +8,25 @@
 \begin{document}
     
 
+Hello, world.
+
+\MakeExpHash{Hash}
+
+\MakeExpHashSet{Hash}{Key Zero}{\gdef\HELLO{Hello, there.}}
+\MakeExpHashSet{Hash}{Key One} {The value of key 'Key One' is 1.}
+
+\IfCommandExists{HELLO}
+    {It is defined.}
+    {It is undefined.}
+
+\MakeExpHashGet{Hash}{Key Zero}
+
+\IfCommandExists{HELLO}
+    {It is defined.}
+    {It is undefined.}
+
+The value of the hash `Hash' has been set.  The value set is ``\MakeExpHashGet{Hash}{Key One}''.  This is a much easier system.
+
 %\input{Tests/Test_Nomenclature}
 %\input{Tests/Test_Programming}
 %\input{Tests/Test_LaTeX3Programming}
