@@ -6,37 +6,23 @@
 \newcommand{\Cmd}[1]{\textcolor{PineGreen}{\texttt{#1}}}
 
 \begin{document}
+
+\makeatletter
+
+\IfIsNumber{1398561359}
+    {This is a number}
+    {This is not a number.}
+    
+\IfIsNumber{gggg}
+    {This is a number}
+    {This is not a number.}
+    
+\IfIsNumber{1234567890}
+    {This is a number}
+    {This is not a number.}
     
 
-Hello, world.
-
-\HashMake{Hash}
-
-\HashSet{Hash}{Key Zero}{\gdef\HELLO{Hello, there.}}
-\HashSet{Hash}{Key One  } {The value of key 'Key One' is 1.}
-
-\IfCommandExists{HELLO}
-    {It is defined.}
-    {It is undefined.}
-
-\HashGet{Hash}{Key Zero}
-
-\IfCommandExists{HELLO}
-    {It is defined.}
-    {It is undefined.}
-
-The value of the hash `Hash' has been set.  The value set is ``\HashGet{Hash}{Key One}''.  This is a much easier system.
-
-\HashUnset{Hash}{Key One}
-
-\HashGet{Hash}{Key One}
-
-\HashDelete{Hash}
-
-\IfCommandExists{prop_if_exist:cTF}
-    {It is defined.}
-    {It is undefined.}
-
+\makeatother
 %\input{Tests/Test_Nomenclature}
 %\input{Tests/Test_Programming}
 %\input{Tests/Test_LaTeX3Programming}
