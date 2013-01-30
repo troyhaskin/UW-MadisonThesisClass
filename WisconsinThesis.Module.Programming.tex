@@ -133,7 +133,7 @@
 \newcommand{\IfEmpty}[3]{%
     \ifdefempty{#1}%
         {#2}%
-        {\ifstrempty{#1}%
+        {\ifblank{#1}%
             {#2}%
             {#3}%
         }%
@@ -210,7 +210,7 @@
 \MakeCommand{UWMad@RegisteredNumber8}{8}
 \MakeCommand{UWMad@RegisteredNumber9}{9}
 
-% Split an input into a Tail and a Head (if input
+% Split an input into a Tail and a Head (if input is terminated by \Stop)
 \def\UWMad@NumberTokenizer#1#2\Stop%
     {\def\Head{#1}\def\Tail{#2}}
 
@@ -227,8 +227,7 @@
             \IfEmpty{\Tail}%
                 {}%
                 {\UWMad@CheckForNumber{\Tail}}%
-         \fi%
-        }%
+         \fi}%
 }
 
 % If all tokens are registered numbers, perform true code;
@@ -398,22 +397,26 @@
 }
 
 \newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Counter Name for index
-    \IfCommandExists{#2}
-        {\IfArrayIndexDefined{#1}{#2}%
-            {\csname#1\ArraySuffix\CounterValue{#2}\endcsname}%
+    {%
+    \IfArrayExists{#1}%
+        {\IfNumber{#2}%
+            {\def\UWMad@LocalIndex{#2}}%
+            {\def\UWMad@LocalIndex{\CounterValue{#2}}}%
+         \IfArrayIndexDefined{#1}{\UWMad@LocalIndex}%
+            {\csuse{#1\ArraySuffix\UWMad@LocalIndex}}%
             {\UWMad@ClassWarning{Index for array '#1' is undefined.}}}%
-        {\csname#1\ArraySuffix#2\endcsname}%
-            %{\UWMad@ClassWarning{Index for array '#1' is undefined.}}}%
+        {}%
+    }%
 }
 
-\newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = Counter, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix\CounterValue{#2}}%
+\newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
+    \IfCommandExists{#1\ArraySuffix#2}%
         {#3}%
         {#4}%
 }
 
-\newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = Index or Counter, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix\CounterValue{#2}}%
+\newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
+    \IfCommandExists{#1\ArraySuffix#2}%
         {#4}%
         {#3}%
 }%
@@ -465,6 +468,8 @@
 
 \ExplSyntaxOff
 % ************ LaTeX3 OFF *********** %
+
+
 
 
 % *************************************************************************** %
