@@ -397,7 +397,6 @@
 }
 
 \newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Counter Name for index
-    {%
     \IfArrayExists{#1}%
         {\IfNumber{#2}%
             {\def\UWMad@LocalIndex{#2}}%
@@ -406,7 +405,6 @@
             {\csuse{#1\ArraySuffix\UWMad@LocalIndex}}%
             {\UWMad@ClassWarning{Index for array '#1' is undefined.}}}%
         {}%
-    }%
 }
 
 \newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
