@@ -69,9 +69,8 @@
 }
 
 \newcommand{\CounterValue}[1]{%
-    \the\csname#1\endcsname%
+    \the\csuse{#1}%
 }
-
 
 
 
@@ -134,7 +133,7 @@
 \newcommand{\IfEmpty}[3]{%
     \ifdefempty{#1}%
         {#2}%
-        {\ifstrempty{#1}%
+        {\ifblank{#1}%
             {#2}%
             {#3}%
         }%
@@ -189,6 +188,57 @@
 
 \newcommand{\MakeCounterUndefined}[1]{% #1 = Counter name
     \MakeCommandUndefined{#1}
+}
+
+
+
+
+% =========================================================================== %
+%                              Number Checker                                 %
+% =========================================================================== %
+\GlobalNewIf{UWMad@IsANumber}
+\UWMad@IsANumberfalse
+
+\MakeCommand{UWMad@RegisteredNumber0}{0}
+\MakeCommand{UWMad@RegisteredNumber1}{1}
+\MakeCommand{UWMad@RegisteredNumber2}{2}
+\MakeCommand{UWMad@RegisteredNumber3}{3}
+\MakeCommand{UWMad@RegisteredNumber4}{4}
+\MakeCommand{UWMad@RegisteredNumber5}{5}
+\MakeCommand{UWMad@RegisteredNumber6}{6}
+\MakeCommand{UWMad@RegisteredNumber7}{7}
+\MakeCommand{UWMad@RegisteredNumber8}{8}
+\MakeCommand{UWMad@RegisteredNumber9}{9}
+
+% Split an input into a Tail and a Head (if input is terminated by \Stop)
+\def\UWMad@NumberTokenizer#1#2\Stop%
+    {\def\Head{#1}\def\Tail{#2}}
+
+% Take an input, and recurse through each token until done or
+% a non-registered number is found.
+\newcommand{\UWMad@CheckForNumber}[1]{%
+    \expandafter\UWMad@NumberTokenizer#1\Stop%
+    \IfEmpty{\Head}%
+        {}%
+        {\IfCommandExists{UWMad@RegisteredNumber\Head}%
+            {\UWMad@IsANumbertrue}%
+            {\UWMad@IsANumberfalse}%
+         \ifUWMad@IsANumber%
+            \IfEmpty{\Tail}%
+                {}%
+                {\UWMad@CheckForNumber{\Tail}}%
+         \fi}%
+}
+
+% If all tokens are registered numbers, perform true code;
+% otherwise perform false code.
+\newcommand{\IfNumber}[3]{
+    \UWMad@CheckForNumber{#1}%
+    \ifUWMad@IsANumber%
+        #2%
+    \else%
+        #3%
+    \fi%
 }
 
 
@@ -314,18 +364,18 @@
     \ArrayIncrementEnd  {#1}
 
     % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
-    \MakeFullyExpandedCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}%
-}
-
-\newcommand{\ArrayCommandPush}[2]{% #1 = Array name, #2 value to push
-
-    % increment counters
-    \ArrayIncrementCount{#1}
-    \ArrayIncrementEnd  {#1}
-
-    % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
     \MakeCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}%
 }
+
+% \newcommand{\ArrayCommandPush}[2]{% #1 = Array name, #2 value to push
+% 
+%     % increment counters
+%     \ArrayIncrementCount{#1}
+%     \ArrayIncrementEnd  {#1}
+% 
+%     % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
+%     \MakeCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}%
+% }
 
 \newcommand{\ArrayPop}[1]{% #1 = Array name
     \ifnum\ArrayNumberCount{#1}>0%
@@ -347,19 +397,26 @@
 }
 
 \newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Counter Name for index
-    \IfArrayIndexDefined{#1}{#2}%
-        {\csname#1\ArraySuffix\the\csuse{#2}\endcsname}%
-        {\UWMad@ClassWarning{Index for array '#1' is undefined.}}%
+    {%
+    \IfArrayExists{#1}%
+        {\IfNumber{#2}%
+            {\def\UWMad@LocalIndex{#2}}%
+            {\def\UWMad@LocalIndex{\CounterValue{#2}}}%
+         \IfArrayIndexDefined{#1}{\UWMad@LocalIndex}%
+            {\csuse{#1\ArraySuffix\UWMad@LocalIndex}}%
+            {\UWMad@ClassWarning{Index for array '#1' is undefined.}}}%
+        {}%
+    }%
 }
 
-\newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = Counter, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix\the\csuse{#2}}%
+\newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
+    \IfCommandExists{#1\ArraySuffix#2}%
         {#3}%
         {#4}%
 }
 
-\newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = Index or Counter, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix\the\csuse{#2}}%
+\newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
+    \IfCommandExists{#1\ArraySuffix#2}%
         {#4}%
         {#3}%
 }%
@@ -411,6 +468,8 @@
 
 \ExplSyntaxOff
 % ************ LaTeX3 OFF *********** %
+
+
 
 
 % *************************************************************************** %
