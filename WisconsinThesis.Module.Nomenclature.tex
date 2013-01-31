@@ -13,10 +13,8 @@
 \DefineNewLength{\EntryMarginLeft}      {1em}
 \DefineNewLength{\EntryMarginBottom}    {0.25em}
 
-\DefineNewCounter{NomenMaxNest}     {0}  % Number of SubNomens
-\DefineNewCounter{GroupSiblingCount}{0}  % Number of SubNomens
-\DefineNewLocalCounter{NomenNestLevel}{0}
-\DefineNewLocalCounter{NomenSectionLevel}{0}
+\DefineNewLocalCounter{UWMad@NomenNestLevel}   {0}
+\DefineNewLocalCounter{UWMad@NomenSectionLevel}{0}
 
 \GlobalNewIf{UWMad@MakeNomenclatureStarred}
 \let\MakeNomenclatureStarred\UWMad@MakeNomenclatureStarredtrue
@@ -154,45 +152,17 @@
 %          SubNomen Environment Initializer and Finalizer              %
 % =========================================================================== %
 
-% Nomen environment ----------------------------------------------------
-\newenvironment{NewNomenclature}[1][chapter]{%
-    \SetCounter{NomenNestLevel}{0}% zeroth-ly nested
-    
-    \SymbolArrayName{NomenSymbol\CounterValue{NomenNestLevel}}
-    \DescriptionArrayName{NomenDescription\CounterValue{NomenNestLevel}}
-    \MakeCommand{ThisNomenArrayName}{Nomenclature\CounterValue{NomenNestLevel}}
-    \ArrayMake{\ThisNomenArrayName}
-    
-    
-    \ArrayCommandPush{\ThisNomenArrayName}{}
-    
-    %\stepcounter{NomenMaxNest} % This is the main Group
-    %\CurrentSectioningCommand{#1}
-    %\NomenSectionLevel=\SectionToLevel{#1}
-    %\NomenNestLevel=1
-    %\NomenGroupName{\TheNomenclatureName}
-    %\NomenInitializer
-    %\NomenclatureNameStyle
-    %\NomenGroupName{}
-}{%
-    \NomenFinalizer{\ArrayDelete}%
-    \setcounter{NomenMaxNest}{0}
-}
-
-
-% Nomen environment ----------------------------------------------------
+% Nomenclature environment ----------------------------------------------------
 \newenvironment{Nomenclature}[1][chapter]{%
-    \stepcounter{NomenMaxNest} % This is the main Group
     \CurrentSectioningCommand{#1}
-    \NomenSectionLevel=\SectionToLevel{#1}
-    \NomenNestLevel=1
+    
+    \SetCounter{UWMad@NomenSectionLevel}{\SectionToLevel{#1}}
+    \SetCounter{UWMad@NomenNestLevel}{0}
+    
     \NomenGroupName{\TheNomenclatureName}
     \NomenInitializer
-    \NomenclatureNameStyle
-    \NomenGroupName{}
 }{%
     \NomenFinalizer{\ArrayDelete}%
-    \setcounter{NomenMaxNest}{0}
 }
 
 

@@ -286,11 +286,11 @@
 \HashSet{SectionToLevel}{subparagraph}  {5}
 
 \newcommand{\LevelToSection}[1]{% #1 = Level number
-    \HashGet{LevelToSection}{#1}%
+    \HashExpandableGet{LevelToSection}{#1}%
 }
 
 \newcommand{\SectionToLevel}[1]{% #1 = section
-    \HashGet{SectionToLevel}{#1}%
+    \HashExpandableGet{SectionToLevel}{#1}%
 }
 
 

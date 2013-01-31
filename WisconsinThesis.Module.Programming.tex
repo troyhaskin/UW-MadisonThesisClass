@@ -47,7 +47,7 @@
         {\let\UWMad@PreCounter\global}%
         {\IfCommandExists{#1\UWMad@CounterSuffixLocal}%
             {\let\UWMad@PreCounter\relax}%
-            {\UWMad@ClassWarning{There is not local or global counter '#1'}}}%
+            {\UWMad@ClassWarning{This is not a local or global counter '#1'}}}%
 }
 
 %   Increment the counter by #2 basedermine if the counter name
@@ -65,7 +65,7 @@
 
 \newcommand{\SetCounter}[2]{
     \LocalGlobalHandler{#1}%
-    \expandafter\UWMad@PreCounter\csname#1\endcsname #2%
+    \expandafter\UWMad@PreCounter\csname#1\endcsname=#2%
 }
 
 \newcommand{\CounterValue}[1]{%
@@ -436,29 +436,32 @@
 % ************ LaTeX3 ON ************ %
 \ExplSyntaxOn
 
-\DeclareDocumentCommand{\HashMake}{m}%
+\DeclareDocumentCommand \HashMake {m}%
     {\prop_new:c {g_UWMad_Hash_#1}}
 
-\DeclareDocumentCommand{\HashSet}{mmm}%
+\DeclareDocumentCommand \HashSet {mmm}%
     {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
       {\prop_gput:cnn   {g_UWMad_Hash_#1}{#2}{#3}}%
         {\HashMake{#1}%
          \prop_gput:cnn {g_UWMad_Hash_#1}{#2}{#3}}}
 
-\DeclareDocumentCommand{\HashGet}{mm}%
+\DeclareDocumentCommand \HashGet {mm}%
     {\prop_if_exist:cTF  {g_UWMad_Hash_#1}%
-        {\prop_get:cnNTF {g_UWMad_Hash_#1} {#2} \l_UWMad_Hash_Value_tl%
-            {\l_UWMad_Hash_Value_tl}%
-            {}}%
+        {\prop_get:cn {g_UWMad_Hash_#1} {#2}}
         {}}
 
-\DeclareDocumentCommand{\HashUnset}{mm}%
+\DeclareExpandableDocumentCommand \HashExpandableGet {mm}%
+    {\prop_if_exist:cTF  {g_UWMad_Hash_#1}%
+        {\prop_get:cn {g_UWMad_Hash_#1} {#2}}
+        {}}
+
+\DeclareDocumentCommand \HashUnset {mm}%
     {\prop_if_exist:cTF    {g_UWMad_Hash_#1}%
         {\prop_get:cnNTF   {g_UWMad_Hash_#1} {#2} \l_UWMad_Hash_Value_tl%
             {\prop_gdel:cn {g_UWMad_Hash_#1} {#2}}
             {}}}
 
-\DeclareDocumentCommand{\HashDelete}{m}%
+\DeclareDocumentCommand \HashDelete {m}%
     {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
         {\prop_gclear:c {g_UWMad_Hash_#1}%
          \cs_undefine:c {g_UWMad_Hash_#1}}
