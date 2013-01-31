@@ -8,18 +8,17 @@
 % =========================================================================== %
 \DefineNewLength{\UWMad@Widest}         {0pt}        % Will have the value of the widest symbol for spacing
 \DefineNewLength{\UWMad@WidestTest}     {0pt}        % Used to test for the widest symbol
-\DefineNewLength{\NomenTitleSkip}{0em}        % Used for title spacing
-\DefineNewLength{\NomenPrintSkip}{1em}        % Used for spacing after Nomen is printed
+\DefineNewLength{\NomenTitleSkip}       {0em}        % Used for title spacing
+\DefineNewLength{\NomenPrintSkip}       {1em}        % Used for spacing after Nomen is printed
 \DefineNewLength{\EntryMarginLeft}      {1em}
 \DefineNewLength{\EntryMarginBottom}    {0.25em}
 
-\DefineNewCounter{NomenMaxNest}   {0}  % Number of SubNomens
+\DefineNewCounter{NomenMaxNest}     {0}  % Number of SubNomens
 \DefineNewCounter{GroupSiblingCount}{0}  % Number of SubNomens
-%\DefineNewCounter{NomenSectionLevel}{0}  % Sectioning Level for the top-level Nomen environment
-\newcount\NomenNestLevel%
-\newcount\NomenSectionLevel%
+\DefineNewLocalCounter{NomenNestLevel}{0}
+\DefineNewLocalCounter{NomenSectionLevel}{0}
 
-\newif\ifUWMad@MakeNomenclatureStarred\UWMad@MakeNomenclatureStarredtrue
+\GlobalNewIf{UWMad@MakeNomenclatureStarred}
 \let\MakeNomenclatureStarred\UWMad@MakeNomenclatureStarredtrue
 \let\MakeNomenclatureNotStarred\UWMad@MakeNomenclatureStarredfalse
 
@@ -36,12 +35,13 @@
     {\renewcommand{\TheNomenclatureName}{#1}}
 %
 \newcommand{\TheNomenGroupName}{}
-\newcommand{\NomenGroupName}[1]
-    {\renewcommand{\TheNomenGroupName}{#1}}
+\newcommand{\NomenGroupName}[1]{
+    \renewcommand{\TheNomenGroupName}{#1}
+}
 %
 %
-\newcommand{\NomenclatureNameStyle}
-    {\ifdefempty{\TheNomenGroupName}%
+\newcommand{\NomenclatureNameStyle}{
+    \ifdefempty{\TheNomenGroupName}%
         {}%
         {\ifUWMad@MakeNomenclatureStarred%
             \csname\TheCurrentSectioningCommand\endcsname*%
@@ -52,12 +52,14 @@
          \else%
             \csname\TheCurrentSectioningCommand\endcsname%
                 {\TheNomenGroupName}%
-         \fi}}
+         \fi}%
+}
 %
 %
 \newcommand{\TheCurrentSectioningCommand}{}
-\newcommand{\CurrentSectioningCommand}[1]
-    {\renewcommand{\TheCurrentSectioningCommand}{#1}}
+\newcommand{\CurrentSectioningCommand}[1]{
+    \renewcommand{\TheCurrentSectioningCommand}{#1}
+}
 
 
 % =========================================================================== %
@@ -68,8 +70,7 @@
 \DefineNewLength{\SymbolDescriptionPad} {0.75em}
 
 
-\newcommand{\UpdateAddCommand}%
-    {}
+\newcommand{\UpdateAddCommand}{}
 %
 \newcommand{\TheSymbolArrayName}{}
 \newcommand{\TheDescriptionArrayName}{}
@@ -154,22 +155,45 @@
 % =========================================================================== %
 
 % Nomen environment ----------------------------------------------------
-\newenvironment{Nomenclature}[1][chapter]%
-    {%
-        \stepcounter{NomenMaxNest} % This is the main Group
-        \CurrentSectioningCommand{#1}
-        \NomenSectionLevel=\SectionToLevel{#1}
-        \NomenNestLevel=1
-        \NomenGroupName{\TheNomenclatureName}
-        \NomenInitializer
-        \NomenclatureNameStyle
-        \NomenGroupName{}}
-    {%
-        %\ifnum\theNomenMaxNest>1%
-        %    \NomenGroupName{}%
-        %\fi%
-        \NomenFinalizer{\ArrayDelete}%
-        \setcounter{NomenMaxNest}{0}}
+\newenvironment{NewNomenclature}[1][chapter]{%
+    \SetCounter{NomenNestLevel}{0}% zeroth-ly nested
+    
+    \SymbolArrayName{NomenSymbol\CounterValue{NomenNestLevel}}
+    \DescriptionArrayName{NomenDescription\CounterValue{NomenNestLevel}}
+    \MakeCommand{ThisNomenArrayName}{Nomenclature\CounterValue{NomenNestLevel}}
+    \ArrayMake{\ThisNomenArrayName}
+    
+    
+    \ArrayCommandPush{\ThisNomenArrayName}{}
+    
+    %\stepcounter{NomenMaxNest} % This is the main Group
+    %\CurrentSectioningCommand{#1}
+    %\NomenSectionLevel=\SectionToLevel{#1}
+    %\NomenNestLevel=1
+    %\NomenGroupName{\TheNomenclatureName}
+    %\NomenInitializer
+    %\NomenclatureNameStyle
+    %\NomenGroupName{}
+}{%
+    \NomenFinalizer{\ArrayDelete}%
+    \setcounter{NomenMaxNest}{0}
+}
+
+
+% Nomen environment ----------------------------------------------------
+\newenvironment{Nomenclature}[1][chapter]{%
+    \stepcounter{NomenMaxNest} % This is the main Group
+    \CurrentSectioningCommand{#1}
+    \NomenSectionLevel=\SectionToLevel{#1}
+    \NomenNestLevel=1
+    \NomenGroupName{\TheNomenclatureName}
+    \NomenInitializer
+    \NomenclatureNameStyle
+    \NomenGroupName{}
+}{%
+    \NomenFinalizer{\ArrayDelete}%
+    \setcounter{NomenMaxNest}{0}
+}
 
 
 

@@ -69,9 +69,8 @@
 }
 
 \newcommand{\CounterValue}[1]{%
-    \the\csname#1\endcsname%
+    \the\csuse{#1}%
 }
-
 
 
 
@@ -132,12 +131,12 @@
 
 % Command combo testing for an empty string or command
 \newcommand{\IfEmpty}[3]{%
-    \ifdefempty{#1}
-        {#2}
-        {\ifstrempty{#1}
-            {#2}
-            {#3}
-        }
+    \ifdefempty{#1}%
+        {#2}%
+        {\ifblank{#1}%
+            {#2}%
+            {#3}%
+        }%
 }
 
 \newcommand{\IfMatch}[4]{% #1 = left compare, #2 = right compare, #3 = true code, #4 = false code
@@ -189,6 +188,57 @@
 
 \newcommand{\MakeCounterUndefined}[1]{% #1 = Counter name
     \MakeCommandUndefined{#1}
+}
+
+
+
+
+% =========================================================================== %
+%                              Number Checker                                 %
+% =========================================================================== %
+\GlobalNewIf{UWMad@IsANumber}
+\UWMad@IsANumberfalse
+
+\MakeCommand{UWMad@RegisteredNumber0}{0}
+\MakeCommand{UWMad@RegisteredNumber1}{1}
+\MakeCommand{UWMad@RegisteredNumber2}{2}
+\MakeCommand{UWMad@RegisteredNumber3}{3}
+\MakeCommand{UWMad@RegisteredNumber4}{4}
+\MakeCommand{UWMad@RegisteredNumber5}{5}
+\MakeCommand{UWMad@RegisteredNumber6}{6}
+\MakeCommand{UWMad@RegisteredNumber7}{7}
+\MakeCommand{UWMad@RegisteredNumber8}{8}
+\MakeCommand{UWMad@RegisteredNumber9}{9}
+
+% Split an input into a Tail and a Head (if input is terminated by \Stop)
+\def\UWMad@NumberTokenizer#1#2\Stop%
+    {\def\Head{#1}\def\Tail{#2}}
+
+% Take an input, and recurse through each token until done or
+% a non-registered number is found.
+\newcommand{\UWMad@CheckForNumber}[1]{%
+    \expandafter\UWMad@NumberTokenizer#1\Stop%
+    \IfEmpty{\Head}%
+        {}%
+        {\IfCommandExists{UWMad@RegisteredNumber\Head}%
+            {\UWMad@IsANumbertrue}%
+            {\UWMad@IsANumberfalse}%
+         \ifUWMad@IsANumber%
+            \IfEmpty{\Tail}%
+                {}%
+                {\UWMad@CheckForNumber{\Tail}}%
+         \fi}%
+}
+
+% If all tokens are registered numbers, perform true code;
+% otherwise perform false code.
+\newcommand{\IfNumber}[3]{
+    \UWMad@CheckForNumber{#1}%
+    \ifUWMad@IsANumber%
+        #2%
+    \else%
+        #3%
+    \fi%
 }
 
 
@@ -314,16 +364,26 @@
     \ArrayIncrementEnd  {#1}
 
     % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
-    \MakeFullyExpandedCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}
+    \MakeCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}%
 }
 
+% \newcommand{\ArrayCommandPush}[2]{% #1 = Array name, #2 value to push
+% 
+%     % increment counters
+%     \ArrayIncrementCount{#1}
+%     \ArrayIncrementEnd  {#1}
+% 
+%     % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
+%     \MakeCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}%
+% }
+
 \newcommand{\ArrayPop}[1]{% #1 = Array name
-    \ifnum\ArrayCount{#1}>0%
+    \ifnum\ArrayNumberCount{#1}>0%
         \csuse{#1\ArraySuffix\ArrayValueEnd{#1}}%
         % decrement counters
-        \ArrayDecrementCount{#1}
-        \ArrayDecrementEnd  {#1}
-    \fi
+        \ArrayDecrementCount{#1}%
+        \ArrayDecrementEnd  {#1}%
+    \fi%
 }
 
 \newcommand{\ArrayPopAndStore}[2]{% #1 = Array name, #2 name of command to store the popped value
@@ -337,19 +397,24 @@
 }
 
 \newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Counter Name for index
-    \IfArrayIndexDefined{#1}{#2}%
-        {\csname#1\ArraySuffix\the\csuse{#2}\endcsname}%
-        {\UWMad@ClassWarning{Index for array '#1' is undefined.}}%
+    \IfArrayExists{#1}%
+        {\IfNumber{#2}%
+            {\def\UWMad@LocalIndex{#2}}%
+            {\def\UWMad@LocalIndex{\CounterValue{#2}}}%
+         \IfArrayIndexDefined{#1}{\UWMad@LocalIndex}%
+            {\csuse{#1\ArraySuffix\UWMad@LocalIndex}}%
+            {\UWMad@ClassWarning{Index for array '#1' is undefined.}}}%
+        {}%
 }
 
-\newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = Counter, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix\the\csuse{#2}}%
+\newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
+    \IfCommandExists{#1\ArraySuffix#2}%
         {#3}%
         {#4}%
 }
 
-\newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = Index or Counter, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix\the\csuse{#2}}%
+\newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
+    \IfCommandExists{#1\ArraySuffix#2}%
         {#4}%
         {#3}%
 }%
@@ -363,87 +428,128 @@
 
 
 
-
 % =========================================================================== %
-%                Hash (Associative Arrays) Creation Commands                  %
+%                 Hashes (Associative Arrays) with LaTeX3                     %
 % =========================================================================== %
-\newcommand{\HashSuffix}{HASH}
-\newcommand{\HashSuffixKeys}{\HashSuffix KEYS}
-
-\newcommand{\IfHashExists}[3]{%
-    \IfCommandExists{#1\HashSuffix}%
-        {#2}%
-        {#3}%
-}
-
-\newcommand{\HashMake}[1]{% #1 = Hash name
-    \IfHashExists{#1}
-        {\UWMad@ClassWarning{Hash '#1' already exists.}}
-        {\MakeCommand{#1\HashSuffix}{}
-         \ArrayMake{#1\HashSuffixKeys}}
-}
-
-\newcommand{\HashSet}[3]{% #1 = hash name, #2 = key name, #3 = value
-
-    \IfHashExists{#1}{}{
-        \HashMake{#1}   % If it doesn't exist, make it.
-    }
-
-    \MakeFullyExpandedCommand{Key}{#2}
-
-    \IfCommandExists{#1\HashSuffix\Key}{
-        \ReMakeCommand{#1\HashSuffix\Key}{#3}%    Only need to remake the command.
-    }{
-        \ArrayPush{#1\HashSuffixKeys}{\Key}%      Push key to Array storing all keys for this hash
-        \MakeCommand{#1\HashSuffix\Key}{#3}%      Command storing the value assoicated with the key
-    }
-}
-
-\newcommand{\HashGet}[2]{% #1 = hash name, #2 = key name
-    \IfCommandExists{#1\HashSuffix}{%
-        \IfCommandExists{#1\HashSuffix#2}{%
-            \csuse{#1\HashSuffix#2}%
-        }{%
-            \UWMad@ClassWarning{There is no key '#2' set for hash '#1'}%
-        }%
-    }{%
-        \UWMad@ClassWarning{Hash '#1' does not exist}%
-    }%
-}%
-
-\newcommand{\IfHashKeyExists}[4]{%
-    \IfCommandExists{#1\HashSuffix#2}%
-        {#3}%
-        {#4}%
-}
 
 
-\newcommand{\HashGetKeyByIndex}[2]{% #1 = hash name, #2 = index value
-    \IfHashExists{#1}%
-        {\IfArrayIndexDefined{#1\HashSuffixKeys}{#2}%
-            {\ArrayGet{#1\HashSuffixKeys}{#2}}%
-            {\UWMad@ClassWarning{Index '#2' is invalid for Hash '#1'.}}}%
-        {\UWMad@ClassWarning{Hash '#1' does not exist}}%
-}%
+% ************ LaTeX3 ON ************ %
+\ExplSyntaxOn
 
-\newcommand{\HashGetValueByIndex}[2]{% #1 = hash name, #2 = index value
-    \HashGet{#1}{\HashGetKeyByIndex{#1}{#2}}%
-}%
+\DeclareDocumentCommand{\HashMake}{m}%
+    {\prop_new:c {g_UWMad_Hash_#1}}
 
+\DeclareDocumentCommand{\HashSet}{mmm}%
+    {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
+      {\prop_gput:cnn   {g_UWMad_Hash_#1}{#2}{#3}}%
+        {\HashMake{#1}%
+         \prop_gput:cnn {g_UWMad_Hash_#1}{#2}{#3}}}
 
-\newcommand{\HashDelete}[1]{% #1 = hash name, #2 = index value
-    \IfCommandExists{#1\HashSuffix}%
-        {\ForEach[1]{#1}{%
-            \MakeCommandUndefined{#1\HashGetKeyByIndex{#1}{ForLoopCounter}\HashSuffix}%
-         }%
-         \ArrayDelete{#1\HashSuffixKeys}%
-         \MakeCommandUndefined{#1\HashSuffix}}%
-        {\UWMad@ClassWarning{Hash '#1' does not exist.}}%
-}%
+\DeclareDocumentCommand{\HashGet}{mm}%
+    {\prop_if_exist:cTF  {g_UWMad_Hash_#1}%
+        {\prop_get:cnNTF {g_UWMad_Hash_#1} {#2} \l_UWMad_Hash_Value_tl%
+            {\l_UWMad_Hash_Value_tl}%
+            {}}%
+        {}}
+
+\DeclareDocumentCommand{\HashUnset}{mm}%
+    {\prop_if_exist:cTF    {g_UWMad_Hash_#1}%
+        {\prop_get:cnNTF   {g_UWMad_Hash_#1} {#2} \l_UWMad_Hash_Value_tl%
+            {\prop_gdel:cn {g_UWMad_Hash_#1} {#2}}
+            {}}}
+
+\DeclareDocumentCommand{\HashDelete}{m}%
+    {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
+        {\prop_gclear:c {g_UWMad_Hash_#1}%
+         \cs_undefine:c {g_UWMad_Hash_#1}}
+        {}}
+
+\ExplSyntaxOff
+% ************ LaTeX3 OFF *********** %
 
 
 
 
+% *************************************************************************** %
+% *********************** LaTeX2e Code (deprecated) ************************* %
+% *************************************************************************** %
+%
+% % =========================================================================== %
+% %                Hash (Associative Arrays) Creation Commands                  %
+% % =========================================================================== %
+% \newcommand{\HashSuffix}{HASH}
+% \newcommand{\HashSuffixKeys}{\HashSuffix KEYS}
+%
+% \newcommand{\IfHashExists}[3]{%
+%     \IfCommandExists{#1\HashSuffix}%
+%         {#2}%
+%         {#3}%
+% }
+%
+% \newcommand{\HashMake}[1]{% #1 = Hash name
+%     \IfHashExists{#1}
+%         {\UWMad@ClassWarning{Hash '#1' already exists.}}
+%         {\MakeCommand{#1\HashSuffix}{}
+%          \ArrayMake{#1\HashSuffixKeys}}
+% }
+%
+% \newcommand{\HashSet}[3]{% #1 = hash name, #2 = key name, #3 = value
+%
+%     \IfHashExists{#1}{}{
+%         \HashMake{#1}   % If it doesn't exist, make it.
+%     }
+%
+%     \MakeFullyExpandedCommand{Key}{#2}
+%
+%     \IfCommandExists{#1\HashSuffix\Key}{
+%         \ReMakeCommand{#1\HashSuffix\Key}{#3}%    Only need to remake the command.
+%     }{
+%         \ArrayPush{#1\HashSuffixKeys}{\Key}%      Push key to Array storing all keys for this hash
+%         \MakeCommand{#1\HashSuffix\Key}{#3}%      Command storing the value assoicated with the key
+%     }
+% }
+%
+% \newcommand{\HashGet}[2]{% #1 = hash name, #2 = key name
+%     \IfCommandExists{#1\HashSuffix}{%
+%         \IfCommandExists{#1\HashSuffix#2}{%
+%             \csuse{#1\HashSuffix#2}%
+%         }{%
+%             \UWMad@ClassWarning{There is no key '#2' set for hash '#1'}%
+%         }%
+%     }{%
+%         \UWMad@ClassWarning{Hash '#1' does not exist}%
+%     }%
+% }%
+%
+% \newcommand{\IfHashKeyExists}[4]{%
+%     \IfCommandExists{#1\HashSuffix#2}%
+%         {#3}%
+%         {#4}%
+% }
+%
+%
+% \newcommand{\HashGetKeyByIndex}[2]{% #1 = hash name, #2 = index value
+%     \IfHashExists{#1}%
+%         {\IfArrayIndexDefined{#1\HashSuffixKeys}{#2}%
+%             {\ArrayGet{#1\HashSuffixKeys}{#2}}%
+%             {\UWMad@ClassWarning{Index '#2' is invalid for Hash '#1'.}}}%
+%         {\UWMad@ClassWarning{Hash '#1' does not exist}}%
+% }%
+%
+% \newcommand{\HashGetValueByIndex}[2]{% #1 = hash name, #2 = index value
+%     \HashGet{#1}{\HashGetKeyByIndex{#1}{#2}}%
+% }%
+%
+%
+% \newcommand{\HashDelete}[1]{% #1 = hash name, #2 = index value
+%     \IfCommandExists{#1\HashSuffix}%
+%         {\ForEach[1]{#1}{%
+%             \MakeCommandUndefined{#1\HashGetKeyByIndex{#1}{ForLoopCounter}\HashSuffix}%
+%          }%
+%          \ArrayDelete{#1\HashSuffixKeys}%
+%          \MakeCommandUndefined{#1\HashSuffix}}%
+%         {\UWMad@ClassWarning{Hash '#1' does not exist.}}%
+% }%
 
 
 
@@ -464,6 +570,7 @@
 
 % Iterator command -------------------------------------------------------
 \newcommand{\For}[4][1]{%
+    {
     % Arguments
     %   #1 = increment (optional)
     %   #2 = start value
@@ -490,6 +597,7 @@
             \ForLoopRecursion%
         }{}%
     \fi%
+    }
 }
 
 

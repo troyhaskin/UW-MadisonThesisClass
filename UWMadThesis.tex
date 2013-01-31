@@ -7,11 +7,25 @@
 
 \begin{document}
 
-%\input{Tests/Test_Nomenclature}
-\input{Tests/Test_Programming}
-\input{Tests/Test_MetaData}
-\input{Tests/Test_Sectioning}
+\ArrayMake{Array}
+\ArrayPush{Array}{\def\HELLO{Hello.}}
 
-\show\MetaDataListCSVLIST
+\IfCommandExists{HELLO}
+    {\HELLO}
+    {Does not exist.}
+
+\ArrayGet{Array}{1}
+
+\IfCommandExists{HELLO}
+    {\HELLO}
+    {Does not exist.}
+
+
+
+%\input{Tests/Test_Nomenclature}
+%\input{Tests/Test_Programming}
+%\input{Tests/Test_LaTeX3Programming}
+%\input{Tests/Test_MetaData}
+%\input{Tests/Test_Sectioning}
 
 \end{document}
