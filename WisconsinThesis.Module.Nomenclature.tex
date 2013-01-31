@@ -22,11 +22,11 @@
 \let\MakeNomenclatureStarred\UWMad@MakeNomenclatureStarredtrue
 \let\MakeNomenclatureNotStarred\UWMad@MakeNomenclatureStarredfalse
 
-\newcommand*{\UWMad@UpdateWidest}[1]{
-    \settowidth{\UWMad@WidestTest}{#1}
-    \ifdim\UWMad@Widest<\UWMad@WidestTest
-        \setlength{\UWMad@Widest}{\UWMad@WidestTest}
-    \fi
+\newcommand*{\UWMad@UpdateWidest}[1]{%
+    \settowidth{\UWMad@WidestTest}{#1}%
+    \ifdim\UWMad@Widest<\UWMad@WidestTest%
+        \setlength{\UWMad@Widest}{\UWMad@WidestTest}%
+    \fi%
 }
 %
 %
