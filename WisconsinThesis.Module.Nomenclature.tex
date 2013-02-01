@@ -28,18 +28,19 @@
 }
 %
 %
-\newcommand{\TheNomenclatureName}{Nomenclature}
-\newcommand{\NomenclatureName}[1]
-    {\renewcommand{\TheNomenclatureName}{#1}}
+\newcommand*{\TheNomenclatureName}{Nomenclature}
+\newcommand{\NomenclatureName}[1]{%
+    \renewcommand*{\TheNomenclatureName}{#1}%
+}
 %
-\newcommand{\TheNomenGroupName}{}
-\newcommand{\NomenGroupName}[1]{
-    \renewcommand{\TheNomenGroupName}{#1}
+\newcommand*{\TheNomenGroupName}{}
+\newcommand{\NomenGroupName}[1]{%
+    \renewcommand*{\TheNomenGroupName}{#1}%
 }
 %
 %
 \newcommand{\NomenclatureNameStyle}{
-    \ifdefempty{\TheNomenGroupName}%
+    \IfEmpty{\TheNomenGroupName}%
         {}%
         {\ifUWMad@MakeNomenclatureStarred%
             \csname\TheCurrentSectioningCommand\endcsname*%
@@ -48,15 +49,14 @@
                 [\TheCurrentSectioningCommand]%
                 {\TheNomenGroupName}
          \else%
-            \csname\TheCurrentSectioningCommand\endcsname%
-                {\TheNomenGroupName}%
+            \csname\TheCurrentSectioningCommand\endcsname{\TheNomenGroupName}%
          \fi}%
 }
 %
 %
-\newcommand{\TheCurrentSectioningCommand}{}
-\newcommand{\CurrentSectioningCommand}[1]{
-    \renewcommand{\TheCurrentSectioningCommand}{#1}
+\newcommand*{\TheCurrentSectioningCommand}{}
+\newcommand{\CurrentSectioningCommand}[1]{%
+    \renewcommand*{\TheCurrentSectioningCommand}{#1}%
 }
 
 
@@ -102,11 +102,11 @@
 \newcommand{\NomenArrayIterator}{
     \ForEach[1]{\TheSymbolArrayName}%
         {\NomenEntry%
-            {\ArrayGet
-                {\TheSymbolArrayName}
+            {\ArrayGet%
+                {\TheSymbolArrayName}%
                 {ForLoopCounter}}%
-            {\ArrayGet
-                {\TheDescriptionArrayName}
+            {\ArrayGet%
+                {\TheDescriptionArrayName}%
                 {ForLoopCounter}}}%
 }
 
@@ -166,41 +166,19 @@
 }
 
 
-
-\newcommand{\GroupNestHandler}{
-    \IfCommandExists{UWMad@Group\theGroupSiblingCount\the\NomenNestLevel}
-        {\stepcounter{GroupSiblingCount}
-            \GroupNestHandler}
-        {\csdef%
-            {UWMad@GroupNumber\the\NomenNestLevel}%
-            {UWMad@GroupNumber\the\NomenNestLevel}
-         \ifnum \NomenNestLevel > \theNomenMaxNest
-            \stepcounter{NomenMaxNest}
-        \fi
-        \advance \NomenNestLevel 1}
-        \setcounter{GroupSiblingCount}{0}
-}
-
 \newenvironment{Group}[1]{% #1 = Group Name
-    \GroupNestHandler%
+    %
     \NomenFinalizer{\ArrayReset}%
     %
-    \ifstrempty{#1}%
+    \IfEmpty{#1}%
         {\NomenGroupName{}}%
         {\NomenGroupName{#1}%
-         \advance \NomenSectionLevel 1}%
+         \StepCounter{UWMad@NomenSectionLevel}}%
     %
-    \CurrentSectioningCommand%
-        {\LevelToSection%
-            {\number\NomenSectionLevel}}
+    \show\CurrentLevel
+    %\CurrentSectioningCommand{\CurrentLevel}
 }{%
-    \ifnum \NomenNestLevel<\theNomenMaxNest%
-        \NomenGroupName{}%
-    \fi%
     \NomenFinalizer{\ArrayReset}%
-    \ifnum \NomenNestLevel=2%
-        \setcounter{NomenMaxNest}{1}%
-    \fi
 }%
 
 

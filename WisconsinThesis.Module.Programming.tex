@@ -3,77 +3,6 @@
 % =============================================================================================== %
 
 
-% This is a convenience command used to define a new length and set its initial value.
-% A thin abstraction that declares and intializes dimensions.
-\newcommand{\DefineNewLength}[2]{
-    \newlength{#1}
-    \setlength{#1}{#2}
-}
-
-% This is a convenience command used to define a new counter and set its initial value.
-% A thin abstraction that declares and intializes lengths.
-\newcommand{\DefineNewCounter}[2]{
-    \newcounter{#1}
-    \setcounter{#1}{#2}
-}
-
-
-% =========================================================================== %
-%                    New Counter System: Local and Global                     %
-% =========================================================================== %
-\newcommand{\UWMad@CounterSuffixLocal} {LOCAL COUNTER}
-\newcommand{\UWMad@CounterSuffixGlobal}{GLOBAL COUNTER}
-
-%   Declare a new local counter (meaning that changes to its value only 
-%   persist for the current group/scope) using the TeX \newcount
-\newcommand{\DefineNewLocalCounter}[2]{
-    \csgdef{#1\UWMad@CounterSuffixLocal}{}
-    \expandafter\newcount\csname#1\endcsname
-    \csname#1\endcsname=#2
-}
-
-%   Declare a new global counter (meaning that changes to its value 
-%   persist for all groups/scopes) using the LaTeX \newcounter
-\newcommand{\DefineNewGlobalCounter}[2]{
-    \csgdef{#1\UWMad@CounterSuffixGlobal}{}
-    \expandafter\newcount\csname#1\endcsname
-    \csname#1\endcsname=#2
-}
-
-%   Use the etoolbox commands to determine if the counter name
-%   passed is a local (TeX) or global (LaTeX) counter
-\newcommand{\LocalGlobalHandler}[1]{%
-    \IfCommandExists{#1\UWMad@CounterSuffixGlobal}%
-        {\let\UWMad@PreCounter\global}%
-        {\IfCommandExists{#1\UWMad@CounterSuffixLocal}%
-            {\let\UWMad@PreCounter\relax}%
-            {\UWMad@ClassWarning{This is not a local or global counter '#1'}}}%
-}
-
-%   Increment the counter by #2 basedermine if the counter name
-%   passed is a local (TeX) or global (LaTeX) counter
-\newcommand{\AddToCounter}[2]{
-    \LocalGlobalHandler{#1}%
-    \UWMad@PreCounter\expandafter\advance\csname#1\endcsname #2%
-}
-
-%   Increment the counter by 1 basedermine if the counter name
-%   passed is a local (TeX) or global (LaTeX) counter
-\newcommand{\StepCounter}[1]{%
-    \AddToCounter{#1}{1}%
-}
-
-\newcommand{\SetCounter}[2]{
-    \LocalGlobalHandler{#1}%
-    \expandafter\UWMad@PreCounter\csname#1\endcsname=#2%
-}
-
-\newcommand{\CounterValue}[1]{%
-    \the\csuse{#1}%
-}
-
-
-
 % If-switch changes only have block level scope by default.  That is, a \newif that is switched within a block
 % reverts to its pre-block state upon exit.  This command creates an if-switch set that has global scope.
 \newcommand{\GlobalNewIf}[1]{%
@@ -93,7 +22,7 @@
         #3%
     \fi%
 }%
-\newcommand{\IfCommandDoesNotExists}[3]{%
+\newcommand{\IfCommandDoesNotExist}[3]{%
     \ifcsname#1\endcsname%
         #3%
     \else%
@@ -128,15 +57,15 @@
     \fi%
 }
 
-
 % Command combo testing for an empty string or command
 \newcommand{\IfEmpty}[3]{%
-    \ifdefempty{#1}%
+    \ifblank{#1}%
         {#2}%
-        {\ifblank{#1}%
+        {\ifcsempty{#1}%
             {#2}%
-            {#3}%
-        }%
+            {\ifdefempty{#1}%
+                {#2}%
+                {#3}}}%
 }
 
 \newcommand{\IfMatch}[4]{% #1 = left compare, #2 = right compare, #3 = true code, #4 = false code
@@ -146,6 +75,110 @@
         #4%
     \fi%
 }
+
+% Dynamic command creators.
+\newcommand{\MakeCommand}[2]{%
+    \IfCommandExists{#1}%
+        {\UWMad@ClassWarning{Command '#1' is already defined; could not redefine.}}%
+        {\csgdef{#1}{#2}}%
+}
+\newcommand{\ReMakeCommand}[2]{
+    \IfCommandExists{#1}%
+        {\csgdef{#1}{#2}}%
+        {\UWMad@ClassWarning{Command '#1' is undefined; could not define.}}%
+}
+\newcommand{\MakeFullyExpandedCommand}[2]{%
+    \csxdef{#1}{#2}%
+}
+\newcommand{\MakeExpandedCommand}[2]{%
+    \protected@csxdef{#1}{#2}%
+}
+\newcommand{\CopyCommand}[2]{%
+    \cslet{#1}{#2}%
+}
+
+\newcommand{\MakeCommandGlobal}[2]{\begin{MakeGlobal}\MakeCommand{#1}{#2}\end{MakeGlobal}}
+
+
+\newcommand{\MakeCommandUndefined}[1]{% #1 = Command name
+    \global\csundef{#1}%
+}
+
+\newcommand{\MakeCounterUndefined}[1]{% #1 = Counter name
+    \MakeCommandUndefined{#1}
+}
+
+% This is a convenience command used to define a new length and set its initial value.
+% A thin abstraction that declares and intializes dimensions.
+\newcommand{\DefineNewLength}[2]{
+    \newlength{#1}
+    \setlength{#1}{#2}
+}
+
+% This is a convenience command used to define a new counter and set its initial value.
+% A thin abstraction that declares and intializes lengths.
+\newcommand{\DefineNewCounter}[2]{
+    \newcounter{#1}
+    \setcounter{#1}{#2}
+}
+
+
+% =========================================================================== %
+%                    New Counter System: Local and Global                     %
+% =========================================================================== %
+\newcommand{\UWMad@CounterSuffixLocal} {LOCAL COUNTER}
+\newcommand{\UWMad@CounterSuffixGlobal}{GLOBAL COUNTER}
+
+%   Declare a new local counter (meaning that changes to its value only 
+%   persist for the current group/scope) using the TeX \newcount
+\newcommand{\DefineNewLocalCounter}[2]{%
+    \MakeCommand{#1\UWMad@CounterSuffixLocal}{}
+    \expandafter\newcount\csname#1\endcsname%
+    \csname#1\endcsname=#2%
+}
+
+%   Declare a new global counter (meaning that changes to its value 
+%   persist for all groups/scopes) using the LaTeX \newcounter
+\newcommand{\DefineNewGlobalCounter}[2]{%
+    \MakeCommand{#1\UWMad@CounterSuffixGlobal}{}%
+    \expandafter\newcount\csname#1\endcsname%
+    \csname#1\endcsname=#2%
+}
+
+%   Use the etoolbox commands to determine if the counter name
+%   passed is a local (TeX) or global (LaTeX) counter
+\newcommand{\LocalGlobalHandler}[1]{%
+    \IfCommandExists{#1\UWMad@CounterSuffixGlobal}%
+        {\let\UWMad@PreCounter\global}%
+        {\IfCommandExists{#1\UWMad@CounterSuffixLocal}%
+            {\let\UWMad@PreCounter\relax}%
+            {\UWMad@ClassWarning{This is not a local or global counter '#1'}}}%
+}
+
+%   Increment the counter by #2 basedermine if the counter name
+%   passed is a local (TeX) or global (LaTeX) counter
+\newcommand{\AddToCounter}[2]{
+    \LocalGlobalHandler{#1}%
+    \expandafter\UWMad@PreCounter\expandafter\advance\csname#1\endcsname #2%
+}
+
+%   Increment the counter by 1 basedermine if the counter name
+%   passed is a local (TeX) or global (LaTeX) counter
+\newcommand{\StepCounter}[1]{%
+    \AddToCounter{#1}{1}%
+}
+
+\newcommand{\SetCounter}[2]{
+    \LocalGlobalHandler{#1}%
+    \expandafter\UWMad@PreCounter\csname#1\endcsname=#2%
+}
+
+\newcommand{\CounterValue}[1]{%
+    \the\csuse{#1}%
+}
+
+\DefineNewGlobalCounter{WorkCounter}{0}
+
 
 
 
@@ -163,32 +196,6 @@
  \newcommand{\Trim}[1]{\ignorespaces#1\unskip} 
 
 
-
-% Dynamic command creators.
-\newcommand{\MakeCommand}[2]{%
-    \IfCommandExists{#1}%
-        {\UWMad@ClassWarning{Command '#1' is already defined; could not redefine.}}%
-        {\csgdef{#1}{#2}}%
-}
-\newcommand{\ReMakeCommand}[2]{
-    \IfCommandExists{#1}%
-        {\csgdef{#1}{#2}}%
-        {\UWMad@ClassWarning{Command '#1' is undefined; could not define.}}%
-}
-\newcommand{\MakeFullyExpandedCommand}[2]{%
-    \csxdef{#1}{#2}%
-}
-
-\newcommand{\MakeCommandGlobal}[2]{\begin{MakeGlobal}\MakeCommand{#1}{#2}\end{MakeGlobal}}
-
-
-\newcommand{\MakeCommandUndefined}[1]{% #1 = Command name
-    \global\csundef{#1}%
-}
-
-\newcommand{\MakeCounterUndefined}[1]{% #1 = Counter name
-    \MakeCommandUndefined{#1}
-}
 
 
 
@@ -211,28 +218,35 @@
 \MakeCommand{UWMad@RegisteredNumber9}{9}
 
 % Split an input into a Tail and a Head (if input is terminated by \Stop)
-\def\UWMad@NumberTokenizer#1#2\Stop%
-    {\def\Head{#1}\def\Tail{#2}}
+\def\UWMad@NumberTokenizer#1#2\Stop{\def\Head{#1}\def\Tail{#2}}
 
 % Take an input, and recurse through each token until done or
 % a non-registered number is found.
+\newcommand{\UWMad@CheckForNumberCore}[1]{%
+    \IfEmpty{#1}%
+        {\UWMad@IsANumberfalse}%
+        {\expandafter\UWMad@NumberTokenizer#1\Stop\relax%
+         \IfEmpty{\Head}%
+            {}%
+            {\IfCommandExists{UWMad@RegisteredNumber\Head}%
+                {\UWMad@IsANumbertrue}%
+                {\UWMad@IsANumberfalse}%
+             \ifUWMad@IsANumber%
+                \IfEmpty{\Tail}%
+                    {}%
+                    {\UWMad@CheckForNumberCore{\Tail}}%
+             \fi}}%
+}
+
 \newcommand{\UWMad@CheckForNumber}[1]{%
-    \expandafter\UWMad@NumberTokenizer#1\Stop%
-    \IfEmpty{\Head}%
-        {}%
-        {\IfCommandExists{UWMad@RegisteredNumber\Head}%
-            {\UWMad@IsANumbertrue}%
-            {\UWMad@IsANumberfalse}%
-         \ifUWMad@IsANumber%
-            \IfEmpty{\Tail}%
-                {}%
-                {\UWMad@CheckForNumber{\Tail}}%
-         \fi}%
+    %{
+    \UWMad@CheckForNumberCore{#1}%
+    %}
 }
 
 % If all tokens are registered numbers, perform true code;
 % otherwise perform false code.
-\newcommand{\IfNumber}[3]{
+\newcommand{\IfNumber}[3]{%
     \UWMad@CheckForNumber{#1}%
     \ifUWMad@IsANumber%
         #2%
@@ -334,6 +348,8 @@
 \newcommand{\ArrayValueStart}   [1]{\CounterValue{#1\ArraySuffixStart}}    % #1 = Array name
 \newcommand{\ArrayValueEnd}     [1]{\CounterValue{#1\ArraySuffixEnd}}      % #1 = Array name
 \newcommand{\ArrayValueCount}   [1]{\CounterValue{#1\ArraySuffixCount}}    % #1 = Array name
+% Use the array entry given a counter set to the desired index
+\newcommand{\ArrayUse}[2]{\csuse{#1\ArraySuffix\CounterValue{#2}}}
 
 
 \newcommand{\ArrayDelete}[1]{% #1 = Array name
@@ -367,19 +383,10 @@
     \MakeCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}%
 }
 
-% \newcommand{\ArrayCommandPush}[2]{% #1 = Array name, #2 value to push
-% 
-%     % increment counters
-%     \ArrayIncrementCount{#1}
-%     \ArrayIncrementEnd  {#1}
-% 
-%     % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
-%     \MakeCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}%
-% }
-
 \newcommand{\ArrayPop}[1]{% #1 = Array name
     \ifnum\ArrayNumberCount{#1}>0%
-        \csuse{#1\ArraySuffix\ArrayValueEnd{#1}}%
+        \ArrayUse{#1}{\ArrayEnd{#1}}%
+        \MakeCommandUndefined{#1\ArraySuffix\ArrayValueEnd{#1}}%
         % decrement counters
         \ArrayDecrementCount{#1}%
         \ArrayDecrementEnd  {#1}%
@@ -387,9 +394,9 @@
 }
 
 \newcommand{\ArrayPopAndStore}[2]{% #1 = Array name, #2 name of command to store the popped value
-    \ifnum\ArrayCount{#1}>0%
-        \MakeFullyExpandedCommand{#2}%
-            {\csuse{#1\ArraySuffix\ArrayValueEnd{#1}}}
+    \ifnum\ArrayNumberCount{#1}>0%
+        \MakeExpandedCommand{#2}{\ArrayUse{#1}{\ArrayEnd{#1}}}%
+        \MakeCommandUndefined{#1\ArraySuffix\ArrayValueEnd{#1}}%
         % decrement counters
         \ArrayDecrementCount{#1}
         \ArrayDecrementEnd  {#1}
@@ -398,23 +405,20 @@
 
 \newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Counter Name for index
     \IfArrayExists{#1}%
-        {\IfNumber{#2}%
-            {\def\UWMad@LocalIndex{#2}}%
-            {\def\UWMad@LocalIndex{\CounterValue{#2}}}%
-         \IfArrayIndexDefined{#1}{\UWMad@LocalIndex}%
-            {\csuse{#1\ArraySuffix\UWMad@LocalIndex}}%
+        {\IfArrayIndexDefined{#1}{#2}%
+            {\ArrayUse{#1}{#2}}%
             {\UWMad@ClassWarning{Index for array '#1' is undefined.}}}%
         {}%
 }
 
 \newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix#2}%
+    \IfCommandExists{#1\ArraySuffix\CounterValue{#2}}%
         {#3}%
         {#4}%
 }
 
 \newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix#2}%
+    \IfCommandExists{#1\ArraySuffix\CounterValue{#2}}%
         {#4}%
         {#3}%
 }%
@@ -460,6 +464,13 @@
         {\prop_get:cnNTF   {g_UWMad_Hash_#1} {#2} \l_UWMad_Hash_Value_tl%
             {\prop_gdel:cn {g_UWMad_Hash_#1} {#2}}
             {}}}
+
+\DeclareDocumentCommand \IfHashKeySet {mmmm}%
+    {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
+        {\prop_if_in:cnTF {g_UWMad_Hash_#1} {#2}
+            {#3}
+            {#4}}
+        {}}
 
 \DeclareDocumentCommand \HashDelete {m}%
     {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
@@ -573,7 +584,7 @@
 
 % Iterator command -------------------------------------------------------
 \newcommand{\For}[4][1]{%
-    {
+    {%
     % Arguments
     %   #1 = increment (optional)
     %   #2 = start value
@@ -583,7 +594,7 @@
     \renewcommand{\ForLoopRecursion}{%
         #4%                                         % Excute <code>
         \AddToCounter{ForLoopCounter}{#1}%          % Increment the counter
-        \For[#1]{\CounterValue{ForLoopCounter}}{#3}{#4}%   % Recurse
+        \For[#1]{\number\ForLoopCounter}{#3}{#4}%   % Recurse
     }%
     %
     % Set the counter to the start value 
@@ -600,7 +611,7 @@
             \ForLoopRecursion%
         }{}%
     \fi%
-    }
+    }%
 }
 
 
@@ -613,11 +624,11 @@
     \IfCommandExists{#2\ArraySuffix}{%
         \For[#1]{\ArrayNumberStart{#2}}{\ArrayNumberEnd{#2}}{#3}%
     }{%
-        \IfCommandExists{#2\HashSuffix}{%
-            \For[#1]{\ArrayNumberStart{#2\HashSuffixKeys}}{\ArrayNumberEnd{#2\HashSuffixKeys}}{#3}%
-        }{%
+        %\IfCommandExists{#2\HashSuffix}{%
+        %    \For[#1]{\ArrayNumberStart{#2\HashSuffixKeys}}{\ArrayNumberEnd{#2\HashSuffixKeys}}{#3}%
+        %}{%
             \UWMad@ClassWarning{Could not find Array or Hash named '#2'}%
-        }%
+        %}%
     }%
 }
 
