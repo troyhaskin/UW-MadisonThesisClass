@@ -13,9 +13,6 @@
 \DefineNewLength{\EntryMarginLeft}      {1em}
 \DefineNewLength{\EntryMarginBottom}    {0.25em}
 
-\DefineNewLocalCounter{UWMad@NomenNestLevel}   {0}
-\DefineNewLocalCounter{UWMad@NomenSectionLevel}{0}
-
 \GlobalNewIf{UWMad@MakeNomenclatureStarred}
 \let\MakeNomenclatureStarred\UWMad@MakeNomenclatureStarredtrue
 \let\MakeNomenclatureNotStarred\UWMad@MakeNomenclatureStarredfalse
@@ -27,36 +24,55 @@
     \fi%
 }
 %
+\newcommand*{\ResetColumnWidth}{%
+    \global\setlength{\UWMad@Widest}{0pt}%
+}
+%
 %
 \newcommand*{\TheNomenclatureName}{Nomenclature}
 \newcommand{\NomenclatureName}[1]{%
     \renewcommand*{\TheNomenclatureName}{#1}%
 }
 %
-\newcommand*{\TheNomenGroupName}{}
-\newcommand{\NomenGroupName}[1]{%
-    \renewcommand*{\TheNomenGroupName}{#1}%
+\newcommand*{\TheCurrentSectionName}{}
+\newcommand{\UWMad@CurrentSectionName}[1]{%
+    \renewcommand*{\TheCurrentSectionName}{#1}%
 }
 %
+\newcommand*{\TheNomenclatureSectionCommand}{}
+\newcommand*{\UWMad@NomenclatureSectionCommand}[1]{%
+    \renewcommand*{\TheNomenclatureSectionCommand}{#1}%
+}
 %
-\newcommand{\NomenclatureNameStyle}{
-    \IfEmpty{\TheNomenGroupName}%
+\newcommand*{\TheGroupSectionCommand}{}
+\newcommand*{\UWMad@GroupSectionCommand}[1]{%
+    \renewcommand*{\TheGroupSectionCommand}{#1}%
+}
+%
+\newcommand*{\TheSubgroupSectionCommand}{}
+\newcommand*{\UWMad@SubgroupSectionCommand}[1]{%
+    \renewcommand*{\TheSubgroupSectionCommand}{#1}%
+}
+%
+\newcommand{\UWMad@PrintSectionName}{
+    \IfCommandEmpty{\TheCurrentSectionName}%
         {}%
         {\ifUWMad@MakeNomenclatureStarred%
-            \csname\TheCurrentSectioningCommand\endcsname*%
-                {\TheNomenGroupName}%
+            \csname\TheCurrentSectionCommand\endcsname*%
+                {\TheCurrentSectionName}%
             \UWMad@FrontMatterRegister%
-                [\TheCurrentSectioningCommand]%
-                {\TheNomenGroupName}
+                [\TheCurrentSectionCommand]%
+                {\TheCurrentSectionName}
          \else%
-            \csname\TheCurrentSectioningCommand\endcsname{\TheNomenGroupName}%
+            \csname\TheCurrentSectionCommand\endcsname
+                {\TheCurrentSectionName}%
          \fi}%
 }
 %
 %
-\newcommand*{\TheCurrentSectioningCommand}{}
-\newcommand{\CurrentSectioningCommand}[1]{%
-    \renewcommand*{\TheCurrentSectioningCommand}{#1}%
+\newcommand*{\TheCurrentSectionCommand}{}
+\newcommand{\UWMad@CurrentSectionCommand}[1]{%
+    \renewcommand{\TheCurrentSectionCommand}{#1}%
 }
 
 
@@ -66,16 +82,14 @@
 \DefineNewLength{\SymbolWidth}          {0em}
 \DefineNewLength{\DescriptionWidth}     {0em}
 \DefineNewLength{\SymbolDescriptionPad} {0.75em}
-
-
-\newcommand{\UpdateAddCommand}{}
+%
 %
 \newcommand{\TheSymbolArrayName}{}
 \newcommand{\TheDescriptionArrayName}{}
-\newcommand{\SymbolArrayName}[1]     {\renewcommand{\TheSymbolArrayName}{#1}}
-\newcommand{\DescriptionArrayName}[1]{\renewcommand{\TheDescriptionArrayName}{#1}}
+\newcommand{\UWMad@SymbolArrayName}[1]     {\renewcommand{\TheSymbolArrayName}{#1}}
+\newcommand{\UWMad@DescriptionArrayName}[1]{\renewcommand{\TheDescriptionArrayName}{#1}}
 
-\newcommand{\SetTheWidths}{%
+\newcommand{\UWMad@SetTheWidths}{%
     % Define Symbol minipage width
     \setlength  {\SymbolWidth}{\UWMad@Widest}%
     \addtolength{\SymbolWidth}{\SymbolDescriptionPad}%
@@ -87,7 +101,7 @@
     \setlength  {\DescriptionWidth}{0.99\DescriptionWidth}%
 }
 
-\newcommand{\NomenEntry}[2]{%
+\newcommand{\UWMad@NomenEntry}[2]{%
     \setstretch{1.1}%
     \hspace{\EntryMarginLeft}%
     \begin{minipage}[t]{\SymbolWidth}%
@@ -99,9 +113,9 @@
     \vskip\EntryMarginBottom%
 }
 
-\newcommand{\NomenArrayIterator}{
+\newcommand{\UWMad@NomenArrayIterator}{%
     \ForEach[1]{\TheSymbolArrayName}%
-        {\NomenEntry%
+        {\UWMad@NomenEntry%
             {\ArrayGet%
                 {\TheSymbolArrayName}%
                 {ForLoopCounter}}%
@@ -110,11 +124,10 @@
                 {ForLoopCounter}}}%
 }
 
-\newcommand{\NomenPrint}{%
-    \NomenclatureNameStyle%         Print the name of the current group
+\newcommand{\UWMad@NomenPrint}{%
     \ifnum\ArrayValueCount{\TheSymbolArrayName}>0%
-        \SetTheWidths%              Set the widths of the minipages
-        \NomenArrayIterator% Iterate over the entries
+        \UWMad@SetTheWidths%              Set the widths of the minipages
+        \UWMad@NomenArrayIterator% Iterate over the entries
     \fi%
 }
 
@@ -122,15 +135,13 @@
 % =========================================================================== %
 %                 Nomen Environment Initializer and Finalizer                 %
 % =========================================================================== %
-\newcommand{\NomenInitializer}{
-    \SymbolArrayName
+\newcommand{\UWMad@NomenInitializer}{
+    \UWMad@SymbolArrayName
         {NomenSymbol}
-    \DescriptionArrayName
+    \UWMad@DescriptionArrayName
         {NomenDescription}
-    \ArrayMake
-        {\TheSymbolArrayName}
-    \ArrayMake
-        {\TheDescriptionArrayName}
+    \ArrayMake{\TheSymbolArrayName}
+    \ArrayMake{\TheDescriptionArrayName}
     \newcommand{\Add}[2]
         {\ArrayPush{\TheSymbolArrayName}{##1}
          \ArrayPush{\TheDescriptionArrayName}{##2}
@@ -140,45 +151,61 @@
     \let\Entry\Add
 }
 
-\newcommand{\NomenFinalizer}[1]{%
-    \NomenPrint%                     Print the current group's symbols and descriptions
+\newcommand{\UWMad@NomenFinalizer}[1]{%
+    \UWMad@NomenPrint%                     Print the current group's symbols and descriptions
     #1{\TheSymbolArrayName}%                Garbage Collection: \ArrayDelete or \ArrayReset
     #1{\TheDescriptionArrayName}%           Garbage Collection: \ArrayDelete or \ArrayReset
-    \global\setlength{\UWMad@Widest}{0pt}%  Set the widest symbol to 0 for future lists
+    \ResetColumnWidth%               %  Set the widest symbol to 0 for future lists
 }
 
 
 % =========================================================================== %
-%          SubNomen Environment Initializer and Finalizer              %
+%              SubNomen Environment Initializer and Finalizer                 %
 % =========================================================================== %
 
 % Nomenclature environment ----------------------------------------------------
 \newenvironment{Nomenclature}[1][chapter]{%
-    \CurrentSectioningCommand{#1}
+    \UWMad@NomenclatureSectionCommand{#1}
+    \UWMad@GroupSectionCommand{\HashExpandableGet{NextSectioningCommand}{#1}}
+    \UWMad@SubgroupSectionCommand{\HashExpandableGet{NextSectioningCommand}{\TheGroupSectionCommand}}
     
-    \SetCounter{UWMad@NomenSectionLevel}{\SectionToLevel{#1}}
-    \SetCounter{UWMad@NomenNestLevel}{0}
+    \newcommand{\Group}[1]
+        {\UWMad@NomenFinalizer{\ArrayReset}
+         \UWMad@CurrentSectionCommand
+            {\TheGroupSectionCommand}
+         \UWMad@CurrentSectionName{##1}
+         \UWMad@PrintSectionName}
+        
+    \newcommand{\Subgroup}[1]
+        {\UWMad@NomenFinalizer{\ArrayReset}
+         \UWMad@CurrentSectionCommand
+            {\TheSubgroupSectionCommand}
+         \UWMad@CurrentSectionName{##1}
+         \UWMad@PrintSectionName}
     
-    \NomenGroupName{\TheNomenclatureName}
-    \NomenInitializer
+    \UWMad@NomenInitializer
+    
+    \UWMad@CurrentSectionCommand{\TheNomenclatureSectionCommand}
+    \UWMad@CurrentSectionName{\TheNomenclatureName}
+    \UWMad@PrintSectionName
 }{%
-    \NomenFinalizer{\ArrayDelete}%
+    \UWMad@NomenFinalizer{\ArrayDelete}%
 }
 
 
-\newenvironment{Group}[1]{% #1 = Group Name
-    %
-    \NomenFinalizer{\ArrayReset}%
-    %
-    \IfEmpty{#1}%
-        {\NomenGroupName{}}%
-        {\NomenGroupName{#1}%
-         \StepCounter{UWMad@NomenSectionLevel}}%
-    %
-    \show\CurrentLevel
-    %\CurrentSectioningCommand{\CurrentLevel}
-}{%
-    \NomenFinalizer{\ArrayReset}%
-}%
+%\newenvironment{Group}[1]{% #1 = Group Name
+%    %
+%    \NomenFinalizer{\ArrayReset}%
+%    %
+%    \IfStringEmpty{#1}%
+%        {\NomenGroupName{}}%
+%        {\NomenGroupName{#1}%
+%         \StepCounter{UWMad@NomenSectionLevel}}%
+%    %
+%    \CurrentSectioningCommand{\LevelToSection{UWMad@NomenSectionLevel}}
+%    \show\TheCurrentSectioningCommand
+%}{%
+%    \NomenFinalizer{\ArrayReset}%
+%}%
 
 

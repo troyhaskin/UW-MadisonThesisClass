@@ -58,14 +58,16 @@
 }
 
 % Command combo testing for an empty string or command
-\newcommand{\IfEmpty}[3]{%
+\newcommand{\IfStringEmpty}[3]{%
     \ifblank{#1}%
         {#2}%
-        {\ifcsempty{#1}%
-            {#2}%
-            {\ifdefempty{#1}%
-                {#2}%
-                {#3}}}%
+        {#3}%
+}
+
+\newcommand{\IfCommandEmpty}[3]{%
+    \ifdefempty{#1}%
+        {#2}%
+        {#3}%
 }
 
 \newcommand{\IfMatch}[4]{% #1 = left compare, #2 = right compare, #3 = true code, #4 = false code
@@ -78,9 +80,10 @@
 
 % Dynamic command creators.
 \newcommand{\MakeCommand}[2]{%
-    \IfCommandExists{#1}%
-        {\UWMad@ClassWarning{Command '#1' is already defined; could not redefine.}}%
-        {\csgdef{#1}{#2}}%
+    %\IfCommandExists{#1}%
+        %{\UWMad@ClassWarning{Command '#1' is already defined; could not redefine.}}%
+        %{
+        \csgdef{#1}{#2}%}%
 }
 \newcommand{\ReMakeCommand}[2]{
     \IfCommandExists{#1}%
@@ -171,6 +174,16 @@
 \newcommand{\SetCounter}[2]{
     \LocalGlobalHandler{#1}%
     \expandafter\UWMad@PreCounter\csname#1\endcsname=#2%
+}
+
+\newcommand{\SetAndAddToCounter}[3]{%
+    \SetCounter{#1}{#2}%
+    \AddToCounter{#1}{#3}%
+}
+
+\newcommand{\SetAndStepCounter}[2]{%
+    \SetCounter{#1}{#2}%
+    \AddToCounter{#1}{1}%
 }
 
 \newcommand{\CounterValue}[1]{%
@@ -404,11 +417,13 @@
 }
 
 \newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Counter Name for index
-    \IfArrayExists{#1}%
-        {\IfArrayIndexDefined{#1}{#2}%
-            {\ArrayUse{#1}{#2}}%
-            {\UWMad@ClassWarning{Index for array '#1' is undefined.}}}%
-        {}%
+    %\IfArrayExists{#1}%
+        %{\IfArrayIndexDefined{#1}{#2}%
+            %{
+            %\ArrayUse{#1}{#2}}%
+        %    {\UWMad@ClassWarning{Index for array '#1' is undefined.}}}%
+        %{}%
+    \csname#1\ArraySuffix\CounterValue{#2}\endcsname
 }
 
 \newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
@@ -454,9 +469,11 @@
         {\prop_get:cn {g_UWMad_Hash_#1} {#2}}
         {}}
 
+\cs_generate_variant:Nn \prop_get:cn {cf}
+
 \DeclareExpandableDocumentCommand \HashExpandableGet {mm}%
     {\prop_if_exist:cTF  {g_UWMad_Hash_#1}%
-        {\prop_get:cn {g_UWMad_Hash_#1} {#2}}
+        {\prop_get:cf {g_UWMad_Hash_#1} {#2}}
         {}}
 
 \DeclareDocumentCommand \HashUnset {mm}%
