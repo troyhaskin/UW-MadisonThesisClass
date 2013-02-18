@@ -43,7 +43,7 @@ local.properties
 
 # Build results
 [Dd]ebug/
-[Rr]elease/
+# [Rr]elease/
 *_i.c
 *_p.c
 *.ilk
@@ -174,3 +174,8 @@ pip-log.txt
 *.lot
 *.tps
 *.pdf
+
+############################
+## References I want synced 
+############################
+!References/*
