@@ -23,7 +23,7 @@
 % ------------------------------------------------------------------------------------- %
 
 % Identification Commands
-\newcommand{\UWMad@ClassName}         {WisconsinThesis}
+\newcommand{\UWMad@ClassName}         {UWMadThesis}
 \newcommand{\UWMad@UniversityLong}    {University of Wisconsin-Madison}
 \newcommand{\UWMad@UniversityShort}   {UW-Madison}
 \newcommand{\UWMad@ClassVersion}      {v0.1}
@@ -138,8 +138,8 @@
 % =============================================================================================== %
 %                                   Module Loader Commands                                        %
 % =============================================================================================== %
-\newcommand{\ModulePrefix}{WisconsinThesis.Module.}
-\newcommand{\ModuleSuffix}{}
+\newcommand{\ModulePrefix}{\UWMad@ClassName.Module.}
+\newcommand{\ModuleSuffix}{.dtx}
 
 \DeclareRobustCommand{\LoadIfModuleExists}[1]{
 
