@@ -19,23 +19,38 @@
 % \fi
 %
 % \iffalse
-%<*driver>
-\ProvidesFile{UWMadThesis.dtx}
-%</driver>
 %
-%<class>\NeedsTeXFormat{LaTeX2e}[1995/12/01]
-%<class>\ProvidesClass{UWMadThesis}
-%<class>              [2013/02/18 v0.1 | LaTeX2e Thesis Class for the 
-%<class>               University of Wiconsin-Madison]
+%<class> \NeedsTeXFormat{LaTeX2e}[1995/12/01]
+%<class> \ProvidesClass{UWMadThesis}
+%<class> [2013/02/18 v0.1 |%
+%<class>  LaTeX2e Thesis Class for the University of Wisconsin-Madison]
 %
 %<*driver>
+
+% ======================================================= %
+%                         ltxdoc                          %
+% ======================================================= %
 \documentclass{ltxdoc}
+
+\makeatletter
+    \@namedef{ver@thumbpdf.sty}{}   %   This definition ensures the thumbpdf package is not loaded.
+\makeatother
+\usepackage[numbered]{hypdoc}       %   Enable hyperlinking for the document and index
+\usepackage{bookmark}               %   Improved bookmarking system for hyperref
+
+% Hyperref options/styles
+\hypersetup{
+    linkcolor=blue
+}
+
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
+
 \begin{document}
     \DocInput{UWMadThesis.dtx}
 \end{document}
+
 %</driver>
 %\fi
 %
@@ -59,23 +74,16 @@
 %   Grave accent  \`     Left brace    \{     Vertical bar  \|
 %   Right brace   \}     Tilde         \~}
 %
-%
-% \changes{v0.1}{2013/02/18}{Development version}
-% \GetFileInfo{UWMadThesis.dtx}
-%
 % \DoNotIndex{\#,\$,\%,\&,\@,\\,\{,\},\^,\_,\~,\ }
 % \DoNotIndex{\@ne}
 % \DoNotIndex{\advance,\begingroup,\catcode,\closein}
 % \DoNotIndex{\closeout,\day,\def,\edef,\else,\empty,\endgroup}
 %
-% \title{The \textsf{UWMadThesis} class\thanks{This document
-% corresponds to \textsf{UWMadThesis}~\fileversion,
-% dated \filedate.}}
-% \author{Troy C. Haskin \\ \texttt{UWMadThesis@hask.in}}
+% \changes{v0.1}{2013/02/18}{Development version}
+% \GetFileInfo{UWMadThesis.dtx} 
+% \input{Content/UWMadThesis.Lit.dtx}
+% \input{Content/UWMadThesis.Lit.dtx}
 %
-% \maketitle
-%
-% \section{The Beginning}
-\def\HELLO{Hello, World!}
-
+% \PrintChanges
+% \PrintIndex
 \endinput

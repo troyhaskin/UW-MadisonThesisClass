@@ -165,6 +165,7 @@ pip-log.txt
 #############
 ## LaTeX 
 #############
+
 *.aux
 *.bbl
 *.blg
@@ -173,9 +174,20 @@ pip-log.txt
 *.lof
 *.lot
 *.tps
+*.glo
+*.gls
+*.hd
+*.idx
+*.ilg
+*.ind
+
+# Ignore all PDFs by default
 *.pdf
 
+# Batch files
+*.bat
+
 ############################
-## References I want synced 
+## I want synced References
 ############################
 !References/*

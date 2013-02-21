@@ -33,7 +33,7 @@
 
 % LaTeX Requirement and Class Idetification
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{\UWMad@ClassName}[\UWMad@ClassVersionDate\space\UWMad@ClassVersion\space| LaTeX2e Thesis Class for \UWMad@UniversityLong]
+\ProvidesClass{\UWMad@ClassName}[\UWMad@ClassVersionDate v0.1 | LaTeX2e Thesis Class for \UWMad@UniversityLong]
 
 
 

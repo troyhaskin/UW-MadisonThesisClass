@@ -4,7 +4,7 @@
 %%
 %% The original source files were:
 %%
-%% ../Development/UWMadThesis2.dtx  (with options: `class')
+%% Content/UWMadThesis.Lit.dtx  (with options: `Code')
 %%     Copyright (C) 2013 by Troy C. Haskin
 %% 
 %%     This file may be distributed and/or modified under the
@@ -20,13 +20,9 @@
 %%     This work has the LPPL maintenance status `maintained'.
 %% 
 %%     The Current Maintainer of this work is Troy C. Haskin
-\NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{UWMadThesis}
-              [2013/02/18 v0.1 | LaTeX2e Thesis Class for the
-               University of Wiconsin-Madison]
-\def\HELLO{Hello, World!}
-\def\HELLOTwo{Hello, World!}
-
+%%   \begin{macrocode}
+    \def\CODE{This section is meant for the implementation section.}
+%%   \end{macrocode}
 \endinput
 %%
 %% End of file `UWMadThesis.cls'.

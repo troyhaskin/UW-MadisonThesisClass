@@ -41,7 +41,24 @@
 \endpreamble
 
 \askforoverwritefalse
-\generate{\file{UWMadThesis.cls}{\from{UWMadThesis.dtx}{class}}}
+
+% Generate the stripped class file
+\generate{\file
+            {UWMadThesis.cls}
+            {\from{Content/UWMadThesis.Lit.dtx}{Code}}}
+
+% Generate the User Guide and 
+\generate{\file
+            {UWMadThesis.UserGuide.tex}
+            {\nopreamble\from{Content/UWMadThesis.Lit.dtx}{Guide}}
+          \file
+            {UWMadThesis.Implementation.tex}
+            {\nopreamble\from{Content/UWMadThesis.Lit.dtx}{Code}}
+          \file
+            {UWMadThesis.Documentation.tex}
+            {\usepreamble\defaultpreamble
+             \from{UWMadThesis.UserGuide.tex}{}
+             \from{UWMadThesis.Implementation.tex}{}}}
 
 \obeyspaces
 \Msg{*********************************************************}
