@@ -4,56 +4,69 @@
 %%
 %% The original source files were:
 %%
-%% UWMadThesis.dtx  (with options: `installer')
-%%     Copyright (C) 2013 by Troy C. Haskin
+%% UWMadThesis.dtx  (with options: `install')
+%% -----------------------------------------------------------------------
+%% UWMadThesis --- A thesis class for the University of Wisconsin-Madison
+%% E-mail: UWMadThesis@hask.in
+%% Released under the LaTeX Project Public License v1.3c or later
+%% See http://www.latex-project.org/lppl.txt
+%% -----------------------------------------------------------------------
 %% 
-%%     This file may be distributed and/or modified under the
-%%     conditions of the LaTeX Project Public License, either
-%%     version 1.3c of this license or (at your option) any later
-%%     version. The latest version of this license is in:
-%% 
-%%     http://www.latex-project.org/lppl.txt
-%% 
-%%     and version 1.3c or later is part of all distributions of
-%%     LaTeX version 2005/12/01 or later.
-%% 
-%%     This work has the LPPL maintenance status `maintained'.
-%% 
-%%     The Current Maintainer of this work is Troy C. Haskin
-
 \input docstrip.tex
 \keepsilent
 \askforoverwritefalse
-\usedir{tex/latex/UWMadThesis}
-
 \preamble
-    Copyright (C) 2013 by Troy C. Haskin
+-----------------------------------------------------------------------
+UWMadThesis --- A thesis class for the University of Wisconsin-Madison
+E-mail: UWMadThesis@hask.in
+Released under the LaTeX Project Public License v1.3c or later
+See http://www.latex-project.org/lppl.txt
+-----------------------------------------------------------------------
 
-    This file may be distributed and/or modified under the
-    conditions of the LaTeX Project Public License, either
-    version 1.3c of this license or (at your option) any later
-    version. The latest version of this license is in:
-
-    http://www.latex-project.org/lppl.txt
-
-    and version 1.3c or later is part of all distributions of
-    LaTeX version 2005/12/01 or later.
-
-    This work has the LPPL maintenance status `maintained'.
-
-    The Current Maintainer of this work is Troy C. Haskin
 \endpreamble
+\postamble
 
+Copyright (C) 2013 by Troy C. Haskin <UWMadThesis@hask.in>
+
+This work may be distributed and/or modified under the
+conditions of the LaTeX Project Public License (LPPL), either
+version 1.3c of this license or (at your option) any later
+version.  The latest version of this license is in the file:
+
+http://www.latex-project.org/lppl.txt
+
+This work is "maintained" (as per LPPL maintenance status) by
+Troy C. Haskin.
+
+This work consists of the file  UWMadThesis.dtx
+and the derived files           UWMadThesis.ins,
+                                UWMadThesis.pdf, and
+                                UWMadThesis.cls.
+
+\endpostamble
 \usedir{tex/latex/UWMadThesis}
 \generate{
-    \file{\jobname.cls}
-        {\from{Manual/UWMadThesis.Implementation.dtx}{}}
+  \file{\jobname.cls}{\from{\jobname.dtx}{class}
+                      \from{\jobname.Implementation.dtx}{}}
 }
-
 \endbatchfile
-\makeatletter
-\input{Manual/UWMadThesis.Implementation.dtx}
-\makeatother
-\endinput
+%% 
+%% Copyright (C) 2013 by Troy C. Haskin <UWMadThesis@hask.in>
+%% 
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License (LPPL), either
+%% version 1.3c of this license or (at your option) any later
+%% version.  The latest version of this license is in the file:
+%% 
+%% http://www.latex-project.org/lppl.txt
+%% 
+%% This work is "maintained" (as per LPPL maintenance status) by
+%% Troy C. Haskin.
+%% 
+%% This work consists of the file  UWMadThesis.dtx
+%% and the derived files           UWMadThesis.ins,
+%%                                 UWMadThesis.pdf, and
+%%                                 UWMadThesis.cls.
+%% 
 %%
 %% End of file `UWMadThesis.ins'.

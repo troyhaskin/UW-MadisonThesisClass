@@ -4,44 +4,38 @@
 %%
 %% The original source files were:
 %%
-%% Manual/UWMadThesis.Implementation.dtx 
-%%     Copyright (C) 2013 by Troy C. Haskin
+%% UWMadThesis.dtx  (with options: `class')
+%% UWMadThesis.Implementation.dtx 
+%% -----------------------------------------------------------------------
+%% UWMadThesis --- A thesis class for the University of Wisconsin-Madison
+%% E-mail: UWMadThesis@hask.in
+%% Released under the LaTeX Project Public License v1.3c or later
+%% See http://www.latex-project.org/lppl.txt
+%% -----------------------------------------------------------------------
 %% 
-%%     This file may be distributed and/or modified under the
-%%     conditions of the LaTeX Project Public License, either
-%%     version 1.3c of this license or (at your option) any later
-%%     version. The latest version of this license is in:
+\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+\ProvidesClass{UWMadThesis}
+    [2013/06/01 v1.0 A thesis class for the University of Wisconsin-Madison]
+\LoadClassWithOptions{article}
+\newcommand{\dummyMacro}{}
+\newenvironment{dummyEnv}{}{}%
 %% 
-%%     http://www.latex-project.org/lppl.txt
+%% Copyright (C) 2013 by Troy C. Haskin <UWMadThesis@hask.in>
 %% 
-%%     and version 1.3c or later is part of all distributions of
-%%     LaTeX version 2005/12/01 or later.
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License (LPPL), either
+%% version 1.3c of this license or (at your option) any later
+%% version.  The latest version of this license is in the file:
 %% 
-%%     This work has the LPPL maintenance status `maintained'.
+%% http://www.latex-project.org/lppl.txt
 %% 
-%%     The Current Maintainer of this work is Troy C. Haskin
-\newcommand{\UWMad@ClassName}         {UWMadThesis}
-\newcommand{\UWMad@UniversityLong}    {University of Wisconsin-Madison}
-\newcommand{\UWMad@UniversityShort}   {UW-Madison}
-\newcommand{\UWMad@ClassVersion}      {v0.1}
-\newcommand{\UWMad@ClassVersionDate}  {2012/01/09}
-\newcommand{\UWMad@TheParentClass}    {report}
-\newif\ifUWMad@FrontMatterCommands\UWMad@FrontMatterCommandsfalse
-\newif\ifUWMad@IncludeMathCommands\UWMad@IncludeMathCommandstrue
-\newif\ifUWMad@NoPDFMetaInfo      \UWMad@NoPDFMetaInfofalse
-\newif\ifUWMad@EnableHyperlinking \UWMad@EnableHyperlinkingtrue
-\newif\ifUWMad@IsADissertation    \UWMad@IsADissertationtrue
-\DeclareRobustCommand{\UWMad@StyleWarningButExecute}[1]{
-   \ClassWarningNoLine{\UWMad@ClassName}{
-        Option '#1' violates UW-Madison Dissertation Guidelines; consider omission
-   }
-   \PassOptionsToClass{#1}{\UWMad@TheParentClass}
-}
-\DeclareOption{FrontMatterCommands}{\UWMad@FrontMatterCommandstrue}
-\DeclareOption{NoMath}             {\UWMad@IncludeMathCommandsfalse}
-\DeclareOption{NoPDFMeta}          {\UWMad@NoPDFMetatrue}
-\DeclareOption{NoLinks}            {\UWMad@EnableHyperlinkingfalse}
-\DeclareOption{Prelim}             {\UWMad@IsADissertationfalse}
-\endinput
+%% This work is "maintained" (as per LPPL maintenance status) by
+%% Troy C. Haskin.
+%% 
+%% This work consists of the file  UWMadThesis.dtx
+%% and the derived files           UWMadThesis.ins,
+%%                                 UWMadThesis.pdf, and
+%%                                 UWMadThesis.cls.
+%% 
 %%
 %% End of file `UWMadThesis.cls'.

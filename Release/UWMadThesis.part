@@ -1,8 +1,0 @@
-\NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{UWMadThesis}
-[2013/02/18 v0.1 |%
-         LaTeX2e Thesis Class for the University of Wisconsin-Madison]
-
-\makeatletter
-\input{Manual/UWMadThesis.Implementation.dtx}
-\makeatother

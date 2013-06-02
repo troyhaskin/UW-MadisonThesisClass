@@ -1,20 +1,17 @@
+Copyright (C) 2013 by Troy C. Haskin <UWMadThesis@hask.in>
 
-   UWMadThesis LaTeX Class
- ===========================
+This work may be distributed and/or modified under the
+conditions of the LaTeX Project Public License (LPPL), either
+version 1.3c of this license or (at your option) any later
+version.  The latest version of this license is in the file:
 
- Copyright (C) 2013 by Troy C. Haskin (UWMadThesis@hask.in)
+http://www.latex-project.org/lppl.txt
 
- This file may be distributed and/or modified under the
- conditions of the LaTeX Project Public License, either
- version 1.3c of this license or (at your option) any later
- version. The latest version of this license is in:
+This work is "maintained" (as per LPPL maintenance status) by
+Troy C. Haskin.
 
- http://www.latex-project.org/lppl.txt
-
- and version 1.3c or later is part of all distributions of
- LaTeX version 2005/12/01 or later.
-
- This work has the LPPL maintenance status `maintained'.
-
- The Current Maintainer of this work is Troy C. Haskin.
+This work consists of the file  UWMadThesis.dtx
+and the derived files           UWMadThesis.ins,
+                                UWMadThesis.pdf, and
+                                UWMadThesis.cls.
 
