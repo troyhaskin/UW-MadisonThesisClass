@@ -17,7 +17,7 @@
 \ProvidesClass{UWMadThesis}
     [2013/06/01 v1.0 A thesis class for the University of Wisconsin-Madison]
 \LoadClassWithOptions{article}
-\newcommand{\dummyMacro}{}
+\newcommand{\dummyMacro}{} % Here is an inline comment.
 \newenvironment{dummyEnv}{}{}%
 %% 
 %% Copyright (C) 2013 by Troy C. Haskin <UWMadThesis@hask.in>
