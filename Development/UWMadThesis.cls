@@ -26,14 +26,14 @@
 \newcommand{\UWMad@ClassName}         {UWMadThesis}
 \newcommand{\UWMad@UniversityLong}    {University of Wisconsin-Madison}
 \newcommand{\UWMad@UniversityShort}   {UW-Madison}
-\newcommand{\UWMad@ClassVersion}      {v0.1}
+\newcommand{\UWMad@ClassVersion}      {0.1}
 \newcommand{\UWMad@ClassVersionDate}  {2012/01/09}
 \newcommand{\UWMad@TheParentClass}    {report}
 
 
 % LaTeX Requirement and Class Idetification
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{\UWMad@ClassName}[\UWMad@ClassVersionDate v0.1 | LaTeX2e Thesis Class for \UWMad@UniversityLong]
+\ProvidesClass{\UWMad@ClassName}[\UWMad@ClassVersionDate v\UWMad@ClassVersion | LaTeX2e Thesis Class for \UWMad@UniversityLong]
 
 
 
@@ -154,7 +154,6 @@
 % =============================================================================================== %
 %                                     Module Loads                                                %
 % =============================================================================================== %
-\LoadIfModuleExists{LaTeX3Programming}
 \LoadIfModuleExists{Programming}
 \LoadIfModuleExists{LayoutAndStyle}
 \LoadIfModuleExists{Sectioning}

@@ -1,8 +1,43 @@
-% =============================================================================================== %
-%                        WisconsinThesis Class: Programming Module                                %
-% =============================================================================================== %
-
-
+%<*UserGuide>
+%%
+%%  Module Name: Programming
+%%  Author:
+%%      Name:           Troy C. Haskin
+%%      E-mail:         UWMadThesis@hask.in
+%%  Version:
+%%      Number:         1.0
+%%      Description:    Initial release
+%%      Date:           06/01/2013
+%%  Purpose:
+%%      Provide a programming layer for the UW-Madison Thesis package
+%%      Most of the module is designed to overcome the lack of such a
+%%      layer in LaTeX2e.  Some LaTeX3 is being used for certain advanced
+%%      features, and this module may become obsolete when/if it is upgraded
+%%      to a pure LaTeX3 implementation.
+\section{Programming}
+This is the User Guide for the programming module of the \UWMadClass.
+%</UserGuide>
+%
+%
+%
+%<*Implementation>
+%<<Implementation
+%%
+%%  Module Name: Programming
+%%  Author:
+%%      Name:           Troy C. Haskin
+%%      E-mail:         UWMadThesis@hask.in
+%%  Version:
+%%      Number:         1.0
+%%      Description:    Initial release
+%%      Date:           06/01/2013
+%%  Purpose:
+%%      Provide a programming layer for the UW-Madison Thesis package
+%%      Most of the module is designed to overcome the lack of such a
+%%      layer in LaTeX2e.  Some LaTeX3 is being used for certain advanced
+%%      features, and this module may become obsolete when/if it is upgraded
+%%      to a pure LaTeX3 implementation.
+%
 % If-switch changes only have block level scope by default.  That is, a \newif that is switched within a block
 % reverts to its pre-block state upon exit.  This command creates an if-switch set that has global scope.
 \newcommand{\GlobalNewIf}[1]{%
@@ -563,10 +598,7 @@
         %}%
     }%
 }
-
-
-
-
-
-
-
+%
+%
+%ModuleImplementation
+%</Implementation>
