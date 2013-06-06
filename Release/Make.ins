@@ -60,10 +60,12 @@ Troy C. Haskin.
 \endpostamble
 
 
-% Generate the monolithis *.dtx
+% Generate the User guide DTX
 \generate{
   \file{UWMadThesis.UserGuide.dtx}{\from{UWMadThesis.Implementation.dtx}{UserGuide}}
 }
+
+% Generate the User guide DTX
 \generate{
   \file{UWMadThesis.dtx}{\from{UWMadThesis.Implementation.dtx}{Implementation}
                          \from{UWMadThesis.Implementation.dtx}{Implementation}}

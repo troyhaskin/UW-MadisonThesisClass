@@ -14,8 +14,9 @@
 %%      layer in LaTeX2e.  Some LaTeX3 is being used for certain advanced
 %%      features, and this module may become obsolete when/if it is upgraded
 %%      to a pure LaTeX3 implementation.
-\section{Programming}
-This is the User Guide for the programming module of the \UWMadClass.
+\subsection{Programming}\label{Subsec:Programming}
+The Programming Module has no immediate user-facing features.
+The Implementation section for this module is the most robust explanation of its feature list.
 %</UserGuide>
 %
 %
@@ -38,35 +39,66 @@ This is the User Guide for the programming module of the \UWMadClass.
 %%      features, and this module may become obsolete when/if it is upgraded
 %%      to a pure LaTeX3 implementation.
 %
-% If-switch changes only have block level scope by default.  That is, a \newif that is switched within a block
-% reverts to its pre-block state upon exit.  This command creates an if-switch set that has global scope.
+%   \subsection{Programming}
+%   This section outlines the Programming module for the \UWMadClass.
+%   It is mostly a collection of utility macros used in other modules.
+%   The two biggest features in this module are the Array and Hash 
+%   (associative arrays) systems used a other modules.  Those features 
+%   are near the end of this subsection.
+%
+%   The commands are currently a mix of \TeX{}, \LaTeX2e{}, and \LaTeX3{}.
+%   Pure \TeX{} is used only where the other features have no such facility
+%   for the intended purpose.  Also, the \verb|etoolbox| package is used as
+%   the basis for many of the utility macros, and those macros are actually,
+%   for all intents and purposes, just aliases for etoolbox commands. This
+%   method was chosen to allow for an easier transition to another system.
+% 
+%   \subsubsection{Utility Macros}
+%   \begin{macro}{\GlobalNewIf}
+%   If-switch changes only have block level scope by default.  This means
+%   that a |\newif| switched within a block reverts to its pre-block
+%   state upon exit.  This command creates an if-switch pair that has global
+%   scope.
+%
+%   Usage: |\GlobalNewIf| \marg{IfName}
+%    \begin{macrocode}
 \newcommand{\GlobalNewIf}[1]{%
     \csgdef{#1true}%
         {\global\cslet{if#1}{\iftrue}}
     \csgdef{#1false}%
-        {\global\cslet{if#1}{\iffalse}}
-}
-
-
-% A simple command that acts like LaTeX's \@ifundefined, but I like the eTeX conditional more (in looks and implementation).
-% Since it is eTeX, this command will allow for a switch to \@ifundefined if problems arise from non-eTeX users in the future.
+        {\global\cslet{if#1}{\iffalse}}}
+%    \end{macrocode}
+%   \end{macro}
+%
+%   \begin{macro}{\IfCommandExists}
+%   \begin{macro}{\IfCommandDoesNotExist}
+%   This command pair is used instead of \LaTeX{}'s |\@ifundefined|.
+%   Since it is \eTeX{}, this command will allow for a switch to
+%   |\@ifundefined| if problems arise from non-\eTeX{} users in the
+%   future.
+%
+%    \begin{macrocode}
 \newcommand{\IfCommandExists}[3]{%
     \ifcsname#1\endcsname%
         #2%
     \else%
         #3%
-    \fi%
-}%
+    \fi}
 \newcommand{\IfCommandDoesNotExist}[3]{%
     \ifcsname#1\endcsname%
         #3%
     \else%
         #2%
-    \fi%
-}%
-
-
-% <= Command - no equivalent in TeX
+    \fi}%
+%    \end{macrocode}
+%   \end{macro}
+%   \end{macro}
+%
+%   \begin{macro}{\IfGreaterThanEqualTo}
+%   \begin{macro}{\IfLessThanEqualTo}
+%   This set of commands uses \TeX{} primitives to allow code
+%   execution with the mathematical conditionals $\geq$ and $\leq$.
+%    \begin{macrocode}
 \newcommand{\IfGreaterThanEqualTo}[4]{%
     \ifnum#1>#2%
         #3%
@@ -76,10 +108,7 @@ This is the User Guide for the programming module of the \UWMadClass.
         \else%
             #4%
         \fi%
-    \fi%
-}
-
-% >= Command - no equivalent in TeX
+    \fi}
 \newcommand{\IfLessThanEqualTo}[4]{%
     \ifnum#1<#2%
         #3%
@@ -89,8 +118,10 @@ This is the User Guide for the programming module of the \UWMadClass.
         \else%
             #4%
         \fi%
-    \fi%
-}
+    \fi}
+%    \end{macrocode}
+%   \end{macro}
+%   \end{macro}
 
 % Command combo testing for an empty string or command
 \newcommand{\IfStringEmpty}[3]{%
@@ -190,8 +221,8 @@ This is the User Guide for the programming module of the \UWMadClass.
         {\let\UWMad@PreCounter\global}%
         {\IfCommandExists{#1\UWMad@CounterSuffixLocal}%
             {\let\UWMad@PreCounter\relax}%
-            {\UWMad@ClassWarning{This is not a local or global counter '#1'}}}%
-}
+            {\UWMad@ClassWarning%
+                {This is not a local or global counter '#1'}}}}
 
 %   Increment the counter by #2 basedermine if the counter name
 %   passed is a local (TeX) or global (LaTeX) counter
