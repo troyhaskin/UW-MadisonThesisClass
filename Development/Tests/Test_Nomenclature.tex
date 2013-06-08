@@ -2,28 +2,59 @@
 \chapter{Nomenclature Tests}
 
 \MakeNomenclatureNotStarred
+
 \NomenclatureName{Unstarred Nomenclature}
+\begin{Nomenclature}[section]
+    \Add{Symbol}  {Description. This is a rather long and ridiculous description designed to test the alignment of 
+                 this description with that of the associated symbol and following entries.}
+    \Item{sym}    {Short desc.}   
+    %
+    \Group{Group 1}
+        \Add{Symbooooool}
+            {Description. This is a rather long and ridiculous description designed to test the alignment of 
+             this description with that of the associated symbol and following entries.}
+        \Item{sym}    {Short desc.}
+        %
+        \Subgroup{Subgroup 1}
+            \Add{S}{    Description. This is a rather long and ridiculous description designed to test the alignment of 
+                        this description with that of the associated symbol and following entries.}
+        \Subgroup{Subgroup 2}
+            \Item{s}{   Short desc.}
+    %
+    \Group{Group 2}
+        \Add{$Symbooooool$}
+            {This tests the multiple group counter and a symbol in math mode.  Also, just another check
+             for an extremely long description and proper spacing of the minipage columns.}
+        \Item{$sym$}    {Short desc.}
+        
+\end{Nomenclature}
+
+
+
+\MakeNomenclatureStarred
+\NomenclatureName{Starred Nomenclature}
 \begin{Nomenclature}[section]
     \Add{Symbol}  {Description. This is a rather long and ridiculous description designed to test the alignment of 
                  this description with that of the associated symbol and following entries.}
     \Item{sym}    {Short desc.}   
     
     \Group{Group 1}
-        \Add{Symboggggggggggl}  { Description. This is a rather long and ridiculous description designed to test the alignment of 
-                        this description with that of the associated symbol and following entries.}
-        \Item{sym}    {Short desc.}   
-        
-        
-        \Subgroup{Subgroup 1}
-            \Add{S}  { Description. This is a rather long and ridiculous description designed to test the alignment of 
-                            this description with that of the associated symbol and following entries.}
-            \Item{s}    {Short desc.}
-
-
-    \Group{Group 2}
-        \Add{Symboggggggggggl}  { Description. This is a rather long and ridiculous description designed to test the alignment of 
-                        this description with that of the associated symbol and following entries.}
+        \Add{Symbooooool}
+            {Description. This is a rather long and ridiculous description designed to test the alignment of 
+             this description with that of the associated symbol and following entries.}
         \Item{sym}    {Short desc.}
+        \Subgroup{Subgroup 1}
+            \Add{S}{    Description. This is a rather long and ridiculous description designed to test the alignment of 
+                        this description with that of the associated symbol and following entries.}
+        \Subgroup{Subgroup 2}
+            \Item{s}{   Short desc.}
+
+    \MakeNomenclatureNotStarred
+    \Group{Group 2}
+        \Add{$Symbooooool$}
+            {This tests the multiple group counter and a symbol in math mode.  Also, just another check
+             for an extremely long description and proper spacing of the minipage columns.}
+        \Item{$sym$}    {Short desc.}
 
 \end{Nomenclature}
 

@@ -5,15 +5,14 @@
 
 % Author command that will display 'The Author' if \TheAuthor is empty
 \newcommand{\TheLicenseAuthor}{
-    \ifthenelse{\equal{\TheAuthor}{}}
+    \IfCommandEmpty{\TheAuthor}
         {The Author}
-        {\TheAuthor}
-}
+        {\TheAuthor}}
 
 % Full Copyright
 \newcommand{\CopyrightTemplate}{
     \large
-    \copyright\ \ Copyright by \TheLicenseAuthor(\the\year)\\
+    \copyright{} Copyright by \TheLicenseAuthor(\the\year)\\
     All Rights Reserved
 }
 
