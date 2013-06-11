@@ -43,6 +43,7 @@
 % ------------------------------------------------------------------------------------- %
 
 % Declare ifs for option switches
+\newif\ifUWMad@UserGuide          \UWMad@UserGuidefalse
 \newif\ifUWMad@FrontMatterCommands\UWMad@FrontMatterCommandsfalse
 \newif\ifUWMad@IncludeMathCommands\UWMad@IncludeMathCommandstrue
 \newif\ifUWMad@NoPDFMetaInfo      \UWMad@NoPDFMetaInfofalse

@@ -35,22 +35,25 @@
 
 
 \definecolor{UWMadGreen}{rgb}{0,0.7,0}
+
 % Default hyperref behavior that is *not* PDF Metadata
-\hypersetup{
-    colorlinks         = true       ,  % Makes links colored and not boxed
-    linkcolor          = blue       ,  % link color to blue
-    citecolor          = UWMadGreen ,  % cite color
-    urlcolor           = violet     ,  % URL color
-    pdfdisplaydoctitle = true       ,  % Show title instead of filename
-    pdfview            = {FitH}     ,  % Should (but does not always) put the PDF zoom to pade width upon open
-    pdfstartview       = {FitH}     ,  % Should (but does not always) put the PDF zoom to pade width upon open
-    pdfpagelayout      = OneColumn  ,
-    plainpages         = false      ,  % Makes Hyperref follow the page numbering styles in the link definitions 
-    hypertexnames      = true       ,  % Makes Hyperref used 'intuitive' choices for its link anchors
-    bookmarksopenlevel = 3          ,  % Will expand the bookmark structure down to the subsubsection level
-    bookmarksopen      = true       ,  % Opens the bookmark menu
-    unicode
-}
+\ifUWMad@EnableHyperlinking
+    \hypersetup{
+        colorlinks         = true       ,  % Makes links colored and not boxed
+        linkcolor          = blue       ,  % link color to blue
+        citecolor          = UWMadGreen ,  % cite color
+        urlcolor           = violet     ,  % URL color
+        pdfdisplaydoctitle = true       ,  % Show title instead of filename
+        pdfview            = {FitH}     ,  % Should (but does not always) put the PDF zoom to pade width upon open
+        pdfstartview       = {FitH}     ,  % Should (but does not always) put the PDF zoom to pade width upon open
+        pdfpagelayout      = OneColumn  ,
+        plainpages         = false      ,  % Makes Hyperref follow the page numbering styles in the link definitions 
+        hypertexnames      = true       ,  % Makes Hyperref used 'intuitive' choices for its link anchors
+        bookmarksopenlevel = 3          ,  % Will expand the bookmark structure down to the subsubsection level
+        bookmarksopen      = true       ,  % Opens the bookmark menu
+        unicode
+    }
+\fi
 
 
 \pagestyle{myheadings}        % Set: Place page number in the upper-right corner of the page

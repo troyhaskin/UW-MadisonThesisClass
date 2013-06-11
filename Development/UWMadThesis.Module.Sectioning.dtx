@@ -99,6 +99,16 @@
 %   comments.
 %
 
+\let\DefaultChapter\@chapter
+
+\def\@chapter{%
+    \thispagestyle{myheadings}%
+    \ifnum \value{chapter}=0%
+        \pagenumbering{arabic}%
+    \fi%
+    \DefaultChapter}%
+
+\iffalse
 \DeclareRobustCommand{\chapter}{%
     \if@openright\cleardoublepage\else\clearpage\fi% %  Double-skips if the 'openright' option is used.
     \global\@topnum\z@%                              %  Prevents figures from being place at the top of the page
@@ -110,9 +120,9 @@
 
 \def\@chapter[#1]#2{%
 %
-    \ifnum \value{chapter}=0%                       % Test:  Is this the first chapter?
-        \pagenumbering{arabic}%                     % True:  Switch to arabic page numbers 
-    \fi%
+    %\ifnum \value{chapter}=0%                       % Test:  Is this the first chapter?
+    %    \pagenumbering{arabic}%                     % True:  Switch to arabic page numbers 
+    %\fi%
 %
     \ifnum \c@secnumdepth >\m@ne%                   % Test: Is the SectionDepth counter is above -1
         \refstepcounter{chapter}%                   % True: Define: Add one to chapter counter
@@ -132,7 +142,7 @@
         \@afterheading%                             % Set:
     \fi%
 }
-
+\fi
 
 
 
@@ -322,7 +332,7 @@
 \HashSet {PreviousSectioningCommand}{paragraph}     {subparagraph}
 
 \newcommand{\LevelToSection}[1]{% #1 = Counter for desired level
-    \HashExpandableGet{LevelToSection}{#1}
+    \HashExpandableGet{LevelToSection}{#1}%
 }
 
 \newcommand{\SectionToLevel}[1]{% #1 = section
