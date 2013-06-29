@@ -139,30 +139,50 @@
 % =============================================================================================== %
 %                                   Module Loader Commands                                        %
 % =============================================================================================== %
-\newcommand{\ModulePrefix}{\UWMad@ClassName.Module.}
-\newcommand{\ModuleSuffix}{.dtx}
+\newcommand{\UWMad@ModulePrefix}{\UWMad@ClassName.Module.}
+\newcommand{\UWMad@ModuleSuffix}{.dtx}
 
-\DeclareRobustCommand{\LoadIfModuleExists}[1]{
 
-    \edef\TheModule{\ModulePrefix#1\ModuleSuffix}
+\ExplSyntaxOn
 
-    \InputIfFileExists{\TheModule}{}{
-        \UWMad@ClassWarning{Could not locate #1 module.}
-    }
-}
+\DeclareDocumentCommand \UWMad@InputIfFileExists { m m m } {
+    \file_if_exist:nTF {#1}
+        {\file_input:n {#1}
+         #2}
+        {#3}}
+
+\DeclareDocumentCommand \UWMad@LoadIfModuleExists {m}{
+    \UWMad@InputIfFileExists{\UWMad@ModulePrefix#1\UWMad@ModuleSuffix}
+        {}
+        {\UWMad@ClassWarning{Could not locate #1 module.}}}
+
+\ExplSyntaxOff
 
 
 % =============================================================================================== %
 %                                     Module Loads                                                %
 % =============================================================================================== %
-\LoadIfModuleExists{Programming}
-\LoadIfModuleExists{LayoutAndStyle}
-\LoadIfModuleExists{Sectioning}
-\LoadIfModuleExists{PDFDataAndMetadata}
-\LoadIfModuleExists{LicensePage}
-\LoadIfModuleExists{Math}
-\LoadIfModuleExists{RelativeDirectoryInput}
-\LoadIfModuleExists{Nomenclature}
+\UWMad@LoadIfModuleExists{Programming}
+\UWMad@LoadIfModuleExists{LayoutAndStyle}
+\UWMad@LoadIfModuleExists{Sectioning}
+\UWMad@LoadIfModuleExists{PDFDataAndMetadata}
+\UWMad@LoadIfModuleExists{LicensePage}
+\UWMad@LoadIfModuleExists{Math}
+\UWMad@LoadIfModuleExists{RelativeDirectoryInput}
+\UWMad@LoadIfModuleExists{Nomenclature}
+
+
+\DeclareExpandableDocumentCommand \LoadThisModule{ m }{
+    \def\DEFINEDA{I am DEFINED A.}
+    \def\DEFINEDB{I am DEFINED B.}
+    \def\DEFINEDC{I am DEFINED C.}}
+
+\newif\ifUWMad@LoadThisModule\UWMad@LoadThisModuletrue
+
+\AtBeginDocument{%
+    \ifUWMad@LoadThisModule%
+        \LoadThisModule{}
+    \fi}
 
 
 

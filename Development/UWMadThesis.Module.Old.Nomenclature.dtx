@@ -1,5 +1,5 @@
 % ===================================================================================== %
-%                                  Nomen Module                                         %
+%                                  Nomen Module                                  %
 % ===================================================================================== %
 
 
@@ -17,14 +17,16 @@
 \let\MakeNomenclatureStarred\UWMad@MakeNomenclatureStarredtrue
 \let\MakeNomenclatureNotStarred\UWMad@MakeNomenclatureStarredfalse
 
-\newcommand{\UWMad@UpdateWidest}[1]{%
+\newcommand*{\UWMad@UpdateWidest}[1]{%
     \settowidth{\UWMad@WidestTest}{#1}%
     \ifdim\UWMad@Widest<\UWMad@WidestTest%
         \setlength{\UWMad@Widest}{\UWMad@WidestTest}%
-    \fi}
+    \fi%
+}
 %
 \newcommand*{\ResetColumnWidth}{%
-    \global\setlength{\UWMad@Widest}{0pt}}
+    \global\setlength{\UWMad@Widest}{0pt}%
+}
 %
 %
 \newcommand*{\TheNomenclatureName}{Nomenclature}
@@ -189,4 +191,5 @@
 }{%
     \UWMad@NomenFinalizer{\ArrayDelete}%
 }
+
 

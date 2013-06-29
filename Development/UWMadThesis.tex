@@ -1,16 +1,34 @@
 \documentclass[12pt]{UWMadThesis}
 
+\usepackage{shortvrb}
+\MakeShortVerb{\|}
+
 \let\OldBackslash\backslash
 \renewcommand{\backslash}{\ensuremath{\OldBackslash}}
 
-\newcommand{\Cmd}[1]{\textcolor{PineGreen}{\texttt{#1}}}
+\newcommand{\Cmd}[1]{\texorpdfstring{\textcolor{PineGreen}{\texttt{#1}}}{#1}}
+
+
+\makeatletter
+    \UWMad@LoadThisModulefalse
+\makeatother
+
 
 \begin{document}
 \makeatletter
 
-\show\romannumeral
+\DequeMake{TestDeque}
+\DequePushRight{TestDeque}{Hello }
+\DequePushRight{TestDeque}{there }
+\DequePushRight{TestDeque}{, sir.}
+\DequeWalkLeftToRight{TestDeque}{\textbf{#1}}
+\DequeWalkRightToLeft{TestDeque}{#1}
 
-\input{Tests/Test_Nomenclature}
+
+\Title{UWMadThesis Tests PDF}
+\Author{Troy C. Haskin}
+
+%\input{Tests/Test_Nomenclature}
 \input{Tests/Test_Programming}
 %\input{Tests/Test_LaTeX3Programming}
 %\input{Tests/Test_MetaData}

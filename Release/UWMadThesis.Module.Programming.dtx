@@ -65,12 +65,11 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\ExplSyntaxOn
-\DeclareDocumentCommand \GlobalNewIf { m }
-    {\cs_gset_nopar:cpn {#1true}
-        {\cs_gset_eq:cc {if#1} {iftrue}}
-     \cs_gset_nopar:cpn {#1false}
-        {\cs_gset_eq:cc {if#1} {iffalse}}}
+\newcommand{\GlobalNewIf}[1]{%
+    \csgdef{#1true}%
+        {\global\cslet{if#1}{\iftrue}}%
+    \csgdef{#1false}%
+        {\global\cslet{if#1}{\iffalse}}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -89,14 +88,18 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfCommandExists { m +m +m }
-    {\cs_if_exist:cTF {#1}
-        {#2}
-        {#3}}
-\DeclareDocumentCommand \IfCommandDoesNotExist { m +m +m }
-    {\cs_if_free:cTF {#1}
-        {#2}
-        {#3}}
+\newcommand{\IfCommandExists}[3]{%
+    \ifcsname#1\endcsname%
+        #2%
+    \else%
+        #3%
+    \fi}
+\newcommand{\IfCommandDoesNotExist}[3]{%
+    \ifcsname#1\endcsname%
+        #3%
+    \else%
+        #2%
+    \fi}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -115,26 +118,26 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfGreaterThanEqualTo { m m m m }
-    {\ifnum#1>#2
-        #3
-     \else
-        \ifnum#1=#2
-            #3
-        \else
-            #4
-        \fi
-     \fi}
-\DeclareDocumentCommand \IfLessThanEqualTo { m m m m }
-    {\ifnum#1<#2
-        #3
-     \else
-        \ifnum#1=#2
-            #3
-        \else
-            #4
-        \fi
-     \fi}
+\newcommand{\IfGreaterThanEqualTo}[4]{%
+    \ifnum#1>#2%
+        #3%
+    \else%
+        \ifnum#1=#2%
+            #3%
+        \else%
+            #4%
+        \fi%
+    \fi}
+\newcommand{\IfLessThanEqualTo}[4]{%
+    \ifnum#1<#2%
+        #3%
+    \else%
+        \ifnum#1=#2%
+            #3%
+        \else%
+            #4%
+        \fi%
+    \fi}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -151,9 +154,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfStringEmpty { m +m +m }
-    {\tl_if_blank:nTF {#1}
-        {#2}
+\newcommand{\IfStringEmpty}[3]{%
+    \ifblank{#1}%
+        {#2}%
         {#3}}
 %    \end{macrocode}
 %   \end{macro}
@@ -169,9 +172,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfCommandEmpty { m +m +m }
-    {\tl_if_blank:oTF{#1}
-        {#2}
+\newcommand{\IfCommandEmpty}[3]{%
+    \ifdefempty{#1}%
+        {#2}%
         {#3}}
 %    \end{macrocode}
 %   \end{macro}
@@ -187,9 +190,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\newcommand{\DefineNewLength}[2]
-    {\newlength{#1}%
-     \setlength{#1}{#2}}
+\newcommand{\DefineNewLength}[2]{%
+    \newlength{#1}%
+    \setlength{#1}{#2}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -204,9 +207,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\newcommand{\DefineNewCounter}[2]
-    {\newcounter{#1}%
-     \setcounter{#1}{#2}}
+\newcommand{\DefineNewCounter}[2]{%
+    \newcounter{#1}%
+    \setcounter{#1}{#2}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -238,12 +241,14 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeCommand { m +m }
-    {\cs_set:cpn {#1} {#2}}
-\DeclareDocumentCommand \ReMakeCommand { m +m }
-    {\IfCommandExists{#1}
-        {\cs_set:cpn {#1} {#2}}
-        {\UWMad@ClassWarning{Command\ `#1'\ is undefined.}}}
+\newcommand{\MakeCommand}[2]{%
+    \IfCommandDoesNotExist{#1}%
+        {\csdef{#1}{#2}}%
+        {\UWMad@ClassWarning{Command `#1' is already defined.}}}
+\newcommand{\ReMakeCommand}[2]{%
+    \IfCommandExists{#1}%
+        {\csdef{#1}{#2}}%
+        {\UWMad@ClassWarning{Command `#1' is undefined.}}}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -259,28 +264,34 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeGlobalCommand { m +m }
-    {\cs_gset:cpn {#1} {#2}}
+\newcommand{\MakeGlobalCommand}[2]{%
+    \csgdef{#1}{#2}}
 %    \end{macrocode}
 %   \end{macro}
 %
 %
 %
 %   \begin{macro}{\MakeExpandedCommand}
-%   This command creates a command in the spirit of |\MakeCommand|
-%   but with several differences.  First, the command simply creates
+%   \begin{macro}{\MakeFullyExpandedCommand}
+%   This command pair creates commands in the spirit of |\MakeCommand|
+%   but with several differences.  First, the commands simply create
 %   the requested command without regard to its existence.  Secondly,
-%   the \marg{Code} supplied is fully expanded without protection.
+%   the \marg{Code} supplied is expanded with protection by 
+%   |\MakeExpandedCommand| and fully expanded by |\MakeFullyExpandedCommand|.
 %   Lastly, the definitions are global.
 %
 %   \begin{Usage}
 %       \item |\MakeExpandedCommand|\marg{Command Name}\marg{Code}
+%       \item |\MakeFullyExpandedCommand|\marg{Command Name}\marg{Code}
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeExpandedCommand { m +m }
-    {\cs_get:cpx {#1} {#2}}
+\newcommand{\MakeExpandedCommand}[2]{%
+    \protected@csxdef{#1}{#2}}
+\newcommand{\MakeFullyExpandedCommand}[2]{%
+    \csxdef{#1}{#2}}
 %    \end{macrocode}
+%   \end{macro}
 %   \end{macro}
 %
 %
@@ -293,8 +304,8 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeCommandUndefined { m }
-    {\cs_undefined:c {#1}}
+\newcommand{\MakeCommandUndefined}[1]{%
+    \global\csundef{#1}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -311,13 +322,13 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \CopyCommand { m m }
-    {\IfCommandExists{#1}
-        {\IfCommandExists{#2}
-            {\UWMad@ClassWarning{Command\ `#2'\ is defined.}}
-            {}
-            \cs_gset_eq:cc {#2}{#1}}
-        {\UWMad@ClassWarning{Command\ `#1'\ is undefined.}}}
+\newcommand{\CopyCommand}[2]{%
+    \IfCommandExists{#1}%
+        {\IfCommandExists{#2}%
+            {\UWMad@ClassWarning{Command `#2' is defined.}}%
+            {}%
+            \csletcs{#2}{#1}}%
+        {\UWMad@ClassWarning{Command `#1' is undefined.}}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -334,20 +345,20 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   This subsystem was made to give a \LaTeX{}-like counter system that
 %   can create both local and global counters.
 %
-%   \begin{macro}{\g_UWMad_RegisteredCounter}
-%   \begin{macro}{\g_UWMad_LocalCounter}
-%   \begin{macro}{\g_UWMad_GlobalCounter}
+%   \begin{macro}{\UWMad@RegisteredCounter}
+%   \begin{macro}{\UWMad@LocalCounter}
+%   \begin{macro}{\UWMad@GlobalCounter}
 %   These commands define the command name suffixes used to store, identify,
 %   and protect (from the user) the counter commands.  All counters created
 %   by the system are given a registration command to indicate it is part of
-%   the system and either a local or global command to indicate if a global
-%   assignment or advancement is needed.  The counter itself is created 
-%   without any prefix or suffix for usage by the user.
+%   the system and either a local or global command to indicate if a |\global|
+%   prefix is needed for assignment and advancement.  The counter itself is
+%   created without any prefix or suffix for usage by the user.
 %
 %    \begin{macrocode}
-\tl_const:Nn \g_UWMad_RegisteredCounter {UWMad_RegisteredCounter}
-\tl_const:Nn \g_UWMad_LocalCounter      {UWMad_LocalCounter}
-\tl_const:Nn \g_UWMad_GlobalCounter     {UWMad_GlobalCounter}
+\newcommand{\UWMad@RegisteredCounter} {UWMad@RegisteredCounter}
+\newcommand{\UWMad@LocalCounter}      {UWMad@LocalCounter}
+\newcommand{\UWMad@GlobalCounter}     {UWMad@GlobalCounter}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -368,38 +379,35 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \DefineNewLocalCounter { m m }
-    {\tl_const:cn {#1 \tl_use:N \g_UWMad_RegisteredCounter} {}
-     \tl_const:cn {#1 \tl_use:N \g_UWMad_LocalCounter}      {}
-     \int_new:c {#1}
-     \int_gset:cn {#1} {#2}}
-\DeclareDocumentCommand \DefineNewGlobalCounter { m m }
-    {\tl_const:cn {#1 \tl_use:N \g_UWMad_RegisteredCounter} {}
-     \tl_const:cn {#1 \tl_use:N \g_UWMad_GlobalCounter}     {}
-     \int_new:c {#1}
-     \int_gset:cn {#1} {#2}}
+\newcommand{\DefineNewLocalCounter}[2]{%
+    \MakeCommand{#1\UWMad@RegisteredCounter}{}%
+    \MakeCommand{#1\UWMad@LocalCounter}{}%
+    \expandafter\newcount\csname#1\endcsname%
+    \csname#1\endcsname=#2}
+\newcommand{\DefineNewGlobalCounter}[2]{%
+    \MakeCommand{#1\UWMad@RegisteredCounter}{}%
+    \MakeCommand{#1\UWMad@GlobalCounter}{}%
+    \expandafter\newcount\csname#1\endcsname%
+    \csname#1\endcsname=#2}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
 %
 %
 %
-%   \begin{macro}{\UWMad_LocalOrGlobal:nnn}
-%   This command expands to either \marg{LocalCode} \marg{GLobalCode}
-%   depending on the definition of the counter \marg{CounterName}.
-%   If the counter is not registered with the system, a warning is thrown.
+%   \begin{macro}{\UWMad@LocalOrGlobal}
+%   This command expands to either |\global| or |\relax| depending on the
+%   definition of the counter \marg{Counter Name}.
 %
 %   \begin{Usage}
-%       \item |\UWMad_LocalOrGlobal:nnn|\marg{CounterName}\marg{LocalCode}\marg{GlobalCode}
+%       \item |\UWMad@LocalOrGlobal|\marg{Counter Name}
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_LocalOrGlobal:nnn
-    {\tl_if_exist:cTF{#1 \tl_use:N \g_UWMad_RegisteredCounter}
-        {\tl_if_exist:cTF{#1 \tl_use:N \g_UWMad_LocalCounter}
-            {#2}
-            {#3}}
-        {\UWMad@ClassWarning{`#1'\ is not a registered counter.}}}
+\newcommand{\UWMad@LocalOrGlobal}[1]{%
+    \IfCommandExists{#1\UWMad@GlobalCounter}%
+        {\global}%
+        {\relax}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -407,18 +415,21 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %   \begin{macro}{\AddToCounter}
 %   This command adds \marg{Increment} to the current value of counter
-%   \marg{CounterName}. |\UWMad_LocalOrGlobal:nnn| handles the local vs.
+%   \marg{Counter Name}. |\UWMad@LocalOrGlobal| handles the local vs.
 %   global advancement.
 %
 %   \begin{Usage}
-%       \item |\AddToCounter|\marg{CounterName}\marg{Increment}
+%       \item |\AddToCounter|\marg{Counter Name}\marg{Increment}
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \AddToCounter { m m }
-    {\UWMad_LocalOrGlobal:nnn {#1}
-        {\int_add:cn  {#1} {#2}}
-        {\int_gadd:cn {#1} {#2}}}
+\newcommand{\AddToCounter}[2]{%
+    \IfCommandExists{#1\UWMad@RegisteredCounter}
+        {\expandafter%
+            \UWMad@LocalOrGlobal{#1}%
+                \expandafter%
+                    \advance\csname#1\endcsname #2}
+        {\UWMad@ClassWarning{`#1' is not a registered counter.}}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -426,15 +437,15 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %   \begin{macro}{\StepCounter}
 %   Adds $1$ to the counter \marg{Counter Name}.
-%   |\UWMad_LocalOrGlobal:nnn| handles the local vs. global advancement.
+%   |\UWMad@LocalOrGlobal| handles the local vs. global advancement.
 %
 %   \begin{Usage}
 %       \item |\StepCounter|\marg{Counter Name}
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \StepCounter { m }
-    {\AddToCounter{#1}{1}}
+\newcommand{\StepCounter}[1]{%
+    \AddToCounter{#1}{1}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -442,17 +453,18 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %   \begin{macro}{\SetCounter}
 %   This command sets the value of counter \marg{Counter Name} to \marg{Value}.
-%   |\UWMad_LocalOrGlobal:nnn| handles the local vs. global assignment.
+%   |\UWMad@LocalOrGlobal| handles the local vs. global assignment.
 %
 %   \begin{Usage}
 %       \item |\SetCounter|\marg{Counter Name}\marg{Value}
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \SetCounter { m m }
-    {\UWMad_LocalOrGlobal:nnn {#1}
-        {\int_set:cn  {#1} {#2}}
-        {\int_gset:cn {#1} {#2}}}
+\newcommand{\SetCounter}[2]{%
+    \expandafter%
+        \UWMad@LocalOrGlobal{#1}%
+            \expandafter%
+                \csname#1\endcsname=#2}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -461,7 +473,6 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \begin{macro}{\SetAndAddToCounter}
 %   \begin{macro}{\SetAndStepCounter}
 %   Combinations of |\SetCounter|, |AddToCounter|, and |\StepCounter|.
-%   |\UWMad_LocalOrGlobal:nnn| handles the local vs. global assignment.
 %
 %   \begin{Usage}
 %       \item |\SetAndAddToCounter|\marg{Counter Name}\marg{Initial Value}\marg{Value}
@@ -469,11 +480,12 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \SetAndAddToCounter { m m m }
-    {\SetCounter{#1}{#2}
-     \AddToCounter{#1}{#3}}
-\DeclareDocumentCommand \SetAndStepCounter { m m }
-    {\SetAndAddToCounter{#1}{#2}{1}}
+\newcommand{\SetAndAddToCounter}[3]{%
+    \SetCounter{#1}{#2}%
+    \AddToCounter{#1}{#3}}
+\newcommand{\SetAndStepCounter}[2]{%
+    \SetCounter{#1}{#2}%
+    \AddToCounter{#1}{1}}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -488,8 +500,25 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \CounterValue { m }
-    {\int_use:c {#1}}
+\newcommand{\CounterValue}[1]{%
+    \the\csuse{#1}}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\MakeCounterUndefined}
+%   Erases the counter \marg{Counter Name} from the system. 
+%
+%   \begin{Usage}
+%       \item |\MakeCounterUndefined|\marg{Counter Name}
+%   \end{Usage}
+%
+%    \begin{macrocode}
+\newcommand{\MakeCounterUndefined}[1]{%
+    \MakeCommandUndefined{#1\UWMad@RegisteredCounter}%
+    \MakeCommandUndefined{#1\UWMad@LocalCounter}%
+    \MakeCommandUndefined{#1\UWMad@GlobalCounter}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -498,229 +527,94 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 %
-%^^A ======================================================================= %
-%^^A                          CSV Creation Commands                          %
-%^^A ======================================================================= %
-%
-%   \subsubsection{CSV System}
-%   This set of commands is a simple system for comma-separated value (CSV)
-%   list creation.  It consists of only a few functions: initialize list,
-%   append value, prepend value, get list, and erase list.
-%
-%   This feature was created solely to export |hyperref| meta-data to an
-%   external file for later reading.  The system is a thin abstraction of
-%   \LaTeXPL's |l3clist| package to avoid developing
-%   a one-shot system while allowing more endeavouring authors access to
-%   to the simple feature without learning \LaTeX3{} programming.
-%
-\ExplSyntaxOn
-\DeclareDocumentCommand  \CSVMake { m }
-    {\clist_new:c {g_UWMad_#1}}
-
-\DeclareDocumentCommand \CSVClear { m }
-    {\clist_gclear:c {g_UWMad_#1}}
-
-\DeclareDocumentCommand \CSVAppend { m m }
-    {\clist_if_exist:cTF {g_UWMad_#1}
-        {}
-        {\clist_new:c {g_UWMad_#1}}
-     \clist_gput_right:cn {g_UWMad_#1} {#2}}
-
-\DeclareDocumentCommand \CSVPrepend { m m }
-    {\clist_if_exist:cTF {g_UWMad_#1}
-        {}
-        {\clist_new:c {g_UWMad_#1}}
-     \clist_gput_left:cn {g_UWMad_#1} {#2}}
-
-\DeclareExpandableDocumentCommand \CSVGet { m }
-    {\clist_use:c {g_UWMad_#1}}
-
-\DeclareDocumentCommand  \IfCSVExists { m m m }
-    {\clist_if_exist:cTF {g_UWMad_#1}
-        {#2}
-        {#3}}
-%
-%
-%
-%
-%
-%
-%^^A ======================================================================= %
-%^^A                          Deque Creation Commands                        %
-%^^A ======================================================================= %
-%
-%   \subsubsection{Deque System}
-%   This set of commands is a simple system for creating and working with
-%   double-ended queues (deques, pronounced \textit{deck}).  Deques are a
-%   generalization of stacks and queues in that data can be pushed, popped,
-%   and walked from either end of the list.
-%
-%   The system is a thin abstraction of \LaTeXPL's
-%   |l3seq| module to avoid developing a one-shot system while allowing more
-%   endeavoring authors access to the feature without learning \LaTeX3{}
-%   programming.
-%
-%
-\DeclareDocumentCommand \DequeMake { m }
-    {\seq_new:c {g_UWMad_Deque_#1}}
-%
-%
-\DeclareDocumentCommand \DequeDelete { m }
-    {\seq_if_exist:cTF {g_UWMad_Deque_#1}
-        {\seq_gclear:c {g_UWMad_Deque_#1}
-         \cs_undefine:c {g_UWMad_Deque_#1}}
-        {}}
-%
-%
-\DeclareDocumentCommand \DequePushLeft  { m +m }
-    {\seq_gput_left:cn {g_UWMad_Deque_#1} {#2}}
-\DeclareDocumentCommand \DequePushRight { m +m }
-    {\seq_gput_right:cn {g_UWMad_Deque_#1} {#2}}
-%
-%
-\DeclareDocumentCommand \DequePopLeft { m }
-    {\seq_gpop_left:cN {g_UWMad_Deque_#1} \l_tmpa_tl
-     \tl_use:N \l_tmpa_tl}
-\DeclareDocumentCommand \DequePopRight { m }
-    {\seq_gpop_right:cN {g_UWMad_Deque_#1} \l_tmpa_tl
-     \tl_use:N \l_tmpa_tl}
-%
-%
-\DeclareDocumentCommand \DequeWalkLeftToRight { m +m }
-    {\seq_if_exist:cTF {g_UWMad_Deque_#1}
-        {\seq_map_inline:cn {g_UWMad_Deque_#1} {#2}}
-        {}}
-%
-%
-\cs_generate_variant:Nn \seq_reverse:N {c}
-\DeclareDocumentCommand \DequeWalkRightToLeft { m +m }
-    {\group_begin:
-        \seq_if_exist:cTF {g_UWMad_Deque_#1}
-            {\seq_reverse:c {g_UWMad_Deque_#1}
-             \seq_map_inline:cn {g_UWMad_Deque_#1} {#2}}
-            {}
-     \group_end:}
-%
-%
-%
-%
-%
-%
 % =========================================================================== %
-%                 Hashes (Associative Arrays) with LaTeX3                     %
+%                          CSV Creation Commands                              %
 % =========================================================================== %
-%
-%   \subsubsection{Hash System}
-%   This set of commands is a simple system for creating and working with
-%   hashes (more often called associative arrays, but since 
-%   |\AssociativeArrayUnset| seemed error prone and annoying, the term 
-%   Hash is used instead). Hashes are a type of array that indexes values
-%   by (atleast in \LaTeX{}) alphanumeric keys instead of just integers.
-%   Data can set by key, retrieved by key, unset by key, deleted, and walked.
-%
-%   A hash walk, like a deque walk, iterates through all of the keys and
-%   values in the hash while applying a user supplied function.  However,
-%   unlike a deque walk, \textbf{a hash's walk order is not gauranteed
-%   to be the set order}.  If hash-like functionality is desired but walk
-%   order is need to be gauranteed, see the Array System after this section.
-%
-%   The system is a thin abstraction of \LaTeXPL's
-%   |l3prop| module to avoid developing a one-shot system while allowing more
-%   endeavoring authors access to the feature without learning \LaTeX3{}
-%   programming.
-%
-%
-\cs_generate_variant:Nn \prop_gput:Nnn   { c x n   }
-\cs_generate_variant:Nn \prop_if_in:NnTF { c x TF  }
-\cs_generate_variant:Nn \prop_get:Nn     { c x     }
-\cs_generate_variant:Nn \prop_get:NnNTF  { c x N TF}
-\cs_generate_variant:Nn \prop_gremove:Nn { c x     }
+\newcommand{\CSVSuffix}{CSV LIST}
 
-\DeclareDocumentCommand \HashMake { m }
-    {\prop_new:c {g_UWMad_Hash_#1}}
+\newcommand{\IfCSVExists}[3]{%
+    \IfCommandExists{#1\CSVSuffix}%
+    {#2}%
+    {#3}%
+}
 
-\DeclareDocumentCommand \HashSet { m m +m }
-    {\prop_if_exist:cTF {g_UWMad_Hash_#1}
-        {\prop_gput:cxn   {g_UWMad_Hash_#1}{#2}{#3}}
-        {\HashMake{#1}
-         \prop_gput:cxn {g_UWMad_Hash_#1}{#2}{#3}}}
+\newcommand{\CSVMake}[1]{ % #1 = List name, #2 = Token to push on to right
+    \IfCSVExists{#1}
+        {\UWMad@ClassWarning{CSV '#1' already exists.}}
+        {\MakeCommand{#1\CSVSuffix}{}}
+}
 
-\DeclareDocumentCommand \HashGet { m m }
-    {\prop_get:cxNTF {g_UWMad_Hash_#1} {#2} \l_tmpa_prop
-        {\tl_use:N \l_tmpa_prop}
-        {}}
+\newcommand{\CSVAppend}[2]{ % #1 = List name, #2 = Token to push on to right
+     \IfCSVExists{#1}
+        {\ifcsempty{#1\CSVSuffix}
+            {\protected@csxdef{#1\CSVSuffix}{#2}}
+            {\protected@csxdef{#1\CSVSuffix}{\csuse{#1\CSVSuffix},#2}}}
+        {\CSVMake{#1}
+         \CSVAppend{#1}{#2}}
+}
 
-\DeclareExpandableDocumentCommand \HashExpandableGet { m m }
-    {\prop_if_in:cxTF  {g_UWMad_Hash_#1} {#2}
-        {\prop_get:cx {g_UWMad_Hash_#1} {#2}}
-        {}}
+\newcommand{\CSVPrepend}[2]{ % #1 = List name, #2 = Token to push on to left
+     \IfCSVExists{#1}
+        {\ifcsempty{#1\CSVSuffix}
+            {\protected@csxdef{#1\CSVSuffix}{#2}}
+            {\protected@csxdef{#1\CSVSuffix}{#2,\csuse{#1\CSVSuffix}}}}
+        {\CSVMake{#1}
+         \CSVPrepend{#1}{#2}}
+}
 
-\DeclareDocumentCommand \HashUnset { m m }
-    {\prop_if_exist:cTF  {g_UWMad_Hash_#1}
-        {\prop_gremove:cx {g_UWMad_Hash_#1} {#2}}
-        {}}
+\newcommand{\CSVGet}[1]{% #1 = List name, #2 = Token to push on to left
+     \IfCSVExists{#1}%
+        {\csuse{#1\CSVSuffix}}%
+        {}%
+}
 
-\DeclareDocumentCommand \IfHashKeySet { m m +m +m }
-    {\prop_if_exist:cTF {g_UWMad_Hash_#1}
-        {\prop_if_in:cxTF {g_UWMad_Hash_#1} {#2}
-            {#3}
-            {#4}}
-        {}}
 
-\DeclareDocumentCommand \HashWalk {m +m}
-    {\prop_if_exist:cTF      {g_UWMad_Hash_#1}
-        {\prop_map_inline:cn {g_UWMad_Hash_#1}
-            {#2}}
-        {}}
 
-\DeclareDocumentCommand \HashDelete { m }
-    {\prop_if_exist:cTF {g_UWMad_Hash_#1}
-        {\prop_gclear:c {g_UWMad_Hash_#1}
-         \cs_undefine:c {g_UWMad_Hash_#1}}
-        {}}
-%
-%
-%
-%
-%
-%
-%^^A ======================================================================= %
-%^^A                          Array Creation Commands                        %
-%^^A ======================================================================= %
-%
-%   \subsubsection{Array System}
-%
-%
+
+
+
+% =========================================================================== %
+%                      Array Building Commands                                %
+% =========================================================================== %
+
 \DefineNewCounter{ArrayWorkCounter}{0}
 \newcommand{\ArraySuffix}         {ARRAY}
 \newcommand{\ArraySuffixStart}    {\ArraySuffix START   }
 \newcommand{\ArraySuffixEnd}      {\ArraySuffix END     }
+\newcommand{\ArraySuffixPosition} {\ArraySuffix POSITION}
 \newcommand{\ArraySuffixCount}    {\ArraySuffix COUNT   }
 
 \newcommand{\ArrayMake}[1]{% #1 = Array name
-    \MakeGlobalCommand{#1\ArraySuffix}{#1\ArraySuffix}
-    \DefineNewGlobalCounter{#1\ArraySuffixStart}{1}
-    \DefineNewGlobalCounter{#1\ArraySuffixEnd}  {0}
-    \DefineNewGlobalCounter{#1\ArraySuffixCount}{0}}
+    \MakeGlobalCommand{#1\ArraySuffix}             {#1\ArraySuffix}
+    \DefineNewGlobalCounter{#1\ArraySuffixPosition} {0}
+    \DefineNewGlobalCounter{#1\ArraySuffixStart}    {1}
+    \DefineNewGlobalCounter{#1\ArraySuffixEnd}      {0}
+    \DefineNewGlobalCounter{#1\ArraySuffixCount}    {0}
+}
 
 
 % Counter names for a given array
+\newcommand{\ArrayPosition}[1]{#1\ArraySuffixPosition} % #1 = ArrayName
 \newcommand{\ArrayStart}   [1]{#1\ArraySuffixStart}    % #1 = ArrayName
 \newcommand{\ArrayEnd}     [1]{#1\ArraySuffixEnd}      % #1 = ArrayName
 \newcommand{\ArrayCount}   [1]{#1\ArraySuffixCount}    % #1 = ArrayName
 % Counter names for a given array
+\newcommand{\ArrayNumberPosition}[1]{\csname#1\ArraySuffixPosition\endcsname}  % #1 = ArrayName
 \newcommand{\ArrayNumberStart}   [1]{\csname#1\ArraySuffixStart\endcsname}    % #1 = ArrayName
 \newcommand{\ArrayNumberEnd}     [1]{\csname#1\ArraySuffixEnd\endcsname}      % #1 = ArrayName
 \newcommand{\ArrayNumberCount}   [1]{\csname#1\ArraySuffixCount\endcsname}    % #1 = ArrayName
 % Decrementers
+\newcommand{\ArrayDecrementPosition}[1]{\AddToCounter{\ArrayPosition{#1}}{-1}}
 \newcommand{\ArrayDecrementStart}   [1]{\AddToCounter{\ArrayStart   {#1}}{-1}}
 \newcommand{\ArrayDecrementEnd}     [1]{\AddToCounter{\ArrayEnd     {#1}}{-1}}
 \newcommand{\ArrayDecrementCount}   [1]{\AddToCounter{\ArrayCount   {#1}}{-1}}
 % Incrementers
+\newcommand{\ArrayIncrementPosition}[1]{\AddToCounter{\ArrayPosition{#1}}{+1}}
 \newcommand{\ArrayIncrementStart}   [1]{\AddToCounter{\ArrayStart   {#1}}{+1}}
 \newcommand{\ArrayIncrementEnd}     [1]{\AddToCounter{\ArrayEnd     {#1}}{+1}}
 \newcommand{\ArrayIncrementCount}   [1]{\AddToCounter{\ArrayCount   {#1}}{+1}}
 % Numerical values
+\newcommand{\ArrayValuePosition}[1]{\CounterValue{#1\ArraySuffixPosition}} % #1 = Array name
 \newcommand{\ArrayValueStart}   [1]{\CounterValue{#1\ArraySuffixStart}}    % #1 = Array name
 \newcommand{\ArrayValueEnd}     [1]{\CounterValue{#1\ArraySuffixEnd}}      % #1 = Array name
 \newcommand{\ArrayValueCount}   [1]{\CounterValue{#1\ArraySuffixCount}}    % #1 = Array name
@@ -734,6 +628,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
             {#1\ArraySuffix\CounterValue{ForLoopCounter}}}
 
     \MakeCommandUndefined{#1\ArraySuffix}
+    \MakeCounterUndefined{#1\ArraySuffixPosition}
     \MakeCounterUndefined{#1\ArraySuffixStart}
     \MakeCounterUndefined{#1\ArraySuffixEnd}
     \MakeCounterUndefined{#1\ArraySuffixCount}
@@ -744,6 +639,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
         \MakeCommandUndefined
             {#1\ArraySuffix\CounterValue{ForLoopCounter}}}
 
+    \SetCounter{#1\ArraySuffixPosition} {0}
     \SetCounter{#1\ArraySuffixStart}    {1}
     \SetCounter{#1\ArraySuffixEnd}      {0}
     \SetCounter{#1\ArraySuffixCount}    {0}
@@ -805,8 +701,63 @@ and is aimed mainly at authors that wish to utilize its abilities.
     \IfCommandExists{#1\ArraySuffix}%
         {#2}%
         {#3}%
-}
+}%
+
+
+
+
+% =========================================================================== %
+%                 Hashes (Associative Arrays) with LaTeX3                     %
+% =========================================================================== %
+
+
+% ************ LaTeX3 ON ************ %
+\ExplSyntaxOn
+
+\DeclareDocumentCommand \HashMake {m}%
+    {\prop_new:c {g_UWMad_Hash_#1}}
+
+\DeclareDocumentCommand \HashSet {mmm}%
+    {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
+      {\prop_gput:cnn   {g_UWMad_Hash_#1}{#2}{#3}}%
+        {\HashMake{#1}%
+         \prop_gput:cnn {g_UWMad_Hash_#1}{#2}{#3}}}
+
+\DeclareDocumentCommand \HashGet {mm}%
+    {\prop_if_exist:cTF  {g_UWMad_Hash_#1}%
+        {\prop_get:cn {g_UWMad_Hash_#1} {#2}}
+        {}}
+
+\cs_generate_variant:Nn \prop_get:cn {cf}
+
+\DeclareExpandableDocumentCommand \HashExpandableGet {mm}%
+    {\prop_if_exist:cTF  {g_UWMad_Hash_#1}%
+        {\prop_get:cf {g_UWMad_Hash_#1} {#2}}
+        {}}
+
+\DeclareDocumentCommand \HashUnset {mm}%
+    {\prop_if_exist:cTF    {g_UWMad_Hash_#1}%
+        {\prop_get:cnNTF   {g_UWMad_Hash_#1} {#2} \l_UWMad_Hash_Value_tl%
+            {\prop_gdel:cn {g_UWMad_Hash_#1} {#2}}
+            {}}}
+
+\DeclareDocumentCommand \IfHashKeySet {mmmm}%
+    {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
+        {\prop_if_in:cnTF {g_UWMad_Hash_#1} {#2}
+            {#3}
+            {#4}}
+        {}}
+
+\DeclareDocumentCommand \HashDelete {m}%
+    {\prop_if_exist:cTF {g_UWMad_Hash_#1}%
+        {\prop_gclear:c {g_UWMad_Hash_#1}%
+         \cs_undefine:c {g_UWMad_Hash_#1}}
+        {}}
+
 \ExplSyntaxOff
+% ************ LaTeX3 OFF *********** %
+
+
 
 
 
