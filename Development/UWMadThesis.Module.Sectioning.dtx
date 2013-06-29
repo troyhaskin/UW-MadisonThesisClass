@@ -288,14 +288,14 @@
 %\HashSet {LevelToSection}{4} {paragraph}
 %\HashSet {LevelToSection}{5} {subparagraph}
 %
-\ArrayMake{LevelToSection}    
-\ArrayPush{LevelToSection}{part}
-\ArrayPush{LevelToSection}{chapter}
-\ArrayPush{LevelToSection}{section}
-\ArrayPush{LevelToSection}{subsection}
-\ArrayPush{LevelToSection}{subsubsection}
-\ArrayPush{LevelToSection}{paragraph}
-\ArrayPush{LevelToSection}{subparagraph}
+\DequeMake{LevelToSection}    
+\DequePushRight{LevelToSection}{part}
+\DequePushRight{LevelToSection}{chapter}
+\DequePushRight{LevelToSection}{section}
+\DequePushRight{LevelToSection}{subsection}
+\DequePushRight{LevelToSection}{subsubsection}
+\DequePushRight{LevelToSection}{paragraph}
+\DequePushRight{LevelToSection}{subparagraph}
 %
 \HashMake{SectionToLevel}
 \HashSet {SectionToLevel}{part}          {-1}

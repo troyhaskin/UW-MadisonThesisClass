@@ -75,39 +75,15 @@
 }
 
 
-\section{Nested loops}
-{\singlespacing
-
-    \subsection{\Cmd{For} loops}
-        \For[1]{1}{3}{
-            Outer Loop: \the\ForLoopCounter
-            
-            {
-            \For[1]{1}{3}{
-                \hspace{3em}Inner Loop: \the\ForLoopCounter
-                
-            }
-            }
-        }
-        
-    \subsection{\Cmd{ForEach} loops}
-        
-        \subsubsection{Array Test}
-            \ArrayMake{Array}
-            \ArrayPush{Array}{1}
-            \ArrayPush{Array}{2}
-            \ArrayPush{Array}{3}
-            \ForEach[1]{Array}{
-                Outer Loop: \ArrayGet{Array}{ForLoopCounter}
-                
-                {
-                    \ForEach[1]{Array}{
-                        \hspace{3em}Inner Loop: \ArrayGet{Array}{ForLoopCounter}
-                        
-                    }
-                }
-            }
-}
+\section{Nested Deque Walks}
+    \DequeMake{Deque}
+    \DequePushRight{Deque}{1}
+    \DequePushRight{Deque}{2}
+    \DequePushRight{Deque}{3}
+    \DequeWalkLeftToRight{Deque}
+        {Outer Loop: #1\par%
+            \DequeWalkLeftToRight{Deque}%
+                {\hspace{3em}Inner Loop: ##1\par}}
 
 
 \section{\Cmd{GlobalNewIf}}

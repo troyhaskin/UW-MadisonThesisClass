@@ -515,28 +515,28 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 \ExplSyntaxOn
 \DeclareDocumentCommand  \CSVMake { m }
-    {\clist_new:c {g_UWMad_#1}}
+    {\clist_new:c {g_UWMad_CSV_#1}}
 
 \DeclareDocumentCommand \CSVClear { m }
-    {\clist_gclear:c {g_UWMad_#1}}
+    {\clist_gclear:c {g_UWMad_CSV_#1}}
 
 \DeclareDocumentCommand \CSVAppend { m m }
-    {\clist_if_exist:cTF {g_UWMad_#1}
+    {\clist_if_exist:cTF {g_UWMad_CSV_#1}
         {}
-        {\clist_new:c {g_UWMad_#1}}
-     \clist_gput_right:cn {g_UWMad_#1} {#2}}
+        {\clist_new:c {g_UWMad_CSV_#1}}
+     \clist_gput_right:cn {g_UWMad_CSV_#1} {#2}}
 
 \DeclareDocumentCommand \CSVPrepend { m m }
-    {\clist_if_exist:cTF {g_UWMad_#1}
+    {\clist_if_exist:cTF {g_UWMad_CSV_#1}
         {}
-        {\clist_new:c {g_UWMad_#1}}
-     \clist_gput_left:cn {g_UWMad_#1} {#2}}
+        {\clist_new:c {g_UWMad_CSV_#1}}
+     \clist_gput_left:cn {g_UWMad_CSV_#1} {#2}}
 
 \DeclareExpandableDocumentCommand \CSVGet { m }
-    {\clist_use:c {g_UWMad_#1}}
+    {\clist_use:c {g_UWMad_CSV_#1}}
 
 \DeclareDocumentCommand  \IfCSVExists { m m m }
-    {\clist_if_exist:cTF {g_UWMad_#1}
+    {\clist_if_exist:cTF {g_UWMad_CSV_#1}
         {#2}
         {#3}}
 %
@@ -621,8 +621,8 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   A hash walk, like a deque walk, iterates through all of the keys and
 %   values in the hash while applying a user supplied function.  However,
 %   unlike a deque walk, \textbf{a hash's walk order is not gauranteed
-%   to be the set order}.  If hash-like functionality is desired but walk
-%   order is need to be gauranteed, see the Array System after this section.
+%   to be the set order}.  If walk order is needed to be gauranteed,
+%   see the previous Deque System.
 %
 %   The system is a thin abstraction of \LaTeXPL's
 %   |l3prop| module to avoid developing a one-shot system while allowing more
@@ -641,7 +641,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 
 \DeclareDocumentCommand \HashSet { m m +m }
     {\prop_if_exist:cTF {g_UWMad_Hash_#1}
-        {\prop_gput:cxn   {g_UWMad_Hash_#1}{#2}{#3}}
+        {\prop_gput:cxn {g_UWMad_Hash_#1}{#2}{#3}}
         {\HashMake{#1}
          \prop_gput:cxn {g_UWMad_Hash_#1}{#2}{#3}}}
 
@@ -651,17 +651,17 @@ and is aimed mainly at authors that wish to utilize its abilities.
         {}}
 
 \DeclareExpandableDocumentCommand \HashExpandableGet { m m }
-    {\prop_if_in:cxTF  {g_UWMad_Hash_#1} {#2}
+    {\prop_if_in:cxTF {g_UWMad_Hash_#1} {#2}
         {\prop_get:cx {g_UWMad_Hash_#1} {#2}}
         {}}
 
 \DeclareDocumentCommand \HashUnset { m m }
-    {\prop_if_exist:cTF  {g_UWMad_Hash_#1}
+    {\prop_if_exist:cTF   {g_UWMad_Hash_#1}
         {\prop_gremove:cx {g_UWMad_Hash_#1} {#2}}
         {}}
 
 \DeclareDocumentCommand \IfHashKeySet { m m +m +m }
-    {\prop_if_exist:cTF {g_UWMad_Hash_#1}
+    {\prop_if_exist:cTF   {g_UWMad_Hash_#1}
         {\prop_if_in:cxTF {g_UWMad_Hash_#1} {#2}
             {#3}
             {#4}}
@@ -681,197 +681,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 %
-%
-%
-%
-%^^A ======================================================================= %
-%^^A                          Array Creation Commands                        %
-%^^A ======================================================================= %
-%
-%   \subsubsection{Array System}
-%
-%
-\DefineNewCounter{ArrayWorkCounter}{0}
-\newcommand{\ArraySuffix}         {ARRAY}
-\newcommand{\ArraySuffixStart}    {\ArraySuffix START   }
-\newcommand{\ArraySuffixEnd}      {\ArraySuffix END     }
-\newcommand{\ArraySuffixCount}    {\ArraySuffix COUNT   }
-
-\newcommand{\ArrayMake}[1]{% #1 = Array name
-    \MakeGlobalCommand{#1\ArraySuffix}{#1\ArraySuffix}
-    \DefineNewGlobalCounter{#1\ArraySuffixStart}{1}
-    \DefineNewGlobalCounter{#1\ArraySuffixEnd}  {0}
-    \DefineNewGlobalCounter{#1\ArraySuffixCount}{0}}
-
-
-% Counter names for a given array
-\newcommand{\ArrayStart}   [1]{#1\ArraySuffixStart}    % #1 = ArrayName
-\newcommand{\ArrayEnd}     [1]{#1\ArraySuffixEnd}      % #1 = ArrayName
-\newcommand{\ArrayCount}   [1]{#1\ArraySuffixCount}    % #1 = ArrayName
-% Counter names for a given array
-\newcommand{\ArrayNumberStart}   [1]{\csname#1\ArraySuffixStart\endcsname}    % #1 = ArrayName
-\newcommand{\ArrayNumberEnd}     [1]{\csname#1\ArraySuffixEnd\endcsname}      % #1 = ArrayName
-\newcommand{\ArrayNumberCount}   [1]{\csname#1\ArraySuffixCount\endcsname}    % #1 = ArrayName
-% Decrementers
-\newcommand{\ArrayDecrementStart}   [1]{\AddToCounter{\ArrayStart   {#1}}{-1}}
-\newcommand{\ArrayDecrementEnd}     [1]{\AddToCounter{\ArrayEnd     {#1}}{-1}}
-\newcommand{\ArrayDecrementCount}   [1]{\AddToCounter{\ArrayCount   {#1}}{-1}}
-% Incrementers
-\newcommand{\ArrayIncrementStart}   [1]{\AddToCounter{\ArrayStart   {#1}}{+1}}
-\newcommand{\ArrayIncrementEnd}     [1]{\AddToCounter{\ArrayEnd     {#1}}{+1}}
-\newcommand{\ArrayIncrementCount}   [1]{\AddToCounter{\ArrayCount   {#1}}{+1}}
-% Numerical values
-\newcommand{\ArrayValueStart}   [1]{\CounterValue{#1\ArraySuffixStart}}    % #1 = Array name
-\newcommand{\ArrayValueEnd}     [1]{\CounterValue{#1\ArraySuffixEnd}}      % #1 = Array name
-\newcommand{\ArrayValueCount}   [1]{\CounterValue{#1\ArraySuffixCount}}    % #1 = Array name
-% Use the array entry given a counter set to the desired index
-\newcommand{\ArrayUse}[2]{\csuse{#1\ArraySuffix\CounterValue{#2}}}
-
-
-\newcommand{\ArrayDelete}[1]{% #1 = Array name
-    \ForEach{#1}{
-        \MakeCommandUndefined
-            {#1\ArraySuffix\CounterValue{ForLoopCounter}}}
-
-    \MakeCommandUndefined{#1\ArraySuffix}
-    \MakeCounterUndefined{#1\ArraySuffixStart}
-    \MakeCounterUndefined{#1\ArraySuffixEnd}
-    \MakeCounterUndefined{#1\ArraySuffixCount}
-}
-
-\newcommand{\ArrayReset}[1]{% #1 = Array name
-    \ForEach{#1}{
-        \MakeCommandUndefined
-            {#1\ArraySuffix\CounterValue{ForLoopCounter}}}
-
-    \SetCounter{#1\ArraySuffixStart}    {1}
-    \SetCounter{#1\ArraySuffixEnd}      {0}
-    \SetCounter{#1\ArraySuffixCount}    {0}
-}
-
-\newcommand{\ArrayPush}[2]{% #1 = Array name, #2 value to push
-
-    % increment counters
-    \ArrayIncrementCount{#1}
-    \ArrayIncrementEnd  {#1}
-
-    % Naming scheme for the Array storage commands: <Name>\roman{<Counter>}
-    \MakeCommand{#1\ArraySuffix\ArrayValueEnd{#1}}{#2}%
-}
-
-\newcommand{\ArrayPop}[1]{% #1 = Array name
-    \ifnum\ArrayNumberCount{#1}>0%
-        \ArrayUse{#1}{\ArrayEnd{#1}}%
-        \MakeCommandUndefined{#1\ArraySuffix\ArrayValueEnd{#1}}%
-        % decrement counters
-        \ArrayDecrementCount{#1}%
-        \ArrayDecrementEnd  {#1}%
-    \fi%
-}
-
-\newcommand{\ArrayPopAndStore}[2]{% #1 = Array name, #2 name of command to store the popped value
-    \ifnum\ArrayNumberCount{#1}>0%
-        \MakeExpandedCommand{#2}{\ArrayUse{#1}{\ArrayEnd{#1}}}%
-        \MakeCommandUndefined{#1\ArraySuffix\ArrayValueEnd{#1}}%
-        % decrement counters
-        \ArrayDecrementCount{#1}
-        \ArrayDecrementEnd  {#1}
-    \fi
-}
-
-\newcommand{\ArrayGet}[2]{% #1 = Array name, % 2 = Counter Name for index
-    %\IfArrayExists{#1}%
-        %{\IfArrayIndexDefined{#1}{#2}%
-            %{
-            %\ArrayUse{#1}{#2}}%
-        %    {\UWMad@ClassWarning{Index for array '#1' is undefined.}}}%
-        %{}%
-    \csname#1\ArraySuffix\CounterValue{#2}\endcsname
-}
-
-\newcommand{\IfArrayIndexDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix\CounterValue{#2}}%
-        {#3}%
-        {#4}%
-}
-
-\newcommand{\IfArrayIndexNotDefined}[4]{% #1 = Array name, % #2 = numeric value, % #3 = True code, % #4 = False code
-    \IfCommandExists{#1\ArraySuffix\CounterValue{#2}}%
-        {#4}%
-        {#3}%
-}%
-
-\newcommand{\IfArrayExists}[3]{% #1 = Array name, #2 = True code, #3 = False code
-    \IfCommandExists{#1\ArraySuffix}%
-        {#2}%
-        {#3}%
-}
 \ExplSyntaxOff
-
-
-
-
-% =========================================================================== %
-%                            For-Loop Definition                              %
-% =========================================================================== %
-
-
-% Initilaze the recursive command (see usage below) ----------------------
-\newcommand{\ForLoopRecursion}{}
-
-% Define the loop counter ------------------------------------------------
-\DefineNewLocalCounter{ForLoopCounter}{0}
-
-% Iterator command -------------------------------------------------------
-\newcommand{\For}[4][1]{%
-    {%
-    % Arguments
-    %   #1 = increment (optional)
-    %   #2 = start value
-    %   #3 = end value
-    %   #4 = <code>
-    % Redefine the command used for recursion
-    \renewcommand{\ForLoopRecursion}{%
-        #4%                                         % Excute <code>
-        \AddToCounter{ForLoopCounter}{#1}%          % Increment the counter
-        \For[#1]{\number\ForLoopCounter}{#3}{#4}%   % Recurse
-    }%
-    %
-    % Set the counter to the start value 
-    % After the recursion begins, #2 is the current value of the counter and not the start value.
-    \SetCounter{ForLoopCounter}{#2}%
-    %
-    % Switch to deal with positive vs. negative increments (decrements).
-    \ifnum #1 > 0%                                    % If positive increment
-        \IfLessThanEqualTo{\ForLoopCounter}{#3}{%     % Execute while the LoopCounter is less than or equal to the end value
-            \ForLoopRecursion%
-        }{}%
-    \else%                                                   % If negative increment
-        \IfGreaterThanEqualTo{\ForLoopCounter}{#3}{%   % Execute while the LoopCounter is greater than or equal to the end value
-            \ForLoopRecursion%
-        }{}%
-    \fi%
-    }%
-}
-
-
-\newcommand{\ForEach}[3][1]{
-% Arguments
-%   #1 = increment (optional)
-%   #2 = Array/Hash name
-%   #3 = <code>
-    %
-    \IfCommandExists{#2\ArraySuffix}{%
-        \For[#1]{\ArrayNumberStart{#2}}{\ArrayNumberEnd{#2}}{#3}%
-    }{%
-        %\IfCommandExists{#2\HashSuffix}{%
-        %    \For[#1]{\ArrayNumberStart{#2\HashSuffixKeys}}{\ArrayNumberEnd{#2\HashSuffixKeys}}{#3}%
-        %}{%
-            \UWMad@ClassWarning{Could not find Array or Hash named '#2'}%
-        %}%
-    }%
-}
-%
 %</Module:Programming>
 %Verbatim
 %</Implementation>
