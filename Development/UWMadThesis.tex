@@ -17,12 +17,24 @@
 \begin{document}
 \makeatletter
 
-\DequeMake{TestDeque}
-\DequePushRight{TestDeque}{Hello }
-\DequePushRight{TestDeque}{there }
-\DequePushRight{TestDeque}{, sir.}
-\DequeWalkLeftToRight{TestDeque}{\textbf{#1}}
-\DequeWalkRightToLeft{TestDeque}{#1}
+%\ExplSyntaxOn
+%\show\ifUWMad@MakeNomenclatureStarred
+%\ExplSyntaxOff
+
+\begin{Nomenclature}
+    \Add{Sym1}{This is a test.}
+    \Add{ReallyReallyLongSymbol}{This is a test.}
+    \Group{Group 1}
+    \Add{Sym2}{This is a test.}
+    \Group{Group 2}
+    \Add{Sym3}{This is a test.}
+        \SubGroup{SubGroup 1}
+            \Add{Sym4}{This is a test.}
+        \SubGroup{SubGroup 2}
+            \Add{Sym5}{This is a test.}
+            \Add{Sym1}{This is a test.}
+            \Add{ReallyReallyLongSymbol}{This is a test.}
+\end{Nomenclature}
 
 
 \Title{UWMadThesis Tests PDF}

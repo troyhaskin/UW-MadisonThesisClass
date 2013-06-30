@@ -1,7 +1,7 @@
 %<*UserGuide>
 \ifUWMad@UserGuide
 
-\subsection{Programming}\label{UG:Programming}
+\section{Programming}\label{UG:Programming}
 The Programming Module has no immediate user-facing features.
 The Implementation section for this module outlines the programming layer
 and is aimed mainly at authors that wish to utilize its abilities.
@@ -32,7 +32,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A    to a pure LaTeX3 implementation; though a thin abatraction layer may
 %^^A    still be desired.
 %
-%   \subsection{Programming Module}\label{Imp:Programming}
+%   \section{Programming Module}\label{Imp:Programming}
 %   This section outlines the Programming module for the \UWMadClass.
 %   It is mostly a collection of utility macros used in other modules.
 %   The two biggest features in this module are the Array and Hash 
@@ -51,7 +51,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                            Utility Macros                            %
 %^^A ==================================================================== %
 %
-%   \subsubsection{Utility Macros}
+%   \subsection{Utility Macros}
 %
 %   \begin{macro}{\GlobalNewIf}
 %   Changes to if-switches only have block level scope by default.
@@ -67,7 +67,8 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %    \begin{macrocode}
 \ExplSyntaxOn
 \DeclareDocumentCommand \GlobalNewIf { m }
-    {\cs_gset_nopar:cpn {#1true}
+    {\cs_gset_eq:cc {if#1} {iftrue}
+     \cs_gset_nopar:cpn {#1true}
         {\cs_gset_eq:cc {if#1} {iftrue}}
      \cs_gset_nopar:cpn {#1false}
         {\cs_gset_eq:cc {if#1} {iffalse}}}
@@ -97,44 +98,6 @@ and is aimed mainly at authors that wish to utilize its abilities.
     {\cs_if_free:cTF {#1}
         {#2}
         {#3}}
-%    \end{macrocode}
-%   \end{macro}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{\IfGreaterThanEqualTo}
-%   \begin{macro}{\IfLessThanEqualTo}
-%   This set of commands uses \TeX{} primitives to allow conditional code
-%   execution of the variety: \marg{Oper1} $\geq$ \marg{Oper2} and 
-%                             \marg{Oper1} $\leq$ \marg{Oper2}.
-%
-%   \begin{Usage}
-%       \item |\IfGreaterThanEqualTo|\marg{Oper1}\marg{Oper2}\marg{True}\marg{False}
-%       \item |\IfLessThanEqualTo|\marg{Oper1}\marg{Oper2}\marg{True}\marg{False}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\DeclareDocumentCommand \IfGreaterThanEqualTo { m m m m }
-    {\ifnum#1>#2
-        #3
-     \else
-        \ifnum#1=#2
-            #3
-        \else
-            #4
-        \fi
-     \fi}
-\DeclareDocumentCommand \IfLessThanEqualTo { m m m m }
-    {\ifnum#1<#2
-        #3
-     \else
-        \ifnum#1=#2
-            #3
-        \else
-            #4
-        \fi
-     \fi}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -219,7 +182,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                      Command Creator System                          %
 %^^A ==================================================================== %
 %
-%   \subsubsection{Command Creator System}
+%   \subsection{Command Creator System}
 %
 %   \begin{macro}{\MakeCommand}
 %   \begin{macro}{\ReMakeCommand}
@@ -330,29 +293,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                            Counter System                            %
 %^^A ==================================================================== %
 %
-%   \subsubsection{Counter System}
+%   \subsection{Counter System}
 %   This subsystem was made to give a \LaTeX{}-like counter system that
 %   can create both local and global counters.
-%
-%   \begin{macro}{\g_UWMad_RegisteredCounter}
-%   \begin{macro}{\g_UWMad_LocalCounter}
-%   \begin{macro}{\g_UWMad_GlobalCounter}
-%   These commands define the command name suffixes used to store, identify,
-%   and protect (from the user) the counter commands.  All counters created
-%   by the system are given a registration command to indicate it is part of
-%   the system and either a local or global command to indicate if a global
-%   assignment or advancement is needed.  The counter itself is created 
-%   without any prefix or suffix for usage by the user.
-%
-%    \begin{macrocode}
-\tl_const:Nn \g_UWMad_RegisteredCounter {UWMad_RegisteredCounter}
-\tl_const:Nn \g_UWMad_LocalCounter      {UWMad_LocalCounter}
-\tl_const:Nn \g_UWMad_GlobalCounter     {UWMad_GlobalCounter}
-%    \end{macrocode}
-%   \end{macro}
-%   \end{macro}
-%   \end{macro}
-%
 %
 %
 %   \begin{macro}{\DefineNewLocalCounter}
@@ -369,15 +312,15 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \DefineNewLocalCounter { m m }
-    {\tl_const:cn {#1 \tl_use:N \g_UWMad_RegisteredCounter} {}
-     \tl_const:cn {#1 \tl_use:N \g_UWMad_LocalCounter}      {}
-     \int_new:c {#1}
-     \int_gset:cn {#1} {#2}}
+    {\tl_const:cn {g__UWMad_Counter_#1_Registered} {}
+     \tl_const:cn {g__UWMad_Counter_#1_Local}      {}
+     \int_new:c   {g__UWMad_Counter_#1}
+     \int_gset:cn {g__UWMad_Counter_#1} {#2}}
 \DeclareDocumentCommand \DefineNewGlobalCounter { m m }
-    {\tl_const:cn {#1 \tl_use:N \g_UWMad_RegisteredCounter} {}
-     \tl_const:cn {#1 \tl_use:N \g_UWMad_GlobalCounter}     {}
-     \int_new:c {#1}
-     \int_gset:cn {#1} {#2}}
+    {\tl_const:cn {g__UWMad_Counter_#1_Registered} {}
+     \tl_const:cn {g__UWMad_Counter_#1_Global}     {}
+     \int_new:c   {g__UWMad_Counter_#1}
+     \int_gset:cn {g__UWMad_Counter_#1} {#2}}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -385,7 +328,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 %   \begin{macro}{\UWMad_LocalOrGlobal:nnn}
-%   This command expands to either \marg{LocalCode} \marg{GLobalCode}
+%   This command expands to either \marg{LocalCode} or \marg{GLobalCode}
 %   depending on the definition of the counter \marg{CounterName}.
 %   If the counter is not registered with the system, a warning is thrown.
 %
@@ -394,9 +337,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_LocalOrGlobal:nnn
-    {\tl_if_exist:cTF{#1 \tl_use:N \g_UWMad_RegisteredCounter}
-        {\tl_if_exist:cTF{#1 \tl_use:N \g_UWMad_LocalCounter}
+\cs_new:Nn \__UWMad_LocalOrGlobal:nnn
+    {\tl_if_exist:cTF     {#1_Registered}
+        {\tl_if_exist:cTF {#1_Local}
             {#2}
             {#3}}
         {\UWMad@ClassWarning{`#1'\ is not a registered counter.}}}
@@ -416,9 +359,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \AddToCounter { m m }
-    {\UWMad_LocalOrGlobal:nnn {#1}
-        {\int_add:cn  {#1} {#2}}
-        {\int_gadd:cn {#1} {#2}}}
+    {\__UWMad_LocalOrGlobal:nnn {g__UWMad_Counter_#1}
+        {\int_add:cn  {g__UWMad_Counter_#1} {#2}}
+        {\int_gadd:cn {g__UWMad_Counter_#1} {#2}}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -450,9 +393,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \SetCounter { m m }
-    {\UWMad_LocalOrGlobal:nnn {#1}
-        {\int_set:cn  {#1} {#2}}
-        {\int_gset:cn {#1} {#2}}}
+    {\__UWMad_LocalOrGlobal:nnn {g__UWMad_Counter_#1}
+        {\int_set:cn  {g__UWMad_Counter_#1} {#2}}
+        {\int_gset:cn {g__UWMad_Counter_#1} {#2}}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -489,7 +432,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \CounterValue { m }
-    {\int_use:c {#1}}
+    {\int_use:c {g__UWMad_Counter_#1}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -502,7 +445,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                          CSV Creation Commands                          %
 %^^A ======================================================================= %
 %
-%   \subsubsection{CSV System}
+%   \subsection{CSV System}
 %   This set of commands is a simple system for comma-separated value (CSV)
 %   list creation.  It consists of only a few functions: initialize list,
 %   append value, prepend value, get list, and erase list.
@@ -513,35 +456,158 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   a one-shot system while allowing more endeavouring authors access to
 %   to the simple feature without learning \LaTeX3{} programming.
 %
-\ExplSyntaxOn
 \DeclareDocumentCommand  \CSVMake { m }
-    {\clist_new:c {g_UWMad_CSV_#1}}
+    {\clist_new:c {g__UWMad_CSV_#1}}
 
 \DeclareDocumentCommand \CSVClear { m }
-    {\clist_gclear:c {g_UWMad_CSV_#1}}
+    {\clist_gclear:c {g__UWMad_CSV_#1}}
 
 \DeclareDocumentCommand \CSVAppend { m m }
-    {\clist_if_exist:cTF {g_UWMad_CSV_#1}
+    {\clist_if_exist:cTF {g__UWMad_CSV_#1}
         {}
-        {\clist_new:c {g_UWMad_CSV_#1}}
-     \clist_gput_right:cn {g_UWMad_CSV_#1} {#2}}
+        {\clist_new:c {g__UWMad_CSV_#1}}
+     \clist_gput_right:cn {g__UWMad_CSV_#1} {#2}}
 
 \DeclareDocumentCommand \CSVPrepend { m m }
-    {\clist_if_exist:cTF {g_UWMad_CSV_#1}
+    {\clist_if_exist:cTF {g__UWMad_CSV_#1}
         {}
-        {\clist_new:c {g_UWMad_CSV_#1}}
-     \clist_gput_left:cn {g_UWMad_CSV_#1} {#2}}
+        {\clist_new:c {g__UWMad_CSV_#1}}
+     \clist_gput_left:cn {g__UWMad_CSV_#1} {#2}}
 
 \DeclareExpandableDocumentCommand \CSVGet { m }
-    {\clist_use:c {g_UWMad_CSV_#1}}
+    {\clist_use:c {g__UWMad_CSV_#1}}
 
 \DeclareDocumentCommand  \IfCSVExists { m m m }
-    {\clist_if_exist:cTF {g_UWMad_CSV_#1}
+    {\clist_if_exist:cTF {g__UWMad_CSV_#1}
         {#2}
         {#3}}
 %
 %
 %
+%
+%
+%
+%^^A ======================================================================= %
+%^^A                     Collection Creation Commands                        %
+%^^A ======================================================================= %
+%
+%   \subsection{Collections}
+%   In the following subsections, commands that create and manipulate
+%   various collection data types will be discussed.  The collections
+%   currently implemented are stacks (LIFO), queues (FIFO), and deques
+%   (LIFO+FIFO).
+%
+%   All of the collection systems are thin abstractions of \LaTeXPL's
+%   |l3seq| module to avoid developing one-shot systems while allowing more
+%   endeavoring authors access to the features without learning \LaTeX3{}
+%   programming.
+%
+%
+%
+%^^A ======================================================================= %
+%^^A                          Stack Creation Commands                        %
+%^^A ======================================================================= %
+%
+%   \subsubsection{Stack System}
+%   This set of commands is a simple system for creating and working with
+%   stacks.  Stacks are a last-in first-out collection data type; this means
+%   that the data element (in this any unexpanded token/token list) last 
+%   pushed on to the stack is the first popped.  Data elements can also be
+%   walked (iterated over) with an inline callback in a LIFO sense.
+%
+%
+%
+\DeclareDocumentCommand \StackMake { m }
+    {\tl_new:c {g__UWMad_Stack_#1}}
+%
+%
+\DeclareDocumentCommand \StackDelete { m }
+    {\tl_if_exist:cTF   {g__UWMad_Stack_#1}
+        {\tl_gclear:c   {g__UWMad_Stack_#1}
+         \cs_undefine:c {g__UWMad_Stack_#1}}
+        {}}
+%
+%
+\DeclareDocumentCommand \StackPush { m +m }
+    {\tl_if_exist:cTF     {g__UWMad_Stack_#1}
+        {\tl_gput_left:cn {g__UWMad_Stack_#1} {#2}}
+        {}}
+%
+%
+\cs_generate_variant:Nn \tl_head:N { c }
+\cs_generate_variant:Nn \tl_tail:N { c }
+%
+\DeclareDocumentCommand \StackPop { m }
+    {\tl_set:Nx \l_tmpa_tl          {\tl_head:c {g__UWMad_Stack_#1}}
+     \tl_set:cx {g__UWMad_Stack_#1} {\tl_tail:c {g__UWMad_Stack_#1}}
+     \tl_use:N \l_tmpa_tl}
+%
+%
+\DeclareDocumentCommand \StackWalk { m +m }
+    {\tl_map_inline:cn {g__UWMad_Stack_#1} {#2}}
+%
+%
+%
+%^^A ======================================================================= %
+%^^A                          Queue Creation Commands                        %
+%^^A ======================================================================= %
+%
+%   \subsubsection{Queue System}
+%   This set of commands is a simple system for creating and working with
+%   queue.  Queues are a first-in first-out collection data type; this means
+%   that the data element (in this any unexpanded token/token list) first 
+%   pushed on to the queue is the first popped.  Data elements can also be
+%   walked (iterated over) with an inline callback in a FIFO sense.
+%
+%
+%
+\DeclareDocumentCommand \QueueMake { m }
+    {\tl_new:c {g__UWMad_Queue_#1}}
+%
+%
+\DeclareDocumentCommand \QueueDelete { m }
+    {\tl_if_exist:cTF   {g__UWMad_Queue_#1}
+        {\tl_gclear:c   {g__UWMad_Queue_#1}
+         \cs_undefine:c {g__UWMad_Queue_#1}}
+        {}}
+%
+%
+\DeclareDocumentCommand \QueueClear { m }
+    {\tl_if_exist:cTF   {g__UWMad_Queue_#1}
+        {\tl_gclear:c   {g__UWMad_Queue_#1}}
+        {}}
+%
+%
+\DeclareDocumentCommand \QueuePush { m +m }
+    {\tl_if_exist:cTF     {g__UWMad_Queue_#1}
+        {\tl_gput_left:cn {g__UWMad_Queue_#1} {{#2}}}
+        {}}
+%
+%
+\cs_generate_variant:Nn \tl_head:N { c }
+\cs_generate_variant:Nn \tl_tail:N { c }
+%
+\DeclareDocumentCommand \QueuePop { m }
+    {\tl_reverse:c   {g__UWMad_Queue_#1}
+     \tl_set:Nx \l_tmpa_tl
+        {\tl_head:c  {g__UWMad_Queue_#1}}
+     \tl_set:cx      {g__UWMad_Queue_#1}
+        {\tl_tail:c  {g__UWMad_Queue_#1}}
+     \tl_reverse:c   {g__UWMad_Queue_#1}
+     \tl_use:N \l_tmpa_tl}
+%
+%
+\DeclareDocumentCommand \QueueWalk { m +m }
+    {\group_begin:
+        \tl_reverse:c     {g__UWMad_Queue_#1}
+        \tl_map_inline:cn {g__UWMad_Queue_#1} {#2}
+     \group_end:}
+%
+%
+\DeclareDocumentCommand \IfQueueEmpty { m +m +m }
+    {\tl_if_empty:cTF {g__UWMad_Queue_#1}
+        {#2}
+        {#3}}
 %
 %
 %
@@ -553,12 +619,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   This set of commands is a simple system for creating and working with
 %   double-ended queues (deques, pronounced \textit{deck}).  Deques are a
 %   generalization of stacks and queues in that data can be pushed, popped,
-%   and walked from either end of the list.
-%
-%   The system is a thin abstraction of \LaTeXPL's
-%   |l3seq| module to avoid developing a one-shot system while allowing more
-%   endeavoring authors access to the feature without learning \LaTeX3{}
-%   programming.
+%   and walked from either end of the list (i.e., LIFO+FIFO).
 %
 %
 \DeclareDocumentCommand \DequeMake { m }
@@ -566,20 +627,20 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 \DeclareDocumentCommand \DequeDelete { m }
-    {\seq_if_exist:cTF {g_UWMad_Deque_#1}
-        {\seq_gclear:c {g_UWMad_Deque_#1}
+    {\seq_if_exist:cTF  {g_UWMad_Deque_#1}
+        {\seq_gclear:c  {g_UWMad_Deque_#1}
          \cs_undefine:c {g_UWMad_Deque_#1}}
         {}}
 %
 %
 \DeclareDocumentCommand \DequePushLeft  { m +m }
-    {\seq_gput_left:cn {g_UWMad_Deque_#1} {#2}}
+    {\seq_gput_left:cn  {g_UWMad_Deque_#1} {#2}}
 \DeclareDocumentCommand \DequePushRight { m +m }
     {\seq_gput_right:cn {g_UWMad_Deque_#1} {#2}}
 %
 %
 \DeclareDocumentCommand \DequePopLeft { m }
-    {\seq_gpop_left:cN {g_UWMad_Deque_#1} \l_tmpa_tl
+    {\seq_gpop_left:cN  {g_UWMad_Deque_#1} \l_tmpa_tl
      \tl_use:N \l_tmpa_tl}
 \DeclareDocumentCommand \DequePopRight { m }
     {\seq_gpop_right:cN {g_UWMad_Deque_#1} \l_tmpa_tl
@@ -595,8 +656,8 @@ and is aimed mainly at authors that wish to utilize its abilities.
 \cs_generate_variant:Nn \seq_reverse:N {c}
 \DeclareDocumentCommand \DequeWalkRightToLeft { m +m }
     {\group_begin:
-        \seq_if_exist:cTF {g_UWMad_Deque_#1}
-            {\seq_reverse:c {g_UWMad_Deque_#1}
+        \seq_if_exist:cTF       {g_UWMad_Deque_#1}
+            {\seq_reverse:c     {g_UWMad_Deque_#1}
              \seq_map_inline:cn {g_UWMad_Deque_#1} {#2}}
             {}
      \group_end:}
@@ -612,17 +673,17 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %   \subsubsection{Hash System}
 %   This set of commands is a simple system for creating and working with
-%   hashes (more often called associative arrays, but since 
-%   |\AssociativeArrayUnset| seemed error prone and annoying, the term 
-%   Hash is used instead). Hashes are a type of array that indexes values
-%   by (atleast in \LaTeX{}) alphanumeric keys instead of just integers.
-%   Data can set by key, retrieved by key, unset by key, deleted, and walked.
+%   hashes (more often called associative arrays or dictionaries, but erring
+%   on the side of usablility, Ruby's verbarge will be used). Hashes are a
+%   type of array that indexes values by (at least in \LaTeX{}) alphanumeric
+%   keys instead of just integers.
+%   Data can BE set by key, retrieved by key, unset by key, deleted, and walked.
 %
-%   A hash walk, like a deque walk, iterates through all of the keys and
-%   values in the hash while applying a user supplied function.  However,
-%   unlike a deque walk, \textbf{a hash's walk order is not gauranteed
-%   to be the set order}.  If walk order is needed to be gauranteed,
-%   see the previous Deque System.
+%   A hash walk, like the collection walks above, iterates through all of the
+%   keys and values in the hash while applying a user supplied function.
+%   However, unlike the collection walks, \textbf{a hash's walk order is not
+%   gauranteed to be the set order}.  If walk order is needed to be
+%   gauranteed, see the previous collection data types.
 %
 %   The system is a thin abstraction of \LaTeXPL's
 %   |l3prop| module to avoid developing a one-shot system while allowing more
@@ -632,7 +693,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 \cs_generate_variant:Nn \prop_gput:Nnn   { c x n   }
 \cs_generate_variant:Nn \prop_if_in:NnTF { c x TF  }
+\cs_generate_variant:Nn \prop_if_in:NnTF { c f TF  }
 \cs_generate_variant:Nn \prop_get:Nn     { c x     }
+\cs_generate_variant:Nn \prop_get:Nn     { c f     }
 \cs_generate_variant:Nn \prop_get:NnNTF  { c x N TF}
 \cs_generate_variant:Nn \prop_gremove:Nn { c x     }
 
@@ -651,8 +714,8 @@ and is aimed mainly at authors that wish to utilize its abilities.
         {}}
 
 \DeclareExpandableDocumentCommand \HashExpandableGet { m m }
-    {\prop_if_in:cxTF {g_UWMad_Hash_#1} {#2}
-        {\prop_get:cx {g_UWMad_Hash_#1} {#2}}
+    {\prop_if_in:cfTF {g_UWMad_Hash_#1} {#2}
+        {\prop_get:cf {g_UWMad_Hash_#1} {#2}}
         {}}
 
 \DeclareDocumentCommand \HashUnset { m m }

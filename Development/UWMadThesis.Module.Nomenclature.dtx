@@ -17,6 +17,8 @@
 \let\MakeNomenclatureStarred\UWMad@MakeNomenclatureStarredtrue
 \let\MakeNomenclatureNotStarred\UWMad@MakeNomenclatureStarredfalse
 
+\GlobalNewIf{UWMad@NomenclatureTitlePrinted}
+
 \newcommand{\UWMad@UpdateWidest}[1]{%
     \settowidth{\UWMad@WidestTest}{#1}%
     \ifdim\UWMad@Widest<\UWMad@WidestTest%
@@ -32,46 +34,6 @@
     \renewcommand*{\TheNomenclatureName}{#1}%
 }
 %
-\newcommand*{\TheCurrentSectionName}{}
-\newcommand{\UWMad@CurrentSectionName}[1]{%
-    \renewcommand*{\TheCurrentSectionName}{#1}%
-}
-%
-\newcommand*{\TheNomenclatureSectionCommand}{}
-\newcommand*{\UWMad@NomenclatureSectionCommand}[1]{%
-    \renewcommand*{\TheNomenclatureSectionCommand}{#1}%
-}
-%
-\newcommand*{\TheGroupSectionCommand}{}
-\newcommand*{\UWMad@GroupSectionCommand}[1]{%
-    \renewcommand*{\TheGroupSectionCommand}{#1}%
-}
-%
-\newcommand*{\TheSubgroupSectionCommand}{}
-\newcommand*{\UWMad@SubgroupSectionCommand}[1]{%
-    \renewcommand*{\TheSubgroupSectionCommand}{#1}%
-}
-%
-\newcommand{\UWMad@PrintSectionName}{
-    \IfCommandEmpty{\TheCurrentSectionName}%
-        {}%
-        {\ifUWMad@MakeNomenclatureStarred%
-            \csname\TheCurrentSectionCommand\endcsname*%
-                {\TheCurrentSectionName}%
-            \UWMad@FrontMatterRegister%
-                [\TheCurrentSectionCommand]%
-                {\TheCurrentSectionName}
-         \else%
-            \csname\TheCurrentSectionCommand\endcsname
-                {\TheCurrentSectionName}%
-         \fi}%
-}
-%
-%
-\newcommand*{\TheCurrentSectionCommand}{}
-\newcommand{\UWMad@CurrentSectionCommand}[1]{%
-    \renewcommand{\TheCurrentSectionCommand}{#1}%
-}
 
 
 % =========================================================================== %
@@ -82,10 +44,6 @@
 \DefineNewLength{\SymbolDescriptionPad} {0.75em}
 %
 %
-\newcommand{\TheSymbolArrayName}{}
-\newcommand{\TheDescriptionArrayName}{}
-\newcommand{\UWMad@SymbolArrayName}[1]     {\renewcommand{\TheSymbolArrayName}{#1}}
-\newcommand{\UWMad@DescriptionArrayName}[1]{\renewcommand{\TheDescriptionArrayName}{#1}}
 
 \newcommand{\UWMad@SetTheWidths}{%
     % Define Symbol minipage width
@@ -99,94 +57,101 @@
     \setlength  {\DescriptionWidth}{0.99\DescriptionWidth}%
 }
 
-\newcommand{\UWMad@NomenEntry}[2]{%
-    \setstretch{1.1}%
-    \hspace{\EntryMarginLeft}%
-    \begin{minipage}[t]{\SymbolWidth}%
-        #1%
-    \end{minipage}%
-    \begin{minipage}[t]{\DescriptionWidth}%
-        #2%
-    \end{minipage}%
-    \vskip\EntryMarginBottom%
-}
-
-\newcommand{\UWMad@NomenArrayIterator}{%
-    \ForEach[1]{\TheSymbolArrayName}%
-        {\UWMad@NomenEntry%
-            {\ArrayGet%
-                {\TheSymbolArrayName}%
-                {ForLoopCounter}}%
-            {\ArrayGet%
-                {\TheDescriptionArrayName}%
-                {ForLoopCounter}}}%
-}
-
-\newcommand{\UWMad@NomenPrint}{%
-    \ifnum\ArrayValueCount{\TheSymbolArrayName}>0%
-        \UWMad@SetTheWidths%              Set the widths of the minipages
-        \UWMad@NomenArrayIterator% Iterate over the entries
-    \fi%
-}
-
-
-% =========================================================================== %
-%                 Nomen Environment Initializer and Finalizer                 %
-% =========================================================================== %
-\newcommand{\UWMad@NomenInitializer}{
-    \UWMad@SymbolArrayName
-        {NomenSymbol}
-    \UWMad@DescriptionArrayName
-        {NomenDescription}
-    \ArrayMake{\TheSymbolArrayName}
-    \ArrayMake{\TheDescriptionArrayName}
-    \newcommand{\Add}[2]
-        {\ArrayPush{\TheSymbolArrayName}{##1}
-         \ArrayPush{\TheDescriptionArrayName}{##2}
-         \UWMad@UpdateWidest{##1}}
-    \let\item\Add
-    \let\Item\Add
-    \let\Entry\Add
-}
-
-\newcommand{\UWMad@NomenFinalizer}[1]{%
-    \UWMad@NomenPrint%                     Print the current group's symbols and descriptions
-    #1{\TheSymbolArrayName}%                Garbage Collection: \ArrayDelete or \ArrayReset
-    #1{\TheDescriptionArrayName}%           Garbage Collection: \ArrayDelete or \ArrayReset
-    \ResetColumnWidth%               %  Set the widest symbol to 0 for future lists
-}
-
-
 % =========================================================================== %
 %              SubNomen Environment Initializer and Finalizer                 %
 % =========================================================================== %
 
+\newcommand{\UWMad@NomenclaturePrintName}[2]
+    {\IfCommandEmpty{#2}%
+        {}%
+        {\ifUWMad@MakeNomenclatureStarred%
+            \csname#1\endcsname*{#2}%
+            \UWMad@FrontMatterRegister[#1]{#2}%
+         \else%
+            \csname#1\endcsname{#2}%
+         \fi}}
+%
+%
+%
+\newcommand{\UWMad@NomenclatureEntry}[2]
+    {\setstretch{1.1}%
+     \hspace{\EntryMarginLeft}%
+     \begin{minipage}[t]{\SymbolWidth}%
+        #1%
+     \end{minipage}%
+     \begin{minipage}[t]{\DescriptionWidth}%
+        #2%
+     \end{minipage}%
+     \vskip\EntryMarginBottom}
+%
+%
+%
+\newcommand{\UWMad@NomenclaturePrintEntries}
+    {\IfQueueEmpty{Nomenclature}%
+        {}%
+        {\UWMad@SetTheWidths{}%
+         \QueueWalk{Nomenclature}{##1}}}
+
+
+
 % Nomenclature environment ----------------------------------------------------
-\newenvironment{Nomenclature}[1][chapter]{%
-    \UWMad@NomenclatureSectionCommand{#1}
-    \UWMad@GroupSectionCommand{\HashExpandableGet{NextSectioningCommand}{#1}}
-    \UWMad@SubgroupSectionCommand{\HashExpandableGet{NextSectioningCommand}{\TheGroupSectionCommand}}
-    
-    \newcommand{\Group}[1]
-        {\UWMad@NomenFinalizer{\ArrayReset}
-         \UWMad@CurrentSectionCommand
-            {\TheGroupSectionCommand}
-         \UWMad@CurrentSectionName{##1}
-         \UWMad@PrintSectionName}
-        
-    \newcommand{\Subgroup}[1]
-        {\UWMad@NomenFinalizer{\ArrayReset}
-         \UWMad@CurrentSectionCommand
-            {\TheSubgroupSectionCommand}
-         \UWMad@CurrentSectionName{##1}
-         \UWMad@PrintSectionName}
-    
-    \UWMad@NomenInitializer
-    
-    \UWMad@CurrentSectionCommand{\TheNomenclatureSectionCommand}
-    \UWMad@CurrentSectionName{\TheNomenclatureName}
-    \UWMad@PrintSectionName
-}{%
-    \UWMad@NomenFinalizer{\ArrayDelete}%
-}
+\DeclareDocumentEnvironment {Nomenclature} { O{chapter} }
+    {\IfHashKeySet{SectionToLevel}{#1}
+        {}
+        {\UWMad@ClassError
+            {Nomenclature~environment~received~invalid~section~`#1'}}
+%
+%
+     \UWMad@NomenclatureTitlePrintedfalse
+%
+%
+     \edef\TheNomenclatureSectionCommand{#1}
+     \edef\TheGroupSectionCommand
+        {\HashExpandableGet{NextSectioningCommand}{#1}}
+     \edef\TheSubGroupSectionCommand
+        {\HashExpandableGet{NextSectioningCommand}{\TheGroupSectionCommand}}
+%
+%
+     \QueueMake{Nomenclature}
+     \DeclareDocumentCommand \Add { m m }
+        {\QueuePush{Nomenclature}
+            {\UWMad@NomenclatureEntry{##1}{##2}}
+         \UWMad@UpdateWidest{##1}}
+     \let\Item \Add
+     \let\Entry\Add
+%
+%
+     \DeclareDocumentCommand \Group { m }
+        {\IfQueueEmpty{Nomenclature}%
+            {}%
+            {\ifUWMad@NomenclatureTitlePrinted%
+             \else%
+                \UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}%
+                \UWMad@NomenclatureTitlePrintedtrue%
+             \fi}%
+         \UWMad@NomenclaturePrintEntries{}%
+         \QueueClear{Nomenclature}%
+         \ResetColumnWidth{}%
+         \UWMad@NomenclaturePrintName{\TheGroupSectionCommand}{##1}}
+%
+     \DeclareDocumentCommand \SubGroup { m }
+        {\IfQueueEmpty{Nomenclature}%
+            {}%
+            {\ifUWMad@NomenclatureTitlePrinted%
+             \else%
+                \UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}%
+                \UWMad@NomenclatureTitlePrintedtrue%
+             \fi}%
+         \UWMad@NomenclaturePrintEntries{}%
+         \QueueClear{Nomenclature}%
+         \ResetColumnWidth{}%
+         \UWMad@NomenclaturePrintName{\TheSubGroupSectionCommand}{##1}}}
+    {\IfQueueEmpty{Nomenclature}%
+            {}%
+            {\ifUWMad@NomenclatureTitlePrinted%
+             \else%
+                \UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}%
+                \UWMad@NomenclatureTitlePrintedtrue%
+             \fi}
+     \UWMad@NomenclaturePrintEntries{}}
 

@@ -130,10 +130,14 @@
    \typeout{Class \UWMad@ClassName\space Message: #1}
 }
 
-
 % Official class warning typeout
 \DeclareRobustCommand{\UWMad@ClassWarning}[1]{%
    \ClassWarning{\UWMad@ClassName}{#1}
+}
+
+% Official class error typeout
+\DeclareRobustCommand{\UWMad@ClassError}[1]{%
+   \ClassError{\UWMad@ClassName}{#1}
 }
 
 % =============================================================================================== %
