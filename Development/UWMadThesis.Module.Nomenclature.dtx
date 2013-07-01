@@ -6,57 +6,52 @@
 % =========================================================================== %
 %                       Entry Independent Commands                            %
 % =========================================================================== %
-\DefineNewLength{\UWMad@Widest}         {0pt}        % Will have the value of the widest symbol for spacing
-\DefineNewLength{\UWMad@WidestTest}     {0pt}        % Used to test for the widest symbol
-\DefineNewLength{\NomenTitleSkip}       {0em}        % Used for title spacing
-\DefineNewLength{\NomenPrintSkip}       {1em}        % Used for spacing after Nomen is printed
-\DefineNewLength{\EntryMarginLeft}      {1em}
-\DefineNewLength{\EntryMarginBottom}    {0.25em}
-
-\GlobalNewIf{UWMad@MakeNomenclatureStarred}
-\let\MakeNomenclatureStarred\UWMad@MakeNomenclatureStarredtrue
-\let\MakeNomenclatureNotStarred\UWMad@MakeNomenclatureStarredfalse
-
-\GlobalNewIf{UWMad@NomenclatureTitlePrinted}
-
-\newcommand{\UWMad@UpdateWidest}[1]{%
-    \settowidth{\UWMad@WidestTest}{#1}%
-    \ifdim\UWMad@Widest<\UWMad@WidestTest%
-        \setlength{\UWMad@Widest}{\UWMad@WidestTest}%
-    \fi}
-%
-\newcommand*{\ResetColumnWidth}{%
-    \global\setlength{\UWMad@Widest}{0pt}}
+\DefineGlobalLength{WidestSymbol}           {0pt}        % Will have the value of the widest symbol for spacing
+\DefineGlobalLength{NomenTitleSkip}         {0em}        % Used for title spacing
+\DefineGlobalLength{NomenPrintSkip}         {1em}        % Used for spacing after Nomen is printed
+\DefineGlobalLength{EntryMarginLeft}        {1em}
+\DefineGlobalLength{EntryMarginBottom}      {0.25em}
+\DefineGlobalLength{EntryWidthSymbol}       {0em}
+\DefineGlobalLength{EntryWidthDescription}  {0em}
+\DefineGlobalLength{EntryPadMiddle}         {0.75em}
 %
 %
-\newcommand*{\TheNomenclatureName}{Nomenclature}
-\newcommand{\NomenclatureName}[1]{%
-    \renewcommand*{\TheNomenclatureName}{#1}%
-}
+\DefineGlobalIfSetFalse{NomenclatureTitlePrinted}
+\DefineGlobalIfSetFalse{NomenclatureStarred}
 %
+\DeclareDocumentCommand \MakeNomenclatureStarred   { }
+    {\SetTrue {NomenclatureStarred}}
+\DeclareDocumentCommand \MakeNomenclatureUnstarred { }
+    {\SetFalse{NomenclatureStarred}}
+%
+\DeclareDocumentCommand  \ResetColumnWidth { }
+    {\SetLength{WidestSymbol}{0pt}}
+%
+\DeclareExpandableDocumentCommand \TheNomenclatureName { }
+    {Nomenclature}
+\DeclareDocumentCommand \NomenclatureName { m }
+    {\DeclareExpandableDocumentCommand \TheNomenclatureName { } {#1}}
 
-
-% =========================================================================== %
-%                       Entry Dependent Commands                              %
-% =========================================================================== %
-\DefineNewLength{\SymbolWidth}          {0em}
-\DefineNewLength{\DescriptionWidth}     {0em}
-\DefineNewLength{\SymbolDescriptionPad} {0.75em}
+\ExplSyntaxOn
+\cs_new:Nn \__UWMad_UpdateWidestSymbolLength:n
+    {\hbox_set:Nn \l_tmpa_box {#1}
+     \IfLength{WidestSymbol}{<}{\box_wd:N \l_tmpa_box}
+        {\SetLength{WidestSymbol}{\box_wd:N \l_tmpa_box}}
+        {}}
 %
 %
-
 \newcommand{\UWMad@SetTheWidths}{%
     % Define Symbol minipage width
-    \setlength  {\SymbolWidth}{\UWMad@Widest}%
-    \addtolength{\SymbolWidth}{\SymbolDescriptionPad}%
+    \SetLength{EntryWidthSymbol}
+        {\LengthValue{WidestSymbol} +
+         \LengthValue{EntryPadMiddle}}
     %
     % Define Description minipage width
-    \setlength  {\DescriptionWidth}{\textwidth}%
-    \addtolength{\DescriptionWidth}{-\SymbolWidth}%
-    \addtolength{\DescriptionWidth}{-\EntryMarginLeft}%
-    \setlength  {\DescriptionWidth}{0.99\DescriptionWidth}%
+    \SetLength{EntryWidthDescription}
+        {0.99\textwidth -
+         \LengthValue{EntryWidthSymbol} - 
+         \LengthValue{EntryMarginLeft}}
 }
-
 % =========================================================================== %
 %              SubNomen Environment Initializer and Finalizer                 %
 % =========================================================================== %
@@ -64,25 +59,23 @@
 \newcommand{\UWMad@NomenclaturePrintName}[2]
     {\IfCommandEmpty{#2}%
         {}%
-        {\ifUWMad@MakeNomenclatureStarred%
-            \csname#1\endcsname*{#2}%
-            \UWMad@FrontMatterRegister[#1]{#2}%
-         \else%
-            \csname#1\endcsname{#2}%
-         \fi}}
+        {\IfTrue{NomenclatureStarred}%
+            {\csname#1\endcsname*{#2}%
+             \UWMad@FrontMatterRegister[#1]{#2}}%
+            {\csname#1\endcsname{#2}}}}
 %
 %
 %
 \newcommand{\UWMad@NomenclatureEntry}[2]
     {\setstretch{1.1}%
-     \hspace{\EntryMarginLeft}%
-     \begin{minipage}[t]{\SymbolWidth}%
+     \hspace{\LengthValue{EntryMarginLeft}}
+     \begin{minipage}[t]{\LengthValue{EntryWidthSymbol}}%
         #1%
      \end{minipage}%
-     \begin{minipage}[t]{\DescriptionWidth}%
+     \begin{minipage}[t]{\LengthValue{EntryWidthDescription}}%
         #2%
      \end{minipage}%
-     \vskip\EntryMarginBottom}
+     \vskip\LengthValue{EntryMarginBottom}}
 %
 %
 %
@@ -102,7 +95,7 @@
             {Nomenclature~environment~received~invalid~section~`#1'}}
 %
 %
-     \UWMad@NomenclatureTitlePrintedfalse
+     \SetFalse{NomenclatureTitlePrinted}
 %
 %
      \edef\TheNomenclatureSectionCommand{#1}
@@ -116,7 +109,7 @@
      \DeclareDocumentCommand \Add { m m }
         {\QueuePush{Nomenclature}
             {\UWMad@NomenclatureEntry{##1}{##2}}
-         \UWMad@UpdateWidest{##1}}
+         \__UWMad_UpdateWidestSymbolLength:n{##1}}
      \let\Item \Add
      \let\Entry\Add
 %
@@ -124,34 +117,34 @@
      \DeclareDocumentCommand \Group { m }
         {\IfQueueEmpty{Nomenclature}%
             {}%
-            {\ifUWMad@NomenclatureTitlePrinted%
-             \else%
-                \UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}%
-                \UWMad@NomenclatureTitlePrintedtrue%
-             \fi}%
-         \UWMad@NomenclaturePrintEntries{}%
-         \QueueClear{Nomenclature}%
-         \ResetColumnWidth{}%
+            {\IfTrue{NomenclatureTitlePrinted}
+                {}
+                {\UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}
+                 \SetTrue{NomenclatureTitlePrinted}}
+                 \UWMad@NomenclaturePrintEntries{}
+                 \QueueClear{Nomenclature}
+                 \ResetColumnWidth{}}
          \UWMad@NomenclaturePrintName{\TheGroupSectionCommand}{##1}}
 %
      \DeclareDocumentCommand \SubGroup { m }
         {\IfQueueEmpty{Nomenclature}%
             {}%
-            {\ifUWMad@NomenclatureTitlePrinted%
-             \else%
-                \UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}%
-                \UWMad@NomenclatureTitlePrintedtrue%
-             \fi}%
-         \UWMad@NomenclaturePrintEntries{}%
-         \QueueClear{Nomenclature}%
-         \ResetColumnWidth{}%
+            {\IfTrue{NomenclatureTitlePrinted}
+                {}
+                {\UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}
+                 \SetTrue{NomenclatureTitlePrinted}}
+                 \UWMad@NomenclaturePrintEntries{}
+                 \QueueClear{Nomenclature}
+                 \ResetColumnWidth{}}
          \UWMad@NomenclaturePrintName{\TheSubGroupSectionCommand}{##1}}}
+%
     {\IfQueueEmpty{Nomenclature}%
-            {}%
-            {\ifUWMad@NomenclatureTitlePrinted%
-             \else%
-                \UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}%
-                \UWMad@NomenclatureTitlePrintedtrue%
-             \fi}
-     \UWMad@NomenclaturePrintEntries{}}
-
+        {}%
+        {\IfTrue{NomenclatureTitlePrinted}
+            {}
+            {\UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}
+             \SetTrue{NomenclatureTitlePrinted}}
+             \UWMad@NomenclaturePrintEntries{}
+             \QueueClear{Nomenclature}
+             \ResetColumnWidth{}}}
+\ExplSyntaxOff
