@@ -1,7 +1,7 @@
 % ===================================================================================== %
 %                                  Nomen Module                                         %
 % ===================================================================================== %
-
+\ExplSyntaxOn
 
 % =========================================================================== %
 %                       Entry Independent Commands                            %
@@ -27,124 +27,159 @@
 \DeclareDocumentCommand  \ResetColumnWidth { }
     {\SetLength{WidestSymbol}{0pt}}
 %
-\DeclareExpandableDocumentCommand \TheNomenclatureName { }
-    {Nomenclature}
+\tl_new:N   \g__UWMad_Nomenclature_Name_tl
+\tl_gset:Nn \g__UWMad_Nomenclature_Name_tl {{Nomenclature}}
 \DeclareDocumentCommand \NomenclatureName { m }
-    {\DeclareExpandableDocumentCommand \TheNomenclatureName { } {#1}}
+    {\tl_gset:Nn \g__UWMad_Nomenclature_Name_tl {#1}}
 
-\ExplSyntaxOn
-\cs_new:Nn \__UWMad_UpdateWidestSymbolLength:n
+\cs_new:Nn \__UWMad_Nomenclature_UpdateWidest:n
     {\hbox_set:Nn \l_tmpa_box {#1}
      \IfLength{WidestSymbol}{<}{\box_wd:N \l_tmpa_box}
         {\SetLength{WidestSymbol}{\box_wd:N \l_tmpa_box}}
         {}}
 %
 %
-\newcommand{\UWMad@SetTheWidths}{%
+\cs_new:Nn \__UWMad_Nomenclature_SetEntryWidths: {
     % Define Symbol minipage width
     \SetLength{EntryWidthSymbol}
-        {\LengthValue{WidestSymbol} +
-         \LengthValue{EntryPadMiddle}}
+        {\LengthOf{WidestSymbol} +
+         \LengthOf{EntryPadMiddle}}
     %
     % Define Description minipage width
     \SetLength{EntryWidthDescription}
         {0.99\textwidth -
-         \LengthValue{EntryWidthSymbol} - 
-         \LengthValue{EntryMarginLeft}}
+         \LengthOf{EntryWidthSymbol} -
+         \LengthOf{EntryMarginLeft}}
 }
-% =========================================================================== %
-%              SubNomen Environment Initializer and Finalizer                 %
-% =========================================================================== %
 
-\newcommand{\UWMad@NomenclaturePrintName}[2]
-    {\IfCommandEmpty{#2}%
-        {}%
-        {\IfTrue{NomenclatureStarred}%
-            {\csname#1\endcsname*{#2}%
-             \UWMad@FrontMatterRegister[#1]{#2}}%
+\newcommand{\UWMad@SetTheWidths}{%
+    % Define Symbol minipage width
+    \SetLength{EntryWidthSymbol}
+        {\LengthOf{WidestSymbol} +
+         \LengthOf{EntryPadMiddle}}
+    %
+    % Define Description minipage width
+    \SetLength{EntryWidthDescription}
+        {0.99\textwidth -
+         \LengthOf{EntryWidthSymbol} - 
+         \LengthOf{EntryMarginLeft}}
+}
+
+% =========================================================================== %
+%              SubNomen Environmentment Initializer and Finalizer                 %
+% =========================================================================== %
+\cs_new:Nn \__UWMad_Nomenclature_PrintSectionHeader:nn
+    {\tl_if_blank:oTF {#2}
+        {}
+        {\IfTrue{NomenclatureStarred}
+            {\csname#1\endcsname*{#2}
+             \UWMad@FrontMatterRegister[#1]{#2}}
             {\csname#1\endcsname{#2}}}}
 %
 %
 %
-\newcommand{\UWMad@NomenclatureEntry}[2]
-    {\setstretch{1.1}%
-     \hspace{\LengthValue{EntryMarginLeft}}
-     \begin{minipage}[t]{\LengthValue{EntryWidthSymbol}}%
-        #1%
-     \end{minipage}%
-     \begin{minipage}[t]{\LengthValue{EntryWidthDescription}}%
-        #2%
-     \end{minipage}%
-     \vskip\LengthValue{EntryMarginBottom}}
+\cs_new:Nn \__UWMad_Nomenclature_Entry:nn {
+    \group_begin:
+        \setstretch{1.1}
+         \hspace{\LengthOf{EntryMarginLeft}}
+         \begin{minipage}[t]{\LengthOf{EntryWidthSymbol}}
+            #1
+         \end{minipage}
+         \begin{minipage}[t]{\LengthOf{EntryWidthDescription}}
+            #2
+         \end{minipage}
+         \vskip\LengthOf{EntryMarginBottom}
+    \group_end:
+}
 %
 %
+\QueueMake{Nomenclature}
 %
-\newcommand{\UWMad@NomenclaturePrintEntries}
-    {\IfQueueEmpty{Nomenclature}%
-        {}%
-        {\UWMad@SetTheWidths{}%
-         \QueueWalk{Nomenclature}{##1}}}
+%
+\cs_new:Nn \__UWMad_Nomenclature_PrintEntries: {
+    \__UWMad_Nomenclature_SetEntryWidths:
+    \QueueWalk {Nomenclature}{##1}
+    \QueueClear{Nomenclature}
+    \ResetColumnWidth{}
+}
+%
+%
+\cs_new:Nn \__UWMad_Nomenclature_PrintEnvironmentTitle: {
+    \IfTrue{NomenclatureTitlePrinted}{
+    }{
+        \__UWMad_Nomenclature_PrintSectionHeader:nn
+            {\tl_use:N\l__UWMad_Nomenclature_EnvironmentSection_tl}
+            {\tl_use:N\g__UWMad_Nomenclature_Name_tl}
+        \SetTrue{NomenclatureTitlePrinted}
+    }
+}
+%
+%
+\tl_new:N \l__UWMad_Nomenclature_EnvironmentSection_tl
+\tl_new:N \l__UWMad_Nomenclature_GroupSection_tl
+\tl_new:N \l__UWMad_Nomenclature_SubGroupSection_tl
 
-
-
-% Nomenclature environment ----------------------------------------------------
+% Nomenclature Environmentment ----------------------------------------------------
 \DeclareDocumentEnvironment {Nomenclature} { O{chapter} }
-    {\IfHashKeySet{SectionToLevel}{#1}
+    {
+     \IfHashKeySet{SectionToLevel}{#1}
         {}
         {\UWMad@ClassError
-            {Nomenclature~environment~received~invalid~section~`#1'}}
+            {Nomenclature~Environmentment~received~invalid~section~`#1'}}
 %
 %
-     \SetFalse{NomenclatureTitlePrinted}
+    \SetFalse{NomenclatureTitlePrinted}
 %
 %
-     \edef\TheNomenclatureSectionCommand{#1}
-     \edef\TheGroupSectionCommand
+    \tl_set:Nf \l__UWMad_Nomenclature_EnvironmentSection_tl {#1}
+    \tl_set:Nf \l__UWMad_Nomenclature_GroupSection_tl
         {\HashExpandableGet{NextSectioningCommand}{#1}}
-     \edef\TheSubGroupSectionCommand
-        {\HashExpandableGet{NextSectioningCommand}{\TheGroupSectionCommand}}
+    \tl_set:Nf \l__UWMad_Nomenclature_SubGroupSection_tl
+        {\HashExpandableGet{NextSectioningCommand}
+            {\tl_use:N \l__UWMad_Nomenclature_GroupSection_tl}}
 %
 %
-     \QueueMake{Nomenclature}
-     \DeclareDocumentCommand \Add { m m }
-        {\QueuePush{Nomenclature}
-            {\UWMad@NomenclatureEntry{##1}{##2}}
-         \__UWMad_UpdateWidestSymbolLength:n{##1}}
-     \let\Item \Add
-     \let\Entry\Add
+    \DeclareDocumentCommand \Add { m m }{
+        \QueuePush{Nomenclature}{
+            \__UWMad_Nomenclature_Entry:nn
+                {##1}
+                {##2}
+        }
+        \__UWMad_Nomenclature_UpdateWidest:n{##1}
+    }
+    \cs_set_eq:NN \Item \Add
+    \cs_set_eq:NN \Entry \Add
 %
 %
-     \DeclareDocumentCommand \Group { m }
-        {\IfQueueEmpty{Nomenclature}%
-            {}%
-            {\IfTrue{NomenclatureTitlePrinted}
-                {}
-                {\UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}
-                 \SetTrue{NomenclatureTitlePrinted}}
-                 \UWMad@NomenclaturePrintEntries{}
-                 \QueueClear{Nomenclature}
-                 \ResetColumnWidth{}}
-         \UWMad@NomenclaturePrintName{\TheGroupSectionCommand}{##1}}
+    \DeclareDocumentCommand \Group { m }{
+        \IfQueueEmpty{Nomenclature}{
+        }{
+            \__UWMad_Nomenclature_PrintEnvironmentTitle:
+            \__UWMad_Nomenclature_PrintEntries:
+        }
+        
+        \__UWMad_Nomenclature_PrintSectionHeader:nn
+            {\tl_use:N\l__UWMad_Nomenclature_GroupSection_tl}
+            {##1}
+    }
 %
-     \DeclareDocumentCommand \SubGroup { m }
-        {\IfQueueEmpty{Nomenclature}%
-            {}%
-            {\IfTrue{NomenclatureTitlePrinted}
-                {}
-                {\UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}
-                 \SetTrue{NomenclatureTitlePrinted}}
-                 \UWMad@NomenclaturePrintEntries{}
-                 \QueueClear{Nomenclature}
-                 \ResetColumnWidth{}}
-         \UWMad@NomenclaturePrintName{\TheSubGroupSectionCommand}{##1}}}
 %
-    {\IfQueueEmpty{Nomenclature}%
-        {}%
-        {\IfTrue{NomenclatureTitlePrinted}
-            {}
-            {\UWMad@NomenclaturePrintName{#1}{\TheNomenclatureName}
-             \SetTrue{NomenclatureTitlePrinted}}
-             \UWMad@NomenclaturePrintEntries{}
-             \QueueClear{Nomenclature}
-             \ResetColumnWidth{}}}
+    \DeclareDocumentCommand \SubGroup { m }{
+        \IfQueueEmpty{Nomenclature}{
+        }{
+            \__UWMad_Nomenclature_PrintEnvironmentTitle:
+            \__UWMad_Nomenclature_PrintEntries:
+        }
+
+        \__UWMad_Nomenclature_PrintSectionHeader:nn
+            {\tl_use:N\l__UWMad_Nomenclature_SubGroupSection_tl}
+            {##1}
+    }
+}{
+    \IfQueueEmpty{Nomenclature}{
+    }{
+        \__UWMad_Nomenclature_PrintEnvironmentTitle:
+        \__UWMad_Nomenclature_PrintEntries:
+    }
+}
 \ExplSyntaxOff
