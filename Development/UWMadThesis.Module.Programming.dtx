@@ -66,12 +66,15 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %    \begin{macrocode}
 \ExplSyntaxOn
-\DeclareDocumentCommand \GlobalNewIf { m }
-    {\cs_gset_eq:cc {if#1} {iftrue}
-     \cs_gset_nopar:cpn {#1true}
-        {\cs_gset_eq:cc {if#1} {iftrue}}
-     \cs_gset_nopar:cpn {#1false}
-        {\cs_gset_eq:cc {if#1} {iffalse}}}
+\DeclareDocumentCommand \GlobalNewIf { m }{
+    \cs_gset_eq:cc {if#1} {iftrue}
+    \cs_gset_nopar:cpn {#1true}{
+        \cs_gset_eq:cc {if#1} {iftrue}
+    }
+    \cs_gset_nopar:cpn {#1false}{
+        \cs_gset_eq:cc {if#1} {iffalse}
+    }
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -90,14 +93,20 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfCommandExists { m +m +m }
-    {\cs_if_exist:cTF {#1}
-        {#2}
-        {#3}}
-\DeclareDocumentCommand \IfCommandDoesNotExist { m +m +m }
-    {\cs_if_free:cTF {#1}
-        {#2}
-        {#3}}
+\DeclareDocumentCommand \IfCommandExists { m +m +m }{
+    \cs_if_exist:cTF {#1}{
+        #2
+    }{
+        #3
+    }
+}
+\DeclareDocumentCommand \IfCommandDoesNotExist { m +m +m }{
+    \cs_if_free:cTF {#1}{
+        #2
+    }{
+        #3
+    }
+}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -114,10 +123,13 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfStringEmpty { m +m +m }
-    {\tl_if_blank:nTF {#1}
-        {#2}
-        {#3}}
+\DeclareDocumentCommand \IfStringEmpty { m +m +m }{
+    \tl_if_blank:nTF {#1}{
+        #2
+    }{
+        #3
+    }
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -132,10 +144,13 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfCommandEmpty { m +m +m }
-    {\tl_if_blank:oTF{#1}
-        {#2}
-        {#3}}
+\DeclareDocumentCommand \IfCommandEmpty { m +m +m }{
+    \tl_if_blank:oTF{#1}{
+        #2
+    }{
+        #3
+    }
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -150,9 +165,10 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\newcommand{\DefineNewLength}[2]
-    {\newlength{#1}%
-     \setlength{#1}{#2}}
+\newcommand{\DefineNewLength}[2]{
+    \newlength{#1}
+    \setlength{#1}{#2}
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -167,49 +183,10 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\newcommand{\DefineNewCounter}[2]
-    {\newcounter{#1}%
-     \setcounter{#1}{#2}}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{\__UWMad_LocalOrGlobal:nnn}
-%   Certain subsystems of the Programming Module make a distinction
-%   between local and global variables where scope is determined by
-%   \TeX{} groups.  This command takes five arguments designed to 
-%   increased maintainability and readability in the subsystems that
-%   use it.
-%
-%   This command accepts a \marg{Prefix}, an \marg{ID}, a \marg{Type},
-%   \marg{LocalCode}, and \marg{GLobalCode}.  All subsystems that use
-%   this command have (in theory) already defined a command of the form
-%   \cmd{\marg{Prefix}\marg{ID}_Local} or \cmd{\marg{Prefix}\marg{ID}_Global}
-%   of a specific \marg{Type}.  If either of the commands is defined, the
-%   appropriate code is executed (in an fully expandable fashion, which is
-%   used to reduce code duplication where possible).  If neither of those
-%   commands exist, the variable is not registered with the system and an
-%   exception is thrown.
-%
-%   As an example, the command |\DefineNewGlobalCounter{Example}| will create
-%   a counter \marg{Type} variable |\g__UWMad_Counter_Example_Global| where
-%   |g__UWMad_Counter_| is the \marg{Prefix}, |Example| is the \marg{ID}, and
-%   |_Global| is the scope indicator leveraged by
-%   |\__UWMad_LocalOrGlobal:nnnnn| for branching.
-%
-%   \begin{Usage}
-%       \item |\UWMad_LocalOrGlobal:nnnnn| \marg{Prefix}\marg{ID}\marg{Type}
-%                               \marg{LocalCode}, and \marg{GLobalCode}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \__UWMad_LocalOrGlobal:nnnnn
-    {\cs_if_exist:cTF     {#1#2_Local}
-        {#4}
-        {\cs_if_exist:cTF {#1#2_Global}
-            {#5}
-            {\UWMad@ClassWarning{`#2'~is~not~a~registered~#3.}}}}
+\newcommand{\DefineNewCounter}[2]{
+    \newcounter{#1}
+    \setcounter{#1}{#2}
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -297,7 +274,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \MakeCommandUndefined { m }
-    {\cs_undefined:c {#1}}
+    {\cs_undefine:c {#1}}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -329,6 +306,86 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 %
+%   \begin{macro}{\__UWMad_IsLocal:nnnnn}
+%   Certain subsystems of the Programming Module make a distinction
+%   between local and global variables where scope is determined by
+%   \TeX{} groups.  This command takes five arguments designed to 
+%   increased maintainability and readability in the subsystems that
+%   use it.
+%
+%   This command accepts a \marg{Prefix}, an \marg{ID}, a \marg{Type},
+%   \marg{LocalCode}, and \marg{GLobalCode}.  All subsystems that use
+%   this command have (in theory) already defined a command of the form
+%   \cmd{\marg{Prefix}\marg{ID}_Local} or \cmd{\marg{Prefix}\marg{ID}_Global}
+%   of a specific \marg{Type}.  If either of the commands is defined, the
+%   appropriate code is executed (in an fully expandable fashion, which is
+%   used to reduce code duplication where possible).  If neither of those
+%   commands exist, the variable is not registered with the system and an
+%   exception is thrown.
+%
+%   As an example, the command |\DefineNewGlobalCounter{Example}| will create
+%   a counter \marg{Type} variable |\g__UWMad_Counter_Example_Global| where
+%   |g__UWMad_Counter_| is the \marg{Prefix}, |Example| is the \marg{ID}, and
+%   |_Global| is the scope indicator leveraged by
+%   |\__UWMad_IsLocal:nnnnn| for branching.
+%
+%   \begin{Usage}
+%       \item |\UWMad_IsLocal:nnnnn| \marg{Prefix}\marg{ID}\marg{Type}
+%                               \marg{LocalCode}, and \marg{GLobalCode}
+%   \end{Usage}
+%
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_IsLocal:nnnnn{
+    \cs_if_exist:cTF     {#1#2_Local}{
+        #4
+    }{
+        \cs_if_exist:cTF {#1#2_Global}{
+            #5
+        }{
+            \UWMad@ClassWarning{`#2'~is~not~a~registered~#3.}
+        }
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\__UWMad_IsLocal_Counter:nnn}
+%   \begin{macro}{\__UWMad_IsLocal_Length:nnn}
+%   \begin{macro}{\__UWMad_IsLocal_Boolean:nnn}
+%   Shortcuts for |\__UWMad_IsLocal:nnnnn| for the various
+%   subsystems.  These commands only take an \marg{ID},
+%   \marg{LocalCode}, and \marg{GlobalCode}.
+%
+%   \begin{Usage}
+%       \item |\__UWMad_IsLocal_Counter:nnn|\marg{ID}
+%                               \marg{LocalCode}\marg{GLobalCode}
+%   \end{Usage}
+%
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_IsLocal_Counter:nTF {
+    \__UWMad_IsLocal:nnnnn
+        {g__UWMad_Counter_}{#1}{counter}{#2}{#3}
+}
+\cs_new:Nn \__UWMad_IsLocal_Length:nTF {
+    \__UWMad_IsLocal:nnnnn
+        {g__UWMad_Length_}{#1}{length}{#2}{#3}
+}
+\cs_new:Nn \__UWMad_IsLocal_Boolean:nTF {
+    \__UWMad_IsLocal:nnnnn
+        {g__UWMad_Boolean_}{#1}{boolean}{#2}{#3}
+}
+%    \end{macrocode}
+%   \end{macro}
+%   \end{macro}
+%   \end{macro}
+%
+%
+%
+%
+%
+%
 %^^A ==================================================================== %
 %^^A                            Boolean System                            %
 %^^A ==================================================================== %
@@ -342,49 +399,67 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   a one-shot system while allowing more endeavouring authors access to
 %   to the simple feature without learning \LaTeX3{} programming.
 %
-\DeclareDocumentCommand \DefineLocalIf { m }
-    {\bool_new:c {g__UWMad_Boolean_#1_Local}}
-\DeclareDocumentCommand \DefineGlobalIf { m }
-    {\bool_new:c {g__UWMad_Boolean_#1_Global}}
+\DeclareDocumentCommand \DefineLocalIf { m } {
+    \bool_new:c {g__UWMad_Boolean_#1_Local}
+}
+\DeclareDocumentCommand \DefineGlobalIf { m } {
+    \bool_new:c {g__UWMad_Boolean_#1_Global}
+    }
 %
 %
-\DeclareDocumentCommand \DefineLocalIfSetTrue { m }
-    {\bool_new:c       {g__UWMad_Boolean_#1_Local}
-     \bool_gset_true:c {g__UWMad_Boolean_#1_Local}}
-\DeclareDocumentCommand \DefineLocalIfSetFalse { m }
-    {\bool_new:c       {g__UWMad_Boolean_#1_Local}
-     \bool_gset_true:c {g__UWMad_Boolean_#1_Local}}
+\DeclareDocumentCommand \DefineLocalIfSetTrue { m } {
+    \bool_new:c       {g__UWMad_Boolean_#1_Local}
+    \bool_gset_true:c {g__UWMad_Boolean_#1_Local}
+}
+\DeclareDocumentCommand \DefineLocalIfSetFalse { m } {
+    \bool_new:c       {g__UWMad_Boolean_#1_Local}
+    \bool_gset_true:c {g__UWMad_Boolean_#1_Local}
+}
 %
-\DeclareDocumentCommand \DefineGlobalIfSetTrue { m }
-    {\bool_new:c       {g__UWMad_Boolean_#1_Global}
-     \bool_gset_true:c {g__UWMad_Boolean_#1_Global}}
-\DeclareDocumentCommand \DefineGlobalIfSetFalse { m }
-    {\bool_new:c       {g__UWMad_Boolean_#1_Global}
-     \bool_gset_true:c {g__UWMad_Boolean_#1_Global}}
-%
-%
-\DeclareDocumentCommand \SetTrue { m }
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Boolean_} {#1} {boolean}
-        {\bool_set_true:c  {g__UWMad_Boolean_#1_Local}}
-        {\bool_gset_true:c {g__UWMad_Boolean_#1_Global}}}
-\DeclareDocumentCommand \SetFalse { m }
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Boolean_} {#1} {boolean}
-        {\bool_set_false:c  {g__UWMad_Boolean_#1_Local}}
-        {\bool_gset_false:c {g__UWMad_Boolean_#1_Global}}}
+\DeclareDocumentCommand \DefineGlobalIfSetTrue { m } {
+    \bool_new:c       {g__UWMad_Boolean_#1_Global}
+    \bool_gset_true:c {g__UWMad_Boolean_#1_Global}
+}
+\DeclareDocumentCommand \DefineGlobalIfSetFalse { m } {
+    \bool_new:c       {g__UWMad_Boolean_#1_Global}
+     \bool_gset_true:c {g__UWMad_Boolean_#1_Global}
+}
 %
 %
-\DeclareDocumentCommand \IfTrue { m +m +m}
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Boolean_} {#1} {boolean}
-        {\bool_if:cTF {g__UWMad_Boolean_#1_Local}}
-        {\bool_if:cTF {g__UWMad_Boolean_#1_Global}}
-            {#2}
-            {#3}}
-\DeclareDocumentCommand \IfFalse { m +m +m}
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Boolean_} {#1} {boolean}
-        {\bool_if:cTF {g__UWMad_Boolean_#1_Local}}
-        {\bool_if:cTF {g__UWMad_Boolean_#1_Global}}
-            {#3}
-            {#2}}
+\DeclareDocumentCommand \SetTrue { m } {
+    \__UWMad_IsLocal_Boolean:nTF {#1} {
+        \bool_set_true:c  {g__UWMad_Boolean_#1_Local}
+    }{
+        \bool_gset_true:c {g__UWMad_Boolean_#1_Global}
+    }
+}
+\DeclareDocumentCommand \SetFalse { m } {
+    \__UWMad_IsLocal_Boolean:nTF {#1} {
+        \bool_set_false:c  {g__UWMad_Boolean_#1_Local}
+    }{
+        \bool_gset_false:c {g__UWMad_Boolean_#1_Global}
+    }
+}
+%
+%
+\DeclareDocumentCommand \IfTrue { m +m +m}{
+    \__UWMad_IsLocal_Boolean:nTF {#1} {
+        \bool_if:cTF {g__UWMad_Boolean_#1_Local}
+    }{
+        \bool_if:cTF {g__UWMad_Boolean_#1_Global}
+    }
+    {#2}
+    {#3}
+}
+\DeclareDocumentCommand \IfFalse { m +m +m}{
+    \__UWMad_IsLocal_Boolean:nTF {#1} {
+        \bool_if:cTF {g__UWMad_Boolean_#1_Local}
+    }{
+        \bool_if:cTF {g__UWMad_Boolean_#1_Global}
+    }
+    {#3}
+    {#2}
+}
 %
 %
 %
@@ -404,36 +479,47 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   a one-shot system while allowing more endeavouring authors access to
 %   to the simple feature without learning \LaTeX3{} programming.
 %
-\DeclareDocumentCommand \DefineLocalLength  { m m }
-    {\dim_new:c   {g__UWMad_Length_#1_Local}
-     \dim_gset:cn {g__UWMad_Length_#1_Local} {#2}}
-\DeclareDocumentCommand \DefineGlobalLength { m m }
-    {\dim_new:c   {g__UWMad_Length_#1_Global}
-     \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}}
+\DeclareDocumentCommand \DefineLocalLength  { m m } {
+    \dim_new:c   {g__UWMad_Length_#1_Local}
+    \dim_gset:cn {g__UWMad_Length_#1_Local} {#2}
+}
+\DeclareDocumentCommand \DefineGlobalLength { m m } {
+    \dim_new:c   {g__UWMad_Length_#1_Global}
+    \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}
+}
 %
 %
-\DeclareDocumentCommand \AddToLength { m m }
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Length_} {#1} {length}
-        {\dim_add:cn  {g__UWMad_Length_#1_Local}  {#2} }
-        {\dim_gadd:cn {g__UWMad_Length_#1_Global} {#2} }}
+\DeclareDocumentCommand \AddToLength { m m } {
+    \__UWMad_IsLocal_Length:nTF {#1} {
+        \dim_add:cn  {g__UWMad_Length_#1_Local}  {#2}
+    }{
+        \dim_gadd:cn {g__UWMad_Length_#1_Global} {#2}
+    }
+}
 %
-\DeclareDocumentCommand \SetLength { m m }
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Length_} {#1} {length}
-        {\dim_set:cn  {g__UWMad_Length_#1_Local}  {#2} }
-        {\dim_gset:cn {g__UWMad_Length_#1_Global} {#2} }}
+\DeclareDocumentCommand \SetLength { m m }{
+    \__UWMad_IsLocal_Length:nTF {#1} {
+        \dim_set:cn  {g__UWMad_Length_#1_Local}  {#2}
+    }{
+        \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}
+    }
+}
 %
-\DeclareDocumentCommand \LengthOf { m }
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Length_} {#1} {length}
-        {\dim_use:c {g__UWMad_Length_#1_Local}}
-        {\dim_use:c {g__UWMad_Length_#1_Global}}}
+\DeclareDocumentCommand \LengthOf { m } {
+    \__UWMad_IsLocal_Length:nTF {#1} {
+        \dim_use:c {g__UWMad_Length_#1_Local}
+    }{
+        \dim_use:c {g__UWMad_Length_#1_Global}
+    }
+}
 %
-\DeclareDocumentCommand \IfLength{ m m m m m }
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Length_} {#1} {length}
-        {\dim_set_eq:Nc \l_tmpa_dim {g__UWMad_Length_#1_Local}}
-        {\dim_set_eq:Nc \l_tmpa_dim {g__UWMad_Length_#1_Global}}
-     \dim_compare:nTF {\l_tmpa_dim #2 #3}
-        {#4}
-        {#5}}
+\DeclareDocumentCommand \IfLength{ m m m +m +m }{
+    \dim_compare:nTF{ \LengthOf{#1} #2 #3 }{
+        #4
+    }{
+        #5
+    }
+}
 %
 %
 %
@@ -462,12 +548,14 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \DefineNewLocalCounter { m m }
-    {\int_new:c   {g__UWMad_Counter_#1_Local}
-     \int_gset:cn {g__UWMad_Counter_#1_Local} {#2}}
-\DeclareDocumentCommand \DefineNewGlobalCounter { m m }
-    {\int_new:c   {g__UWMad_Counter_#1_Global}
-     \int_gset:cn {g__UWMad_Counter_#1_Global} {#2}}
+\DeclareDocumentCommand \DefineNewLocalCounter { m m } {
+    \int_new:c   {g__UWMad_Counter_#1_Local}
+    \int_gset:cn {g__UWMad_Counter_#1_Local} {#2}
+}
+\DeclareDocumentCommand \DefineNewGlobalCounter { m m } {
+    \int_new:c   {g__UWMad_Counter_#1_Global}
+    \int_gset:cn {g__UWMad_Counter_#1_Global} {#2}
+}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -476,7 +564,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %   \begin{macro}{\AddToCounter}
 %   This command adds \marg{Increment} to the current value of counter
-%   \marg{CounterName}. |\UWMad_LocalOrGlobal:nnn| handles the local vs.
+%   \marg{CounterName}. |\UWMad_IsLocal:nnn| handles the local vs.
 %   global advancement.
 %
 %   \begin{Usage}
@@ -484,10 +572,13 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \AddToCounter { m m }
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Counter_} {#1} {Counter}
-        {\int_add:cn  {g__UWMad_Counter_#1_Local} {#2}}
-        {\int_gadd:cn {g__UWMad_Counter_#1_Global} {#2}}}
+\DeclareDocumentCommand \AddToCounter { m m } {
+    \__UWMad_IsLocal_Counter:nTF {#1} {
+        \int_add:cn  {g__UWMad_Counter_#1_Local}  {#2}
+    }{
+        \int_gadd:cn {g__UWMad_Counter_#1_Global} {#2}
+    }
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -495,15 +586,16 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %   \begin{macro}{\StepCounter}
 %   Adds $1$ to the counter \marg{Counter Name}.
-%   |\UWMad_LocalOrGlobal:nnn| handles the local vs. global advancement.
+%   |\UWMad_IsLocal:nnn| handles the local vs. global advancement.
 %
 %   \begin{Usage}
 %       \item |\StepCounter|\marg{Counter Name}
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \StepCounter { m }
-    {\AddToCounter{#1}{1}}
+\DeclareDocumentCommand \StepCounter { m }{
+    \AddToCounter{#1}{1}
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -511,17 +603,20 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %   \begin{macro}{\SetCounter}
 %   This command sets the value of counter \marg{Counter Name} to \marg{Value}.
-%   |\UWMad_LocalOrGlobal:nnn| handles the local vs. global assignment.
+%   |\UWMad_IsLocal:nnn| handles the local vs. global assignment.
 %
 %   \begin{Usage}
 %       \item |\SetCounter|\marg{Counter Name}\marg{Value}
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \SetCounter { m m }
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Counter_} {#1} {Counter}
-        {\int_set:cn  {g__UWMad_Counter_#1_Local}  {#2}}
-        {\int_gset:cn {g__UWMad_Counter_#1_Global} {#2}}}
+\DeclareDocumentCommand \SetCounter { m m }{
+    \__UWMad_IsLocal_Counter:nTF {#1} {
+        \int_set:cn  {g__UWMad_Counter_#1_Local}  {#2}
+    }{
+        \int_gset:cn {g__UWMad_Counter_#1_Global} {#2}
+    }
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -530,7 +625,6 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \begin{macro}{\SetAndAddToCounter}
 %   \begin{macro}{\SetAndStepCounter}
 %   Combinations of |\SetCounter|, |AddToCounter|, and |\StepCounter|.
-%   |\UWMad_LocalOrGlobal:nnn| handles the local vs. global assignment.
 %
 %   \begin{Usage}
 %       \item |\SetAndAddToCounter|\marg{Counter Name}\marg{Initial Value}\marg{Value}
@@ -538,11 +632,13 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \SetAndAddToCounter { m m m }
-    {\SetCounter{#1}{#2}
-     \AddToCounter{#1}{#3}}
-\DeclareDocumentCommand \SetAndStepCounter { m m }
-    {\SetAndAddToCounter{#1}{#2}{1}}
+\DeclareDocumentCommand \SetAndAddToCounter { m m m }{
+    \SetCounter{#1}{#2}
+    \AddToCounter{#1}{#3}
+}
+\DeclareDocumentCommand \SetAndStepCounter { m m }{
+    \SetAndAddToCounter{#1}{#2}{1}
+}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -557,10 +653,13 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \CounterValue { m }
-    {\__UWMad_LocalOrGlobal:nnnnn {g__UWMad_Counter_} {#1} {Counter}
-        {\int_use:c {g__UWMad_Counter_#1_Local}}
-        {\int_use:c {g__UWMad_Counter_#1_Global}}}
+\DeclareDocumentCommand \CounterValue { m }{
+    \__UWMad_IsLocal_Counter:nTF {#1} {
+        \int_use:c {g__UWMad_Counter_#1_Local}
+    }{
+        \int_use:c {g__UWMad_Counter_#1_Global}
+    }
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -584,31 +683,39 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   a one-shot system while allowing more endeavouring authors access to
 %   to the simple feature without learning \LaTeX3{} programming.
 %
-\DeclareDocumentCommand  \CSVMake { m }
-    {\clist_new:c {g__UWMad_CSV_#1}}
+\DeclareDocumentCommand  \CSVMake { m } {
+    \clist_new:c {g__UWMad_CSV_#1}
+}
 
-\DeclareDocumentCommand \CSVClear { m }
-    {\clist_gclear:c {g__UWMad_CSV_#1}}
+\DeclareDocumentCommand \CSVClear { m } {
+    \clist_gclear:c {g__UWMad_CSV_#1}
+}
 
-\DeclareDocumentCommand \CSVAppend { m m }
-    {\clist_if_exist:cTF {g__UWMad_CSV_#1}
-        {}
-        {\clist_new:c {g__UWMad_CSV_#1}}
-     \clist_gput_right:cn {g__UWMad_CSV_#1} {#2}}
+\DeclareDocumentCommand \CSVAppend { m m } {
+    \clist_if_exist:cTF {g__UWMad_CSV_#1}{}{
+        \clist_new:c {g__UWMad_CSV_#1}
+    }
+    \clist_gput_right:cn {g__UWMad_CSV_#1} {#2}
+}
 
-\DeclareDocumentCommand \CSVPrepend { m m }
-    {\clist_if_exist:cTF {g__UWMad_CSV_#1}
-        {}
-        {\clist_new:c {g__UWMad_CSV_#1}}
-     \clist_gput_left:cn {g__UWMad_CSV_#1} {#2}}
+\DeclareDocumentCommand \CSVPrepend { m m } {
+    \clist_if_exist:cTF {g__UWMad_CSV_#1}{}{
+        \clist_new:c {g__UWMad_CSV_#1}
+    }
+     \clist_gput_left:cn {g__UWMad_CSV_#1} {#2}
+}
 
-\DeclareExpandableDocumentCommand \CSVGet { m }
-    {\clist_use:c {g__UWMad_CSV_#1}}
+\DeclareExpandableDocumentCommand \CSVGet { m } {
+    \clist_use:c {g__UWMad_CSV_#1}
+}
 
-\DeclareDocumentCommand  \IfCSVExists { m m m }
-    {\clist_if_exist:cTF {g__UWMad_CSV_#1}
-        {#2}
-        {#3}}
+\DeclareDocumentCommand  \IfCSVExists { m m m } {
+    \clist_if_exist:cTF {g__UWMad_CSV_#1}{
+        #2
+    }{
+        #3
+    }
+}
 %
 %
 %
@@ -851,12 +958,16 @@ and is aimed mainly at authors that wish to utilize its abilities.
         {\prop_gremove:cx {g_UWMad_Hash_#1} {#2}}
         {}}
 
-\DeclareDocumentCommand \IfHashKeySet { m m +m +m }
-    {\prop_if_exist:cTF   {g_UWMad_Hash_#1}
-        {\prop_if_in:cxTF {g_UWMad_Hash_#1} {#2}
+\cs_generate_variant:Nn \tl_to_lowercase:n {f}
+
+\DeclareDocumentCommand \IfHashKeySet { m m +m +m } {
+    \prop_if_exist:cTF   {g_UWMad_Hash_#1}{
+        \prop_if_in:cfTF {g_UWMad_Hash_#1} {\tl_trim_spaces:n{#2}}
             {#3}
-            {#4}}
-        {}}
+            {#4}
+    }{
+    }
+}
 
 \DeclareDocumentCommand \HashWalk {m +m}
     {\prop_if_exist:cTF      {g_UWMad_Hash_#1}

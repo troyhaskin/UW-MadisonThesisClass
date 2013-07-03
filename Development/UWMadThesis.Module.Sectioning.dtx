@@ -1,7 +1,7 @@
 % =============================================================================================== %
 %                        WisconsinThesis Class: Sectioning Module                                 %
 % =============================================================================================== %
-
+\ExplSyntaxOn
 
 % =========================================================================== %
 %                        Redefined Chapter Head Command                       %
@@ -108,41 +108,7 @@
     \fi%
     \DefaultChapter}%
 
-\iffalse
-\DeclareRobustCommand{\chapter}{%
-    \if@openright\cleardoublepage\else\clearpage\fi% %  Double-skips if the 'openright' option is used.
-    \global\@topnum\z@%                              %  Prevents figures from being place at the top of the page
-    \thispagestyle{myheadings}%                      %  Places the page number in the upper-right corner
-    \@afterindentfalse%                              %  Turns off indentation of the first paragraph following the chapter head.
-    \secdef\@chapter\@schapter%                      %  Runs commands for the unstarred (\@chapter) and starred (\@schapter) uses of \chapter
-}
 
-
-\def\@chapter[#1]#2{%
-%
-    %\ifnum \value{chapter}=0%                       % Test:  Is this the first chapter?
-    %    \pagenumbering{arabic}%                     % True:  Switch to arabic page numbers 
-    %\fi%
-%
-    \ifnum \c@secnumdepth >\m@ne%                   % Test: Is the SectionDepth counter is above -1
-        \refstepcounter{chapter}%                   % True: Define: Add one to chapter counter
-        \typeout{\@chapapp\space\thechapter.}%      %       Type:   Chapter ID
-        \addcontentsline{toc}{chapter}%             %       Write:  Add a contentsline line to the ToC file at the chapter level
-        {\protect\numberline{\thechapter}#1}%       %               Write out chapter number and title
-    \else%                                          % False:
-        \addcontentsline{toc}{chapter}{#1}%         %       Write:  Add a contentsline line with Chapter Title only
-    \fi%
-    \chaptermark{#1}%                               % Set: For \pagestyle{myheadings} this just gobbles the argument
-    \addtocontents{lof}{\protect\addvspace{10\p@}}% % Write: To LoF
-    \addtocontents{lot}{\protect\addvspace{10\p@}}% % Write: To LoT
-    \if@twocolumn%
-        \@topnewpage[\@makechapterhead{#2}]%        % Set: The Chapter Head on a new page
-    \else%
-        \@makechapterhead{#2}%                      % Set: The Chapter Head
-        \@afterheading%                             % Set:
-    \fi%
-}
-\fi
 
 
 
@@ -189,28 +155,37 @@
 % =========================================================================== %
 %              Front Matter Environment/Command Definitions                   %
 % =========================================================================== %
-\DefineNewCounter{FrontMatter}{0}
+\DefineNewGlobalCounter{FrontMatter}{0}
 
-\DeclareRobustCommand{\UWMad@FrontMatterRegister}[2][chapter]{
+
+\cs_new:Nn \__UWMad_Sectioning_FrontMatterRegister:nn {
     \addcontentsline{toc}{#1}{#2}
-    \stepcounter{FrontMatter}
+    \StepCounter{FrontMatter}
 }
 
-\ifUWMad@FrontMatterCommands
-    % Preliminary page commands
-        \DeclareRobustCommand{\dedications}    [1][Dedications]    {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \DeclareRobustCommand{\acknowledgments}[1][Acknowledgments]{\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \DeclareRobustCommand{\abstract}       [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \DeclareRobustCommand{\umiabstract}    [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \DeclareRobustCommand{\preface}        [1][Preface]        {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-\else
-    % Preliminary page environments
-        \newenvironment  {dedications}    [1][Dedications]    {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \newenvironment  {acknowledgments}[1][Acknowledgments]{\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \renewenvironment{abstract}       [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \newenvironment  {umiabstract}    [1][Abstract]       {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-        \newenvironment  {preface}        [1][Preface]        {\chapter*{#1}\UWMad@FrontMatterRegister{#1}}{}
-\fi
+
+\MakeCommandUndefined{abstract}
+
+\DeclareDocumentCommand \dedications     { O{Dedications}    } {
+    \chapter*{#1}
+    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+}
+\DeclareDocumentCommand \acknowledgments { O{acknowledgments}} {
+    \chapter*{#1}
+    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+}
+\DeclareDocumentCommand \abstract        { O{Abstract}       } {
+    \chapter*{#1}
+    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+}
+\DeclareDocumentCommand \umiabstract     { O{Abstract}       } {
+    \chapter*{#1}
+    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+}
+\DeclareDocumentCommand \preface         { O{Preface}        } {
+    \chapter*{#1}
+    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+}
 
 
 
@@ -219,45 +194,67 @@
 % =========================================================================== %
 %                 List of Contents, Tables, and Figures                       %
 % =========================================================================== %
+
+\cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
+\cs_gset_eq:NN \ListOfTablesDefault    \listoftables
+\cs_gset_eq:NN \ListOfFiguresDefault   \listoffigures
+
+\MakeCommandUndefined{tableofcontents}
+\MakeCommandUndefined{listoftables}
+\MakeCommandUndefined{listoffigures}
+
 % Register the Table of Contents to the Table of Contents
-\renewcommand{\contentsname}{Table of Contents}
-\let\TableOfContentsDefault\tableofcontents
-\renewcommand{\tableofcontents}{%
-    {%
-        \setstretch{1.05}%
-        \phantomsection%
-        \UWMad@FrontMatterRegister{\contentsname}%
-        \TableOfContentsDefault%
+\tl_new:N   \g__UWMad_Sectioning_TOCName_tl
+\tl_gset:Nn \g__UWMad_Sectioning_TOCName_tl {Table of Contents}
+
+\tl_new:N   \g__UWMad_Sectioning_LOTName_tl
+\tl_gset:Nn \g__UWMad_Sectioning_LOTName_tl {List of Tables}
+
+\tl_new:N   \g__UWMad_Sectioning_LOFName_tl
+\tl_gset:Nn \g__UWMad_Sectioning_LOFName_tl {List of Figures}
+
+\DeclareDocumentCommand \tableofcontents { } {
+    \group_begin:
+        \cs_set_eq:NN \contentsname \g__UWMad_Sectioning_TOCName_tl
+        \setstretch{1.05}
+        \phantomsection
+        \__UWMad_Sectioning_FrontMatterRegister:nn
+            {chapter}
+            {\contentsname}
+        \TableOfContentsDefault
+        \clearpage
+    \group_end:
+}
+%
+%
+% Register the List of Tables to the Table of Contents
+\DeclareDocumentCommand \listoftables { } {
+    {
+        \setstretch{1.05}
+        \ListOfTablesDefault
+        \__UWMad_Sectioning_FrontMatterRegister:nn
+            {chapter}
+            {\listtablename}
         \clearpage
     }
 }
-\let\TableOfContents\tableofcontents
-
-
-% Register the List of Tables to the Table of Contents
-\let\ListOfTablesDefault\listoftables
-\renewcommand{\listoftables}{%
-    {%
-        \setstretch{1.05}%
-        \ListOfTablesDefault%
-        \UWMad@FrontMatterRegister{\listtablename}%
-        \clearpage%
-    }
-}
-\let\ListOfTables\listoftables
-
-
+%
+%
 % Register the List of Figures to the Table of Contents
-\let\ListOfFiguresDefault\listoffigures
-\renewcommand{\listoffigures}{%
-    {%
-        \setstretch{1.05}%
-        \ListOfFiguresDefault%
-        \UWMad@FrontMatterRegister{\listfigurename}%
-        \clearpage%
+\DeclareDocumentCommand \listoffigures { } {
+    {
+        \setstretch{1.05}
+        \ListOfFiguresDefault
+        \__UWMad_Sectioning_FrontMatterRegister:nn
+            {chapter}
+            {\listfigurename}
+        \clearpage
     }
 }
-\let\ListOfFigures\listoffigures
+
+\cs_set_eq:NN \TableOfContents \tableofcontents
+\cs_set_eq:NN \ListOfTables    \listoftables
+\cs_set_eq:NN \ListOfFigures   \listoffigures
 
 
 
@@ -339,3 +336,4 @@
 
 
 
+\ExplSyntaxOff
