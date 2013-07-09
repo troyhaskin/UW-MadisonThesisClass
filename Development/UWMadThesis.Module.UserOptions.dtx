@@ -1,0 +1,41 @@
+
+\ExplSyntaxOn
+
+\cs_generate_variant:Nn \dim_set:Nn {cf}
+
+\cs_new:Nn \__UWMad_UserOptions_Register_TokenList:nnn {
+    \tl_new:c  {l__UWMad_#1_#2_tl}
+    \tl_set:cf {l__UWMad_#1_#2_tl} {#3}
+}
+
+
+\cs_new:Nn \__UWMad_UserOptions_Dimension_Register:nnn {
+    \dim_new:c  {l__UWMad_#1_#2_dim}
+    \dim_set:cf {l__UWMad_#1_#2_dim} {#3}
+}
+
+\cs_new:Nn \__UWMad_UserOptions_Dimension_Set:nnn {
+    \IfCommandExists{l__UWMad_#1_#2_dim} {
+        \dim_set:c  {l__UWMad_#1_#2_dim} {#3}
+    }{
+        \UWMad@ClassWarning{Undefined~option~`#2'~for~module~`#1'.}
+    }
+}
+
+\cs_new:Nn \__UWMad_UserOptions_Dimension_Use:nn {
+    \IfCommandExists{l__UWMad_#1_#2_dim} {
+        \dim_use:c  {l__UWMad_#1_#2_dim}
+    }{
+        \UWMad@ClassWarning{Undefined~option~`#2'~for~module~`#1'.}
+    }
+}
+
+\cs_new:Nn \__UWMad_UserOptions_Dimension_Show:nn {
+    \IfCommandExists{l__UWMad_#1_#2_dim} {
+        \dim_show:c {l__UWMad_#1_#2_dim}
+    }{
+        \UWMad@ClassWarning{Undefined~option~`#2'~for~module~`#1'.}
+    }
+}
+
+\ExplSyntaxOff

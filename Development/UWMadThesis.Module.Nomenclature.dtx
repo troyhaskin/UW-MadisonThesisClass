@@ -6,9 +6,9 @@
 % =========================================================================== %
 %                       Entry Independent Commands                            %
 % =========================================================================== %
-\DefineGlobalLength{__Nomenclature_WidestSymbol}        {0pt}        % Will have the value of the widest symbol for spacing
-\DefineGlobalLength{Nomenclature_TitleSkip}             {0em}        % Used for title spacing
-\DefineGlobalLength{Nomenclature_PrintSkip}             {1em}        % Used for spacing after Nomen is printed
+\DefineGlobalLength{__Nomenclature_WidestSymbol}        {0pt}
+\DefineGlobalLength{Nomenclature_TitleSkip}             {0em}
+\DefineGlobalLength{Nomenclature_PrintSkip}             {1em}
 \DefineGlobalLength{Nomenclature_EntryMarginLeft}       {1em}
 \DefineGlobalLength{Nomenclature_EntryMarginBottom}     {0.25em}
 \DefineGlobalLength{Nomenclature_EntryWidthSymbol}      {0em}
@@ -17,7 +17,7 @@
 %
 %
 \DefineGlobalIfSetFalse{Nomenclature_TitlePrinted}
-\DefineGlobalIfSetFalse{Nomenclature_Numbered}
+\DefineGlobalIfSetTrue{Nomenclature_Numbered}
 %
 \DeclareDocumentCommand \MakeNomenclatureNotNumbered { } {
     \SetFalse{Nomenclature_Numbered}
@@ -39,9 +39,9 @@
 %
 \cs_generate_variant:Nn \dim_set:Nn {Nf}
 
-\cs_new:Nn \__UWMad_Nomenclature_UpdateWidest:n{
+\cs_new:Nn \__UWMad_Nomenclature_UpdateWidest:n {
     \hbox_set:Nn \l_tmpa_box {#1}
-    \dim_set:Nf \l_tmpa_dim {\box_wd:N \l_tmpa_box}
+    \dim_set:Nf  \l_tmpa_dim {\box_wd:N \l_tmpa_box}
     \IfLength{__Nomenclature_WidestSymbol} {<} {\l_tmpa_dim} {
         \SetLength
             {__Nomenclature_WidestSymbol}
@@ -198,4 +198,5 @@
 }
 \cs_new:cpn      {Nomenclature*} {\Nomenclature*}
 \cs_new_eq:cN {endNomenclature*} \endNomenclature
+%
 \ExplSyntaxOff

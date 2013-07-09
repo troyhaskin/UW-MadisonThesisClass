@@ -219,12 +219,16 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeCommand { m +m }
-    {\cs_set:cpn {#1} {#2}}
-\DeclareDocumentCommand \ReMakeCommand { m +m }
-    {\IfCommandExists{#1}
-        {\cs_set:cpn {#1} {#2}}
-        {\UWMad@ClassWarning{Command~`#1'~is~undefined.}}}
+\DeclareDocumentCommand \MakeCommand { m +m } {
+    \cs_set:cpn {#1} {#2}
+}
+\DeclareDocumentCommand \ReMakeCommand { m +m }{
+    \IfCommandExists{#1}{
+        \cs_set:cpn {#1} {#2}
+    }{
+        \UWMad@ClassWarning{Command~`#1'~is~undefined.}
+    }
+}
 %    \end{macrocode}
 %   \end{macro}
 %   \end{macro}
@@ -240,8 +244,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeGlobalCommand { m +m }
-    {\cs_gset:cpn {#1} {#2}}
+\DeclareDocumentCommand \MakeGlobalCommand { m +m } {
+    \cs_gset:cpn {#1} {#2}
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -259,8 +264,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeExpandedCommand { m +m }
-    {\cs_get:cpx {#1} {#2}}
+\DeclareDocumentCommand \MakeExpandedCommand { m +m } {
+    \cs_get:cpx {#1} {#2}
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -274,8 +280,9 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeCommandUndefined { m }
-    {\cs_undefine:c {#1}}
+\DeclareDocumentCommand \MakeCommandUndefined { m } {
+    \cs_undefine:c {#1}
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -292,13 +299,17 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \CopyCommand { m m }
-    {\IfCommandExists{#1}
-        {\IfCommandExists{#2}
-            {\UWMad@ClassWarning{Command~`#2'~is~defined.}}
-            {}
-            \cs_gset_eq:cc {#2}{#1}}
-        {\UWMad@ClassWarning{Command~`#1'~is~undefined.}}}
+\DeclareDocumentCommand \CopyCommand { m m } {
+    \IfCommandExists{#1} {
+        \IfCommandExists{#2} {
+            \UWMad@ClassWarning{Command~`#2'~is~defined.}
+        }{
+        }
+        \cs_gset_eq:cc {#2}{#1}
+    }{
+        \UWMad@ClassWarning{Command~`#1'~is~undefined.}
+    }
+}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -311,7 +322,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   Certain subsystems of the Programming Module make a distinction
 %   between local and global variables where scope is determined by
 %   \TeX{} groups.  This command takes five arguments designed to 
-%   increased maintainability and readability in the subsystems that
+%   increase maintainability and readability in the subsystems that
 %   use it.
 %
 %   This command accepts a \marg{Prefix}, an \marg{ID}, a \marg{Type},
@@ -325,7 +336,8 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   exception is thrown.
 %
 %   As an example, the command |\DefineNewGlobalCounter{Example}| will create
-%   a counter \marg{Type} variable |\g__UWMad_Counter_Example_Global| where
+%   a variable of \marg{Type} counter called 
+%   |\g__UWMad_Counter_Example_Global| where
 %   |g__UWMad_Counter_| is the \marg{Prefix}, |Example| is the \marg{ID}, and
 %   |_Global| is the scope indicator leveraged by
 %   |\__UWMad_IsLocal:nnnnn| for branching.
@@ -405,7 +417,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 }
 \DeclareDocumentCommand \DefineGlobalIf { m } {
     \bool_new:c {g__UWMad_Boolean_#1_Global}
-    }
+}
 %
 %
 \DeclareDocumentCommand \DefineLocalIfSetTrue { m } {
@@ -594,7 +606,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \StepCounter { m }{
+\DeclareDocumentCommand \StepCounter { m } {
     \AddToCounter{#1}{1}
 }
 %    \end{macrocode}
@@ -611,7 +623,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \SetCounter { m m }{
+\DeclareDocumentCommand \SetCounter { m m } {
     \__UWMad_IsLocal_Counter:nTF {#1} {
         \int_set:cn  {g__UWMad_Counter_#1_Local}  {#2}
     }{
@@ -633,11 +645,11 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \SetAndAddToCounter { m m m }{
+\DeclareDocumentCommand \SetAndAddToCounter { m m m } {
     \SetCounter{#1}{#2}
     \AddToCounter{#1}{#3}
 }
-\DeclareDocumentCommand \SetAndStepCounter { m m }{
+\DeclareDocumentCommand \SetAndStepCounter { m m } {
     \SetAndAddToCounter{#1}{#2}{1}
 }
 %    \end{macrocode}
@@ -654,7 +666,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \CounterValue { m }{
+\DeclareDocumentCommand \CounterValue { m } {
     \__UWMad_IsLocal_Counter:nTF {#1} {
         \int_use:c {g__UWMad_Counter_#1_Local}
     }{
@@ -753,34 +765,41 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 %
-\DeclareDocumentCommand \StackMake { m }
-    {\tl_new:c {g__UWMad_Stack_#1}}
+\DeclareDocumentCommand \StackMake { m } {
+    \tl_new:c {g__UWMad_Stack_#1}
+}
 %
 %
-\DeclareDocumentCommand \StackDelete { m }
-    {\tl_if_exist:cTF   {g__UWMad_Stack_#1}
-        {\tl_gclear:c   {g__UWMad_Stack_#1}
-         \cs_undefine:c {g__UWMad_Stack_#1}}
-        {}}
+\DeclareDocumentCommand \StackDelete { m } {
+    \tl_if_exist:cTF   {g__UWMad_Stack_#1} {
+        \tl_gclear:c   {g__UWMad_Stack_#1}
+         \cs_undefine:c {g__UWMad_Stack_#1}
+    }{
+    }
+}
 %
 %
-\DeclareDocumentCommand \StackPush { m +m }
-    {\tl_if_exist:cTF     {g__UWMad_Stack_#1}
-        {\tl_gput_left:cn {g__UWMad_Stack_#1} {#2}}
-        {}}
+\DeclareDocumentCommand \StackPush { m +m } {
+    \tl_if_exist:cTF     {g__UWMad_Stack_#1} {
+        \tl_gput_left:cn {g__UWMad_Stack_#1} {#2}
+    }{
+    }
+}
 %
 %
 \cs_generate_variant:Nn \tl_head:N { c }
 \cs_generate_variant:Nn \tl_tail:N { c }
 %
-\DeclareDocumentCommand \StackPop { m }
-    {\tl_set:Nx \l_tmpa_tl          {\tl_head:c {g__UWMad_Stack_#1}}
-     \tl_set:cx {g__UWMad_Stack_#1} {\tl_tail:c {g__UWMad_Stack_#1}}
-     \tl_use:N \l_tmpa_tl}
+\DeclareDocumentCommand \StackPop { m } {
+    \tl_set:Nx \l_tmpa_tl          {\tl_head:c {g__UWMad_Stack_#1}}
+    \tl_set:cx {g__UWMad_Stack_#1} {\tl_tail:c {g__UWMad_Stack_#1}}
+    \tl_use:N \l_tmpa_tl
+}
 %
 %
-\DeclareDocumentCommand \StackWalk { m +m }
-    {\tl_map_inline:cn {g__UWMad_Stack_#1} {#2}}
+\DeclareDocumentCommand \StackWalk { m +m } {
+    \tl_map_inline:cn {g__UWMad_Stack_#1} {#2}
+}
 %
 %
 %
@@ -797,53 +816,65 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 %
-\DeclareDocumentCommand \QueueMake { m }
-    {\tl_new:c {g__UWMad_Queue_#1}}
+\DeclareDocumentCommand \QueueMake { m } {
+    \tl_new:c {g__UWMad_Queue_#1}
+}
 %
 %
-\DeclareDocumentCommand \QueueDelete { m }
-    {\tl_if_exist:cTF   {g__UWMad_Queue_#1}
-        {\tl_gclear:c   {g__UWMad_Queue_#1}
-         \cs_undefine:c {g__UWMad_Queue_#1}}
-        {}}
+\DeclareDocumentCommand \QueueDelete { m }{
+    \tl_if_exist:cTF   {g__UWMad_Queue_#1} {
+        \tl_gclear:c   {g__UWMad_Queue_#1}
+         \cs_undefine:c {g__UWMad_Queue_#1}
+    }{
+    }
+}
 %
 %
-\DeclareDocumentCommand \QueueClear { m }
-    {\tl_if_exist:cTF   {g__UWMad_Queue_#1}
-        {\tl_gclear:c   {g__UWMad_Queue_#1}}
-        {}}
+\DeclareDocumentCommand \QueueClear { m }{
+    \tl_if_exist:cTF   {g__UWMad_Queue_#1} {
+        \tl_gclear:c   {g__UWMad_Queue_#1}
+    }{
+    }
+}
 %
 %
-\DeclareDocumentCommand \QueuePush { m +m }
-    {\tl_if_exist:cTF     {g__UWMad_Queue_#1}
-        {\tl_gput_left:cn {g__UWMad_Queue_#1} {{#2}}}
-        {}}
+\DeclareDocumentCommand \QueuePush { m +m }{
+    \tl_if_exist:cTF     {g__UWMad_Queue_#1} {
+        \tl_gput_left:cn {g__UWMad_Queue_#1} {{#2}}
+    }{
+    }
+}
 %
 %
 \cs_generate_variant:Nn \tl_head:N { c }
 \cs_generate_variant:Nn \tl_tail:N { c }
 %
-\DeclareDocumentCommand \QueuePop { m }
-    {\tl_reverse:c   {g__UWMad_Queue_#1}
-     \tl_set:Nx \l_tmpa_tl
-        {\tl_head:c  {g__UWMad_Queue_#1}}
-     \tl_set:cx      {g__UWMad_Queue_#1}
-        {\tl_tail:c  {g__UWMad_Queue_#1}}
-     \tl_reverse:c   {g__UWMad_Queue_#1}
-     \tl_use:N \l_tmpa_tl}
+\DeclareDocumentCommand \QueuePop { m } {
+    \tl_reverse:c   {g__UWMad_Queue_#1}
+    \tl_set:Nx \l_tmpa_tl
+        {\tl_head:c {g__UWMad_Queue_#1}}
+    \tl_set:cx      {g__UWMad_Queue_#1}
+        {\tl_tail:c {g__UWMad_Queue_#1}}
+    \tl_reverse:c   {g__UWMad_Queue_#1}
+    \tl_use:N \l_tmpa_tl
+}
 %
 %
-\DeclareDocumentCommand \QueueWalk { m +m }
-    {\group_begin:
+\DeclareDocumentCommand \QueueWalk { m +m } {
+    \group_begin:
         \tl_reverse:c     {g__UWMad_Queue_#1}
         \tl_map_inline:cn {g__UWMad_Queue_#1} {#2}
-     \group_end:}
+     \group_end:
+}
 %
 %
-\DeclareDocumentCommand \IfQueueEmpty { m +m +m }
-    {\tl_if_empty:cTF {g__UWMad_Queue_#1}
-        {#2}
-        {#3}}
+\DeclareDocumentCommand \IfQueueEmpty { m +m +m } {
+    \tl_if_empty:cTF {g__UWMad_Queue_#1}{
+        #2
+    }{
+        #3
+    }
+}
 %
 %
 %
@@ -858,45 +889,56 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %   and walked from either end of the list (i.e., LIFO+FIFO).
 %
 %
-\DeclareDocumentCommand \DequeMake { m }
-    {\seq_new:c {g_UWMad_Deque_#1}}
+\DeclareDocumentCommand \DequeMake { m } {
+    \seq_new:c {g_UWMad_Deque_#1}
+}
 %
 %
-\DeclareDocumentCommand \DequeDelete { m }
-    {\seq_if_exist:cTF  {g_UWMad_Deque_#1}
-        {\seq_gclear:c  {g_UWMad_Deque_#1}
-         \cs_undefine:c {g_UWMad_Deque_#1}}
-        {}}
+\DeclareDocumentCommand \DequeDelete { m } {
+    \seq_if_exist:cTF  {g_UWMad_Deque_#1} {
+        \seq_gclear:c  {g_UWMad_Deque_#1}
+        \cs_undefine:c {g_UWMad_Deque_#1}
+    }{
+    }
+}
 %
 %
-\DeclareDocumentCommand \DequePushLeft  { m +m }
-    {\seq_gput_left:cn  {g_UWMad_Deque_#1} {#2}}
-\DeclareDocumentCommand \DequePushRight { m +m }
-    {\seq_gput_right:cn {g_UWMad_Deque_#1} {#2}}
+\DeclareDocumentCommand \DequePushLeft  { m +m } {
+    \seq_gput_left:cn  {g_UWMad_Deque_#1} {#2}
+}
+\DeclareDocumentCommand \DequePushRight { m +m } {
+    \seq_gput_right:cn {g_UWMad_Deque_#1} {#2}
+}
 %
 %
-\DeclareDocumentCommand \DequePopLeft { m }
-    {\seq_gpop_left:cN  {g_UWMad_Deque_#1} \l_tmpa_tl
-     \tl_use:N \l_tmpa_tl}
-\DeclareDocumentCommand \DequePopRight { m }
-    {\seq_gpop_right:cN {g_UWMad_Deque_#1} \l_tmpa_tl
-     \tl_use:N \l_tmpa_tl}
+\DeclareDocumentCommand \DequePopLeft { m } {
+    \seq_gpop_left:cN  {g_UWMad_Deque_#1} \l_tmpa_tl
+    \tl_use:N \l_tmpa_tl
+}
+\DeclareDocumentCommand \DequePopRight { m } {
+    \seq_gpop_right:cN {g_UWMad_Deque_#1} \l_tmpa_tl
+    \tl_use:N \l_tmpa_tl
+}
 %
 %
-\DeclareDocumentCommand \DequeWalkLeftToRight { m +m }
-    {\seq_if_exist:cTF {g_UWMad_Deque_#1}
-        {\seq_map_inline:cn {g_UWMad_Deque_#1} {#2}}
-        {}}
+\DeclareDocumentCommand \DequeWalkLeftToRight { m +m } {
+    \seq_if_exist:cTF      {g_UWMad_Deque_#1} {
+        \seq_map_inline:cn {g_UWMad_Deque_#1} {#2}
+    }{
+    }
+}
 %
 %
 \cs_generate_variant:Nn \seq_reverse:N {c}
-\DeclareDocumentCommand \DequeWalkRightToLeft { m +m }
-    {\group_begin:
-        \seq_if_exist:cTF       {g_UWMad_Deque_#1}
-            {\seq_reverse:c     {g_UWMad_Deque_#1}
-             \seq_map_inline:cn {g_UWMad_Deque_#1} {#2}}
-            {}
-     \group_end:}
+\DeclareDocumentCommand \DequeWalkRightToLeft { m +m } {
+    \group_begin:
+        \seq_if_exist:cTF       {g_UWMad_Deque_#1} {
+            \seq_reverse:c      {g_UWMad_Deque_#1}
+             \seq_map_inline:cn {g_UWMad_Deque_#1} {#2}
+        }{
+        }
+     \group_end:
+}
 %
 %
 %
@@ -935,52 +977,67 @@ and is aimed mainly at authors that wish to utilize its abilities.
 \cs_generate_variant:Nn \prop_get:NnNTF  { c x N TF}
 \cs_generate_variant:Nn \prop_gremove:Nn { c x     }
 
-\DeclareDocumentCommand \HashMake { m }
-    {\prop_new:c {g_UWMad_Hash_#1}}
+\DeclareDocumentCommand \HashMake { m }{
+    \prop_new:c {g_UWMad_Hash_#1}
+}
 
-\DeclareDocumentCommand \HashSet { m m +m }
-    {\prop_if_exist:cTF {g_UWMad_Hash_#1}
-        {\prop_gput:cxn {g_UWMad_Hash_#1}{#2}{#3}}
-        {\HashMake{#1}
-         \prop_gput:cxn {g_UWMad_Hash_#1}{#2}{#3}}}
+\DeclareDocumentCommand \HashSet { m m +m } {
+    \prop_if_exist:cTF {g_UWMad_Hash_#1} {
+        \prop_gput:cxn {g_UWMad_Hash_#1}{#2}{#3}
+    }{
+        \HashMake{#1}
+        \prop_gput:cxn {g_UWMad_Hash_#1}{#2}{#3}
+    }
+}
 
-\DeclareDocumentCommand \HashGet { m m }
-    {\prop_get:cxNTF {g_UWMad_Hash_#1} {#2} \l_tmpa_prop
-        {\tl_use:N \l_tmpa_prop}
-        {}}
-
-\DeclareExpandableDocumentCommand \HashExpandableGet { m m }
-    {\prop_if_in:cfTF {g_UWMad_Hash_#1} {#2}
-        {\prop_get:cf {g_UWMad_Hash_#1} {#2}}
-        {}}
-
-\DeclareDocumentCommand \HashUnset { m m }
-    {\prop_if_exist:cTF   {g_UWMad_Hash_#1}
-        {\prop_gremove:cx {g_UWMad_Hash_#1} {#2}}
-        {}}
-
-\cs_generate_variant:Nn \tl_to_lowercase:n {f}
-
-\DeclareDocumentCommand \IfHashKeySet { m m +m +m } {
-    \prop_if_exist:cTF   {g_UWMad_Hash_#1}{
-        \prop_if_in:cfTF {g_UWMad_Hash_#1} {\tl_trim_spaces:n{#2}}
-            {#3}
-            {#4}
+\DeclareDocumentCommand \HashGet { m m } {
+    \prop_get:cxNTF {g_UWMad_Hash_#1} {#2} \l_tmpa_prop {
+        \tl_use:N \l_tmpa_prop
     }{
     }
 }
 
-\DeclareDocumentCommand \HashWalk {m +m}
-    {\prop_if_exist:cTF      {g_UWMad_Hash_#1}
-        {\prop_map_inline:cn {g_UWMad_Hash_#1}
-            {#2}}
-        {}}
+\DeclareExpandableDocumentCommand \HashExpandableGet { m m } {
+    \prop_if_in:cfTF {g_UWMad_Hash_#1} {#2} {
+        \prop_get:cf {g_UWMad_Hash_#1} {#2}
+    }{
+    }
+}
 
-\DeclareDocumentCommand \HashDelete { m }
-    {\prop_if_exist:cTF {g_UWMad_Hash_#1}
-        {\prop_gclear:c {g_UWMad_Hash_#1}
-         \cs_undefine:c {g_UWMad_Hash_#1}}
-        {}}
+\DeclareDocumentCommand \HashUnset { m m } {
+    \prop_if_exist:cTF   {g_UWMad_Hash_#1} {
+        \prop_gremove:cx {g_UWMad_Hash_#1} {#2}
+    }{
+    }
+}
+
+\cs_generate_variant:Nn \tl_to_lowercase:n {f}
+
+\DeclareDocumentCommand \IfHashKeySet { m m +m +m } {
+    \prop_if_exist:cTF   {g_UWMad_Hash_#1} {
+        \prop_if_in:cfTF {g_UWMad_Hash_#1} {\tl_trim_spaces:n{#2}} {
+            #3
+        }{
+            #4
+        }
+    }{
+    }
+}
+
+\DeclareDocumentCommand \HashWalk {m +m} {
+    \prop_if_exist:cTF      {g_UWMad_Hash_#1} {
+        \prop_map_inline:cn {g_UWMad_Hash_#1} {#2}
+    }{
+    }
+}
+
+\DeclareDocumentCommand \HashDelete { m } {
+    \prop_if_exist:cTF {g_UWMad_Hash_#1} {
+        \prop_gclear:c {g_UWMad_Hash_#1}
+        \cs_undefine:c {g_UWMad_Hash_#1}
+    }{
+    }
+}
 %
 %
 %

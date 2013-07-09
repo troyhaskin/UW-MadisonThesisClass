@@ -96,16 +96,13 @@
 \RequirePackage{etex}
 \RequirePackage{expl3}     %
 \RequirePackage{xparse}    %
-%\RequirePackage{etoolbox}  %
 \RequirePackage{fixltx2e}  % Provides fixes from the LaTeX Team that address certain issues
 \RequirePackage{array}     %
 \RequirePackage{graphicx}  % 
 \RequirePackage{subfig}    % Provides the ability to make figures wrappable
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor} % Provides enhanced color support
 \RequirePackage{setspace}  % Provides easy control of LaTeX line spacing
-\RequirePackage{ifthen}    % Provides if-then-else commands and comparisons 
 \RequirePackage{geometry}  % Provides easy control of LaTeX page layout
-\RequirePackage{xspace}    % Small module defining xspace (used for properly inserting a space at the end of a text 'storage' command
 \RequirePackage{caption}
 
 \ifUWMad@IncludeMathCommands
@@ -168,6 +165,7 @@
 %                                     Module Loads                                                %
 % =============================================================================================== %
 \UWMad@LoadIfModuleExists{Programming}
+\UWMad@LoadIfModuleExists{UserOptions}
 \UWMad@LoadIfModuleExists{LayoutAndStyle}
 \UWMad@LoadIfModuleExists{Sectioning}
 \UWMad@LoadIfModuleExists{PDFDataAndMetadata}
