@@ -27,22 +27,25 @@
 %
 
 % Lengths for spacing the chapter head as desired.
-\DefineNewLength{\ChapterHeadVSpaceStart}  { 40pt}  % Set: Distance between top of text body and top of Chapter Head
-\DefineNewLength{\ChapterHeadVSpaceEnd}    { 20pt}  % Set: Distance between bottom of Chapter Head and top of chapter content
+\DefineNewLength{\ChapterHeadVSpaceStart}  {  0pt}  % Set: Distance between top of text body and top of Chapter Head
+\DefineNewLength{\ChapterHeadVSpaceEnd}    {  5em}  % Set: Distance between bottom of Chapter Head and top of chapter content
 \DefineNewLength{\ChapterHeadParIndent}    {  0pt}  % Set: Indentation of Chapter Head
-\DefineNewLength{\ChapterHeadIDTitleSkip}  {-10pt}  % Set: Distance between Chapter ID and Chapter Title
+\DefineNewLength{\ChapterHeadIDTitleSkip}  {  0pt}  % Set: Distance between Chapter ID and Chapter Title
 
 
 % Styles for the chapter head
 \newcommand{\ChapterHeadJustification}  {\raggedright}
 \newcommand{\ChapterHeadFont}           {\normalfont}
-\newcommand{\ChapterHeadID}             {\@chapapp\space\thechapter}
+\newcommand{\ChapterHeadID}             {\chaptername\space\thechapter}
 \newcommand{\ChapterHeadStyleID}   [1]  {\LARGE{\textbf{#1}}}
 \newcommand{\ChapterHeadStyleTitle}[1]  {\Huge{\textbf{#1}}}
+
+%\iffalse
 
 % Replacement command for \@makechapterhead
 \DeclareRobustCommand{\ChapterHead@MakeNormal}[1]{%
     {%
+        \singlespacing
         \setlength{\topskip}{\ChapterHeadVSpaceStart}%   %  Set:  Vertical whitespace between the top of the page and the Chapter Head
         \parindent \ChapterHeadParIndent%                %  Set:  Chapter Head indentation from the left margin
                    \ChapterHeadJustification%            %  Set:  Chapter Head justification
@@ -82,6 +85,8 @@
 
 
 
+% \fi
+
 
 
 % =========================================================================== %
@@ -101,10 +106,16 @@
 
 \let\DefaultChapter\@chapter
 
+\tl_new:N  \g__UWMad_Sectioning_ChapterPageStyle_tl
+\tl_set:Nn \g__UWMad_Sectioning_ChapterPageStyle_tl
+    {\thispagestyle{myheadings}}
+
 \def\@chapter{%
-    \thispagestyle{myheadings}%
+    %\thispagestyle{myheadings}%
+    \tl_use:N \g__UWMad_Sectioning_ChapterPageStyle_tl
     \ifnum \value{chapter}=0%
-        \pagenumbering{arabic}%
+        \pagenumbering{arabic}
+        \showthe\count0
     \fi%
     \DefaultChapter}%
 
@@ -203,19 +214,23 @@
 \MakeCommandUndefined{listoftables}
 \MakeCommandUndefined{listoffigures}
 
+\ReMakeCommand{contentsname}{}
+
 % Register the Table of Contents to the Table of Contents
 \tl_new:N   \g__UWMad_Sectioning_TOCName_tl
-\tl_gset:Nn \g__UWMad_Sectioning_TOCName_tl {Table of Contents}
+\tl_gset:Nn \g__UWMad_Sectioning_TOCName_tl {Table~of~Contents}
 
 \tl_new:N   \g__UWMad_Sectioning_LOTName_tl
-\tl_gset:Nn \g__UWMad_Sectioning_LOTName_tl {List of Tables}
+\tl_gset:Nn \g__UWMad_Sectioning_LOTName_tl {List~of~Tables}
 
 \tl_new:N   \g__UWMad_Sectioning_LOFName_tl
-\tl_gset:Nn \g__UWMad_Sectioning_LOFName_tl {List of Figures}
+\tl_gset:Nn \g__UWMad_Sectioning_LOFName_tl {List~of~Figures}
 
 \DeclareDocumentCommand \tableofcontents { } {
     \group_begin:
-        \cs_set_eq:NN \contentsname \g__UWMad_Sectioning_TOCName_tl
+        \IfCommandEmpty{contentsname}{
+            \cs_set_eq:NN \contentsname \g__UWMad_Sectioning_TOCName_tl
+        }{}
         \setstretch{1.05}
         \phantomsection
         \__UWMad_Sectioning_FrontMatterRegister:nn
@@ -229,50 +244,40 @@
 %
 % Register the List of Tables to the Table of Contents
 \DeclareDocumentCommand \listoftables { } {
-    {
+    \group_begin:
+        \cs_set_eq:NN \listtablename \g__UWMad_Sectioning_LOTName_tl
         \setstretch{1.05}
-        \ListOfTablesDefault
         \__UWMad_Sectioning_FrontMatterRegister:nn
             {chapter}
             {\listtablename}
+        \ListOfTablesDefault
         \clearpage
-    }
+    \group_end:
 }
 %
 %
 % Register the List of Figures to the Table of Contents
 \DeclareDocumentCommand \listoffigures { } {
-    {
+    \group_begin:
+        \cs_set_eq:NN \listfigurename \g__UWMad_Sectioning_LOFName_tl
         \setstretch{1.05}
-        \ListOfFiguresDefault
         \__UWMad_Sectioning_FrontMatterRegister:nn
             {chapter}
             {\listfigurename}
+        \ListOfFiguresDefault
         \clearpage
-    }
+    \group_end:
 }
 
 \cs_set_eq:NN \TableOfContents \tableofcontents
 \cs_set_eq:NN \ListOfTables    \listoftables
 \cs_set_eq:NN \ListOfFigures   \listoffigures
-
-
-
-
-
-
-% =========================================================================== %
-%                 Table of Contents 'Headers' (i.e., Parts)                   %
-% =========================================================================== %
-\newcommand{\AddToCHeaderStyle}[2][-0.35em]{
-    \hspace{#1}#2\rule{0pt}{1em}
-}
-
-\DeclareRobustCommand{\AddToCHeader}[2][part]{
-    \addtocontents{toc}{\protect\contentsline{#1}{\AddToCHeaderStyle{#2}}{}{}}
-}
-
-
+%
+%
+%
+%
+%
+%
 % =========================================================================== %
 %                 Table of Contents 'Headers' (i.e., Parts)                   %
 % =========================================================================== %

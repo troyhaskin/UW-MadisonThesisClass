@@ -93,9 +93,10 @@
 % =============================================================================================== %
 %                                          Package Loads                                          %
 % =============================================================================================== %
+\RequirePackage{etex}
 \RequirePackage{expl3}     %
 \RequirePackage{xparse}    %
-\RequirePackage{etoolbox}  %
+%\RequirePackage{etoolbox}  %
 \RequirePackage{fixltx2e}  % Provides fixes from the LaTeX Team that address certain issues
 \RequirePackage{array}     %
 \RequirePackage{graphicx}  % 

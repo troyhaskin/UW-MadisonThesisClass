@@ -9,19 +9,23 @@
 \newcommand{\Cmd}[1]{\texorpdfstring{\textcolor{PineGreen}{\texttt{#1}}}{#1}}
 
 
-\makeatletter
-    \UWMad@LoadThisModulefalse
-\makeatother
-
+\show\AtBeginDocument
 
 \begin{document}
 \makeatletter
 
 \ExplSyntaxOn
-\show\addcontentsline
+{
+\let\protect\show
+\show\hskip
+}
 \ExplSyntaxOff
 
+\renewcommand{\contentsname}{List of Contents}
 
+\TableOfContents
+\ListOfFigures
+\ListOfTables
 
 \begin{Nomenclature}
     \Add{Sym1}{This is a test.}

@@ -53,17 +53,21 @@
 %
 \cs_new:Nn \__UWMad_Nomenclature_SetEntryWidths: {
     % Define Symbol minipage width
-    \SetLength{Nomenclature_EntryWidthSymbol}
-        {\LengthOf{__Nomenclature_WidestSymbol} +
-         \LengthOf{Nomenclature_EntryPadMiddle}}
+    \SetLength{Nomenclature_EntryWidthSymbol} {
+        \LengthOf{__Nomenclature_WidestSymbol} +
+        \LengthOf{Nomenclature_EntryPadMiddle}
+    }
     %
     % Define Description minipage width
-    \SetLength{Nomenclature_EntryWidthDescription}
-        {0.99\textwidth -
-         \LengthOf{Nomenclature_EntryWidthSymbol} -
-         \LengthOf{Nomenclature_EntryMarginLeft}}
+    \SetLength{Nomenclature_EntryWidthDescription} {
+        0.99\textwidth -
+        \LengthOf{Nomenclature_EntryWidthSymbol} -
+        \LengthOf{Nomenclature_EntryMarginLeft}
+    }
 }
-
+%
+%
+%
 % =========================================================================== %
 %              SubNomen Environmentment Initializer and Finalizer                 %
 % =========================================================================== %
@@ -111,8 +115,8 @@
     \IfTrue{Nomenclature_TitlePrinted}{
     }{
         \__UWMad_Nomenclature_PrintSectionHeader:nn
-            {\tl_use:N\l__UWMad_Nomenclature_EnvironmentSection_tl}
-            {\tl_use:N\g__UWMad_Nomenclature_Name_tl}
+            {\l__UWMad_Nomenclature_EnvironmentSection_tl}
+            {\g__UWMad_Nomenclature_Name_tl}
         \SetTrue{Nomenclature_TitlePrinted}
     }
 }
@@ -169,7 +173,7 @@
         }
         
         \__UWMad_Nomenclature_PrintSectionHeader:nn
-            {\tl_use:N\l__UWMad_Nomenclature_GroupSection_tl}
+            {\l__UWMad_Nomenclature_GroupSection_tl}
             {##1}
     }
 %
@@ -182,7 +186,7 @@
         }
 
         \__UWMad_Nomenclature_PrintSectionHeader:nn
-            {\tl_use:N\l__UWMad_Nomenclature_SubGroupSection_tl}
+            {\l__UWMad_Nomenclature_SubGroupSection_tl}
             {##1}
     }
 }{
@@ -192,6 +196,6 @@
         \__UWMad_Nomenclature_PrintEntries:
     }
 }
-\cs_new:cpn {Nomenclature*} {\Nomenclature*}
+\cs_new:cpn      {Nomenclature*} {\Nomenclature*}
 \cs_new_eq:cN {endNomenclature*} \endNomenclature
 \ExplSyntaxOff

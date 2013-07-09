@@ -195,6 +195,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 %
+%
 %^^A ==================================================================== %
 %^^A                      Command Creator System                          %
 %^^A ==================================================================== %
@@ -697,18 +698,18 @@ and is aimed mainly at authors that wish to utilize its abilities.
     }
     \clist_gput_right:cn {g__UWMad_CSV_#1} {#2}
 }
-
+%
 \DeclareDocumentCommand \CSVPrepend { m m } {
     \clist_if_exist:cTF {g__UWMad_CSV_#1}{}{
         \clist_new:c {g__UWMad_CSV_#1}
     }
-     \clist_gput_left:cn {g__UWMad_CSV_#1} {#2}
+    \clist_gput_left:cn {g__UWMad_CSV_#1} {#2}
 }
-
+%
 \DeclareExpandableDocumentCommand \CSVGet { m } {
-    \clist_use:c {g__UWMad_CSV_#1}
+    \use:c {g__UWMad_CSV_#1}
 }
-
+%
 \DeclareDocumentCommand  \IfCSVExists { m m m } {
     \clist_if_exist:cTF {g__UWMad_CSV_#1}{
         #2
