@@ -6,28 +6,28 @@
 % =========================================================================== %
 %                       Entry Independent Commands                            %
 % =========================================================================== %
-\DefineGlobalLength{__Nomenclature_WidestSymbol}        {0pt}
-\DefineGlobalLength{Nomenclature_TitleSkip}             {0em}
-\DefineGlobalLength{Nomenclature_PrintSkip}             {1em}
-\DefineGlobalLength{Nomenclature_EntryMarginLeft}       {1em}
-\DefineGlobalLength{Nomenclature_EntryMarginBottom}     {0.25em}
-\DefineGlobalLength{Nomenclature_EntryWidthSymbol}      {0em}
-\DefineGlobalLength{Nomenclature_EntryWidthDescription} {0em}
-\DefineGlobalLength{Nomenclature_EntryPadMiddle}        {0.75em}
+\UWMad_Length_DefineGlobal:nn {__Nomenclature-WidestSymbol}         {0pt}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-TitleSkip}            {0em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-PrintSkip}            {1em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryMarginLeft}      {1em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryMarginBottom}    {0.25em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryWidthSymbol}     {0em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryWidthDescription}{0em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryPadMiddle}       {0.75em}
 %
 %
-\DefineGlobalIfSetFalse{Nomenclature_TitlePrinted}
-\DefineGlobalIfSetTrue{Nomenclature_Numbered}
+\UWMad_Boolean_DefineGlobalSetFalse:n {__Nomenclature-TitlePrinted}
+\UWMad_Boolean_DefineGlobalSetFalse:n {__Nomenclature-Numbered}
 %
 \DeclareDocumentCommand \MakeNomenclatureNotNumbered { } {
-    \SetFalse{Nomenclature_Numbered}
+    \UWMad_Boolean_SetFalse:n {__Nomenclature-Numbered}
 }
 \DeclareDocumentCommand \MakeNomenclatureNumbered { } {
-    \SetTrue{Nomenclature_Numbered}
+    \UWMad_Boolean_SetTrue:n {__Nomenclature-Numbered}
 }
 %
 \DeclareDocumentCommand  \ResetColumnWidth { }{
-    \SetLength{__Nomenclature_WidestSymbol}{0pt}
+    \UWMad_Length_Set:nn {__Nomenclature-WidestSymbol}{0pt}
 }
 %
 \tl_new:N   \g__UWMad_Nomenclature_Name_tl
@@ -42,9 +42,9 @@
 \cs_new:Nn \__UWMad_Nomenclature_UpdateWidest:n {
     \hbox_set:Nn \l_tmpa_box {#1}
     \dim_set:Nf  \l_tmpa_dim {\box_wd:N \l_tmpa_box}
-    \IfLength{__Nomenclature_WidestSymbol} {<} {\l_tmpa_dim} {
-        \SetLength
-            {__Nomenclature_WidestSymbol}
+    \UWMad_Length_If:nnnTF{__Nomenclature-WidestSymbol} {<} {\l_tmpa_dim} {
+        \UWMad_Length_Set:nn
+            {__Nomenclature-WidestSymbol}
             {\l_tmpa_dim}
     }{
     }
@@ -53,32 +53,34 @@
 %
 \cs_new:Nn \__UWMad_Nomenclature_SetEntryWidths: {
     % Define Symbol minipage width
-    \SetLength{Nomenclature_EntryWidthSymbol} {
-        \LengthOf{__Nomenclature_WidestSymbol} +
-        \LengthOf{Nomenclature_EntryPadMiddle}
+    \UWMad_Length_Set:nn {Nomenclature-EntryWidthSymbol} {
+        \UWMad_Length_Of:n{__Nomenclature-WidestSymbol} +
+        \UWMad_Length_Of:n{Nomenclature-EntryPadMiddle}
     }
     %
     % Define Description minipage width
-    \SetLength{Nomenclature_EntryWidthDescription} {
+    \UWMad_Length_Set:nn{Nomenclature-EntryWidthDescription} {
         0.99\textwidth -
-        \LengthOf{Nomenclature_EntryWidthSymbol} -
-        \LengthOf{Nomenclature_EntryMarginLeft}
+        \UWMad_Length_Of:n{Nomenclature-EntryWidthSymbol} -
+        \UWMad_Length_Of:n{Nomenclature-EntryMarginLeft}
     }
 }
 %
 %
 %
 % =========================================================================== %
-%              SubNomen Environmentment Initializer and Finalizer                 %
+%              SubNomen Environmentment Initializer and Finalizer             %
 % =========================================================================== %
 \cs_new:Nn \__UWMad_Nomenclature_PrintSectionHeader:nn{
     \tl_if_blank:oTF {#2}{
     }{
-        \IfTrue{Nomenclature_Numbered}{
+        \UWMad_Boolean_IfTrue:nTF {__Nomenclature-Numbered} {
+            \typeout{*********** Numbered: #1}
             \csname#1\endcsname{#2}
         }{
+            \typeout{*********** Not Numbered: #1}
             \csname#1\endcsname*{#2}
-            \UWMad@FrontMatterRegister[#1]{#2}
+            \__UWMad_Sectioning_FrontMatterRegister:nn{#1}{#2}
         }
     }
 }
@@ -88,36 +90,38 @@
 \cs_new:Nn \__UWMad_Nomenclature_Entry:nn {
     \group_begin:
         \setstretch{1.1}
-         \hspace{\LengthOf{Nomenclature_EntryMarginLeft}}
-         \begin{minipage}[t]{\LengthOf{Nomenclature_EntryWidthSymbol}}
+        \hspace{\UWMad_Length_Of:n{Nomenclature-EntryMarginLeft}}
+        \begin{minipage}[t]
+            {\UWMad_Length_Of:n{Nomenclature-EntryWidthSymbol}}
             #1
-         \end{minipage}
-         \begin{minipage}[t]{\LengthOf{Nomenclature_EntryWidthDescription}}
-            #2
-         \end{minipage}
-         \vskip\LengthOf{Nomenclature_EntryMarginBottom}
+        \end{minipage}
+        \begin{minipage}[t]
+            {\UWMad_Length_Of:n{Nomenclature-EntryWidthDescription}}
+           #2
+        \end{minipage}
+        \vskip\UWMad_Length_Of:n{Nomenclature-EntryMarginBottom}
     \group_end:
 }
 %
 %
-\QueueMake{Nomenclature_Entries}
+\UWMad_Queue_Define:n{__Nomenclature-Entries}
 %
 %
 \cs_new:Nn \__UWMad_Nomenclature_PrintEntries: {
     \__UWMad_Nomenclature_SetEntryWidths:
-    \QueueWalk {Nomenclature_Entries}{##1}
-    \QueueClear{Nomenclature_Entries}
+    \UWMad_Queue_Walk:nn {__Nomenclature-Entries}{##1}
+    \UWMad_Queue_Clear:n {__Nomenclature-Entries}
     \ResetColumnWidth{}
 }
 %
 %
 \cs_new:Nn \__UWMad_Nomenclature_PrintEnvironmentTitle: {
-    \IfTrue{Nomenclature_TitlePrinted}{
+    \UWMad_Boolean_IfTrue:nTF {__Nomenclature-TitlePrinted}{
     }{
         \__UWMad_Nomenclature_PrintSectionHeader:nn
             {\l__UWMad_Nomenclature_EnvironmentSection_tl}
             {\g__UWMad_Nomenclature_Name_tl}
-        \SetTrue{Nomenclature_TitlePrinted}
+        \UWMad_Boolean_SetTrue:n {__Nomenclature-TitlePrinted}
     }
 }
 %
@@ -129,32 +133,33 @@
 % Nomenclature Environmentment ----------------------------------------------------
 \DeclareDocumentEnvironment {Nomenclature} { s O{chapter} } {
 %
-    \IfHashKeySet{SectionToLevel}{#2}{}{
+    \UWMad_Hash_IfKeySet:nnTF {SectionToLevel}{#2}{
+    }{
         \UWMad@ClassError
             {Nomenclature~Environmentment~received~invalid~section~`#1'}
     }
 %
 %
-    \IfBooleanTF{#1}{
-        \SetFalse{Nomenclature_Numbered}
+    \IfBooleanTF {#1} {
+        \UWMad_Boolean_SetFalse:n{__Nomenclature-Numbered}
     }{
-        \SetTrue{Nomenclature_Numbered}
+        \UWMad_Boolean_SetTrue:n{__Nomenclature-Numbered}
     }
 %
 %
-    \SetFalse{Nomenclature_TitlePrinted}
+    \UWMad_Boolean_SetFalse:n {__Nomenclature-TitlePrinted}
 %
 %
     \tl_set:Nf \l__UWMad_Nomenclature_EnvironmentSection_tl {#2}
     \tl_set:Nf \l__UWMad_Nomenclature_GroupSection_tl
-        {\HashExpandableGet{NextSectioningCommand}{#2}}
+        {\UWMad_Hash_ExpandableGet:nn{NextSectioningCommand}{#2}}
     \tl_set:Nf \l__UWMad_Nomenclature_SubGroupSection_tl
-        {\HashExpandableGet{NextSectioningCommand}
+        {\UWMad_Hash_ExpandableGet:nn {NextSectioningCommand}
             {\tl_use:N \l__UWMad_Nomenclature_GroupSection_tl}}
 %
 %
     \DeclareDocumentCommand \Add { m m }{
-        \QueuePush{Nomenclature_Entries}{
+        \UWMad_Queue_Push:nn {__Nomenclature-Entries} {
             \__UWMad_Nomenclature_Entry:nn
                 {##1}
                 {##2}
@@ -165,32 +170,44 @@
     \cs_set_eq:NN \Entry \Add
 %
 %
-    \DeclareDocumentCommand \Group { m }{
-        \IfQueueEmpty{Nomenclature_Entries}{
-        }{
-            \__UWMad_Nomenclature_PrintEnvironmentTitle:
-            \__UWMad_Nomenclature_PrintEntries:
-        }
-        
-        \__UWMad_Nomenclature_PrintSectionHeader:nn
-            {\l__UWMad_Nomenclature_GroupSection_tl}
-            {##1}
-    }
-%
-%
-    \DeclareDocumentCommand \SubGroup { m }{
-        \IfQueueEmpty{Nomenclature_Entries}{
+    \DeclareDocumentCommand \Group { s m } {
+        \UWMad_Queue_IfEmpty:nTF {__Nomenclature-Entries} {
         }{
             \__UWMad_Nomenclature_PrintEnvironmentTitle:
             \__UWMad_Nomenclature_PrintEntries:
         }
 
+        \IfBooleanTF {##1} {
+            \UWMad_Boolean_SetFalse:n{__Nomenclature-Numbered}
+        }{
+            \UWMad_Boolean_SetTrue:n{__Nomenclature-Numbered}
+        }
+
+        \__UWMad_Nomenclature_PrintSectionHeader:nn
+            {\l__UWMad_Nomenclature_GroupSection_tl}
+            {##2}
+    }
+%
+%
+    \DeclareDocumentCommand \SubGroup { s m } {
+        \UWMad_Queue_IfEmpty:nTF {__Nomenclature-Entries} {
+        }{
+            \__UWMad_Nomenclature_PrintEnvironmentTitle:
+            \__UWMad_Nomenclature_PrintEntries:
+        }
+
+        \IfBooleanTF {##1} {
+            \UWMad_Boolean_SetFalse:n{__Nomenclature-Numbered}
+        }{
+            \UWMad_Boolean_SetTrue:n{__Nomenclature-Numbered}
+        }
+
         \__UWMad_Nomenclature_PrintSectionHeader:nn
             {\l__UWMad_Nomenclature_SubGroupSection_tl}
-            {##1}
+            {##2}
     }
 }{
-    \IfQueueEmpty{Nomenclature_Entries}{
+    \UWMad_Queue_IfEmpty:nTF {__Nomenclature-Entries} {
     }{
         \__UWMad_Nomenclature_PrintEnvironmentTitle:
         \__UWMad_Nomenclature_PrintEntries:

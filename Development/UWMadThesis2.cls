@@ -7,10 +7,10 @@
       }%
     \endinput
 }%
-\ExplSyntaxOn
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{UWMadThesis}
     [2013/08/21~v1.0~|~LaTeX2e+~Thesis~Class~for~UW-Madison]
+\ExplSyntaxOn
 \tl_const:Nn \c_UWMad_ClassName_tl        {UWMadThesis}
 \tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin-Madison}
 \tl_const:Nn \c_UWMad_UniversityShort_tl  {UW-Madison}
@@ -21,7 +21,7 @@
 \cs_new_eq:NN \UWMadShort        \c_UWMad_UniversityShort_tl
 \cs_new_eq:NN \UWMadClassVersion \c_UWMad_ClassVersion_tl
 \cs_new_eq:NN \UWMadClassDate    \c_UWMad_ClassVersionDate_tl
-\tl_new:N   \g_UWMad_ParentClass_tl
+\tl_new:N      \g_UWMad_ParentClass_tl
 \tl_gset:Nn \g_UWMad_ParentClass_tl {report}
 \msg_new:nnn{UWMadThesis}{Options/StyleViolation}{
     Option~'#1'~violates~\c_UWMadUniversityShort_tl{}~
@@ -30,7 +30,7 @@
 \cs_new:Nn \__UWMad_FrontMatter_StyleWarning:n {
     \msg_warning{UWMadThesis}{Options/StyleViolation}
         {#1}
-   \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
+   \PassOptionsToClass{#1}{\g_UWMad_TheParentClass_tl}
 }
 \bool_new:N       \g__UWMad_MathTweaks_bool
 \bool_gset_true:N \g__UWMad_MathTweaks_bool
@@ -53,20 +53,17 @@
 \DeclareOption{twoside} {
     \__UWMad_FrontMatter_StyleWarning:N{\CurrentOption}
 }
-\DeclareOption{article} {
-    \tl_gset:Nn \g_UWMad_ParentClass_tl {article}
-}
-\DeclareOption{l3doc} {
-    \tl_gset:Nn \g_UWMad_ParentClass_tl {l3doc}
-    \tl_const:cn {ver@thumbpdf.sty} {}
-}
+\DeclareOption{article}
+    {\tl_gset:Nn \g_UWMad_@TheParentClass_tl {article}}
+\DeclareOption{l3doc}
+    {\tl_gset:Nn \g_UWMad_@TheParentClass_tl {l3doc}}
 \DeclareOption*{
     \PassOptionsToClass
-        {\CurrentOption}{\g_UWMad_ParentClass_tl}
+        {\CurrentOption}{\g_UWMad_@TheParentClass_tl}
 }
 \ExecuteOptions{oneside,12pt}
 \ProcessOptions\relax
-\LoadClass{\g_UWMad_ParentClass_tl}[1995/12/01]
+\LoadClass{\g_UWMad_TheParentClass_tl}[1995/12/01]
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
 \RequirePackage{array}
@@ -74,12 +71,12 @@
 \RequirePackage{setspace}
 \RequirePackage{geometry}
 \bool_if:NTF \g__UWMad_MathTweaks_bool {
-    \RequirePackage{amsmath}
+    \RequirePackage[intlimits,sumlimits]{amsmath}
     \RequirePackage{amssymb}
     \RequirePackage{amsfonts}
 }{}
 \bool_if:NTF \g__UWMad_Hyperlinks_bool {
-    \RequirePackage{bookmark}
+    \RequirePackage{bookmark}  % Provides an improvement to hyperref
 }{}
 \RequirePackage[noabbrev]{cleveref}
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
@@ -652,68 +649,8 @@
     }
 }
 }
-\tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
-    \geometry{
-        includemp      = true,
-        margin         = 0.80in,
-        marginparwidth = 1.00in,
-        includehead    = true,
-        paper          = letterpaper
-    }
-} {
-    \geometry{
-        margin      = 1.0in,
-        includehead = true,
-        paper       = letterpaper
-    }
-    \creflabelformat{equation}{#2#1#3}
-    \captionsetup[table]{
-        format=hang,
-        labelsep=colon,
-        justification=justified,
-        labelfont={sl},
-        textfont=sl,
-        font={sc,small,stretch=1.1},
-        width=0.9\textwidth,
-        position=above,
-        skip=0.25em
-    }
-    \captionsetup[figure]{
-        format=hang,
-        labelsep=colon,
-        justification=justified,
-        labelfont={sl},
-        textfont=sl,
-        font={small,stretch=1.1},
-        width=0.9\textwidth,
-        position=above,
-        skip=0.5em
-    }
-}
-\definecolor{UWMadGreen}{rgb}{0,0.7,0}
-\bool_if:NTF \g__UWMad_Hyperlinks_bool {
-    \hypersetup{
-        colorlinks         = true       ,
-        linkcolor          = blue       ,
-        citecolor          = UWMadGreen ,
-        urlcolor           = violet     ,
-        pdfdisplaydoctitle = true       ,
-        pdfview            = {FitH}     ,
-        pdfstartview       = {FitH}     ,
-        pdfpagelayout      = OneColumn  ,
-        plainpages         = false      ,
-        hypertexnames      = true       ,
-        bookmarksopenlevel = 3          ,
-        bookmarksopen      = true       ,
-        unicode
-    }
-} {}
-\pagestyle{myheadings}
-\pagenumbering{roman}
-\doublespacing
-\setlength{\parindent}{ 0pt}
-\setlength{\parskip}  {10pt}
-\setlength{\headsep}  {15pt}
+\ExplSyntaxOff
+\ExplSyntaxOn
 
 \let\DefaultChapter\@chapter
 
@@ -728,41 +665,6 @@
     \fi
     \DefaultChapter
 }
-
-\tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
-
-\show\thesubsection
-
-    \UWMad_Counter_DefineGlobal:nn{Chapter}{0}
-
-    \cs_new:Nn \UWMad_Sectioning_PrintModule:nn {
-        \clearpage
-        \group_begin:
-            \UWMad_Counter_Step:n {Chapter}
-            \null\vskip 0.1em
-            \phantomsection
-            \textbf{\LARGE{Module}~
-                \int_to_arabic:n{\UWMad_Counter_Value:n{Chapter}}}
-            \vskip 0.5em
-            \textbf{\Huge{#2}}
-            \vskip 1em
-            \addcontentsline{toc}{chapter}{#1}
-            \par
-        \group_end:
-    }
-
-\show\Module
-
-    \DeclareDocumentCommand \Module { o m } {
-        \IfNoValueTF {#1} {
-            \UWMad_Sectioning_PrintModule:nn{#2}{#2}
-        } {
-            \UWMad_Sectioning_PrintModule:nn{#1}{#2}
-        }
-    }
-
-}{}
-
 
 \UWMad_Counter_DefineGlobal:nn{Appendix}{0}
 
@@ -815,7 +717,6 @@
     \chapter*{#1}
     \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
 }
-
 
 \cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
 \cs_gset_eq:NN \ListOfTablesDefault    \listoftables
@@ -892,31 +793,19 @@
 \UWMad_Hash_Set:nnn  {LevelToSection}{4} {paragraph}
 \UWMad_Hash_Set:nnn  {LevelToSection}{5} {subparagraph}
 \UWMad_Hash_Define:n {NextSectioningCommand}
-\UWMad_Hash_Set:nnn
-    {NextSectioningCommand}{part}          {chapter}
-\UWMad_Hash_Set:nnn
-    {NextSectioningCommand}{chapter}       {section}
-\UWMad_Hash_Set:nnn
-    {NextSectioningCommand}{section}       {subsection}
-\UWMad_Hash_Set:nnn
-    {NextSectioningCommand}{subsection}    {subsubsection}
-\UWMad_Hash_Set:nnn
-    {NextSectioningCommand}{subsubsection} {paragraph}
-\UWMad_Hash_Set:nnn
-    {NextSectioningCommand}{paragraph}     {subparagraph}
+\UWMad_Hash_Set:nnn  {NextSectioningCommand}{part}          {chapter}
+\UWMad_Hash_Set:nnn  {NextSectioningCommand}{chapter}       {section}
+\UWMad_Hash_Set:nnn  {NextSectioningCommand}{section}       {subsection}
+\UWMad_Hash_Set:nnn  {NextSectioningCommand}{subsection}    {subsubsection}
+\UWMad_Hash_Set:nnn  {NextSectioningCommand}{subsubsection} {paragraph}
+\UWMad_Hash_Set:nnn  {NextSectioningCommand}{paragraph}     {subparagraph}
 \UWMad_Hash_Define:n {PreviousSectioningCommand}
-\UWMad_Hash_Set:nnn
-    {PreviousSectioningCommand}{part}          {chapter}
-\UWMad_Hash_Set:nnn
-    {PreviousSectioningCommand}{chapter}       {section}
-\UWMad_Hash_Set:nnn
-    {PreviousSectioningCommand}{section}       {subsection}
-\UWMad_Hash_Set:nnn
-    {PreviousSectioningCommand}{subsection}    {subsubsection}
-\UWMad_Hash_Set:nnn
-    {PreviousSectioningCommand}{subsubsection} {paragraph}
-\UWMad_Hash_Set:nnn
-    {PreviousSectioningCommand}{paragraph}     {subparagraph}
+\UWMad_Hash_Set:nnn  {PreviousSectioningCommand}{part}          {chapter}
+\UWMad_Hash_Set:nnn  {PreviousSectioningCommand}{chapter}       {section}
+\UWMad_Hash_Set:nnn  {PreviousSectioningCommand}{section}       {subsection}
+\UWMad_Hash_Set:nnn  {PreviousSectioningCommand}{subsection}    {subsubsection}
+\UWMad_Hash_Set:nnn  {PreviousSectioningCommand}{subsubsection} {paragraph}
+\UWMad_Hash_Set:nnn  {PreviousSectioningCommand}{paragraph}     {subparagraph}
 
 \newcommand{\LevelToSection}[1]{% #1 = Counter for desired level
     \HashExpandableGet{LevelToSection}{#1}}
@@ -932,108 +821,5 @@
                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
                                     {1.5ex \@plus .2ex}%
                                     {\normalfont\normalsize\bfseries}}
-\cs_new:Nn \UWMad_Math_NthRoot:nn {
-    \root #1 \of {#2\:\!}
-}
-\cs_new:Nn \UWMad_Math_SquareRootCore:nn {
-    \setbox0=\hbox{\ensuremath{\NthRootInTeX{#1}{#2}}}
-    \dimen0=\ht0
-    \advance\dimen0-0.2\ht0
-    \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}
-    {\box0\lower0.47pt\box2}
-}
-\DeclareDocumentCommand \Sqrt { O{} m } {
-    \mathchoice{\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
-}
-\newcommand{\bigdiffn}[4]{\dfrac{#1{}^{#4}}{#1 #3{}^{#4}} \left[ #2 \right]}
-\newcommand{\gendiffn}[4]{\dfrac{#1{}^{#4} #2}{#1 #3{}^{#4}}}
-\tl_new:N \g__UWMad_Math_DerivativeToken_tl
-\cs_new:Nn \__UWMad_Math_DerivativeToken:n {
-    \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {
-        \tl_if_empty:nTF {#1} {d} {
-            \tl_if_in:nnTF {#1} {d} {
-                d
-            } {
-                \tl_if_in:nnTF {#1} {p} {
-                    \partial
-                } {
-                    \tl_if_in:nnTF {#1} {t} {
-                        D
-                    } {
-                        #1
-                    }
-                }
-            }
-        }
-    }
-}
-\DeclareDocumentCommand \diff { O{} +m +m} {
-    \gendiffn{\__UWMad_Math_DerivativeToken:n {#1}}{#2}{#3}{}
-}
-\newcommand{\diffn}[4][d]{
-    \ifthenelse{\equal{p}{#1}}{
-        \gendiffn{\partial}{#2}{#3}{#4}
-    }{
-        \ifthenelse{\equal{b}{#1}}{
-            \bigdiffn{#2}{#3}{#4}
-        }{
-            \ifthenelse{\equal{bp}{#1}}{
-                \bigdiffn{\partial}{#2}{#3}{#4}
-            }{
-                \gendiffn{#1}{#2}{#3}{#4}
-            }
-        }
-    }
-}
-\newcommand{\bigdiff}   [2] {\diff[b]{#1}{#2}}
-\newcommand{\pdiff}     [2] {\diff[p]{#1}{#2}}
-\newcommand{\bigpdiff}  [2] {\diff[bp]{#1}{#2}}
-\let\frac\dfrac
-\newcommand{\subs}      [2][]{\ensuremath{{}_{#1\text{\scriptsize #2}}}}
-\newcommand{\sups}      [2][]{\ensuremath{{}^{#1\text{\scriptsize #2}}}}
-\newcommand{\oneo}      [1]  {\ensuremath{\frac{1}{#1}}}
-\iffalse
-    \let\Oldalpha     \alpha     \renewcommand{\alpha}     {\ensuremath{\Oldalpha     }\xspace}
-    \let\Oldbeta      \beta      \renewcommand{\beta}      {\ensuremath{\Oldbeta      }\xspace}
-    \let\Oldgamma     \gamma     \renewcommand{\gamma}     {\ensuremath{\Oldgamma     }\xspace}
-    \let\Olddelta     \delta     \renewcommand{\delta}     {\ensuremath{\Olddelta     }\xspace}
-    \let\Oldepsilon   \epsilon   \renewcommand{\epsilon}   {\ensuremath{\Oldepsilon   }\xspace}
-    \let\Oldvarepsilon\varepsilon\renewcommand{\varepsilon}{\ensuremath{\Oldvarepsilon}\xspace}
-    \let\Oldzeta      \zeta      \renewcommand{\zeta}      {\ensuremath{\Oldzeta      }\xspace}
-    \let\Oldeta       \eta       \renewcommand{\eta}       {\ensuremath{\Oldeta       }\xspace}
-    \let\Oldtheta     \theta     \renewcommand{\theta}     {\ensuremath{\Oldtheta     }\xspace}
-    \let\Oldvartheta  \vartheta  \renewcommand{\vartheta}  {\ensuremath{\Oldvartheta  }\xspace}
-    \let\Oldkappa     \kappa     \renewcommand{\kappa}     {\ensuremath{\Oldkappa     }\xspace}
-    \let\Oldlambda    \lambda    \renewcommand{\lambda}    {\ensuremath{\Oldlambda    }\xspace}
-    \let\Oldmu        \mu        \renewcommand{\mu}        {\ensuremath{\Oldmu        }\xspace}
-    \let\Oldnu        \nu        \renewcommand{\nu}        {\ensuremath{\Oldnu        }\xspace}
-    \let\Oldxi        \xi        \renewcommand{\xi}        {\ensuremath{\Oldxi        }\xspace}
-    \let\Oldpi        \pi        \renewcommand{\pi}        {\ensuremath{\Oldpi        }\xspace}
-    \let\Oldvarpi     \varpi     \renewcommand{\varpi}     {\ensuremath{\Oldvarpi     }\xspace}
-    \let\Oldrho       \rho       \renewcommand{\rho}       {\ensuremath{\Oldrho       }\xspace}
-    \let\Oldvarrho    \varrho    \renewcommand{\varrho}    {\ensuremath{\Oldvarrho    }\xspace}
-    \let\Oldsigma     \sigma     \renewcommand{\sigma}     {\ensuremath{\Oldsigma     }\xspace}
-    \let\Oldvarsigma  \varsigma  \renewcommand{\varsigma}  {\ensuremath{\Oldvarsigma  }\xspace}
-    \let\Oldtau       \tau       \renewcommand{\tau}       {\ensuremath{\Oldtau       }\xspace}
-    \let\Oldupsilon   \upsilon   \renewcommand{\upsilon}   {\ensuremath{\Oldupsilon   }\xspace}
-    \let\Oldphi       \phi       \renewcommand{\phi}       {\ensuremath{\Oldphi       }\xspace}
-    \let\Oldvarphi    \varphi    \renewcommand{\varphi}    {\ensuremath{\Oldvarphi    }\xspace}
-    \let\Oldchi       \chi       \renewcommand{\chi}       {\ensuremath{\Oldchi       }\xspace}
-    \let\Oldpsi       \psi       \renewcommand{\psi}       {\ensuremath{\Oldpsi       }\xspace}
-    \let\Oldomega     \omega     \renewcommand{\omega}     {\ensuremath{\Oldomega     }\xspace}
-    \let\OldGamma     \Gamma     \renewcommand{\Gamma}     {\ensuremath{\OldGamma     }\xspace}
-    \let\OldLambda    \Lambda    \renewcommand{\Lambda}    {\ensuremath{\OldLambda    }\xspace}
-    \let\OldSigma     \Sigma     \renewcommand{\Sigma}     {\ensuremath{\OldSigma     }\xspace}
-    \let\OldPsi       \Psi       \renewcommand{\Psi}       {\ensuremath{\OldPsi       }\xspace}
-    \let\OldDelta     \Delta     \renewcommand{\Delta}     {\ensuremath{\OldDelta     }\xspace}
-    \let\OldXi        \Xi        \renewcommand{\Xi}        {\ensuremath{\OldXi        }\xspace}
-    \let\OldUpsilon   \Upsilon   \renewcommand{\Upsilon}   {\ensuremath{\OldUpsilon   }\xspace}
-    \let\OldOmega     \Omega     \renewcommand{\Omega}     {\ensuremath{\OldOmega     }\xspace}
-    \let\OldTheta     \Theta     \renewcommand{\Theta}     {\ensuremath{\OldTheta     }\xspace}
-    \let\OldPi        \Pi        \renewcommand{\Pi}        {\ensuremath{\OldPi        }\xspace}
-    \let\OldPhi       \Phi       \renewcommand{\Phi}       {\ensuremath{\OldPhi       }\xspace}
-    \fi
+
 \ExplSyntaxOff

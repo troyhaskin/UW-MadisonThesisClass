@@ -1,3 +1,142 @@
+%   \iffalse
+%<*PROTECT>
+%   \fi
+%   \iffalse
+\documentclass[l3doc,full]{UWMadThesis}
+%
+    \usepackage[english]{babel}
+    \ExplSyntaxOn
+    \DeclareDocumentCommand \LaTeXPL { } {
+        \LaTeX3PL
+    }
+
+    \RenewDocumentCommand   \part { m } {
+        \stepcounter{part}
+        \cleardoublepage
+        \group_begin:
+            \newgeometry{marginparwidth = 0pt}
+            \vspace*{2in}
+            \begin{center}
+                \textbf{
+                    \huge{Part~\thepart}
+                    \vskip 0.30em
+                    \Huge{#1}
+                }
+            \end{center}
+            \thispagestyle{empty}
+            \clearpage
+        \group_end:
+        \clearpage
+        \restoregeometry
+    }
+
+    \ExplSyntaxOff
+
+% Define some lengths for the documentation.
+    \setstretch{1.5}
+    \setlength{\parindent}{0pt}
+
+    % Play with macrocode env. formatting
+    \let\BeginMacroCode\macrocode
+    \let\EndMacroCode\endmacrocode
+
+    \renewcommand{\macrocode}{%
+            \vspace*{-0.80em}
+            \BeginMacroCode
+            \setlength{\parskip}{0em}
+            \setstretch{1.0}}
+    \renewcommand{\endmacrocode}{%
+            \EndMacroCode
+            \vspace*{0.5em}}
+
+    % Define the Usage environment
+    \newenvironment{Usage}
+        {   \vskip 0.6em
+            \textsl{Usage}:
+            \begin{list}
+                {}
+                {   \setstretch{1}
+                    \setlength{\topsep}{0em}
+                    \setlength{\itemsep}{0em}
+                    \setlength{\parsep}{0em}
+                    \setlength{\leftmargin}{1em}}}
+        {   \end{list}}
+
+    \begin{document}
+        \DocInput{\jobname.dtx}
+    \end{document}
+%
+%
+%   \fi
+%
+%
+% \CheckSum{0}
+%
+%   \CharacterTable
+%   {Upper-case \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%    Lower-case \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%    Digits     \0\1\2\3\4\5\6\7\8\9
+%    Exclamation   \!    Double quote \"     Hash (number) \#
+%    Dollar        \$    Percent      \%     Ampersand     \&
+%    Acute accent  \'    Left paren   \(     Right paren   \)
+%    Asterisk      \*    Plus         \+     Comma         \,
+%    Minus         \-    Point        \.     Solidus       \/
+%    Colon         \:    Semicolon    \;     Less than     \<
+%    Equals        \=    Greater than \>     Question mark \?
+%    Commercial at \@    Left bracket \[     Backslash     \\
+%    Right bracket \]    Circumflex   \^     Underscore    \_
+%    Grave accent  \`    Left brace   \{     Vertical bar  \|
+%    Right brace   \}    Tilde \~}
+%
+%
+%   \title{UWMadThesis Manual}
+%   \author{Troy C. Haskin}
+%
+%   \part{User Guide}
+%   \input{UWMadThesis.Documentation.UserGuide.dtx}
+%   \GetFileInfo{UWMadThesis.cls}
+%   \StopEventually{}
+%
+%
+%
+%
+%
+%
+%^^A ==================================================== !
+%^^A                                                      !
+%^^A                    BEGIN IMPLEMENTATION              !
+%^^A                                                      !
+%^^A ==================================================== !
+%
+%
+%
+%   \iffalse
+%</PROTECT>
+%   \fi
+%   \iffalse
+%<*Code>
+%   \fi
+%
+%
+%   \part{Implementation}
+%
+%
+%   \section{Front Matter}
+%
+%   Much of this class is written using the \LaTeX3 Programming Layer;
+%   this will be denoted as \LaTeXPL{}.  The \LaTeXPL{} is the first
+%   piece of a new system designed to succeed \LaTeXe{} in the future.
+%   However, while the programming layer is solid and remarkable,
+%   a lot of presentation work still needs to be done.  Therefore,
+%   this class uses \LaTeXe{} code where necessary and will hopefully
+%   be slowly pulled out as needed.  The good news is that since everything
+%   is more-or-less an abstraction of \TeX{}, it should work together well.
+%
+%   \section{expl3 Package and Identification}
+%   The |expl3| package loads the \LaTeXPL{} and is therefore required.
+%   If the package is not recent enough, the class aborts and requests
+%   the user update.
+%    \begin{macrocode}
 \RequirePackage{expl3}[2013/07/28]
 \@ifpackagelater{expl3}{2013/07/28} {} {%
     \PackageError{UWMadThesis}{Version of l3kernel is too old}
@@ -7,22 +146,58 @@
       }%
     \endinput
 }%
+%    \end{macrocode}
+%
+%   Assuming the the |expl3| package is recent enough, we invoke the
+%   \LaTeXPL{}'s syntax for the duration of the class.
+%    \begin{macrocode}
 \ExplSyntaxOn
+%    \end{macrocode}
+%
+%   We now identify the \LaTeXe{} system needed and provide the class.
+%    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{UWMadThesis}
     [2013/08/21~v1.0~|~LaTeX2e+~Thesis~Class~for~UW-Madison]
+%    \end{macrocode}
+%
+%
+%   \section{Identification and Defaults}
+%
+%   Now, we define some identification variables (token lists).
+%    \begin{macrocode}
 \tl_const:Nn \c_UWMad_ClassName_tl        {UWMadThesis}
 \tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin-Madison}
 \tl_const:Nn \c_UWMad_UniversityShort_tl  {UW-Madison}
 \tl_const:Nn \c_UWMad_ClassVersion_tl     {1.0}
 \tl_const:Nn \c_UWMad_ClassVersionDate_tl {2012/01/09}
+%    \end{macrocode}
+%
+%   And since these identifications may be desired in typsetting more,
+%   where \LaTeXPL{}'s syntax will be turned off, we define some aliases.
+%    \begin{macrocode}
 \cs_new_eq:NN \UWMadClassName    \c_UWMad_ClassName_tl
 \cs_new_eq:NN \UWMadLong         \c_UWMad_UniversityLong_tl
 \cs_new_eq:NN \UWMadShort        \c_UWMad_UniversityShort_tl
 \cs_new_eq:NN \UWMadClassVersion \c_UWMad_ClassVersion_tl
 \cs_new_eq:NN \UWMadClassDate    \c_UWMad_ClassVersionDate_tl
+%    \end{macrocode}
+%
+%   In an effort to allow the thesis class to adapt to new underlying classes,
+%   the class that \UWMadClassName{} loads is decalred as a mutable
+%   token list.  The default is the \LaTeX{} base class |report|.
+%    \begin{macrocode}
 \tl_new:N   \g_UWMad_ParentClass_tl
 \tl_gset:Nn \g_UWMad_ParentClass_tl {report}
+%    \end{macrocode}
+%
+%
+%
+%   \section{Options}
+%
+%   First, a command is created to throw a warning if an option that
+%   violates \UWMadLong{}'s dissertation guidelines.
+%    \begin{macrocode}
 \msg_new:nnn{UWMadThesis}{Options/StyleViolation}{
     Option~'#1'~violates~\c_UWMadUniversityShort_tl{}~
     Dissertation~Guidelines;~consider~omission
@@ -32,12 +207,21 @@
         {#1}
    \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
 }
+%    \end{macrocode}
+%
+%   Now, declare booleans for the option processing.  All new booleans
+%   are false by default.
+%    \begin{macrocode}
 \bool_new:N       \g__UWMad_MathTweaks_bool
 \bool_gset_true:N \g__UWMad_MathTweaks_bool
 \bool_new:N       \g__UWMad_PDFMetaDataTweaks_bool
 \bool_gset_true:N \g__UWMad_PDFMetaDataTweaks_bool
 \bool_new:N       \g__UWMad_Hyperlinks_bool
 \bool_gset_true:N \g__UWMad_Hyperlinks_bool
+%    \end{macrocode}
+%
+%   Declare the options.
+%    \begin{macrocode}
 \DeclareOption{NoMath} {
     \bool_gset_false:N \g__UWMad_MathTweaks_bool
 }
@@ -47,12 +231,22 @@
 \DeclareOption{NoLinks} {
     \bool_gset_false:N \g__UWMad_Hyperlinks_bool
 }
+%    \end{macrocode}
+%
+%   Catch the couple of default options that violate the requirements:
+%   8.5 by 11 paper for single-sided printing.
+%    \begin{macrocode}
 \DeclareOption{a4paper} {
     \__UWMad_FrontMatter_StyleWarning:N{\CurrentOption}
 }
 \DeclareOption{twoside} {
     \__UWMad_FrontMatter_StyleWarning:N{\CurrentOption}
 }
+%    \end{macrocode}
+%
+%   These options change the default report class to the
+%   ones indicated.
+%    \begin{macrocode}
 \DeclareOption{article} {
     \tl_gset:Nn \g_UWMad_ParentClass_tl {article}
 }
@@ -60,31 +254,124 @@
     \tl_gset:Nn \g_UWMad_ParentClass_tl {l3doc}
     \tl_const:cn {ver@thumbpdf.sty} {}
 }
+%    \end{macrocode}
+%
+%   Pass all remaining options to the base class.
+%    \begin{macrocode}
 \DeclareOption*{
     \PassOptionsToClass
         {\CurrentOption}{\g_UWMad_ParentClass_tl}
 }
+%    \end{macrocode}
+%
+%   Process the options with some defaults and load the base class.
+%    \begin{macrocode}
 \ExecuteOptions{oneside,12pt}
 \ProcessOptions\relax
 \LoadClass{\g_UWMad_ParentClass_tl}[1995/12/01]
+%    \end{macrocode}
+%
+%
+%
+%   \section{Package Loads}
+%
+%   First we load some packages that give nice features and are not
+%   hyperlink sensitive.
+%    \begin{macrocode}
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
 \RequirePackage{array}
 \RequirePackage{graphicx}
 \RequirePackage{setspace}
 \RequirePackage{geometry}
+%    \end{macrocode}
+%
+%   If math was not negated by options, the AMS suite is loaded.
+%    \begin{macrocode}
 \bool_if:NTF \g__UWMad_MathTweaks_bool {
     \RequirePackage{amsmath}
     \RequirePackage{amssymb}
     \RequirePackage{amsfonts}
 }{}
+%    \end{macrocode}
+%
+%   If links were not negated by the options, |bookmark| is load,
+%   which is a successor to |hyperref|.
+%    \begin{macrocode}
 \bool_if:NTF \g__UWMad_Hyperlinks_bool {
     \RequirePackage{bookmark}
 }{}
+%    \end{macrocode}
+%
+%   And now we load some packages that give nice features and are
+%   hyperlink sensitive.
+%    \begin{macrocode}
 \RequirePackage[noabbrev]{cleveref}
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
 \RequirePackage{subfig}
 \RequirePackage{caption}
+%    \end{macrocode}
+%
+%   \iffalse
+%</Code>
+%   \fi
+%   \iffalse
+%<*Code>
+%   \fi
+%
+%^^A
+%^^A  Module Name: Programming
+%^^A  Author:
+%^^A    Name:           Troy C. Haskin
+%^^A    E-mail:         UWMadThesis@hask.in
+%^^A  Version:
+%^^A    Number:         1.0
+%^^A    Description:    Initial release
+%^^A    Date:           06/01/2013
+%^^A  Purpose:
+%^^A    Provide a programming layer for the UW-Madison Thesis package
+%^^A    Most of the module is designed to overcome the lack of such a
+%^^A    layer in LaTeX2e.  Some LaTeX3 is being used for certain advanced
+%^^A    features, and this module may become obsolete when/if it is upgraded
+%^^A    to a pure LaTeX3 implementation; though a thin abatraction layer may
+%^^A    still be desired.
+%
+%   \Module{Programming}\label{Chapter:Programming}
+%   This section outlines the Programming module for the \UWMadClassName{}.
+%   It is mostly a collection of utility macros used in other modules.
+%   The two biggest features in this module are the Array and Hash
+%   (associative arrays) systems used a other modules.  Those features
+%   are near the end of this subsection.
+%
+%   The commands are currently a mix of \TeX{}, \LaTeX2e{}, and \LaTeX3{}.
+%   Pure \TeX{} is used only where the other features have no such facility
+%   for the intended purpose.  Also, the |etoolbox| package is used as
+%   the basis for many of the utility macros, and those macros are actually,
+%   for all intents and purposes, just aliases for etoolbox commands. This
+%   method was chosen to allow for an easier transition to another system.
+%
+%
+%
+%^^A ==================================================================== %
+%^^A                        Core Programming Systems                      %
+%^^A ==================================================================== %
+%   \subsection{Core Programming Systems}
+%
+%   The commands in this section form the core of the programming module.
+%   All of the Core systems are written using the \LaTeXPL and have
+%   extremely long names.  Most of the commands as thin abstractions from
+%   the already-written \LaTeXPL modules and are designed to provide
+%   a more stream-lined and robust environment in providing
+%   useful warnings and errors where needed.
+%
+%   One of the main features added by the core programming system is more
+%   transparent local-global handling.  The onus of remembering which
+%   vairables of local-global is all that's needed with the commands
+%   for altering them being all of the same.
+%
+%
+%   We define some messages for the rest of the module.
+%    \begin{macrocode}
 \msg_new:nnn {UWMadThesis} {Programming/UnregisteredVariable} {
     `#1'~is~not~a~registered~#2.~~The~#2~must~be~defined~
     before~usage~by~the~function~\string\UWMad_#2_DefineLocal:n~or~
@@ -97,6 +384,38 @@
 \msg_new:nnn {UWMadThesis} {Programming/Defined} {
     The~#2~`#1'~is~already~defined~and~will~not~altered.
 }
+%    \end{macrocode}
+%
+%
+%   \begin{macro}{\__UWMad_IfLocal:nnnTF}
+%   Certain subsystems of the Programming Module make a distinction
+%   between local and global variables where scope is determined by
+%   \TeX{} groups.  This command takes five arguments designed to
+%   increase maintainability and readability in the subsystems that
+%   use it.
+%
+%   This command accepts a \marg{Prefix}, an \marg{ID}, a \marg{Type},
+%   \marg{LocalCode}, and \marg{GlobalCode}.  All subsystems that use
+%   this command have (in theory) already defined a command that concatenates
+%   the \marg{Prefix}, \marg{ID}, and |_Local| or |_Global|
+%   of a specific \marg{Type}.  If either of the commands is defined, the
+%   appropriate code is executed (in an fully expandable fashion, which is
+%   used to reduce code duplication where possible).  If neither of those
+%   commands exist, the variable is not registered with the system and an
+%   exception is thrown.
+%
+%   As an example, the counter system below creates a command by concatenating
+%   |g__UWMad_Counter_| (the \marg{Prefix}) with user supplied \marg{ID} and
+%   either |_Local| or |_Global| depending on the definition.  That command is
+%   a variable of \marg{Type} Counter.
+%   |\__UWMad_IfLocal:nnnnn| handles the local-global branching.
+%
+%   \begin{Usage}
+%       \item |\__UWMad_IfLocal:nnnTF| \marg{Prefix}\marg{ID}\marg{Type}
+%                               \marg{LocalCode}, and \marg{GLobalCode}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_IfLocal:nnnTF {
     \cs_if_exist:cTF     {#1#2_Local}{
         #4
@@ -112,6 +431,25 @@
         }
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}[internal]{
+%       \__UWMad_IfDefined:nnnnT,
+%       \__UWMad_IfUndefined:nnnnT}
+%   These commands accept a \marg{Prefix}, an \marg{ID}, a \marg{Suffix}
+%   a \marg{Type}, and \marg{Code}.  It determines if a command named by the
+%   concatenation of \marg{Prefix}, \marg{ID}, and \marg{Suffix}
+%   is defined or not and executes \marg{Code} depending on the existence.
+%
+%   \begin{Usage}
+%       \item |\__UWMad_IfUndefined:nnnnT|
+%           \marg{Prefix}\marg{ID}\marg{Suffix}\marg{Type}\marg{Code}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_IfDefined:nnnnT{
     \cs_if_exist:cTF {#1#2#3} {
         #5
@@ -134,6 +472,36 @@
                 {#4}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%
+%
+%
+%^^A ==================================================================== %
+%^^A                            Boolean System                            %
+%^^A ==================================================================== %
+%
+%   \subsubsection{Boolean System}
+%   This subsystem was made to give a \LaTeX{}-like branching system that
+%   can create both local and global switches.
+%
+%   The system is a thin abstraction of
+%   \LaTeXPL's |bool| module in the |l3prg| package to avoid developing
+%   a one-shot system while allowing more endeavouring authors access to
+%   to the simple feature without learning \LaTeX3{} programming.
+%
+%
+%
+%   \begin{function}{
+%       \__UWMad_Boolean_IfLocal:nTF,
+%       \__UWMad_Boolean_IfUndefined:nnT}
+%   These commands are shortcuts to the more general commands
+%   outlined above.
+%
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_Boolean_IfLocal:nTF {
     \__UWMad_IfLocal:nnnTF
         {g__UWMad_Boolean_}{#1}{Boolean}{#2}{#3}
@@ -142,6 +510,12 @@
     \__UWMad_IfUndefined:nnnnT
         {g__UWMad_Boolean_}{#1}{#2}{Boolean}{#3}
 }
+%    \end{macrocode}
+%   \end{function}
+%
+%
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Boolean_DefineLocal:n {
     \__UWMad_Boolean_IfUndefined:nnT {#1} {_Local} {
         \bool_new:c {g__UWMad_Boolean_#1_Local}
@@ -152,6 +526,9 @@
         \bool_new:c {g__UWMad_Boolean_#1_Global}
     }
 }
+%
+%
+%
 \cs_new:Nn \UWMad_Boolean_DefineLocalSetTrue:n {
     \__UWMad_Boolean_IfUndefined:nnT {#1} {_Local} {
         \bool_new:c       {g__UWMad_Boolean_#1_Local}
@@ -164,6 +541,9 @@
         \bool_gset_false:c {g__UWMad_Boolean_#1_Local}
     }
 }
+%
+%
+%
 \cs_new:Nn \UWMad_Boolean_DefineGlobalSetTrue:n {
     \__UWMad_Boolean_IfUndefined:nnT {#1} {_Global} {
         \bool_new:c       {g__UWMad_Boolean_#1_Global}
@@ -176,6 +556,9 @@
         \bool_gset_false:c {g__UWMad_Boolean_#1_Global}
     }
 }
+%
+%
+%
 \cs_new:Nn \UWMad_Boolean_SetTrue:n {
     \__UWMad_Boolean_IfLocal:nTF {#1} {
         \bool_set_true:c  {g__UWMad_Boolean_#1_Local}
@@ -190,6 +573,9 @@
         \bool_gset_false:c {g__UWMad_Boolean_#1_Global}
     }
 }
+%
+%
+%
 \cs_new:Nn \UWMad_Boolean_IfTrue:nTF {
     \__UWMad_Boolean_IfLocal:nTF {#1} {
         \bool_if:cTF {g__UWMad_Boolean_#1_Local}
@@ -208,6 +594,34 @@
     {#3}
     {#2}
 }
+%    \end{macrocode}
+%
+%
+%
+%
+%
+%^^A ==================================================================== %
+%^^A                            Length System                             %
+%^^A ==================================================================== %
+%
+%   \subsubsection{Length System}
+%   This subsystem was made to give a \LaTeX{}-like length system that
+%   can create both local and global lengths.
+%
+%   The system is a thin abstraction of
+%   \LaTeXPL's |dim| module in the |l3skip| package to avoid developing
+%   a one-shot system while allowing more endeavouring authors access to
+%   to the simple feature without learning \LaTeX3{} programming.
+%
+%
+%
+%   \begin{macro}[internal]{
+%       \__UWMad_Length_IfLocal:nTF,
+%       \__UWMad_Length_IfUndefined:nnT}
+%   These commands are shortcuts to the more general
+%   commands outlines above.
+%
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_Length_IfLocal:nTF {
     \__UWMad_IfLocal:nnnTF
         {g__UWMad_Length_}{#1}{Length}{#2}{#3}
@@ -215,6 +629,12 @@
 \cs_new:Nn \__UWMad_Length_IfUndefined:nnT{
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Length_}{#1}{#2}{Length}{#3}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Length_DefineLocal:nn {
     \__UWMad_Length_IfUndefined:nnT {#1} {_Local} {
         \dim_new:c   {g__UWMad_Length_#1_Local}
@@ -227,6 +647,9 @@
         \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}
     }
 }
+%
+%
+%
 \cs_new:Nn \UWMad_Length_Add:nn {
     \__UWMad_Length_IfLocal:nTF {#1} {
         \dim_add:cn  {g__UWMad_Length_#1_Local}  {#2}
@@ -234,6 +657,9 @@
         \dim_gadd:cn {g__UWMad_Length_#1_Global} {#2}
     }
 }
+%
+%
+%
 \cs_new:Nn \UWMad_Length_Set:nn {
     \__UWMad_Length_IfLocal:nTF {#1} {
         \dim_set:cn  {g__UWMad_Length_#1_Local}  {#2}
@@ -241,6 +667,9 @@
         \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}
     }
 }
+%
+%
+%
 \cs_new:Nn \UWMad_Length_Of:n {
     \__UWMad_Length_IfLocal:nTF {#1} {
         \dim_use:c {g__UWMad_Length_#1_Local}
@@ -248,6 +677,9 @@
         \dim_use:c {g__UWMad_Length_#1_Global}
     }
 }
+%
+%
+%
 \cs_new:Nn \UWMad_Length_If:nnnTF {
     \dim_compare:nTF{ \UWMad_Length_Of:n{#1} #2 #3 }{
         #4
@@ -255,6 +687,28 @@
         #5
     }
 }
+%    \end{macrocode}
+%
+%
+%
+%
+%
+%^^A ==================================================================== %
+%^^A                            Counter System                            %
+%^^A ==================================================================== %
+%
+%   \subsubsection{Counter System}
+%   This subsystem was made to give a \LaTeX{}-like counter system that
+%   can create both local and global counters.
+%
+%
+%   \begin{macro}[internal]{
+%       \__UWMad_Counter_IfLocal:nTF,
+%       \__UWMad_Counter_IfUndefined:nTF}
+%   These commands are shortcuts to the more general
+%   commands outlines above.
+%
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_Counter_IfLocal:nTF {
     \__UWMad_IfLocal:nnnTF
         {g__UWMad_Counter_}{#1}{Counter}{#2}{#3}
@@ -262,6 +716,25 @@
 \cs_new:Nn \__UWMad_Counter_IfUndefined:nnT{
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Counter_}{#1}{#2}{Counter}{#3}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \UWMad_Counter_DefineLocal:nn,
+%       \UWMad_Counter_DefineGlobal:nn}
+%   This pair creates either a local or global counter named
+%   \marg{Counter Name} with \marg{Initial Value}. The counters
+%   are registered, defined to be local or global, initialized
+%   by |\newcount|, and set to \marg{Initial Value}.
+%
+%   \begin{Usage}
+%       \item |\DefineNewLocalCounter|\marg{Counter Name}{Initial Value}
+%       \item |\DefineNewGlobalCounter|\marg{Counter Name}{Initial Value}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Counter_DefineLocal:nn {
     \__UWMad_Counter_IfUndefined:nnT {#1} {_Local} {
         \int_new:c   {g__UWMad_Counter_#1_Local}
@@ -274,6 +747,21 @@
         \int_gset:cn {g__UWMad_Counter_#1_Global} {#2}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_Counter_Add:nn}
+%   This command adds \marg{Increment} to the current value of counter
+%   \marg{CounterName}. Local vs. global advancement is set at definition
+%   and is handled transparently.
+%
+%   \begin{Usage}
+%       \item |\AddToCounter|\marg{CounterName}\marg{Increment}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Counter_Add:nn {
     \__UWMad_Counter_IfLocal:nTF {#1} {
         \int_add:cn  {g__UWMad_Counter_#1_Local}  {#2}
@@ -281,9 +769,37 @@
         \int_gadd:cn {g__UWMad_Counter_#1_Global} {#2}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_Counter_Step:n}
+%   Adds $1$ to the counter \marg{Counter Name}.
+%   |\UWMad_IsLocal:nnn| handles the local vs. global advancement.
+%
+%   \begin{Usage}
+%       \item |\UWMad_Counter_Step:nn|\marg{Counter Name}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Counter_Step:n {
     \UWMad_Counter_Add:nn{#1}{1}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_Counter_Set:nn}
+%   This command sets the value of counter \marg{Counter Name} to \marg{Value}.
+%   |\UWMad_IsLocal:nnn| handles the local vs. global assignment.
+%
+%   \begin{Usage}
+%       \item |\SetCounter|\marg{Counter Name}\marg{Value}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Counter_Set:nn {
     \__UWMad_Counter_IfLocal:nTF {#1} {
         \int_set:cn  {g__UWMad_Counter_#1_Local}  {#2}
@@ -291,6 +807,22 @@
         \int_gset:cn {g__UWMad_Counter_#1_Global} {#2}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \UWMad_Counter_SetAndAdd:nnn,
+%       \UWMad_Counter_SetAndStep:nn}
+%   Combinations of |\SetCounter|, |AddToCounter|, and |\StepCounter|.
+%
+%   \begin{Usage}
+%       \item |\SetAndAddToCounter|\marg{Counter Name}\marg{Initial Value}\marg{Value}
+%       \item |\SetAndStepCounter|\marg{Counter Name}\marg{Initial Value}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Counter_SetAndAdd:nnn {
     \UWMad_Counter_Set:nn{#1}{#2}
     \UWMad_Counter_Add:nn{#1}{#3}
@@ -298,6 +830,19 @@
 \cs_new:Nn \UWMad_Counter_SetAndStep:nn {
     \UWMad_Counter_SetAndAdd:nnn {#1}{#2}{1}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_Counter_Value:n}
+%   Combinations of |\SetCounter|, |AddToCounter|, and |\StepCounter|.
+%
+%   \begin{Usage}
+%       \item |\CounterValue|\marg{Counter Name}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Counter_Value:n {
     \__UWMad_Counter_IfLocal:nTF {#1} {
         \int_use:c {g__UWMad_Counter_#1_Local}
@@ -305,6 +850,18 @@
         \int_use:c {g__UWMad_Counter_#1_Global}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_Counter_Compare:nnnTF}
+%
+%   \begin{Usage}
+%       \item |\UWMad_Counter_Compare:nnnTF| {}{}{}{}{}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Counter_Compare:nnnTF {
     \int_compare:nTF {\UWMad_Counter_Value:n{#1} #2 #3} {
         #4
@@ -312,43 +869,92 @@
         #5
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%
+%
+%
+%
+%^^A ======================================================================= %
+%^^A                          CSV Creation Commands                          %
+%^^A ======================================================================= %
+%
+%   \subsubsection{CSV System}
+%   This set of commands is a simple system for comma-separated value (CSV)
+%   list creation.  It consists of only a few functions: initialize list,
+%   append value, prepend value, get list, and erase list.
+%
+%   This feature was created solely to export |hyperref| meta-data to an
+%   external file for later reading.  The system is a thin abstraction of
+%   \LaTeXPL's |l3clist| package to avoid developing
+%   a one-shot system while allowing more endeavouring authors access to
+%   to the simple feature without learning \LaTeX3{} programming.
+%
+%
+%   \begin{macro}[internal]{
+%       \__UWMad_CSV_IfDefined:nT,
+%       \__UWMad_CSV_IfUndefined:nT}
+%   Shortcuts for the more general commands outlined above.
+%
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_CSV_IfDefined:nT {
     \__UWMad_IfDefined:nnnnT{g__UWMad_CSV_}{#1}{}{CSV}{#2}
 }
 \cs_new:Nn \__UWMad_CSV_IfUndefined:nT{
     \__UWMad_IfUndefined:nnnnT{g__UWMad_CSV_}{#1}{}{CSV}{#2}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_CSV_Define:n {
     \__UWMad_CSV_IfUndefined:nT {#1} {
         \clist_new:c {g__UWMad_CSV_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_CSV_Clear:n {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \clist_gclear:c {g__UWMad_CSV_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_CSV_Delete:n {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \clist_gclear:c {g__UWMad_CSV_#1}
         \cs_undefine:c  {g__UWMad_CSV_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_CSV_Append:nn {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \clist_gput_right:cn {g__UWMad_CSV_#1} {#2}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_CSV_Prepend:nn {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \clist_gput_left:cn {g__UWMad_CSV_#1} {#2}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_CSV_Get:n {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \use:c {g__UWMad_CSV_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_CSV_IfNotEmpty:nTF {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \clist_if_empty:cTF {g__UWMad_CSV_#1} {
@@ -358,6 +964,12 @@
         }
     }
 }
+%    \end{macrocode}
+%
+%
+%
+%
+%
 %%^^A ======================================================================= %
 %%^^A                     Collection Creation Commands                        %
 %%^^A ======================================================================= %
@@ -372,35 +984,72 @@
 %%   |l3seq| module to avoid developing one-shot systems while allowing more
 %%   endeavoring authors access to the features without learning \LaTeX3{}
 %%   programming.
+%
+%
+%
+%^^A ======================================================================= %
+%^^A                          Stack Creation Commands                        %
+%^^A ======================================================================= %
+%
+%   \subsubsection{Stack System}
+%   This set of commands is a simple system for creating and working with
+%   stacks.  Stacks are a last-in first-out collection data type; this means
+%   that the data element (in this any unexpanded token/token list) last
+%   pushed on to the stack is the first popped.  Data elements can also be
+%   walked (iterated over) with an inline callback in a LIFO sense.
+%
+%
+%
+%   \begin{macro}[internal]{
+%       \__UWMad_Stack_IfDefined:nT,
+%       \__UWMad_Stack_IfUndefined:nT}
+%   Shortcuts for the more general commands outlined above.
+%
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_Stack_IfDefined:nT {
     \__UWMad_IfDefined:nnnnT{g__UWMad_Stack_}{#1}{}{Stack}{#2}
 }
 \cs_new:Nn \__UWMad_Stack_IfUndefined:nT{
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Stack_}{#1}{}{Stack}{#2}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Stack_Define:n {
     \__UWMad_Stack_IfUndefined:nT {#1} {
         \tl_new:c {g__UWMad_Stack_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Stack_Clear:n {
     \__UWMad_Stack_IfDefined:nT {#1} {
         \tl_gclear:c   {g__UWMad_Stack_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Stack_Delete:n {
     \__UWMad_Stack_IfDefined:nT {#1} {
         \tl_gclear:c   {g__UWMad_Stack_#1}
         \cs_undefine:c {g__UWMad_Stack_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Stack_Push:nn {
     \__UWMad_Stack_IfDefined:nT {#1} {
         \tl_gput_left:cn {g__UWMad_Stack_#1} {#2}
     }
 }
+%
+%
 \cs_generate_variant:Nn \tl_head:N { c }
 \cs_generate_variant:Nn \tl_tail:N { c }
+%
 \cs_new:Nn \UWMad_Stack_Pop:n {
     \__UWMad_Stack_IfDefined:nT {#1} {
         \tl_set:Nx \l_tmpa_tl          {\tl_head:c {g__UWMad_Stack_#1}}
@@ -408,38 +1057,78 @@
         \tl_use:N \l_tmpa_tl
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Stack_Walk:nn {
     \tl_map_inline:cn {g__UWMad_Stack_#1} {#2}
 }
+%    \end{macrocode}
+%
+%
+%
+%^^A ======================================================================= %
+%^^A                          Queue Creation Commands                        %
+%^^A ======================================================================= %
+%
+%   \subsubsection{Queue System}
+%   This set of commands is a simple system for creating and working with
+%   queue.  Queues are a first-in first-out collection data type; this means
+%   that the data element (in this any unexpanded token/token list) first
+%   pushed on to the queue is the first popped.  Data elements can also be
+%   walked (iterated over) with an inline callback in a FIFO sense.
+%
+%
+%
+%   \begin{macro}[internal]{
+%       \__UWMad_Queue_IfDefined:nT,
+%       \__UWMad_Queue_IfUndefined:nT}
+%   Shortcuts for the more general commands outlined above.
+%
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_Queue_IfDefined:nT {
     \__UWMad_IfDefined:nnnnT{g__UWMad_Queue_}{#1}{}{Queue}{#2}
 }
 \cs_new:Nn \__UWMad_Queue_IfUndefined:nT{
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Queue_}{#1}{}{Queue}{#2}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Queue_Define:n {
     \__UWMad_Queue_IfUndefined:nT {#1} {
         \tl_new:c {g__UWMad_Queue_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Queue_Delete:n {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \tl_gclear:c    {g__UWMad_Queue_#1}
          \cs_undefine:c {g__UWMad_Queue_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Queue_Clear:n {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \tl_gclear:c {g__UWMad_Queue_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Queue_Push:nn {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \tl_gput_left:cn {g__UWMad_Queue_#1} {{#2}}
     }
 }
+%
+%
 \cs_generate_variant:Nn \tl_head:N { c }
 \cs_generate_variant:Nn \tl_tail:N { c }
+%
 \cs_new:Nn \UWMad_Queue_Pop:n {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \tl_reverse:c   {g__UWMad_Queue_#1}
@@ -451,6 +1140,8 @@
         \tl_use:N \l_tmpa_tl
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Queue_Walk:nn {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \group_begin:
@@ -459,6 +1150,8 @@
         \group_end:
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Queue_IfEmpty:nTF {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \tl_if_empty:cTF {g__UWMad_Queue_#1}{
@@ -468,23 +1161,54 @@
         }
     }
 }
+%    \end{macrocode}
+%
+%
+%^^A ======================================================================= %
+%^^A                          Deque Creation Commands                        %
+%^^A ======================================================================= %
+%
+%   \subsubsection{Deque System}
+%   This set of commands is a simple system for creating and working with
+%   double-ended queues (deques, pronounced \textit{deck}).  Deques are a
+%   generalization of stacks and queues in that data can be pushed, popped,
+%   and walked from either end of the list (i.e., LIFO+FIFO).
+%
+%
+%
+%   \begin{macro}[internal]{
+%       \__UWMad_Deque_IfDefined:nT,
+%       \__UWMad_Deque_IfUndefined:nT}
+%   Shortcuts for the more general  commands outlined above.
+%
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_Deque_IfDefined:nT {
     \__UWMad_IfDefined:nnnnT{g__UWMad_Deque_}{#1}{}{Deque}{#2}
 }
 \cs_new:Nn \__UWMad_Deque_IfUndefined:nT{
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Deque_}{#1}{}{Deque}{#2}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Deque_Define:n {
     \__UWMad_Deque_IfUndefined:nT {#1} {
         \seq_new:c {g__UWMad_Deque_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Deque_Delete:n {
     \__UWMad_Deque_IfDefined:nT {#1} {
         \seq_gclear:c  {g__UWMad_Deque_#1}
         \cs_undefine:c {g__UWMad_Deque_#1}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Deque_PushLeft:nn {
     \__UWMad_Deque_IfDefined:nT {#1} {
         \seq_gput_left:cn  {g__UWMad_Deque_#1} {#2}
@@ -495,6 +1219,8 @@
         \seq_gput_right:cn {g__UWMad_Deque_#1} {#2}
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Deque_PopLeft:n {
     \__UWMad_Deque_IfDefined:nT {#1} {
         \seq_gpop_left:cN  {g__UWMad_Deque_#1} \l_tmpa_tl
@@ -507,11 +1233,15 @@
         \tl_use:N \l_tmpa_tl
     }
 }
+%
+%
 \cs_new:Nn \UWMad_Deque_WalkLeftToRight:nn {
     \__UWMad_Deque_IfDefined:nT {#1} {
         \seq_map_inline:cn {g__UWMad_Deque_#1} {#2}
     }
 }
+%
+%
 \cs_generate_variant:Nn \seq_reverse:N {c}
 \cs_new:Nn \UWMad_Deque_WalkRightToLeft:nn {
     \__UWMad_Deque_IfDefined:nT {#1} {
@@ -521,6 +1251,37 @@
         \group_end:
     }
 }
+%    \end{macrocode}
+%
+%
+%
+%
+%
+%^^A =========================================================================== %
+%^^A                 Hashes (Associative Arrays) with LaTeX3                     %
+%^^A =========================================================================== %
+%
+%   \subsubsection{Hash System}
+%   This set of commands is a simple system for creating and working with
+%   hashes (more often called associative arrays or dictionaries, but erring
+%   on the side of usablility, Ruby's jargon will be used). Hashes are a
+%   type of array that indexes values by (at least in \LaTeX{}) alphanumeric
+%   keys instead of just integers.
+%   Data can be set by key, retrieved by key, unset by key, deleted, and walked.
+%
+%   A hash walk, like the collection walks above, iterates through all of the
+%   keys and values in the hash while applying a user supplied function.
+%   However, unlike the collection walks, \textbf{a hash's walk order is not
+%   gauranteed to be the set order}.  If walk order is needed to be
+%   gauranteed, see the previous collection data types.
+%
+%   The system is a thin abstraction of \LaTeXPL's
+%   |l3prop| module to avoid developing a one-shot system while allowing more
+%   endeavoring authors access to the feature without learning \LaTeX3{}
+%   programming.
+%
+%
+%    \begin{macrocode}
 \cs_generate_variant:Nn \prop_gput:Nnn   { c x n   }
 \cs_generate_variant:Nn \prop_if_in:NnTF { c x TF  }
 \cs_generate_variant:Nn \prop_if_in:NnTF { c f TF  }
@@ -528,12 +1289,26 @@
 \cs_generate_variant:Nn \prop_get:Nn     { c f     }
 \cs_generate_variant:Nn \prop_get:NnNTF  { c x N TF}
 \cs_generate_variant:Nn \prop_gremove:Nn { c x     }
+%    \end{macrocode}
+%
+%
+%   \begin{macro}[internal]{
+%       \__UWMad_Hash_IfDefined:nT,
+%       \__UWMad_Hash_IfUndefined:nT}
+%   Shortcuts for the more general commands outlined above.
+%
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_Hash_IfDefined:nT {
     \__UWMad_IfDefined:nnnnT{g__UWMad_Hash_}{#1}{}{Hash}{#2}
 }
 \cs_new:Nn \__UWMad_Hash_IfUndefined:nT{
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Hash_}{#1}{}{Hash}{#2}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Hash_Define:n {
     \__UWMad_Hash_IfUndefined:nT {#1} {
         \prop_new:c {g__UWMad_Hash_#1}
@@ -592,7 +1367,46 @@
         \cs_undefine:c {g__UWMad_Hash_#1}
     }
 }
+%    \end{macrocode}
+%
+%
+%
+%
+%^^A ==================================================================== %
+%^^A                         LaTeX2e Abstractions                         %
+%^^A ==================================================================== %
+%
+%   \subsection{\texorpdfstring{\LaTeXe{}}{LaTeX2e} Abstractions}
+%
+%   The commands that follow are \LaTeXe{}-like commands that use the
+%   \LaTeXPL{} as the underlying system.  \textbf{The commands are not loaded
+%   by default; they must be invoked by calling the following command.}
+%
+%   \begin{macro}{\LoadLaTeXeAbstractions}
+%   \textbf{This command needs to be invoked to define the abstractions
+%   for usage.}
+%
+%    \begin{macrocode}
 \DeclareDocumentCommand \LoadLaTeXeAbstractions { } {
+%    \end{macrocode}
+%
+%   \end{macro}
+%
+%   \subsubsection{Utility Commands}
+%
+%
+%   \begin{macro}{\IfCommandExists,\IfCommandDoesNotExist}
+%   This command pair is used instead of \LaTeX{}'s |\@ifundefined|.
+%   Since it is \eTeX{}, this command will allow for a switch to
+%   |\@ifundefined| if problems arise from non-\eTeX{} users in the
+%   future.
+%
+%   \begin{Usage}
+%       \item |\IfCommandExists|\marg{Command Name}\marg{True}\marg{False}
+%       \item |\IfCommandDoesNotExist|\marg{Command Name}\marg{True}\marg{False}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \DeclareDocumentCommand \IfCommandExists { m +m +m }{
     \cs_if_exist:cTF {##1}{
         ##2
@@ -607,6 +1421,21 @@
         ##3
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\IfStringEmpty}
+%   Checks if a given string is empty.
+%   It uses the |etoolbox|'s |\ifblank|.
+%   This command will not expand input.
+%
+%   \begin{Usage}
+%       \item |\IfStringEmpty|\marg{String}\marg{True}\marg{False}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \DeclareDocumentCommand \IfStringEmpty { m +m +m }{
     \tl_if_blank:nTF {##1}{
         ##2
@@ -614,6 +1443,20 @@
         ##3
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\IfCommandEmpty}
+%   Uses the |etoolbox|'s |\ifdefempty| command to test if a command expands
+%   to an empty string and is followed by the given conditional code.
+%
+%   \begin{Usage}
+%       \item |IfCommandEmpty|\marg{Command}\marg{True}\marg{False}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \DeclareDocumentCommand \IfCommandEmpty { m +m +m }{
     \tl_if_blank:oTF{##1}{
         ##2
@@ -621,6 +1464,36 @@
         ##3
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%
+%
+%
+%^^A ==================================================================== %
+%^^A                      Command Creator System                          %
+%^^A ==================================================================== %
+%
+%   \subsubsection{Command Creator System}
+%
+%   \begin{macro}{\MakeCommand,\ReMakeCommand}
+%   This command pair uses the |etoolbox|'s |\csdef| to define a commands
+%   via a supplied string \marg{Command Name} and a set of \marg{Code}.
+%   If the requested command is not defined, |\MakeCommand| will create it;
+%   however, if the requested command is already defined, |\MakeCommand| will
+%   throw a warning and not make the command.
+%   If the requested command is defined, |\ReMakeCommand| will redefine it;
+%   however, if the requested command is not defined, |\ReMakeCommand| will
+%   throw a warning and not make the command.
+%
+%   \begin{Usage}
+%       \item |\MakeCommand|\marg{Command Name}\marg{Code}
+%       \item |\ReMakeCommand|\marg{Command Name}\marg{Code}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \DeclareDocumentCommand \MakeCommand { m +m } {
     \cs_set:cpn {##1} {##2}
 }
@@ -631,15 +1504,75 @@
         \UWMad@ClassWarning{Command~`##1'~is~undefined.}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\MakeGlobalCommand}
+%   Similar to |\MakeCommand| except the creation is made regardless of the
+%   requested command's definition and the creation is global.
+%
+%   \begin{Usage}
+%       \item |\MakeGlobalCommand|\marg{Command Name}\marg{Code}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \DeclareDocumentCommand \MakeGlobalCommand { m +m } {
     \cs_gset:cpn {##1} {##2}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\MakeExpandedCommand}
+%   This command creates a command in the spirit of |\MakeCommand|
+%   but with several differences.  First, the command simply creates
+%   the requested command without regard to its existence.  Secondly,
+%   the \marg{Code} supplied is fully expanded without protection.
+%   Lastly, the definitions are global.
+%
+%   \begin{Usage}
+%       \item |\MakeExpandedCommand|\marg{Command Name}\marg{Code}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \DeclareDocumentCommand \MakeExpandedCommand { m +m } {
     \cs_get:cpx {##1} {##2}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\MakeCommandUndefined}
+%   Globally undefines the command specified by \marg{Command Name}.
+%
+%   \begin{Usage}
+%       \item |\MakeCommandUndefined|\marg{Command Name}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \DeclareDocumentCommand \MakeCommandUndefined { m } {
     \cs_undefine:c {##1}
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\CopyCommand}
+%   Copies the defintion of the command named \marg{Command Name 1} to
+%   a new command named \marg{Command Name 2}.  If \marg{Command Name 2}
+%   already has a definition, |\CopyCommand| will throw a warning
+%   \emph{but} still make the copy.
+%
+%   \begin{Usage}
+%       \item |\CopyCommand|\marg{Command Name 1}\marg{Command Name 2}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \DeclareDocumentCommand \CopyCommand { m m } {
     \IfCommandExists{##1} {
         \IfCommandExists{##2} {
@@ -651,7 +1584,38 @@
         \UWMad@ClassWarning{Command~`##1'~is~undefined.}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%
+%
+%
+%   \subsubsection{Core System Aliases}
+%
+%
+%
+%
+%
+%
+%   This line closes the |\LoadLaTeXeAbstractions| command.
+%    \begin{macrocode}
 }
+%    \end{macrocode}
+%
+%
+%
+%
+%
+%
+%   \iffalse
+%</Code>
+%   \fi
+%   \iffalse
+%<*Code>
+%   \fi
+%    \begin{macrocode}
 \tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
     \geometry{
         includemp      = true,
@@ -666,7 +1630,9 @@
         includehead = true,
         paper       = letterpaper
     }
+%
     \creflabelformat{equation}{#2#1#3}
+%
     \captionsetup[table]{
         format=hang,
         labelsep=colon,
@@ -678,6 +1644,7 @@
         position=above,
         skip=0.25em
     }
+%
     \captionsetup[figure]{
         format=hang,
         labelsep=colon,
@@ -690,7 +1657,10 @@
         skip=0.5em
     }
 }
+%
 \definecolor{UWMadGreen}{rgb}{0,0.7,0}
+%
+% Default hyperref behavior that is *not* PDF Metadata
 \bool_if:NTF \g__UWMad_Hyperlinks_bool {
     \hypersetup{
         colorlinks         = true       ,
@@ -708,12 +1678,30 @@
         unicode
     }
 } {}
+%
+%
 \pagestyle{myheadings}
 \pagenumbering{roman}
 \doublespacing
 \setlength{\parindent}{ 0pt}
 \setlength{\parskip}  {10pt}
 \setlength{\headsep}  {15pt}
+%    \end{macrocode}
+%
+%
+%
+%   \iffalse
+%</Code>
+%   \fi
+%\iffalse
+%<*Code>
+%\fi
+%
+%    \begin{macrocode}
+%
+%^^A  =========================================================================== %
+%^^A                     Redefinition of Chapter Commands                         %
+%^^A  =========================================================================== %
 
 \let\DefaultChapter\@chapter
 
@@ -728,6 +1716,7 @@
     \fi
     \DefaultChapter
 }
+
 
 \tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
 
@@ -764,6 +1753,12 @@
 }{}
 
 
+
+%^^A  =========================================================================== %
+%^^A                           New Appendix Command                               %
+%^^A  =========================================================================== %
+
+% Appendix counter
 \UWMad_Counter_DefineGlobal:nn{Appendix}{0}
 
 \newcommand{\AppendixInitializer}{
@@ -785,7 +1780,15 @@
     \chapter
 }
 
+
+
+
+
+%^^A =========================================================================== %
+%^^A               Front Matter Environment/Command Definitions                   %
+%^^A  =========================================================================== %
 \UWMad_Counter_DefineGlobal:nn{FrontMatter}{0}
+
 
 \cs_new:Nn \__UWMad_Sectioning_FrontMatterRegister:nn {
     \addcontentsline{toc}{#1}{#2}
@@ -817,6 +1820,13 @@
 }
 
 
+
+
+
+%^^A  =========================================================================== %
+%^^A                  List of Contents, Tables, and Figures                       %
+%^^A  =========================================================================== %
+
 \cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
 \cs_gset_eq:NN \ListOfTablesDefault    \listoftables
 \cs_gset_eq:NN \ListOfFiguresDefault   \listoffigures
@@ -826,6 +1836,7 @@
 \cs_undefine:N \listoffigures
 \cs_undefine:N \contentsname
 
+% Register the Table of Contents to the Table of Contents
 \tl_new:N   \g__UWMad_Sectioning_TOCName_tl
 \tl_gset:Nn \g__UWMad_Sectioning_TOCName_tl {Table~of~Contents}
 
@@ -849,6 +1860,9 @@
         \clearpage
     \group_end:
 }
+%
+%
+% Register the List of Tables to the Table of Contents
 \DeclareDocumentCommand \listoftables { } {
     \group_begin:
         \cs_set_eq:NN \listtablename \g__UWMad_Sectioning_LOTName_tl
@@ -860,6 +1874,9 @@
         \clearpage
     \group_end:
 }
+%
+%
+% Register the List of Figures to the Table of Contents
 \DeclareDocumentCommand \listoffigures { } {
     \group_begin:
         \cs_set_eq:NN \listfigurename \g__UWMad_Sectioning_LOFName_tl
@@ -875,6 +1892,16 @@
 \cs_set_eq:NN \TableOfContents \tableofcontents
 \cs_set_eq:NN \ListOfTables    \listoftables
 \cs_set_eq:NN \ListOfFigures   \listoffigures
+%
+%
+%
+%
+%
+%
+%^^A  =========================================================================== %
+%^^A                  Table of Contents 'Headers' (i.e., Parts)                   %
+%^^A  =========================================================================== %
+%
 \UWMad_Hash_Define:n {SectionToLevel}
 \UWMad_Hash_Set:nnn  {SectionToLevel}{part}          {-1}
 \UWMad_Hash_Set:nnn  {SectionToLevel}{chapter}       {0}
@@ -883,6 +1910,7 @@
 \UWMad_Hash_Set:nnn  {SectionToLevel}{subsubsection} {3}
 \UWMad_Hash_Set:nnn  {SectionToLevel}{paragraph}     {4}
 \UWMad_Hash_Set:nnn  {SectionToLevel}{subparagraph}  {5}
+%
 \UWMad_Hash_Define:n {LevelToSection}
 \UWMad_Hash_Set:nnn  {LevelToSection}{-1}{part}
 \UWMad_Hash_Set:nnn  {LevelToSection}{0} {chapter}
@@ -891,6 +1919,7 @@
 \UWMad_Hash_Set:nnn  {LevelToSection}{3} {subsubsection}
 \UWMad_Hash_Set:nnn  {LevelToSection}{4} {paragraph}
 \UWMad_Hash_Set:nnn  {LevelToSection}{5} {subparagraph}
+%
 \UWMad_Hash_Define:n {NextSectioningCommand}
 \UWMad_Hash_Set:nnn
     {NextSectioningCommand}{part}          {chapter}
@@ -904,6 +1933,7 @@
     {NextSectioningCommand}{subsubsection} {paragraph}
 \UWMad_Hash_Set:nnn
     {NextSectioningCommand}{paragraph}     {subparagraph}
+%
 \UWMad_Hash_Define:n {PreviousSectioningCommand}
 \UWMad_Hash_Set:nnn
     {PreviousSectioningCommand}{part}          {chapter}
@@ -924,6 +1954,11 @@
 \newcommand{\SectionToLevel}[1]{% #1 = section
     \HashExpandableGet{SectionToLevel}{#1}}
 
+
+
+%^^A  =========================================================================== %
+%^^A       Paragraphs and Subparagraphs are Layed out like subsubsections         %
+%^^A  =========================================================================== %
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
                                     {1.5ex \@plus .2ex}%
@@ -932,6 +1967,16 @@
                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
                                     {1.5ex \@plus .2ex}%
                                     {\normalfont\normalsize\bfseries}}
+%    \end{macrocode}
+%   \iffalse
+%</Code>
+%   \fi
+%   \iffalse
+%<*Code>
+%   \fi
+%
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Math_NthRoot:nn {
     \root #1 \of {#2\:\!}
 }
@@ -948,8 +1993,15 @@
                {\SquareRootCore{#1}{#2}}
                {\SquareRootCore{#1}{#2}}
 }
+%
+%
+%
+% ---------------------------------------------------------------------------- %
+%                              Derivative Commands                             %
+% ---------------------------------------------------------------------------- %
 \newcommand{\bigdiffn}[4]{\dfrac{#1{}^{#4}}{#1 #3{}^{#4}} \left[ #2 \right]}
 \newcommand{\gendiffn}[4]{\dfrac{#1{}^{#4} #2}{#1 #3{}^{#4}}}
+%
 \tl_new:N \g__UWMad_Math_DerivativeToken_tl
 \cs_new:Nn \__UWMad_Math_DerivativeToken:n {
     \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {
@@ -970,9 +2022,11 @@
         }
     }
 }
+%
 \DeclareDocumentCommand \diff { O{} +m +m} {
     \gendiffn{\__UWMad_Math_DerivativeToken:n {#1}}{#2}{#3}{}
 }
+%
 \newcommand{\diffn}[4][d]{
     \ifthenelse{\equal{p}{#1}}{
         \gendiffn{\partial}{#2}{#3}{#4}
@@ -988,6 +2042,7 @@
         }
     }
 }
+%
 \newcommand{\bigdiff}   [2] {\diff[b]{#1}{#2}}
 \newcommand{\pdiff}     [2] {\diff[p]{#1}{#2}}
 \newcommand{\bigpdiff}  [2] {\diff[bp]{#1}{#2}}
@@ -995,6 +2050,15 @@
 \newcommand{\subs}      [2][]{\ensuremath{{}_{#1\text{\scriptsize #2}}}}
 \newcommand{\sups}      [2][]{\ensuremath{{}^{#1\text{\scriptsize #2}}}}
 \newcommand{\oneo}      [1]  {\ensuremath{\frac{1}{#1}}}
+%
+%
+%
+%
+%
+%
+% ===================================================================================== %
+%                   Make greek letters work in and out of MathMode                      %
+% ===================================================================================== %
 \iffalse
     \let\Oldalpha     \alpha     \renewcommand{\alpha}     {\ensuremath{\Oldalpha     }\xspace}
     \let\Oldbeta      \beta      \renewcommand{\beta}      {\ensuremath{\Oldbeta      }\xspace}
@@ -1036,4 +2100,13 @@
     \let\OldPi        \Pi        \renewcommand{\Pi}        {\ensuremath{\OldPi        }\xspace}
     \let\OldPhi       \Phi       \renewcommand{\Phi}       {\ensuremath{\OldPhi       }\xspace}
     \fi
+%    \end{macrocode}
+%   \iffalse
+%</Code>
+%   \fi
+%    \begin{macrocode}
 \ExplSyntaxOff
+%    \end{macrocode}
+%
+%   \Finale
+\endinput

@@ -1,0 +1,47 @@
+% =============================================================================================== %
+%                                      Title Page                                                 %
+% =============================================================================================== %
+% That phrase that occurs on every title page design the class author has seen
+\DeclareRobustCommand{\ThatOddPhrase}{\setstretch{1.1}
+    \ifUWMad@IsADissertation
+        A dissertation submitted in partial fulfillment of the requirements for the degree of
+    \else
+        A preliminary report submitted in partial fulfillment of the requirements for the degree of
+    \fi
+}
+
+\DeclareRobustCommand{\MakeTitlePageTitleBlock}{
+    \vspace{0.3in}
+    \LARGE
+    \textsc{\TheTitle}~\\[0.2in]
+    by~\\[0.2in]
+    \Large
+    \TheAuthor
+}
+
+\DeclareRobustCommand{\MakeTitlePageDegreeBlock}{
+    \Large
+    \ThatOddPhrase~\\[0.2in]
+    \TheDegree \\[0.1in]
+    \TheSpecialty
+}
+
+\DeclareRobustCommand{\MakeTitlePageUniversityBlock}{
+    \Large
+    at \\[0.4in]
+    \textsc{\TheUniversity} \\[0.1in]
+    \the\year
+}
+
+
+\DeclareRobustCommand{\MakeTitlePage}{
+    \thispagestyle{empty}
+    \begin{center}
+        \MakeTitlePageTitleBlock
+        \null\vfill
+        \MakeTitlePageDegreeBlock
+        \null\vfill
+        \MakeTitlePageUniversityBlock
+    \end{center}
+    \clearpage
+}

@@ -1,7 +1,7 @@
 % =============================================================================================== %
 %                                  PDFDataAndMetadata Module                                      %
 % =============================================================================================== %
-
+\ExplSyntaxOn
 % ------------------------------------------------------------------------ %
 %                    Metadata Writing/Importing Routines                   %
 % ------------------------------------------------------------------------ %
@@ -18,23 +18,33 @@
 
 % Command used to append the data to the CSV list.  It is called in the 
 % metadata commands below
+\UWMad_CSV_Define:n {MetaDataList}
 \newcommand{\PushPDFMetaDataToList}[2]{
-    \CSVAppend{MetaDataList}{#1={#2}}        % True:    Append the data
+    \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}        % True:    Append the data
 }
 
 
 % If the auxiliary file exists, import it.
-\InputIfFileExists{UWMad.PDFMetaData.aux}{}{}
+\file_if_exist:nTF{UWMad.PDFMetaData.aux} {
+    \file_input:n {UWMad.PDFMetaData.aux}
+}{
+}
 
 % End-of-Document Commands
-\AtEndDocument{%
-    \IfCSVExists{MetaDataList}%
-        {\newwrite\HyperSetupWrite%
-         \immediate\openout\HyperSetupWrite=UWMad.PDFMetaData.aux%
-         \immediate\write\HyperSetupWrite{\noexpand\hypersetup{\CSVGet{MetaDataList}}}%
-         \immediate\closeout\HyperSetupWrite}%
-        {}%
-}%
+\AtEndDocument{
+    \UWMad_CSV_IfNotEmpty:nTF {MetaDataList} {
+        \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
+        \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
+            UWMad.PDFMetaData.aux
+        }
+        \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
+            \noexpand\ExplSyntaxOff
+                \noexpand\hypersetup{\UWMad_CSV_Get:n{MetaDataList}}
+            \noexpand\ExplSyntaxOn
+        }
+        \iow_close:N \g__UWMad_PDFMetaData_HyperSetup_io 
+    }
+}
 
 
 
@@ -73,3 +83,4 @@
 
 
 
+\ExplSyntaxOff

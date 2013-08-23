@@ -1,0 +1,64 @@
+%%
+%%  This is "make" file for the UWMadThesis.dtx.
+%%  The make file combines all of the UWMadThesis Module files into 
+%%  one monolithic *.dtx and *.cls.
+%% 
+%% -----------------------------------------------------------------------
+%% UWMadThesis --- A thesis class for the University of Wisconsin-Madison
+%% E-mail: UWMadThesis@hask.in
+%% Released under the LaTeX Project Public License v1.3c or later
+%% See http://www.latex-project.org/lppl.txt
+%% -----------------------------------------------------------------------
+%% 
+
+% Load docstrip, suppress some logging, and overwrite at own peril.
+\input docstrip.tex
+\keepsilent
+\askforoverwritefalse
+
+
+% Preabmble for all generated files
+\nopreamble
+\nopostamble
+
+%   Generate the Main file for the Documentation
+%   This file contains the ltxdoc class and all implementation
+%   code.  The User guide is \input-ed into this file with the
+%   actual User Guide file created below.
+\generate{
+    \file{UWMadThesis.Documentation.dtx}{
+        \from{UWMadThesis.Documentation.Start.dtx}   {Documentation}
+        \from{UWMadThesis.Module.FrontMatter.dtx}    {Documentation}
+        \from{UWMadThesis.Module.Programming.dtx}    {Documentation}
+        \from{UWMadThesis.Module.LayoutAndStyle.dtx} {Documentation}
+        \from{UWMadThesis.Module.Sectioning.dtx}     {Documentation}
+        \from{UWMadThesis.Module.Math.dtx}          {Documentation}
+        \from{UWMadThesis.Module.Finalize.dtx}       {Documentation}
+    }
+}
+
+
+% This call generates the User Guide file.
+\generate{
+    \file{UWMadThesis.Documentation.UserGuide.dtx}{
+        \from{UWMadThesis.Module.FrontMatter.dtx}    {UserGuide}
+        \from{UWMadThesis.Module.Programming.dtx}    {UserGuide}
+        \from{UWMadThesis.Module.LayoutAndStyle.dtx} {UserGuide}
+        \from{UWMadThesis.Module.Sectioning.dtx}     {UserGuide}
+        \from{UWMadThesis.Module.Math.dtx}           {UserGuide}
+    }
+}
+
+%   This pulls all of the actual code from Guide.Main into a cls
+%   file the Guide.Main with load via \ProvidesFile{}.
+\generate{
+    \file{UWMadThesis.cls}{
+        \from{UWMadThesis.Documentation.dtx}{Code}
+    }
+}
+
+
+\endbatchfile
+
+
+

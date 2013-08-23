@@ -1,161 +1,96 @@
-% =============================================================================================== %
-%                        WisconsinThesis Class: Sectioning Module                                 %
-% =============================================================================================== %
-\ExplSyntaxOn
-
-% =========================================================================== %
-%                        Redefined Chapter Head Command                       %
-% =========================================================================== %
+%<*UserGuide>
 %
-%   LaTeX's standard Report Class is used as a base; however, the chapter heading
-%   customization leaves something to be desired.  So, in this section,
-%   \@makechapterhead is redefined with lengths and styles available to the 
-%   users to redfine at their own risk.
-%
-%   Terms for this section:
-%       Chapter ID:     Text that identifies what follows is a numbered chapter (e.g. "Chapter 1")
-%       Chapter Title:  Text supplied by the user that names the numbered chapter (e.g., "Differential Calculus")
-%       Chapter Title:  Text supplied by the user that names the numbered chapter (e.g., "Differential Calculus")
-%       Chapter Head:   A styled combination of a Chapter ID and a Chapter Title at the beginning of a chapter.
-%
-%   Lengths:
-%       \ChapterHeadVSpaceStart:    Vertical space between top of set-able area (i.e., a page) to the start of Chapter Head.
-%       \ChapterHeadIDTitleSkip:    Vertical space between the Chapter ID and Chapter Title
-%       \ChapterHeadVSpaceEnd:      Vertical space between end of chapter head and the chapter text.
-%       \ChapterHeadParIndent:      Horizontal indentation of chapter ID and chapter Title
+%</UserGuide>
 %
 %
-
-% Lengths for spacing the chapter head as desired.
-\DefineNewLength{\ChapterHeadVSpaceStart}  {  0pt}  % Set: Distance between top of text body and top of Chapter Head
-\DefineNewLength{\ChapterHeadVSpaceEnd}    {  5em}  % Set: Distance between bottom of Chapter Head and top of chapter content
-\DefineNewLength{\ChapterHeadParIndent}    {  0pt}  % Set: Indentation of Chapter Head
-\DefineNewLength{\ChapterHeadIDTitleSkip}  {  0pt}  % Set: Distance between Chapter ID and Chapter Title
-
-
-% Styles for the chapter head
-\newcommand{\ChapterHeadJustification}  {\raggedright}
-\newcommand{\ChapterHeadFont}           {\normalfont}
-\newcommand{\ChapterHeadID}             {\chaptername\space\thechapter}
-\newcommand{\ChapterHeadStyleID}   [1]  {\LARGE{\textbf{#1}}}
-\newcommand{\ChapterHeadStyleTitle}[1]  {\Huge{\textbf{#1}}}
-
+%
+%
+%
+%
+%<*Documentation>
+%<<Verbatim
 %\iffalse
-
-% Replacement command for \@makechapterhead
-\DeclareRobustCommand{\ChapterHead@MakeNormal}[1]{%
-    {%
-        \singlespacing
-        \setlength{\topskip}{\ChapterHeadVSpaceStart}%   %  Set:  Vertical whitespace between the top of the page and the Chapter Head
-        \parindent \ChapterHeadParIndent%                %  Set:  Chapter Head indentation from the left margin
-                   \ChapterHeadJustification%            %  Set:  Chapter Head justification
-                   \ChapterHeadFont%                     %  Set:  Chapter Head font
-        \ifnum \c@secnumdepth > \m@ne%                   %  Test: Is the SectionDepth counter is above -1
-            \ChapterHeadStyleID{\ChapterHeadID}%         %  True: Set: the Chapter ID with the above style
-            \par\nobreak%                                %        Set: End the paragraph and forbid breaking before the next paragraph
-            \vskip \ChapterHeadIDTitleSkip%              %        Set: Adds vertical space between the Chapter ID and the Chapter Title
-        \fi%                                             %  
-        \interlinepenalty\@M%                            %  Define: A penalty declaration of 10,000 for page breaking before the Chapter Title
-        \ChapterHeadStyleTitle{#1}%                      %  Set:    Chapter Title with the above style
-        \par\nobreak%                                    %  Set:    End the paragraph and forbid breaking before the next paragraph
-        \addtolength{\ChapterHeadVSpaceEnd}{-\parskip}%  %  Set:    Temporary correction to the spacing to account for a large \parskip
-        \vskip \ChapterHeadVSpaceEnd%                    %  Set:    Add vertical space between the Chapter Title and the following set text
-    }%
-}
-
-
-% Replacement command for \@makeschapterhead (the starred chapter chapter head)
-\DeclareRobustCommand{\ChapterHead@MakeStarred}[1]{%
-    {   \setlength{\topskip}{\ChapterHeadVSpaceStart}%   %  Adds vertical whitespace between the top of the page and the Chapter Head
-        \parindent \ChapterHeadParIndent%                %  Defines the Chapter Head indentation from the left margin
-                   \ChapterHeadJustification%            %  Defines the Chapter Head justification
-                   \ChapterHeadFont%                     %  Defines the Chapter Head font
-        \interlinepenalty\@M%                            %  A penalty declaration of 10,000 for page breaking the Chapter ID and Chapter Title
-        \ChapterHeadStyleTitle{#1}%                      %  Sets the Chapter Title with the above style
-        \par\nobreak%                                    %  Ends the paragraph (\par) and forbids putting a break before the next paragraph (\nobreak)
-        \addtolength{\ChapterHeadVSpaceEnd}{-\parskip}%  %  A local temporary correction to the spacing to account for a large \parskip
-        \vskip \ChapterHeadVSpaceEnd%                    %  Adds vertical space (technically, glue) between the Chapter Title and the following set text
-    }%
-}
-
-
-% Overwrite the default commands
-\let\@makechapterhead\ChapterHead@MakeNormal
-\let\@makeschapterhead\ChapterHead@MakeStarred
-
-
-
-% \fi
-
-
-
-% =========================================================================== %
-%                    Redefinition of Chapter Commands                         %
-% =========================================================================== %
+%<*Code>
+%\fi
 %
-%   The \chapter command has also been redefined to use the \thispagestyle{myheadings}
-%   command to be in compliance with the page number thesis guidelines of UW-Madison.
+%    \begin{macrocode}
 %
-%   The \@chapter command (which is called for unstarred \chapter{} uses) is also redfined
-%   such that upon the first unstarred use of \chapter, the page numbering is switched to arabic.
-%
-%   A fair amount of the macro code is taken directly from the original \defs of \chapter 
-%   and \@chapter in report.cls ("2007/10/19 v1.4h Standard LaTeX document class") with additional 
-%   comments.
-%
+%^^A  =========================================================================== %
+%^^A                     Redefinition of Chapter Commands                         %
+%^^A  =========================================================================== %
 
 \let\DefaultChapter\@chapter
 
-\tl_new:N  \g__UWMad_Sectioning_ChapterPageStyle_tl
-\tl_set:Nn \g__UWMad_Sectioning_ChapterPageStyle_tl
+\tl_new:N  \g_UWMad_Sectioning_ChapterPageStyle_tl
+\tl_set:Nn \g_UWMad_Sectioning_ChapterPageStyle_tl
     {\thispagestyle{myheadings}}
 
-\def\@chapter{%
-    %\thispagestyle{myheadings}%
-    \tl_use:N \g__UWMad_Sectioning_ChapterPageStyle_tl
-    \ifnum \value{chapter}=0%
+\def\@chapter{
+    \tl_use:N \g_UWMad_Sectioning_ChapterPageStyle_tl
+    \ifnum \value{chapter}=0
         \pagenumbering{arabic}
-        \showthe\count0
-    \fi%
-    \DefaultChapter}%
-
-
-
-
-
-
-% =========================================================================== %
-%                          New Appendix Command                               %
-% =========================================================================== %
-
-% Appendix counter
-\DefineNewCounter{appendix}{0}  %  New appendix counter used in \Chapter@Appendix
-
-%
-%   This command initializes the \appendix commands (this was originally the 
-%   \appendix command, but that will be replaced as a \chapter alias).
-%
-%   The following taken directly from the \appendix definition in report.cls 
-%   ("2007/10/19 v1.4h Standard LaTeX document class") and nothing in the expansion
-%   has changed.
-%
-\newcommand{\AppendixInitializer}{%
-    \par%
-    \setcounter{section}{0}%
-    \def\@chapapp{\appendixname}%
-    \def\thechapter{\Alph{appendix}}%
+    \fi
+    \DefaultChapter
 }
 
 
-%
-%   This command redefines the \appendix to act as a chapter alias.
-%
+\tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
+
+\show\thesubsection
+
+    \UWMad_Counter_DefineGlobal:nn{Chapter}{0}
+
+    \cs_new:Nn \UWMad_Sectioning_PrintModule:nn {
+        \clearpage
+        \group_begin:
+            \UWMad_Counter_Step:n {Chapter}
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{\LARGE{Module}~
+                \int_to_arabic:n{\UWMad_Counter_Value:n{Chapter}}}
+            \vskip 0.5em
+            \textbf{\Huge{#2}}
+            \vskip 1em
+            \addcontentsline{toc}{chapter}{#1}
+            \par
+        \group_end:
+    }
+
+    \DeclareDocumentCommand \Module { o m } {
+        \IfNoValueTF {#1} {
+            \UWMad_Sectioning_PrintModule:nn{#2}{#2}
+        } {
+            \UWMad_Sectioning_PrintModule:nn{#1}{#2}
+        }
+    }
+
+}{}
+
+
+
+%^^A  =========================================================================== %
+%^^A                           New Appendix Command                               %
+%^^A  =========================================================================== %
+
+% Appendix counter
+\UWMad_Counter_DefineGlobal:nn{Appendix}{0}
+
+\newcommand{\AppendixInitializer}{
+    \par
+    \setcounter{section}{0}
+    \def\@chapapp{\appendixname}
+    \def\thechapter{
+        \@Alph{
+            \UWMad_Counter_Value:n{Appendix}
+        }
+    }
+}
+
 \renewcommand{\appendix}{
-    \ifnum \value{appendix}=0
+    \UWMad_Counter_Compare:nnnTF{Appendix}{=}{0} {
         \AppendixInitializer
-    \fi
-    
-    \stepcounter{appendix}
+    }{}
+    \UWMad_Counter_Step:n{Appendix}
     \chapter
 }
 
@@ -163,19 +98,19 @@
 
 
 
-% =========================================================================== %
-%              Front Matter Environment/Command Definitions                   %
-% =========================================================================== %
-\DefineNewGlobalCounter{FrontMatter}{0}
+%^^A =========================================================================== %
+%^^A               Front Matter Environment/Command Definitions                   %
+%^^A  =========================================================================== %
+\UWMad_Counter_DefineGlobal:nn{FrontMatter}{0}
 
 
 \cs_new:Nn \__UWMad_Sectioning_FrontMatterRegister:nn {
     \addcontentsline{toc}{#1}{#2}
-    \StepCounter{FrontMatter}
+    \UWMad_Counter_Step:n{FrontMatter}
 }
 
-
-\MakeCommandUndefined{abstract}
+\cs_undefine:N \abstract
+\cs_undefine:N \endabstract
 
 \DeclareDocumentCommand \dedications     { O{Dedications}    } {
     \chapter*{#1}
@@ -202,19 +137,18 @@
 
 
 
-% =========================================================================== %
-%                 List of Contents, Tables, and Figures                       %
-% =========================================================================== %
+%^^A  =========================================================================== %
+%^^A                  List of Contents, Tables, and Figures                       %
+%^^A  =========================================================================== %
 
 \cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
 \cs_gset_eq:NN \ListOfTablesDefault    \listoftables
 \cs_gset_eq:NN \ListOfFiguresDefault   \listoffigures
 
-\MakeCommandUndefined{tableofcontents}
-\MakeCommandUndefined{listoftables}
-\MakeCommandUndefined{listoffigures}
-
-\ReMakeCommand{contentsname}{}
+\cs_undefine:N \tableofcontents
+\cs_undefine:N \listoftables
+\cs_undefine:N \listoffigures
+\cs_undefine:N \contentsname
 
 % Register the Table of Contents to the Table of Contents
 \tl_new:N   \g__UWMad_Sectioning_TOCName_tl
@@ -278,43 +212,55 @@
 %
 %
 %
-% =========================================================================== %
-%                 Table of Contents 'Headers' (i.e., Parts)                   %
-% =========================================================================== %
+%^^A  =========================================================================== %
+%^^A                  Table of Contents 'Headers' (i.e., Parts)                   %
+%^^A  =========================================================================== %
 %
-\HashMake{SectionToLevel}
-\HashSet {SectionToLevel}{part}          {-1}
-\HashSet {SectionToLevel}{chapter}       {0}
-\HashSet {SectionToLevel}{section}       {1}
-\HashSet {SectionToLevel}{subsection}    {2}
-\HashSet {SectionToLevel}{subsubsection} {3}
-\HashSet {SectionToLevel}{paragraph}     {4}
-\HashSet {SectionToLevel}{subparagraph}  {5}
+\UWMad_Hash_Define:n {SectionToLevel}
+\UWMad_Hash_Set:nnn  {SectionToLevel}{part}          {-1}
+\UWMad_Hash_Set:nnn  {SectionToLevel}{chapter}       {0}
+\UWMad_Hash_Set:nnn  {SectionToLevel}{section}       {1}
+\UWMad_Hash_Set:nnn  {SectionToLevel}{subsection}    {2}
+\UWMad_Hash_Set:nnn  {SectionToLevel}{subsubsection} {3}
+\UWMad_Hash_Set:nnn  {SectionToLevel}{paragraph}     {4}
+\UWMad_Hash_Set:nnn  {SectionToLevel}{subparagraph}  {5}
 %
-\HashMake{LevelToSection}
-\HashSet {LevelToSection}{-1}{part}
-\HashSet {LevelToSection}{0} {chapter}
-\HashSet {LevelToSection}{1} {section}
-\HashSet {LevelToSection}{2} {subsection}
-\HashSet {LevelToSection}{3} {subsubsection}
-\HashSet {LevelToSection}{4} {paragraph}
-\HashSet {LevelToSection}{5} {subparagraph}
+\UWMad_Hash_Define:n {LevelToSection}
+\UWMad_Hash_Set:nnn  {LevelToSection}{-1}{part}
+\UWMad_Hash_Set:nnn  {LevelToSection}{0} {chapter}
+\UWMad_Hash_Set:nnn  {LevelToSection}{1} {section}
+\UWMad_Hash_Set:nnn  {LevelToSection}{2} {subsection}
+\UWMad_Hash_Set:nnn  {LevelToSection}{3} {subsubsection}
+\UWMad_Hash_Set:nnn  {LevelToSection}{4} {paragraph}
+\UWMad_Hash_Set:nnn  {LevelToSection}{5} {subparagraph}
 %
-\HashMake{NextSectioningCommand}
-\HashSet {NextSectioningCommand}{part}          {chapter}
-\HashSet {NextSectioningCommand}{chapter}       {section}
-\HashSet {NextSectioningCommand}{section}       {subsection}
-\HashSet {NextSectioningCommand}{subsection}    {subsubsection}
-\HashSet {NextSectioningCommand}{subsubsection} {paragraph}
-\HashSet {NextSectioningCommand}{paragraph}     {subparagraph}
+\UWMad_Hash_Define:n {NextSectioningCommand}
+\UWMad_Hash_Set:nnn  
+    {NextSectioningCommand}{part}          {chapter}
+\UWMad_Hash_Set:nnn  
+    {NextSectioningCommand}{chapter}       {section}
+\UWMad_Hash_Set:nnn  
+    {NextSectioningCommand}{section}       {subsection}
+\UWMad_Hash_Set:nnn  
+    {NextSectioningCommand}{subsection}    {subsubsection}
+\UWMad_Hash_Set:nnn  
+    {NextSectioningCommand}{subsubsection} {paragraph}
+\UWMad_Hash_Set:nnn  
+    {NextSectioningCommand}{paragraph}     {subparagraph}
 %
-\HashMake{PreviousSectioningCommand}
-\HashSet {PreviousSectioningCommand}{part}          {chapter}
-\HashSet {PreviousSectioningCommand}{chapter}       {section}
-\HashSet {PreviousSectioningCommand}{section}       {subsection}
-\HashSet {PreviousSectioningCommand}{subsection}    {subsubsection}
-\HashSet {PreviousSectioningCommand}{subsubsection} {paragraph}
-\HashSet {PreviousSectioningCommand}{paragraph}     {subparagraph}
+\UWMad_Hash_Define:n {PreviousSectioningCommand}
+\UWMad_Hash_Set:nnn  
+    {PreviousSectioningCommand}{part}          {chapter}
+\UWMad_Hash_Set:nnn  
+    {PreviousSectioningCommand}{chapter}       {section}
+\UWMad_Hash_Set:nnn  
+    {PreviousSectioningCommand}{section}       {subsection}
+\UWMad_Hash_Set:nnn  
+    {PreviousSectioningCommand}{subsection}    {subsubsection}
+\UWMad_Hash_Set:nnn  
+    {PreviousSectioningCommand}{subsubsection} {paragraph}
+\UWMad_Hash_Set:nnn  
+    {PreviousSectioningCommand}{paragraph}     {subparagraph}
 
 \newcommand{\LevelToSection}[1]{% #1 = Counter for desired level
     \HashExpandableGet{LevelToSection}{#1}}
@@ -324,9 +270,9 @@
 
 
 
-% =========================================================================== %
-%      Paragraphs and Subparagraphs are Layed out like subsubsections         %
-% =========================================================================== %
+%^^A  =========================================================================== %
+%^^A       Paragraphs and Subparagraphs are Layed out like subsubsections         %
+%^^A  =========================================================================== %
 \renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
                                     {1.5ex \@plus .2ex}%
@@ -335,10 +281,9 @@
                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
                                     {1.5ex \@plus .2ex}%
                                     {\normalfont\normalsize\bfseries}}
-
-
-
-
-
-
-\ExplSyntaxOff
+%    \end{macrocode}
+%   \iffalse
+%</Code>
+%   \fi
+%Verbatim
+%</Documentation>

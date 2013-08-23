@@ -1,0 +1,119 @@
+%<*Documentation>
+%<<Verbatim
+%   \iffalse
+%<*PROTECT>
+%   \fi
+%   \iffalse
+\documentclass[l3doc,full]{UWMadThesis}
+%
+    \usepackage[english]{babel}
+    \ExplSyntaxOn
+    \DeclareDocumentCommand \LaTeXPL { } {
+        \LaTeX3PL
+    }
+    
+    \RenewDocumentCommand   \part { m } {
+        \stepcounter{part}
+        \cleardoublepage
+        \group_begin:
+            \newgeometry{marginparwidth = 0pt}
+            \vspace*{2in}
+            \begin{center}
+                \textbf{
+                    \huge{Part~\thepart}
+                    \vskip 0.30em
+                    \Huge{#1}
+                }
+            \end{center}
+            \thispagestyle{empty}
+            \clearpage
+        \group_end:
+        \clearpage
+        \restoregeometry
+    }
+    
+    \ExplSyntaxOff
+
+% Define some lengths for the documentation.
+    \setstretch{1.5}
+    \setlength{\parindent}{0pt}
+
+    % Play with macrocode env. formatting
+    \let\BeginMacroCode\macrocode
+    \let\EndMacroCode\endmacrocode
+
+    \renewcommand{\macrocode}{%
+            \vspace*{-0.80em}
+            \BeginMacroCode
+            \setlength{\parskip}{0em}
+            \setstretch{1.0}}
+    \renewcommand{\endmacrocode}{%
+            \EndMacroCode
+            \vspace*{0.5em}}
+
+    % Define the Usage environment
+    \newenvironment{Usage}
+        {   \vskip 0.6em
+            \textsl{Usage}:
+            \begin{list}
+                {}
+                {   \setstretch{1}
+                    \setlength{\topsep}{0em}
+                    \setlength{\itemsep}{0em}
+                    \setlength{\parsep}{0em}
+                    \setlength{\leftmargin}{1em}}}
+        {   \end{list}}
+
+    \begin{document}
+        \DocInput{\jobname.dtx}
+    \end{document}
+%
+%
+%   \fi
+%
+%
+% \CheckSum{0}
+%
+%   \CharacterTable
+%   {Upper-case \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%    Lower-case \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%    Digits     \0\1\2\3\4\5\6\7\8\9
+%    Exclamation   \!    Double quote \"     Hash (number) \#
+%    Dollar        \$    Percent      \%     Ampersand     \&
+%    Acute accent  \'    Left paren   \(     Right paren   \)
+%    Asterisk      \*    Plus         \+     Comma         \,
+%    Minus         \-    Point        \.     Solidus       \/
+%    Colon         \:    Semicolon    \;     Less than     \<
+%    Equals        \=    Greater than \>     Question mark \?
+%    Commercial at \@    Left bracket \[     Backslash     \\
+%    Right bracket \]    Circumflex   \^     Underscore    \_
+%    Grave accent  \`    Left brace   \{     Vertical bar  \|
+%    Right brace   \}    Tilde \~}
+%
+%
+%   \title{UWMadThesis Manual}
+%   \author{Troy C. Haskin}
+%
+%   \part{User Guide}
+%   \input{UWMadThesis.Documentation.UserGuide.dtx}
+%   \GetFileInfo{UWMadThesis.cls}
+%   \StopEventually{}
+%
+%
+%
+%
+%
+%
+%^^A ==================================================== !
+%^^A                                                      !
+%^^A                    BEGIN IMPLEMENTATION              !
+%^^A                                                      !
+%^^A ==================================================== !
+%
+%
+%
+%   \iffalse
+%</PROTECT>
+%   \fi
+%Verbatim
+%</Documentation>

@@ -1,51 +1,70 @@
-% =============================================================================================== %
-%                                     Math Module                                                 %
-% =============================================================================================== %
-
-% ---------------------------------------------------------------------------- %
-%                                Square Root Tail                              %
-% ---------------------------------------------------------------------------- %
-\DeclareRobustCommand{\NthRootInTeX}[2]{\root #1 \of {#2\:\!}}
-
-\DeclareRobustCommand{\SquareRootCore}[2]{
+%<*UserGuide>
+%
+%</UserGuide>
+%
+%
+%
+%
+%
+%
+%<*Documentation>
+%<<Verbatim
+%   \iffalse
+%<*Code>
+%   \fi
+%
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_Math_NthRoot:nn {
+    \root #1 \of {#2\:\!}
+}
+\cs_new:Nn \UWMad_Math_SquareRootCore:nn {
     \setbox0=\hbox{\ensuremath{\NthRootInTeX{#1}{#2}}}
     \dimen0=\ht0
     \advance\dimen0-0.2\ht0
     \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}
     {\box0\lower0.47pt\box2}
 }
-
-\DeclareRobustCommand{\Sqrt}[2][]{
+\DeclareDocumentCommand \Sqrt { O{} m } {
     \mathchoice{\SquareRootCore{#1}{#2}}
                {\SquareRootCore{#1}{#2}}
                {\SquareRootCore{#1}{#2}}
                {\SquareRootCore{#1}{#2}}
 }
-
-
-
+%
+%
+%
 % ---------------------------------------------------------------------------- %
 %                              Derivative Commands                             %
 % ---------------------------------------------------------------------------- %
 \newcommand{\bigdiffn}[4]{\dfrac{#1{}^{#4}}{#1 #3{}^{#4}} \left[ #2 \right]}
 \newcommand{\gendiffn}[4]{\dfrac{#1{}^{#4} #2}{#1 #3{}^{#4}}}
-
-\newcommand{\diff}[3][d]{
-    \ifthenelse{\equal{p}{#1}}{
-        \gendiffn{\partial}{#2}{#3}{}
-    }{
-        \ifthenelse{\equal{b}{#1}}{
-            \bigdiffn{d}{#2}{#3}{}
-        }{
-            \ifthenelse{\equal{bp}{#1}}{
-                \bigdiffn{\partial}{#2}{#3}{}
-            }{
-                \gendiffn{d}{#2}{#3}{}
+%
+\tl_new:N \g__UWMad_Math_DerivativeToken_tl
+\cs_new:Nn \__UWMad_Math_DerivativeToken:n {
+    \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {
+        \tl_if_empty:nTF {#1} {d} {
+            \tl_if_in:nnTF {#1} {d} {
+                d
+            } {
+                \tl_if_in:nnTF {#1} {p} {
+                    \partial
+                } {
+                    \tl_if_in:nnTF {#1} {t} {
+                        D
+                    } {
+                        #1
+                    }
+                }
             }
         }
     }
 }
-
+%
+\DeclareDocumentCommand \diff { O{} +m +m} {
+    \gendiffn{\__UWMad_Math_DerivativeToken:n {#1}}{#2}{#3}{}
+}
+%
 \newcommand{\diffn}[4][d]{
     \ifthenelse{\equal{p}{#1}}{
         \gendiffn{\partial}{#2}{#3}{#4}
@@ -61,7 +80,7 @@
         }
     }
 }
-
+%
 \newcommand{\bigdiff}   [2] {\diff[b]{#1}{#2}}
 \newcommand{\pdiff}     [2] {\diff[p]{#1}{#2}}
 \newcommand{\bigpdiff}  [2] {\diff[bp]{#1}{#2}}
@@ -69,16 +88,16 @@
 \newcommand{\subs}      [2][]{\ensuremath{{}_{#1\text{\scriptsize #2}}}}
 \newcommand{\sups}      [2][]{\ensuremath{{}^{#1\text{\scriptsize #2}}}}
 \newcommand{\oneo}      [1]  {\ensuremath{\frac{1}{#1}}}
-
-
-
-
-
-
+%
+%
+%
+%
+%
+%
 % ===================================================================================== %
 %                   Make greek letters work in and out of MathMode                      %
 % ===================================================================================== %
-
+\iffalse
     \let\Oldalpha     \alpha     \renewcommand{\alpha}     {\ensuremath{\Oldalpha     }\xspace}
     \let\Oldbeta      \beta      \renewcommand{\beta}      {\ensuremath{\Oldbeta      }\xspace}
     \let\Oldgamma     \gamma     \renewcommand{\gamma}     {\ensuremath{\Oldgamma     }\xspace}
@@ -118,3 +137,10 @@
     \let\OldTheta     \Theta     \renewcommand{\Theta}     {\ensuremath{\OldTheta     }\xspace}
     \let\OldPi        \Pi        \renewcommand{\Pi}        {\ensuremath{\OldPi        }\xspace}
     \let\OldPhi       \Phi       \renewcommand{\Phi}       {\ensuremath{\OldPhi       }\xspace}
+    \fi
+%    \end{macrocode}
+%   \iffalse
+%</Code>
+%   \fi
+%Verbatim
+%</Documentation>

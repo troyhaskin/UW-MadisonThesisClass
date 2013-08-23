@@ -1,0 +1,215 @@
+%<*UserGuide>
+%
+%</UserGuide>
+%
+%
+%
+%
+%
+%
+%<*Documentation>
+%<<Verbatim
+%   \iffalse
+%<*Code>
+%   \fi
+%
+%
+%   \part{Implementation}
+%
+%
+%   \section{Front Matter}
+%
+%   Much of this class is written using the \LaTeX3 Programming Layer;
+%   this will be denoted as \LaTeXPL{}.  The \LaTeXPL{} is the first
+%   piece of a new system designed to succeed \LaTeXe{} in the future.
+%   However, while the programming layer is solid and remarkable,
+%   a lot of presentation work still needs to be done.  Therefore,
+%   this class uses \LaTeXe{} code where necessary and will hopefully
+%   be slowly pulled out as needed.  The good news is that since everything
+%   is more-or-less an abstraction of \TeX{}, it should work together well.
+%
+%   \section{expl3 Package and Identification}
+%   The |expl3| package loads the \LaTeXPL{} and is therefore required.
+%   If the package is not recent enough, the class aborts and requests
+%   the user update.
+%    \begin{macrocode}
+\RequirePackage{expl3}[2013/07/28]
+\@ifpackagelater{expl3}{2013/07/28} {} {%
+    \PackageError{UWMadThesis}{Version of l3kernel is too old}
+      {%
+        Please install an up to date version of l3kernel\MessageBreak
+        using your TeX package manager or from CTAN.
+      }%
+    \endinput
+}%
+%    \end{macrocode}
+%
+%   Assuming the the |expl3| package is recent enough, we invoke the 
+%   \LaTeXPL{}'s syntax for the duration of the class.
+%    \begin{macrocode}
+\ExplSyntaxOn
+%    \end{macrocode}
+%
+%   We now identify the \LaTeXe{} system needed and provide the class.
+%    \begin{macrocode}
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesClass{UWMadThesis}
+    [2013/08/21~v1.0~|~LaTeX2e+~Thesis~Class~for~UW-Madison]
+%    \end{macrocode}
+%
+%
+%   \section{Identification and Defaults}
+%
+%   Now, we define some identification variables (token lists).
+%    \begin{macrocode}
+\tl_const:Nn \c_UWMad_ClassName_tl        {UWMadThesis}
+\tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin-Madison}
+\tl_const:Nn \c_UWMad_UniversityShort_tl  {UW-Madison}
+\tl_const:Nn \c_UWMad_ClassVersion_tl     {1.0}
+\tl_const:Nn \c_UWMad_ClassVersionDate_tl {2012/01/09}
+%    \end{macrocode}
+%
+%   And since these identifications may be desired in typsetting more,
+%   where \LaTeXPL{}'s syntax will be turned off, we define some aliases.
+%    \begin{macrocode}
+\cs_new_eq:NN \UWMadClassName    \c_UWMad_ClassName_tl
+\cs_new_eq:NN \UWMadLong         \c_UWMad_UniversityLong_tl
+\cs_new_eq:NN \UWMadShort        \c_UWMad_UniversityShort_tl
+\cs_new_eq:NN \UWMadClassVersion \c_UWMad_ClassVersion_tl
+\cs_new_eq:NN \UWMadClassDate    \c_UWMad_ClassVersionDate_tl
+%    \end{macrocode}
+%
+%   In an effort to allow the thesis class to adapt to new underlying classes,
+%   the class that \UWMadClassName{} loads is decalred as a mutable
+%   token list.  The default is the \LaTeX{} base class |report|.
+%    \begin{macrocode}
+\tl_new:N   \g_UWMad_ParentClass_tl
+\tl_gset:Nn \g_UWMad_ParentClass_tl {report}
+%    \end{macrocode}
+%
+%
+%
+%   \section{Options}
+%
+%   First, a command is created to throw a warning if an option that
+%   violates \UWMadLong{}'s dissertation guidelines.
+%    \begin{macrocode}
+\msg_new:nnn{UWMadThesis}{Options/StyleViolation}{
+    Option~'#1'~violates~\c_UWMadUniversityShort_tl{}~
+    Dissertation~Guidelines;~consider~omission
+}
+\cs_new:Nn \__UWMad_FrontMatter_StyleWarning:n {
+    \msg_warning{UWMadThesis}{Options/StyleViolation}
+        {#1}
+   \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
+}
+%    \end{macrocode}
+%
+%   Now, declare booleans for the option processing.  All new booleans
+%   are false by default.
+%    \begin{macrocode}
+\bool_new:N       \g__UWMad_MathTweaks_bool
+\bool_gset_true:N \g__UWMad_MathTweaks_bool
+\bool_new:N       \g__UWMad_PDFMetaDataTweaks_bool
+\bool_gset_true:N \g__UWMad_PDFMetaDataTweaks_bool
+\bool_new:N       \g__UWMad_Hyperlinks_bool
+\bool_gset_true:N \g__UWMad_Hyperlinks_bool
+%    \end{macrocode}
+%
+%   Declare the options.
+%    \begin{macrocode}
+\DeclareOption{NoMath} {
+    \bool_gset_false:N \g__UWMad_MathTweaks_bool
+}
+\DeclareOption{NoPDFMeta} {
+    \bool_gset_false:N \g__UWMad_PDFMetaDataTweaks_bool
+}
+\DeclareOption{NoLinks} {
+    \bool_gset_false:N \g__UWMad_Hyperlinks_bool
+}
+%    \end{macrocode}
+%
+%   Catch the couple of default options that violate the requirements: 
+%   8.5 by 11 paper for single-sided printing.
+%    \begin{macrocode}
+\DeclareOption{a4paper} {
+    \__UWMad_FrontMatter_StyleWarning:N{\CurrentOption}
+}
+\DeclareOption{twoside} {
+    \__UWMad_FrontMatter_StyleWarning:N{\CurrentOption}
+}
+%    \end{macrocode}
+%
+%   These options change the default report class to the
+%   ones indicated.
+%    \begin{macrocode}
+\DeclareOption{article} {
+    \tl_gset:Nn \g_UWMad_ParentClass_tl {article}
+}
+\DeclareOption{l3doc} {
+    \tl_gset:Nn \g_UWMad_ParentClass_tl {l3doc}
+    \tl_const:cn {ver@thumbpdf.sty} {}
+}
+%    \end{macrocode}
+%
+%   Pass all remaining options to the base class.
+%    \begin{macrocode}
+\DeclareOption*{
+    \PassOptionsToClass
+        {\CurrentOption}{\g_UWMad_ParentClass_tl}
+}
+%    \end{macrocode}
+%
+%   Process the options with some defaults and load the base class.
+%    \begin{macrocode}
+\ExecuteOptions{oneside,12pt}
+\ProcessOptions\relax
+\LoadClass{\g_UWMad_ParentClass_tl}[1995/12/01]
+%    \end{macrocode}
+%
+%
+%
+%   \section{Package Loads}
+%
+%   First we load some packages that give nice features and are not
+%   hyperlink sensitive.
+%    \begin{macrocode}
+\RequirePackage{xparse}
+\RequirePackage{fixltx2e}
+\RequirePackage{array}
+\RequirePackage{graphicx}
+\RequirePackage{setspace}
+\RequirePackage{geometry}
+%    \end{macrocode}
+%
+%   If math was not negated by options, the AMS suite is loaded.
+%    \begin{macrocode}
+\bool_if:NTF \g__UWMad_MathTweaks_bool {
+    \RequirePackage{amsmath}
+    \RequirePackage{amssymb}
+    \RequirePackage{amsfonts}
+}{}
+%    \end{macrocode}
+%
+%   If links were not negated by the options, |bookmark| is load,
+%   which is a successor to |hyperref|.
+%    \begin{macrocode}
+\bool_if:NTF \g__UWMad_Hyperlinks_bool {
+    \RequirePackage{bookmark}
+}{}
+%    \end{macrocode}
+%
+%   And now we load some packages that give nice features and are
+%   hyperlink sensitive.
+%    \begin{macrocode}
+\RequirePackage[noabbrev]{cleveref}
+\RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
+\RequirePackage{subfig}
+\RequirePackage{caption}
+%    \end{macrocode}
+%
+%   \iffalse
+%</Code>
+%   \fi
+%Verbatim
+%</Documentation>
