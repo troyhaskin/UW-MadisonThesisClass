@@ -15,9 +15,7 @@
 %
 %
 %   \part{Implementation}
-%
-%
-%   \section{Front Matter}
+%   \UWModule{Front Matter}
 %
 %   Much of this class is written using the \LaTeX3 Programming Layer;
 %   this will be denoted as \LaTeXPL{}.  The \LaTeXPL{} is the first
@@ -28,7 +26,7 @@
 %   be slowly pulled out as needed.  The good news is that since everything
 %   is more-or-less an abstraction of \TeX{}, it should work together well.
 %
-%   \section{expl3 Package and Identification}
+%   \UWSubmodule{expl3 Package and Identification}
 %   The |expl3| package loads the \LaTeXPL{} and is therefore required.
 %   If the package is not recent enough, the class aborts and requests
 %   the user update.
@@ -58,7 +56,7 @@
 %    \end{macrocode}
 %
 %
-%   \section{Identification and Defaults}
+%   \UWSubmodule{Identification and Defaults}
 %
 %   Now, we define some identification variables (token lists).
 %    \begin{macrocode}
@@ -89,7 +87,7 @@
 %
 %
 %
-%   \section{Options}
+%   \UWSubmodule{Options}
 %
 %   First, a command is created to throw a warning if an option that
 %   violates \UWMadLong{}'s dissertation guidelines.
@@ -169,9 +167,8 @@
 %
 %
 %
-%   \section{Package Loads}
-%
-%   First we load some packages that give nice features and are not
+%   \UWSubmodule{Package Loads}
+%   Load some packages that give nice features and are not
 %   hyperlink sensitive.
 %    \begin{macrocode}
 \RequirePackage{xparse}
@@ -182,7 +179,7 @@
 \RequirePackage{geometry}
 %    \end{macrocode}
 %
-%   If math was not negated by options, the AMS suite is loaded.
+%   If math was not negated by options, the \AmS{} suite is loaded.
 %    \begin{macrocode}
 \bool_if:NTF \g__UWMad_MathTweaks_bool {
     \RequirePackage{amsmath}
@@ -191,10 +188,11 @@
 }{}
 %    \end{macrocode}
 %
-%   If links were not negated by the options, |bookmark| is load,
-%   which is a successor to |hyperref|.
+%   If links were not negated by the options, \pkg{bookmark} and 
+%   \pkg{hyperred} are loaded.
 %    \begin{macrocode}
 \bool_if:NTF \g__UWMad_Hyperlinks_bool {
+    \RequirePackage{hyperref}
     \RequirePackage{bookmark}
 }{}
 %    \end{macrocode}

@@ -1,11 +1,421 @@
-% ===================================================================================== %
-%                                  Nomen Module                                         %
-% ===================================================================================== %
-\ExplSyntaxOn
-
-% =========================================================================== %
-%                       Entry Independent Commands                            %
-% =========================================================================== %
+%<*UserGuide>
+%
+%</UserGuide>
+%
+%
+%
+%
+%
+%<*Documentation>
+%<<Verbatim
+%   \iffalse
+%<*Code>
+%   \fi
+%
+%^^A =========================================================================== %
+%^^A                       Entry Independent Commands                            %
+%^^A =========================================================================== %
+%
+%
+%  \UWModule{ListOf}
+%
+%   The ListOf Module is a collection of commands that enables the easy
+%   creation and typsetting of Lists.
+%
+%   Lists are taken to be any collection of entries that is to be typeset
+%   with a particular style.  For example, a simple Nomenclature could be
+%   considered a list of (symbol, description) entries to be typeset with a
+%   fixed style for all entires.  The |ListOf| commands create a system
+%   specifically for this scenario.
+%
+%   Of course, as the commands description will show, lists can be much more
+%   complicated that two items.  For the |ListOf| system to function, an
+%   author really only needs to define the |ListOf|, create a command to push
+%   (enqueue) entries on to the |ListOf| queue, and at some point tell the
+%   |ListOf| to typeset the entries it has stored (if display of the content
+%   is desired).
+%
+%
+%
+%
+%   \UWSubmodule{ListOf Commands}
+%
+%   \begin{macro}{\UWMad_ListOf_Define:n}
+%   Define a new |ListOf| with \marg{ID}. This command creates the
+%   commands to store the section commands and title for each group,
+%   the booleans to indicate if the sections should be numbered and
+%   if the sections should be included in the table of contentst
+%   (regardless of numbering), a hash to hold of the user-defined
+%   hooks for the |ListOf|, and a queue to store the entries for
+%   typesetting.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_Define:n {
+    \tl_const:cn {c__ListOf#1-Defined}{}
+%
+    \tl_new:c {l__UWMad_ListOf#1_SectionMain_tl}
+    \tl_new:c {l__UWMad_ListOf#1_SectionGroup_tl}
+    \tl_new:c {l__UWMad_ListOf#1_SectionSubgroup_tl}
+%
+    \tl_new:c {l__UWMad_ListOf#1_TitleMain_tl}
+    \tl_new:c {l__UWMad_ListOf#1_TitleGroup_tl}
+    \tl_new:c {l__UWMad_ListOf#1_TitleSubgroup_tl}
+%
+    \UWMad_Boolean_DefineGlobalSetTrue:n{__ListOf#1-Numbered}
+    \UWMad_Boolean_DefineGlobalSetTrue:n{__ListOf#1-IncludeInTOC}
+    \UWMad_Queue_Define:n               {__ListOf#1-EntryQueue}
+    \UWMad_Hash_Define:n                {__ListOf#1-Hook}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_Delete:n}
+%   Simply undefines all of the commands created in the |Define| command
+%   above for the given \marg{ID}.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_Delete:n {
+    \cs_undefine:c {c__ListOf#1-Defined}
+%
+    \cs_undefine:c {l__UWMad_ListOf#1_SectionMain_tl}
+    \cs_undefine:c {l__UWMad_ListOf#1_SectionGroup_tl}
+    \cs_undefine:c {l__UWMad_ListOf#1_SectionSubgroup_tl}
+%
+    \cs_undefine:c {l__UWMad_ListOf#1_TitleMain_tl}
+    \cs_undefine:c {l__UWMad_ListOf#1_TitleGroup_tl}
+    \cs_undefine:c {l__UWMad_ListOf#1_TitleSubgroup_tl}
+%
+    \UWMad_Boolean_Delete:n {__ListOf#1-Numbered}
+    \UWMad_Boolean_Delete:n {__ListOf#1-IncludeInTOC}
+    \UWMad_Queue_Delete:n   {__ListOf#1-EntryQueue}
+    \UWMad_Hash_Delete:n    {__ListOf#1-Hook}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_IfDefined:nT}
+%   Checks to see if a |ListOf| with \marg{ID} has been created and
+%   errors if not.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_IfDefined:nT {
+    \__UWMad_IfDefined:nnnnT
+        {c__ListOf}
+        {#1}
+        {-Defined}
+        {ListOf}
+        {#2}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_MakeNumbered:n}
+%   Makes the current section of the |ListOf| with \marg{ID} numbered.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_MakeNumbered:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_SetTrue:n {__ListOf#1-Numbered}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_MakeNotNumbered:n}
+%   Makes the current section of the |ListOf| with \marg{ID} unnumbered
+%   (it ``stars'' the section).
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_MakeNotNumbered:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_SetFalse:n {__ListOf#1-Numbered}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_IfNumbered:nTF}
+%   Branches to \marg{True Code} or \marg{False Code} depending on whether
+%   the |ListOf| with \marg{ID} is numbered or not.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_IfNumbered:nTF {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_IfTrue:nTF {__ListOf#1-Numbered} {
+            #2
+        }{
+            #3
+        }
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_IncludeInTOC:n}
+%   Makes the current section of the |ListOf| with \marg{ID} appear in
+%   the Table of Contents (TOC) regardless of if it is numbered/unnumbered.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_IncludeInTOC:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_SetTrue:n {__ListOf#1-IncludeInTOC}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_DoNotIncludeInTOC:n}
+%   Makes the current section of the |ListOf| with \marg{ID} not appear in
+%   the Table of Contents (TOC) regardless of if it is numbered/unnumbered.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_DoNotIncludeInTOC:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_SetFalse:n {__ListOf#1-IncludeInTOC}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_IfIncludeInTOC:n}
+%   Branches to \marg{True Code} or \marg{False Code} depending on whether
+%   the |ListOf| with \marg{ID} is to be included or not.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_IfIncludeInTOC:nTF {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_IfTrue:nTF {__ListOf#1-IncludeInTOC} {
+            #2
+        }{
+            #3
+        }
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \UWMad_ListOf_SetTitleMain:nn,
+%       \UWMad_ListOf_SetTitleGroup:nn,
+%       \UWMad_ListOf_SetTitleSubgroup:nn}
+%   Sets the value of the title of the sections to \marg{Title} for the
+%   |ListOf| with \marg{ID}
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_SetTitleMain:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_TitleMain_tl}{#2}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_SetTitleGroup:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_TitleGroup_tl}{#2}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_SetTitleSubgroup:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_TitleSubgroup_tl}{#2}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \UWMad_ListOf_GetTitleMain:nn,
+%       \UWMad_ListOf_GetTitleGroup:nn,
+%       \UWMad_ListOf_GetTitleSubgroup:nn}
+%   Gets the value of the title of the sections to \marg{Title} for the
+%   |ListOf| with \marg{ID}
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_GetTitleMain:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_TitleMain_tl}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_GetTitleGroup:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_TitleGroup_tl}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_GetTitleSubgroup:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_TitleSubgroup_tl}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \UWMad_ListOf_SetSectionMain:nn,
+%       \UWMad_ListOf_SetSectionGroup:nn,
+%       \UWMad_ListOf_SetSectionSubgroup:nn}
+%   Sets the value of the sectioning command for a particular group of the
+%   |ListOf| with \marg{ID}.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_SetSectionMain:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_SectionMain_tl}{#2}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_SetSectionGroup:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_SectionGroup_tl}{#2}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_SetSectionSubgroup:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_SectionSubgroup_tl}{#2}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \UWMad_ListOf_GetSectionMain:nn,
+%       \UWMad_ListOf_GetSectionGroup:nn,
+%       \UWMad_ListOf_GetSectionSubgroup:nn}
+%   Gets the value of the sectioning command for a particular group of the
+%   |ListOf| with \marg{ID}.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_GetSectionMain:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_SectionMain_tl}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_GetSectionGroup:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_SectionGroup_tl}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_GetSectionSubgroup:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_SectionSubgroup_tl}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_PushEntry:nn}
+%   Pushes \marg{Entry} on to the entry queue of the |ListOf| with \marg{ID}.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_PushEntry:nn {
+    \UWMad_Queue_Push:nn{__ListOf#1-EntryQueue}{#2}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_SetHook:nnn}
+%   Sets a \marg{HookName} to a \marg{HookCode} for the |ListOf|
+%   with \marg{ID}.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_SetHook:nnn {
+    \UWMad_Hash_Set:nnn{__ListOf#1-Hook}{#2}{#3}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_PrintEntries:n}
+%   Prints all entries currently in the |ListOf| queue with \marg{ID} and
+%   clears the queue.  The \texttt{PrePrint} and \texttt{PostPrint} hooks
+%   are also called here.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_PrintEntries:n {
+    \UWMad_Hash_Get:nn   {__ListOf#1-Hook}{PrePrint}
+    \UWMad_Queue_Walk:nn {__ListOf#1-EntryQueue}{##1}
+    \UWMad_Queue_Clear:n {__ListOf#1-EntryQueue}
+    \UWMad_Hash_Get:nn   {__ListOf#1-Hook}{PostPrint}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_PrintTitle:n}
+%   Prints all entries currently in the |ListOf| queue with \marg{ID} and
+%   clears the queue.  The \texttt{PrePrint} and \texttt{PostPrint} hooks
+%   are also called here.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_PrintTitle:nn {
+    \UWMad_ListOf_IfNumbered:nTF {#1} {
+        \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
+            \cs:w\tl_use:c {l__UWMad_ListOf#1_Section#2_tl}\cs_end:
+            {\tl_use:c {l__UWMad_ListOf#1_Title#2_tl}}
+        }{
+            \cs:w\tl_use:c {l__UWMad_ListOf#1_Section#2_tl}\cs_end:*
+            {\tl_use:c {l__UWMad_ListOf#1_Title#2_tl}}
+        }
+    } {
+        \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
+            \phantomsection
+            \addcontentsline
+                {toc}
+                {\tl_use:c {l__UWMad_ListOf#1_Section#2_tl}}
+                {\tl_use:c {l__UWMad_ListOf#1_Title#2_tl}}
+        }{}
+        \cs:w\tl_use:c {l__UWMad_ListOf#1_Section#2_tl}\cs_end:*
+        {\tl_use:c {l__UWMad_ListOf#1_Title#2_tl}}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_StartGroup:nn}
+%   A shortcut command that prints the entires in the current queue
+%   and then starts the next section by printing the title.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_StartGroup:nn {
+    \UWMad_ListOf_PrintEntries:n{#1}
+    \UWMad_ListOf_PrintTitle:nn{#1}{#2}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%    \begin{macrocode}
+%
+%
+%
+% Nomenclature Environmentment ----------------------------------------------------
 \UWMad_Length_DefineGlobal:nn {__Nomenclature-WidestSymbol}         {0pt}
 \UWMad_Length_DefineGlobal:nn   {Nomenclature-TitleSkip}            {0em}
 \UWMad_Length_DefineGlobal:nn   {Nomenclature-PrintSkip}            {1em}
@@ -15,25 +425,8 @@
 \UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryWidthDescription}{0em}
 \UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryPadMiddle}       {0.75em}
 %
-%
-\UWMad_Boolean_DefineGlobalSetFalse:n {__Nomenclature-TitlePrinted}
-\UWMad_Boolean_DefineGlobalSetFalse:n {__Nomenclature-Numbered}
-%
-\DeclareDocumentCommand \MakeNomenclatureNotNumbered { } {
-    \UWMad_Boolean_SetFalse:n {__Nomenclature-Numbered}
-}
-\DeclareDocumentCommand \MakeNomenclatureNumbered { } {
-    \UWMad_Boolean_SetTrue:n {__Nomenclature-Numbered}
-}
-%
 \DeclareDocumentCommand  \ResetColumnWidth { }{
     \UWMad_Length_Set:nn {__Nomenclature-WidestSymbol}{0pt}
-}
-%
-\tl_new:N   \g__UWMad_Nomenclature_Name_tl
-\tl_gset:Nn \g__UWMad_Nomenclature_Name_tl {Nomenclature}
-\DeclareDocumentCommand \NomenclatureName { m } {
-    \tl_gset:Nn \g__UWMad_Nomenclature_Name_tl {#1}
 }
 %
 %
@@ -68,29 +461,10 @@
 %
 %
 %
-% =========================================================================== %
-%              SubNomen Environmentment Initializer and Finalizer             %
-% =========================================================================== %
-\cs_new:Nn \__UWMad_Nomenclature_PrintSectionHeader:nn{
-    \tl_if_blank:oTF {#2}{
-    }{
-        \UWMad_Boolean_IfTrue:nTF {__Nomenclature-Numbered} {
-            \typeout{*********** Numbered: #1}
-            \csname#1\endcsname{#2}
-        }{
-            \typeout{*********** Not Numbered: #1}
-            \csname#1\endcsname*{#2}
-            \__UWMad_Sectioning_FrontMatterRegister:nn{#1}{#2}
-        }
-    }
-}
-%
-%
-%
 \cs_new:Nn \__UWMad_Nomenclature_Entry:nn {
     \group_begin:
         \setstretch{1.1}
-        \hspace{\UWMad_Length_Of:n{Nomenclature-EntryMarginLeft}}
+        \skip_horizontal:n{\UWMad_Length_Of:n{Nomenclature-EntryMarginLeft}}
         \begin{minipage}[t]
             {\UWMad_Length_Of:n{Nomenclature-EntryWidthSymbol}}
             #1
@@ -99,121 +473,108 @@
             {\UWMad_Length_Of:n{Nomenclature-EntryWidthDescription}}
            #2
         \end{minipage}
-        \vskip\UWMad_Length_Of:n{Nomenclature-EntryMarginBottom}
+        \skip_vertical:n{\UWMad_Length_Of:n{Nomenclature-EntryMarginBottom}}
     \group_end:
 }
 %
 %
-\UWMad_Queue_Define:n{__Nomenclature-Entries}
 %
 %
-\cs_new:Nn \__UWMad_Nomenclature_PrintEntries: {
-    \__UWMad_Nomenclature_SetEntryWidths:
-    \UWMad_Queue_Walk:nn {__Nomenclature-Entries}{##1}
-    \UWMad_Queue_Clear:n {__Nomenclature-Entries}
-    \ResetColumnWidth{}
-}
-%
-%
-\cs_new:Nn \__UWMad_Nomenclature_PrintEnvironmentTitle: {
-    \UWMad_Boolean_IfTrue:nTF {__Nomenclature-TitlePrinted}{
-    }{
-        \__UWMad_Nomenclature_PrintSectionHeader:nn
-            {\l__UWMad_Nomenclature_EnvironmentSection_tl}
-            {\g__UWMad_Nomenclature_Name_tl}
-        \UWMad_Boolean_SetTrue:n {__Nomenclature-TitlePrinted}
-    }
-}
-%
-%
-\tl_new:N \l__UWMad_Nomenclature_EnvironmentSection_tl
-\tl_new:N \l__UWMad_Nomenclature_GroupSection_tl
-\tl_new:N \l__UWMad_Nomenclature_SubGroupSection_tl
-
-% Nomenclature Environmentment ----------------------------------------------------
-\DeclareDocumentEnvironment {Nomenclature} { s O{chapter} } {
+\DeclareDocumentEnvironment {Nomenclature} { s O{chapter} G{Nomenclature} } {
 %
     \UWMad_Hash_IfKeySet:nnTF {SectionToLevel}{#2}{
     }{
         \UWMad@ClassError
-            {Nomenclature~Environmentment~received~invalid~section~`#1'}
+            {Nomenclature~environment~received~invalid~section~`#2'}
     }
 %
+%
+    \UWMad_ListOf_Define:n {Nomenclature}
 %
     \IfBooleanTF {#1} {
-        \UWMad_Boolean_SetFalse:n{__Nomenclature-Numbered}
+        \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
     }{
-        \UWMad_Boolean_SetTrue:n{__Nomenclature-Numbered}
+        \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
     }
 %
 %
-    \UWMad_Boolean_SetFalse:n {__Nomenclature-TitlePrinted}
+    \UWMad_ListOf_SetSectionMain:nn  {Nomenclature} {#2}
+    \UWMad_ListOf_SetSectionGroup:nn {Nomenclature} {
+        \UWMad_Hash_Get:nn{NextSectioningCommand}{#2}
+    }
+    \UWMad_ListOf_SetSectionSubgroup:nn {Nomenclature} {
+        \UWMad_Hash_Get:nn{NextSectioningCommand} {
+            \UWMad_ListOf_GetSectionGroup:n{Nomenclature}
+        }
+    }
 %
 %
-    \tl_set:Nf \l__UWMad_Nomenclature_EnvironmentSection_tl {#2}
-    \tl_set:Nf \l__UWMad_Nomenclature_GroupSection_tl
-        {\UWMad_Hash_ExpandableGet:nn{NextSectioningCommand}{#2}}
-    \tl_set:Nf \l__UWMad_Nomenclature_SubGroupSection_tl
-        {\UWMad_Hash_ExpandableGet:nn {NextSectioningCommand}
-            {\tl_use:N \l__UWMad_Nomenclature_GroupSection_tl}}
-%
-%
-    \DeclareDocumentCommand \Add { m m }{
-        \UWMad_Queue_Push:nn {__Nomenclature-Entries} {
+    \DeclareDocumentCommand \Entry { m m } {
+        \UWMad_ListOf_PushEntry:nn {Nomenclature} {
             \__UWMad_Nomenclature_Entry:nn
                 {##1}
                 {##2}
         }
         \__UWMad_Nomenclature_UpdateWidest:n{##1}
     }
-    \cs_set_eq:NN \Item \Add
-    \cs_set_eq:NN \Entry \Add
-%
-%
-    \DeclareDocumentCommand \Group { s m } {
-        \UWMad_Queue_IfEmpty:nTF {__Nomenclature-Entries} {
-        }{
-            \__UWMad_Nomenclature_PrintEnvironmentTitle:
-            \__UWMad_Nomenclature_PrintEntries:
-        }
-
-        \IfBooleanTF {##1} {
-            \UWMad_Boolean_SetFalse:n{__Nomenclature-Numbered}
-        }{
-            \UWMad_Boolean_SetTrue:n{__Nomenclature-Numbered}
-        }
-
-        \__UWMad_Nomenclature_PrintSectionHeader:nn
-            {\l__UWMad_Nomenclature_GroupSection_tl}
-            {##2}
+    \UWMad_ListOf_SetHook:nnn {Nomenclature} {PrePrint} {
+        \__UWMad_Nomenclature_SetEntryWidths:
+    }
+    \UWMad_ListOf_SetHook:nnn {Nomenclature} {PostPrint} {
+        \ResetColumnWidth{}
     }
 %
 %
-    \DeclareDocumentCommand \SubGroup { s m } {
-        \UWMad_Queue_IfEmpty:nTF {__Nomenclature-Entries} {
-        }{
-            \__UWMad_Nomenclature_PrintEnvironmentTitle:
-            \__UWMad_Nomenclature_PrintEntries:
-        }
-
+    \UWMad_ListOf_SetTitleMain:nn {Nomenclature}{#3}
+    \UWMad_ListOf_PrintTitle:nn {Nomenclature}{Main}
+%
+%
+%
+    \DeclareDocumentCommand \Group { s G{} } {
         \IfBooleanTF {##1} {
-            \UWMad_Boolean_SetFalse:n{__Nomenclature-Numbered}
+            \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
         }{
-            \UWMad_Boolean_SetTrue:n{__Nomenclature-Numbered}
+            \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
         }
-
-        \__UWMad_Nomenclature_PrintSectionHeader:nn
-            {\l__UWMad_Nomenclature_SubGroupSection_tl}
-            {##2}
+        \UWMad_ListOf_SetTitleGroup:nn {Nomenclature}{##2}
+        \UWMad_ListOf_StartGroup:nnn{Nomenclature}{Group}
     }
+%
+%
+    \DeclareDocumentCommand \SubGroup { s G{} } {
+        \IfBooleanTF {##1} {
+            \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
+        }{
+            \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
+        }
+        \UWMad_ListOf_SetTitleSubgroup:nn {Nomenclature}{##2}
+        \UWMad_ListOf_StartGroup:nnn{Nomenclature}{Subgroup}
+    }
+%
 }{
-    \UWMad_Queue_IfEmpty:nTF {__Nomenclature-Entries} {
-    }{
-        \__UWMad_Nomenclature_PrintEnvironmentTitle:
-        \__UWMad_Nomenclature_PrintEntries:
-    }
+    \UWMad_ListOf_PrintEntries:n {Nomenclature}
+    \UWMad_ListOf_Delete:n{Nomenclature}
 }
 \cs_new:cpn      {Nomenclature*} {\Nomenclature*}
 \cs_new_eq:cN {endNomenclature*} \endNomenclature
+%    \end{macrocode}
 %
-\ExplSyntaxOff
+%
+%
+%   \begin{Nomenclature}[subsection]
+%       \Entry{One}{Two}
+%   \end{Nomenclature}
+%
+%   \begin{Nomenclature*}[subsection]{My Nomenclature Name}
+%       \Entry{One}{Two}
+%   \end{Nomenclature*}
+%   \clearpage
+%
+%
+%
+%
+%   \iffalse
+%</Code>
+%   \fi
+%Verbatim
+%</Documentation>

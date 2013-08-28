@@ -7,62 +7,12 @@
 \documentclass[l3doc,full]{UWMadThesis}
 %
     \usepackage[english]{babel}
+
     \ExplSyntaxOn
     \DeclareDocumentCommand \LaTeXPL { } {
         \LaTeX3PL
     }
-    
-    \RenewDocumentCommand   \part { m } {
-        \stepcounter{part}
-        \cleardoublepage
-        \group_begin:
-            \newgeometry{marginparwidth = 0pt}
-            \vspace*{2in}
-            \begin{center}
-                \textbf{
-                    \huge{Part~\thepart}
-                    \vskip 0.30em
-                    \Huge{#1}
-                }
-            \end{center}
-            \thispagestyle{empty}
-            \clearpage
-        \group_end:
-        \clearpage
-        \restoregeometry
-    }
-    
     \ExplSyntaxOff
-
-% Define some lengths for the documentation.
-    \setstretch{1.5}
-    \setlength{\parindent}{0pt}
-
-    % Play with macrocode env. formatting
-    \let\BeginMacroCode\macrocode
-    \let\EndMacroCode\endmacrocode
-
-    \renewcommand{\macrocode}{%
-            \vspace*{-0.80em}
-            \BeginMacroCode
-            \setlength{\parskip}{0em}
-            \setstretch{1.0}}
-    \renewcommand{\endmacrocode}{%
-            \EndMacroCode
-            \vspace*{0.5em}}
-
-    % Define the Usage environment
-    \newenvironment{Usage}
-        {   \vskip 0.6em
-            \textsl{Usage}:
-            \begin{list}
-                {}
-                {   \setstretch{1}
-                    \setlength{\topsep}{0em}
-                    \setlength{\itemsep}{0em}
-                    \setlength{\parsep}{0em}
-                    \setlength{\leftmargin}{1em}}}
-        {   \end{list}}
 
     \begin{document}
         \DocInput{\jobname.dtx}
@@ -109,8 +59,6 @@
 %^^A                    BEGIN IMPLEMENTATION              !
 %^^A                                                      !
 %^^A ==================================================== !
-%
-%
 %
 %   \iffalse
 %</PROTECT>

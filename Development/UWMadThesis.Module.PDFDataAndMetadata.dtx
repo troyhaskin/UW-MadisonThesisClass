@@ -1,21 +1,36 @@
-% =============================================================================================== %
-%                                  PDFDataAndMetadata Module                                      %
-% =============================================================================================== %
-\ExplSyntaxOn
-% ------------------------------------------------------------------------ %
-%                    Metadata Writing/Importing Routines                   %
-% ------------------------------------------------------------------------ %
+%<*UserGuide>
+%
+%</UserGuide>
+%
+%
+%
+%
+%
+%
+%<*Documentation>
+%<<Verbatim
+%   \iffalse
+%<*Code>
+%   \fi
+%^^A ------------------------------------------------------------------------ %
+%^^A                    Metadata Writing/Importing Routines                   %
+%^^A ------------------------------------------------------------------------ %
+%
+%   \UWModule{PDF and Other Metadata}
+%
+%
 %
 %   Since the metadata (i.e., properties) of a PDF must be set in the preamble
 %   but typically a user defines them in the document, these routines write the
 %   supported metadata that a user may define to an auxiliary file that is
 %   then imported upon recompilation.  It uses the CSV commands above to define
-%   and build the CSV list, and then uses the TeX \write to dump it to the file.
+%   and build the CSV list, and then uses the TeX |\write| to dump it to the file.
 %   
-
+%
 % Used to determine is the list was created
-
-
+%
+%    \begin{macrocode}
+%
 % Command used to append the data to the CSV list.  It is called in the 
 % metadata commands below
 \UWMad_CSV_Define:n {MetaDataList}
@@ -65,12 +80,18 @@
 \newcommand{\TheSubject}    {}
 \newcommand{\TheProducer}   {}
 \newcommand{\TheCreator}    {}
-\newcommand{\Title}      [1] {\renewcommand{\TheTitle}      {#1\xspace}    \PushPDFMetaDataToList{pdftitle}    {#1}}
-\newcommand{\Author}     [1] {\renewcommand{\TheAuthor}     {#1\xspace}    \PushPDFMetaDataToList{pdfauthor}   {#1}}
-\newcommand{\Subject}    [1] {\renewcommand{\TheSubject}    {#1\xspace}    \PushPDFMetaDataToList{pdfsubject}  {#1}}
-\newcommand{\Producer}   [1] {\renewcommand{\TheProducer}   {#1\xspace}    \PushPDFMetaDataToList{pdfproducer} {#1}}
-\newcommand{\Creator}    [1] {\renewcommand{\TheCreator}    {#1\xspace}    \PushPDFMetaDataToList{pdfcreator}  {#1}}
-\newcommand{\Keywords}   [1] {\renewcommand{\TheKeywords}   {#1\xspace}    \PushPDFMetaDataToList{pdfkeywords} {#1}}
+\newcommand{\Title}      [1] {\renewcommand{\TheTitle}      {#1\xspace}
+    \PushPDFMetaDataToList{pdftitle}    {#1}}
+\newcommand{\Author}     [1] {\renewcommand{\TheAuthor}     {#1\xspace}
+    \PushPDFMetaDataToList{pdfauthor}   {#1}}
+\newcommand{\Subject}    [1] {\renewcommand{\TheSubject}    {#1\xspace}
+    \PushPDFMetaDataToList{pdfsubject}  {#1}}
+\newcommand{\Producer}   [1] {\renewcommand{\TheProducer}   {#1\xspace}
+    \PushPDFMetaDataToList{pdfproducer} {#1}}
+\newcommand{\Creator}    [1] {\renewcommand{\TheCreator}    {#1\xspace}
+    \PushPDFMetaDataToList{pdfcreator}  {#1}}
+\newcommand{\Keywords}   [1] {\renewcommand{\TheKeywords}   {#1\xspace}
+    \PushPDFMetaDataToList{pdfkeywords} {#1}}
 \newcommand{\Subtitle}   [1] {\renewcommand{\TheSubtitle}   {#1\xspace}}
 \newcommand{\Date}       [1] {\renewcommand{\TheDate}       {#1\xspace}}
 \newcommand{\Department} [1] {\renewcommand{\TheDepartment} {#1\xspace}}
@@ -78,9 +99,13 @@
 \newcommand{\Specialty}  [1] {\renewcommand{\TheSpecialty}  {#1\xspace}}
 \newcommand{\Advisor}    [1] {\renewcommand{\TheAdvisor}    {#1\xspace}}
 \newcommand{\University} [1] {\renewcommand{\TheUniversity} {#1\xspace}}
-
-% These commands are used to assign the information to the above commands
-
-
-
-\ExplSyntaxOff
+%    \end{macrocode}
+%
+%
+%
+%
+%   \iffalse
+%</Code>
+%   \fi
+%Verbatim
+%</Documentation>

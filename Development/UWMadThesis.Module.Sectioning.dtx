@@ -13,6 +13,10 @@
 %<*Code>
 %\fi
 %
+%
+%   \UWModule{Sectioning}
+%
+%
 %    \begin{macrocode}
 %
 %^^A  =========================================================================== %
@@ -36,33 +40,171 @@
 
 \tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
 
-\show\thesubsection
+    \UWMad_Counter_DefineGlobal:nn{Part}{0}
+    \UWMad_Counter_DefineGlobal:nn{Module}{0}
+    \UWMad_Counter_DefineGlobal:nn{Submodule}{0}
+    \UWMad_Counter_DefineGlobal:nn{Feature}{0}
 
-    \UWMad_Counter_DefineGlobal:nn{Chapter}{0}
+    \tl_new:N   \g_UWMad_ThePart_tl
+    \tl_new:N \g_UWMad_TheModule_tl
+    \tl_new:N \g_UWMad_TheSubmodule_tl
+    \tl_new:N \g_UWMad_TheFeature_tl
 
-    \cs_new:Nn \UWMad_Sectioning_PrintModule:nn {
+    \tl_gset:Nn \g_UWMad_ThePart_tl {
+        Part~\UWMad_Counter_Roman:n{Part}
+    }
+    \tl_gset:Nn \g_UWMad_TheModule_tl {
+        Module~\UWMad_Counter_arabic:n{Module}
+    }
+    \tl_gset:Nn \g_UWMad_TheSubmodule_tl {
+        \UWMad_Counter_arabic:n{Module}.
+        \UWMad_Counter_arabic:n{Submodule}
+    }
+    \tl_gset:Nn \g_UWMad_TheFeature_tl {
+        \g_UWMad_TheSubmodule_tl.
+        \UWMad_Counter_arabic:n{Feature}
+    }
+
+    \cs_new:Nn \UWMad_Sectioning_Module:nn {
         \clearpage
+
+        \UWMad_Counter_Step:n {Module}
+        \UWMad_Counter_Set:nn {Submodule}{0}
+        \UWMad_Counter_Set:nn {Feature}{0}
+
         \group_begin:
-            \UWMad_Counter_Step:n {Chapter}
             \null\vskip 0.1em
             \phantomsection
-            \textbf{\LARGE{Module}~
-                \int_to_arabic:n{\UWMad_Counter_Value:n{Chapter}}}
+            \textbf{
+                \LARGE{
+                    \g_UWMad_TheModule_tl
+                }
+            }
             \vskip 0.5em
             \textbf{\Huge{#2}}
-            \vskip 1em
-            \addcontentsline{toc}{chapter}{#1}
-            \par
         \group_end:
+        \addcontentsline{toc}{section}{#1}
+        \vskip 1em
+        \par
     }
 
-    \DeclareDocumentCommand \Module { o m } {
+    \cs_new:Nn \UWMad_Sectioning_Submodule:nn {
+        \UWMad_Counter_Step:n {Submodule}
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \Large{
+                    \g_UWMad_TheSubmodule_tl
+                    \hspace*{0.5em}#2
+                }
+            }
+        \group_end:
+        \addcontentsline{toc}{subsection}{#1}
+        \vskip 0.2em
+        \par
+    }
+
+    \cs_new:Nn \UWMad_Sectioning_Feature:nn {
+        \UWMad_Counter_Step:n {Feature}
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \large{
+                    \g_UWMad_TheFeature_tl
+                    \hspace*{0.5em}#2
+                }
+            }
+        \group_end:
+        \addcontentsline{toc}{subsubsection}{#1}
+        \vskip 0.2em
+        \par
+    }
+
+
+    \DeclareDocumentCommand \UWModule { o m } {
         \IfNoValueTF {#1} {
-            \UWMad_Sectioning_PrintModule:nn{#2}{#2}
+            \UWMad_Sectioning_Module:nn{#2}{#2}
         } {
-            \UWMad_Sectioning_PrintModule:nn{#1}{#2}
+            \UWMad_Sectioning_Module:nn{#1}{#2}
         }
     }
+
+    \DeclareDocumentCommand \UWSubmodule { o m } {
+        \IfNoValueTF {#1} {
+            \UWMad_Sectioning_Submodule:nn{#2}{#2}
+        } {
+            \UWMad_Sectioning_Submodule:nn{#1}{#2}
+        }
+    }
+
+    \DeclareDocumentCommand \UWFeature { o m } {
+        \IfNoValueTF {#1} {
+            \UWMad_Sectioning_Feature:nn{#2}{#2}
+        } {
+            \UWMad_Sectioning_Feature:nn{#1}{#2}
+        }
+    }
+
+    \RenewDocumentCommand   \part { o m } {
+        \UWMad_Counter_Step:n{Part}
+        \cleardoublepage
+        \newgeometry{marginparwidth = 0pt}
+        \group_begin:
+            \vspace*{2in}
+            \phantomsection
+            \begin{center}
+                \textbf{
+                    \huge{\g_UWMad_ThePart_tl}
+                    \vskip 0.30em
+                    \Huge{#2}
+                }
+                \IfNoValueTF{#1} {
+                    \addcontentsline{toc}{part}{#2}
+                } {
+                    \addcontentsline{toc}{part}{#1}
+                }
+            \end{center}
+            \thispagestyle{empty}
+        \group_end:
+        \restoregeometry
+        \clearpage
+    }
+
+% Define some lengths for the documentation.
+    \setstretch{1.30}
+    \setlength{\parindent}{0pt}
+
+    % Play with macrocode env. formatting
+    \let\BeginMacroCode\macrocode
+    \let\EndMacroCode\endmacrocode
+
+    \renewcommand{\macrocode}{
+        \vspace*{-0.90em}
+        \BeginMacroCode
+        \setlength{\parskip}{0em}
+        \setstretch{1.0}
+    }
+    \renewcommand{\endmacrocode}{
+        \EndMacroCode
+        \vspace*{0.5em}
+    }
+
+    % Define the Usage environment
+    \newenvironment{Usage}
+        {   \vskip 0.6em
+            \textsl{Usage}:
+            \begin{list}
+                {}
+                {   \setstretch{1}
+                    \setlength{\topsep}{0em}
+                    \setlength{\itemsep}{0em}
+                    \setlength{\parsep}{0em}
+                    \setlength{\leftmargin}{1em}}}
+        {   \end{list}}
 
 }{}
 

@@ -5,62 +5,12 @@
 \documentclass[l3doc,full]{UWMadThesis}
 %
     \usepackage[english]{babel}
+
     \ExplSyntaxOn
     \DeclareDocumentCommand \LaTeXPL { } {
         \LaTeX3PL
     }
-
-    \RenewDocumentCommand   \part { m } {
-        \stepcounter{part}
-        \cleardoublepage
-        \group_begin:
-            \newgeometry{marginparwidth = 0pt}
-            \vspace*{2in}
-            \begin{center}
-                \textbf{
-                    \huge{Part~\thepart}
-                    \vskip 0.30em
-                    \Huge{#1}
-                }
-            \end{center}
-            \thispagestyle{empty}
-            \clearpage
-        \group_end:
-        \clearpage
-        \restoregeometry
-    }
-
     \ExplSyntaxOff
-
-% Define some lengths for the documentation.
-    \setstretch{1.5}
-    \setlength{\parindent}{0pt}
-
-    % Play with macrocode env. formatting
-    \let\BeginMacroCode\macrocode
-    \let\EndMacroCode\endmacrocode
-
-    \renewcommand{\macrocode}{%
-            \vspace*{-0.80em}
-            \BeginMacroCode
-            \setlength{\parskip}{0em}
-            \setstretch{1.0}}
-    \renewcommand{\endmacrocode}{%
-            \EndMacroCode
-            \vspace*{0.5em}}
-
-    % Define the Usage environment
-    \newenvironment{Usage}
-        {   \vskip 0.6em
-            \textsl{Usage}:
-            \begin{list}
-                {}
-                {   \setstretch{1}
-                    \setlength{\topsep}{0em}
-                    \setlength{\itemsep}{0em}
-                    \setlength{\parsep}{0em}
-                    \setlength{\leftmargin}{1em}}}
-        {   \end{list}}
 
     \begin{document}
         \DocInput{\jobname.dtx}
@@ -108,8 +58,6 @@
 %^^A                                                      !
 %^^A ==================================================== !
 %
-%
-%
 %   \iffalse
 %</PROTECT>
 %   \fi
@@ -119,9 +67,7 @@
 %
 %
 %   \part{Implementation}
-%
-%
-%   \section{Front Matter}
+%   \UWModule{Front Matter}
 %
 %   Much of this class is written using the \LaTeX3 Programming Layer;
 %   this will be denoted as \LaTeXPL{}.  The \LaTeXPL{} is the first
@@ -132,7 +78,7 @@
 %   be slowly pulled out as needed.  The good news is that since everything
 %   is more-or-less an abstraction of \TeX{}, it should work together well.
 %
-%   \section{expl3 Package and Identification}
+%   \UWSubmodule{expl3 Package and Identification}
 %   The |expl3| package loads the \LaTeXPL{} and is therefore required.
 %   If the package is not recent enough, the class aborts and requests
 %   the user update.
@@ -162,7 +108,7 @@
 %    \end{macrocode}
 %
 %
-%   \section{Identification and Defaults}
+%   \UWSubmodule{Identification and Defaults}
 %
 %   Now, we define some identification variables (token lists).
 %    \begin{macrocode}
@@ -193,7 +139,7 @@
 %
 %
 %
-%   \section{Options}
+%   \UWSubmodule{Options}
 %
 %   First, a command is created to throw a warning if an option that
 %   violates \UWMadLong{}'s dissertation guidelines.
@@ -273,9 +219,8 @@
 %
 %
 %
-%   \section{Package Loads}
-%
-%   First we load some packages that give nice features and are not
+%   \UWSubmodule{Package Loads}
+%   Load some packages that give nice features and are not
 %   hyperlink sensitive.
 %    \begin{macrocode}
 \RequirePackage{xparse}
@@ -286,7 +231,7 @@
 \RequirePackage{geometry}
 %    \end{macrocode}
 %
-%   If math was not negated by options, the AMS suite is loaded.
+%   If math was not negated by options, the \AmS{} suite is loaded.
 %    \begin{macrocode}
 \bool_if:NTF \g__UWMad_MathTweaks_bool {
     \RequirePackage{amsmath}
@@ -295,10 +240,11 @@
 }{}
 %    \end{macrocode}
 %
-%   If links were not negated by the options, |bookmark| is load,
-%   which is a successor to |hyperref|.
+%   If links were not negated by the options, \pkg{bookmark} and
+%   \pkg{hyperred} are loaded.
 %    \begin{macrocode}
 \bool_if:NTF \g__UWMad_Hyperlinks_bool {
+    \RequirePackage{hyperref}
     \RequirePackage{bookmark}
 }{}
 %    \end{macrocode}
@@ -336,41 +282,17 @@
 %^^A    to a pure LaTeX3 implementation; though a thin abatraction layer may
 %^^A    still be desired.
 %
-%   \Module{Programming}\label{Chapter:Programming}
+%   \UWModule{Programming}\label{Module:Programming}
 %   This section outlines the Programming module for the \UWMadClassName{}.
-%   It is mostly a collection of utility macros used in other modules.
-%   The two biggest features in this module are the Array and Hash
-%   (associative arrays) systems used a other modules.  Those features
-%   are near the end of this subsection.
-%
-%   The commands are currently a mix of \TeX{}, \LaTeX2e{}, and \LaTeX3{}.
-%   Pure \TeX{} is used only where the other features have no such facility
-%   for the intended purpose.  Also, the |etoolbox| package is used as
-%   the basis for many of the utility macros, and those macros are actually,
-%   for all intents and purposes, just aliases for etoolbox commands. This
-%   method was chosen to allow for an easier transition to another system.
+%   It encompasses thin abstractions from the standard \LaTeXPL{}'s type
+%   and collection systems and provides \LaTeXe{} abstractions for
+%   several other features.
 %
 %
 %
-%^^A ==================================================================== %
-%^^A                        Core Programming Systems                      %
-%^^A ==================================================================== %
-%   \subsection{Core Programming Systems}
+%   \UWSubmodule{Utility Commands}
 %
-%   The commands in this section form the core of the programming module.
-%   All of the Core systems are written using the \LaTeXPL and have
-%   extremely long names.  Most of the commands as thin abstractions from
-%   the already-written \LaTeXPL modules and are designed to provide
-%   a more stream-lined and robust environment in providing
-%   useful warnings and errors where needed.
-%
-%   One of the main features added by the core programming system is more
-%   transparent local-global handling.  The onus of remembering which
-%   vairables of local-global is all that's needed with the commands
-%   for altering them being all of the same.
-%
-%
-%   We define some messages for the rest of the module.
+%   Define some messages for the rest of the module.
 %    \begin{macrocode}
 \msg_new:nnn {UWMadThesis} {Programming/UnregisteredVariable} {
     `#1'~is~not~a~registered~#2.~~The~#2~must~be~defined~
@@ -387,59 +309,11 @@
 %    \end{macrocode}
 %
 %
-%   \begin{macro}{\__UWMad_IfLocal:nnnTF}
-%   Certain subsystems of the Programming Module make a distinction
-%   between local and global variables where scope is determined by
-%   \TeX{} groups.  This command takes five arguments designed to
-%   increase maintainability and readability in the subsystems that
-%   use it.
-%
-%   This command accepts a \marg{Prefix}, an \marg{ID}, a \marg{Type},
-%   \marg{LocalCode}, and \marg{GlobalCode}.  All subsystems that use
-%   this command have (in theory) already defined a command that concatenates
-%   the \marg{Prefix}, \marg{ID}, and |_Local| or |_Global|
-%   of a specific \marg{Type}.  If either of the commands is defined, the
-%   appropriate code is executed (in an fully expandable fashion, which is
-%   used to reduce code duplication where possible).  If neither of those
-%   commands exist, the variable is not registered with the system and an
-%   exception is thrown.
-%
-%   As an example, the counter system below creates a command by concatenating
-%   |g__UWMad_Counter_| (the \marg{Prefix}) with user supplied \marg{ID} and
-%   either |_Local| or |_Global| depending on the definition.  That command is
-%   a variable of \marg{Type} Counter.
-%   |\__UWMad_IfLocal:nnnnn| handles the local-global branching.
-%
-%   \begin{Usage}
-%       \item |\__UWMad_IfLocal:nnnTF| \marg{Prefix}\marg{ID}\marg{Type}
-%                               \marg{LocalCode}, and \marg{GLobalCode}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \__UWMad_IfLocal:nnnTF {
-    \cs_if_exist:cTF     {#1#2_Local}{
-        #4
-    }{
-        \cs_if_exist:cTF {#1#2_Global}{
-            #5
-        }{
-            \msg_error:nnnn
-                {UWMadThesis}
-                {Programming/UnregisteredVariable}
-                {#2}
-                {#3}
-        }
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
 %
 %   \begin{macro}[internal]{
 %       \__UWMad_IfDefined:nnnnT,
 %       \__UWMad_IfUndefined:nnnnT}
-%   These commands accept a \marg{Prefix}, an \marg{ID}, a \marg{Suffix}
+%   These commands accept a \marg{Prefix}, an \marg{ID}, a \marg{Suffix},
 %   a \marg{Type}, and \marg{Code}.  It determines if a command named by the
 %   concatenation of \marg{Prefix}, \marg{ID}, and \marg{Suffix}
 %   is defined or not and executes \marg{Code} depending on the existence.
@@ -477,6 +351,93 @@
 %
 %
 %
+%   \begin{macro}[internal]{
+%       \__UWMad_IfDefined:nT,
+%       \__UWMad_IfUndefined:nT}
+%   These commands are simplifications of the above commands and
+%   that only take a \marg{CommandName} and \marg{TrueCode}.
+%
+%   \begin{Usage}
+%       \item |\__UWMad_IfUndefined:nT|
+%           \marg{CommandName}\marg{TrueCode}
+%   \end{Usage}
+%
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_IfDefined:nT{
+    \_UWMad_IfDefined:nnnnT{#1}{}{}{command}{#2}
+}
+\cs_new:Nn \__UWMad_IfUndefined:nT{
+    \_UWMad_IfUndefined:nnnnT{#1}{}{}{command}{#2}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%
+%
+%^^A ==================================================================== %
+%^^A                        Core Programming Systems                      %
+%^^A ==================================================================== %
+%   \UWSubmodule{Type System}
+%
+%   The commands in this section form the core of the programming module.
+%   All of the Core systems are written using the \LaTeXPL and have
+%   extremely long names.  Most of the commands as thin abstractions from
+%   the already-written \LaTeXPL modules and are designed to provide
+%   a more stream-lined and robust environment in providing
+%   useful warnings and errors where needed.
+%
+%   One of the main features added by the core programming system is more
+%   transparent local-global handling.  The onus of remembering which
+%   vairables of local-global is all that's needed with the commands
+%   for altering them being all of the same.
+%
+%
+%
+%   \begin{macro}{\__UWMad_IfLocal:nnnTF}
+%   Certain subsystems of the Programming Module make a distinction
+%   between local and global variables where scope is determined by
+%   \TeX{} groups.  This command takes five arguments designed to
+%   increase maintainability and readability in the subsystems that
+%   use it.
+%
+%   This command accepts a \marg{Prefix}, an \marg{ID}, a \marg{Type},
+%   \marg{LocalCode}, and \marg{GlobalCode}.  All subsystems that use
+%   this command have (in theory) already defined a command that concatenates
+%   the \marg{Prefix}, \marg{ID}, and |_Local| or |_Global|
+%   of a specific \marg{Type}.  If either of the commands is defined, the
+%   appropriate code is executed (in an fully expandable fashion, which is
+%   used to reduce code duplication where possible).  If neither of those
+%   commands exist, the variable is not registered with the system and an
+%   exception is thrown.
+%
+%   \begin{Usage}
+%       \item |\__UWMad_IfLocal:nnnTF| \marg{Prefix}\marg{ID}\marg{Type}
+%                               \marg{LocalCode}, and \marg{GLobalCode}
+%   \end{Usage}
+%
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_IfLocal:nnnTF {
+    \cs_if_exist:cTF     {#1#2_Local}{
+        #4
+    }{
+        \cs_if_exist:cTF {#1#2_Global}{
+            #5
+        }{
+            \msg_error:nnnn
+                {UWMadThesis}
+                {Programming/UnregisteredVariable}
+                {#2}
+                {#3}
+        }
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
 %
 %
 %
@@ -484,7 +445,7 @@
 %^^A                            Boolean System                            %
 %^^A ==================================================================== %
 %
-%   \subsubsection{Boolean System}
+%   \UWFeature{Boolean System}
 %   This subsystem was made to give a \LaTeX{}-like branching system that
 %   can create both local and global switches.
 %
@@ -495,7 +456,7 @@
 %
 %
 %
-%   \begin{function}{
+%   \begin{macro}[internal]{
 %       \__UWMad_Boolean_IfLocal:nTF,
 %       \__UWMad_Boolean_IfUndefined:nnT}
 %   These commands are shortcuts to the more general commands
@@ -511,9 +472,13 @@
         {g__UWMad_Boolean_}{#1}{#2}{Boolean}{#3}
 }
 %    \end{macrocode}
-%   \end{function}
+%   \end{macro}
 %
 %
+%   \begin{macro}{
+%       \UWMad_Boolean_DefineLocal:n,
+%       \UWMad_Boolean_DefineGlobal:n}
+%   Create a new Boolean with local or global scope.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Boolean_DefineLocal:n {
@@ -526,9 +491,15 @@
         \bool_new:c {g__UWMad_Boolean_#1_Global}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
+%   \begin{macro}{
+%       \UWMad_Boolean_DefineLocalSetTrue:n,
+%       \UWMad_Boolean_DefineLocalSetFalse:n}
+%   Define a new  local Boolean with an explicit initial state.
 %
-%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Boolean_DefineLocalSetTrue:n {
     \__UWMad_Boolean_IfUndefined:nnT {#1} {_Local} {
         \bool_new:c       {g__UWMad_Boolean_#1_Local}
@@ -541,9 +512,29 @@
         \bool_gset_false:c {g__UWMad_Boolean_#1_Local}
     }
 }
+%    \end{macrocode}
+%    \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Boolean_Delete:n}
+%   Delete a defined boolean.
 %
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_Boolean_Delete:n {
+    \__UWMad_Boolean_IfLocal:nTF {#1} {
+        \cs_undefine:c {g__UWMad_Boolean_#1_Local}
+    } {
+        \cs_undefine:c {g__UWMad_Boolean_#1_Global}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%   \begin{macro}{
+%       \UWMad_Boolean_DefineGlobalSetTrue:n,
+%       \UWMad_Boolean_DefineGlobalSetFalse:n}
+%   Define a new  global Boolean with an explicit initial state.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Boolean_DefineGlobalSetTrue:n {
     \__UWMad_Boolean_IfUndefined:nnT {#1} {_Global} {
         \bool_new:c       {g__UWMad_Boolean_#1_Global}
@@ -556,9 +547,19 @@
         \bool_gset_false:c {g__UWMad_Boolean_#1_Global}
     }
 }
+%    \end{macrocode}
+%    \end{macro}
 %
 %
+%   \begin{macro}{
+%       \UWMad_Boolean_SetTrue:n,
+%       \UWMad_Boolean_SetFalse:n}
+%   Set any defined Boolean to true or false.
+%   Local-global assignment is handled by the Boolean's initial
+%   definition.  If a local and global Boolean exist with the
+%   same name, a local assignment is carried out.
 %
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Boolean_SetTrue:n {
     \__UWMad_Boolean_IfLocal:nTF {#1} {
         \bool_set_true:c  {g__UWMad_Boolean_#1_Local}
@@ -573,9 +574,17 @@
         \bool_gset_false:c {g__UWMad_Boolean_#1_Global}
     }
 }
+%    \end{macrocode}
+%    \end{macro}
 %
 %
+%   \begin{macro}{
+%       \UWMad_Boolean_IfTrue:n,
+%       \UWMad_Boolean_IfFalse:n}
+%   Conditionally execute code depending on the current state
+%   of the Boolean.
 %
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Boolean_IfTrue:nTF {
     \__UWMad_Boolean_IfLocal:nTF {#1} {
         \bool_if:cTF {g__UWMad_Boolean_#1_Local}
@@ -595,6 +604,7 @@
     {#2}
 }
 %    \end{macrocode}
+%    \end{macro}
 %
 %
 %
@@ -604,7 +614,7 @@
 %^^A                            Length System                             %
 %^^A ==================================================================== %
 %
-%   \subsubsection{Length System}
+%   \UWFeature{Length System}
 %   This subsystem was made to give a \LaTeX{}-like length system that
 %   can create both local and global lengths.
 %
@@ -630,9 +640,14 @@
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Length_}{#1}{#2}{Length}{#3}
 }
 %    \end{macrocode}
-%   \end{macro}
+%    \end{macro}
 %
 %
+%   \begin{macro}{
+%       \UWMad_Length_DefineLocal:nn,
+%       \UWMad_Length_DefineGlobal:nn}
+%   Define a new Length with an explicit initial value having either
+%   local or global scope.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Length_DefineLocal:nn {
@@ -647,9 +662,17 @@
         \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}
     }
 }
+%    \end{macrocode}
+%    \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Length_Add:nn}
+%   Add a dimension to a defined Length.
+%   Local-global assignment is handled by the Length's initial
+%   definition.  If a local and global Length exist with the
+%   same name, a local assignment is carried out.
 %
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Length_Add:nn {
     \__UWMad_Length_IfLocal:nTF {#1} {
         \dim_add:cn  {g__UWMad_Length_#1_Local}  {#2}
@@ -657,9 +680,17 @@
         \dim_gadd:cn {g__UWMad_Length_#1_Global} {#2}
     }
 }
+%    \end{macrocode}
+%    \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Length_Set:nn}
+%   Set the dimension of a defined Length.
+%   Local-global assignment is handled by the Length's initial
+%   definition.  If a local and global Length exist with the
+%   same name, a local assignment is carried out.
 %
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Length_Set:nn {
     \__UWMad_Length_IfLocal:nTF {#1} {
         \dim_set:cn  {g__UWMad_Length_#1_Local}  {#2}
@@ -667,9 +698,14 @@
         \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}
     }
 }
+%    \end{macrocode}
+%    \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Length_Of:n}
+%   Retreive the value of a defined Length.
 %
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Length_Of:n {
     \__UWMad_Length_IfLocal:nTF {#1} {
         \dim_use:c {g__UWMad_Length_#1_Local}
@@ -677,9 +713,22 @@
         \dim_use:c {g__UWMad_Length_#1_Global}
     }
 }
+%    \end{macrocode}
+%    \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Length_If:nnnTF}
+%   Conditionally execute true/false code based  on the
+%   value of a defined Length given an operator and second
+%   operand.
 %
+%   \begin{Usage}
+%       \item |\UWMad_Length_If:nnnTF|
+%               \marg{LengthID}\marg{Operator}\marg{Operand}
+%                   \marg{True}\marg{False}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Length_If:nnnTF {
     \dim_compare:nTF{ \UWMad_Length_Of:n{#1} #2 #3 }{
         #4
@@ -688,6 +737,7 @@
     }
 }
 %    \end{macrocode}
+%    \end{macro}
 %
 %
 %
@@ -697,7 +747,7 @@
 %^^A                            Counter System                            %
 %^^A ==================================================================== %
 %
-%   \subsubsection{Counter System}
+%   \UWFeature{Counter System}
 %   This subsystem was made to give a \LaTeX{}-like counter system that
 %   can create both local and global counters.
 %
@@ -730,8 +780,8 @@
 %   by |\newcount|, and set to \marg{Initial Value}.
 %
 %   \begin{Usage}
-%       \item |\DefineNewLocalCounter|\marg{Counter Name}{Initial Value}
-%       \item |\DefineNewGlobalCounter|\marg{Counter Name}{Initial Value}
+%       \item |\UWMad_Counter_DefineLocal:nn|\marg{Counter Name}{Initial Value}
+%       \item |\UWMad_Counter_DefineGlobal:nn|\marg{Counter Name}{Initial Value}
 %   \end{Usage}
 %
 %    \begin{macrocode}
@@ -758,7 +808,7 @@
 %   and is handled transparently.
 %
 %   \begin{Usage}
-%       \item |\AddToCounter|\marg{CounterName}\marg{Increment}
+%       \item |\UWMad_Counter_Add:nn|\marg{CounterName}\marg{Increment}
 %   \end{Usage}
 %
 %    \begin{macrocode}
@@ -779,7 +829,7 @@
 %   |\UWMad_IsLocal:nnn| handles the local vs. global advancement.
 %
 %   \begin{Usage}
-%       \item |\UWMad_Counter_Step:nn|\marg{Counter Name}
+%       \item |\UWMad_Counter_Step:n|\marg{Counter Name}
 %   \end{Usage}
 %
 %    \begin{macrocode}
@@ -792,11 +842,12 @@
 %
 %
 %   \begin{macro}{\UWMad_Counter_Set:nn}
-%   This command sets the value of counter \marg{Counter Name} to \marg{Value}.
+%   This command sets the value of counter \marg{Counter Name} to
+%   \marg{Value}.
 %   |\UWMad_IsLocal:nnn| handles the local vs. global assignment.
 %
 %   \begin{Usage}
-%       \item |\SetCounter|\marg{Counter Name}\marg{Value}
+%       \item |\UWMad_Counter_Set:nn|\marg{Counter Name}\marg{Value}
 %   \end{Usage}
 %
 %    \begin{macrocode}
@@ -818,8 +869,10 @@
 %   Combinations of |\SetCounter|, |AddToCounter|, and |\StepCounter|.
 %
 %   \begin{Usage}
-%       \item |\SetAndAddToCounter|\marg{Counter Name}\marg{Initial Value}\marg{Value}
-%       \item |\SetAndStepCounter|\marg{Counter Name}\marg{Initial Value}
+%       \item |\UWMad_Counter_SetAndAdd:nnn|\marg{Counter Name}
+%                   \marg{Initial Value}\marg{Value}
+%       \item |\UWMad_Counter_SetAndStep:nn|\marg{Counter Name}
+%                   \marg{Initial Value}
 %   \end{Usage}
 %
 %    \begin{macrocode}
@@ -839,7 +892,7 @@
 %   Combinations of |\SetCounter|, |AddToCounter|, and |\StepCounter|.
 %
 %   \begin{Usage}
-%       \item |\CounterValue|\marg{Counter Name}
+%       \item |\UWMad_Counter_Value:n|\marg{Counter Name}
 %   \end{Usage}
 %
 %    \begin{macrocode}
@@ -874,7 +927,58 @@
 %
 %
 %
+%   \begin{macro}{
+%       \UWMad_Counter_arabic:n,
+%       \UWMad_Counter_alpha:n,
+%       \UWMad_Counter_Alpha:n,
+%       \UWMad_Counter_roman:n,
+%       \UWMad_Counter_Roman:n,}
+%   This set of functions converts the counter \marg{CounterName}
+%   into a formatted number.
 %
+%   \begin{Usage}
+%       \item |\UWMad_Counter_arabic:n| \marg{CounterName}
+%   \end{Usage}
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_Counter_arabic:n {
+    \int_to_arabic:n {\UWMad_Counter_Value:n{#1}}
+}
+\cs_new:Nn \UWMad_Counter_alpha:n {
+    \int_to_alpha:n {\UWMad_Counter_Value:n{#1}}
+}
+\cs_new:Nn \UWMad_Counter_Alpha:n {
+    \int_to_Alpha:n {\UWMad_Counter_Value:n{#1}}
+}
+\cs_new:Nn \UWMad_Counter_roman:n {
+    \int_to_roman:n {\UWMad_Counter_Value:n{#1}}
+}
+\cs_new:Nn \UWMad_Counter_Roman:n {
+    \int_to_Roman:n {\UWMad_Counter_Value:n{#1}}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%
+%
+%
+%^^A ======================================================================= %
+%^^A                     Collection Creation Commands                        %
+%^^A ======================================================================= %
+%
+%   \UWSubmodule{Collections}
+%   In the following subsections, commands that create and manipulate
+%   various collection data types will be discussed.  The collections
+%   currently implemented are comma-separate values (CSVs), stacks (LIFO),
+%   queues (FIFO), deques (LIFO+FIFO), and hashes (key-value pairs).
+%
+%   All of the collection systems are thin abstractions of \LaTeXPL{}'s
+%   |l3clist|, |l3tl|, |l3seq|, and |l3prop| modules to avoid developing
+%   one-shot systems while allowing more endeavoring authors access to the
+%   features without learning \LaTeX3{} programming if they load the
+%   abstractions.
 %
 %
 %
@@ -882,7 +986,7 @@
 %^^A                          CSV Creation Commands                          %
 %^^A ======================================================================= %
 %
-%   \subsubsection{CSV System}
+%   \UWFeature{CSVs}
 %   This set of commands is a simple system for comma-separated value (CSV)
 %   list creation.  It consists of only a few functions: initialize list,
 %   append value, prepend value, get list, and erase list.
@@ -910,6 +1014,8 @@
 %   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_CSV_Define:n}
+%   Define a new CSV.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_CSV_Define:n {
@@ -917,44 +1023,81 @@
         \clist_new:c {g__UWMad_CSV_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_CSV_Clear:n}
+%   Define a clear a defined CSV but do not undefine.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_CSV_Clear:n {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \clist_gclear:c {g__UWMad_CSV_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_CSV_Delete:n}
+%   Define a clear and undefine a defined CSV.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_CSV_Delete:n {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \clist_gclear:c {g__UWMad_CSV_#1}
         \cs_undefine:c  {g__UWMad_CSV_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_CSV_Append:nn}
+%   Push a value on to the right side of a defined CSV.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_CSV_Append:nn {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \clist_gput_right:cn {g__UWMad_CSV_#1} {#2}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_CSV_Prepend:nn}
+%   Push a value on to the left side of a defined CSV.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_CSV_Prepend:nn {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \clist_gput_left:cn {g__UWMad_CSV_#1} {#2}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_CSV_Get:n}
+%   Return a defined CSV to the input stream.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_CSV_Get:n {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \use:c {g__UWMad_CSV_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_CSV_IfNotEmpty:nTF}
+%   Execute true/false code depending on if the
+%   defined CSV is empty or not.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_CSV_IfNotEmpty:nTF {
     \__UWMad_CSV_IfDefined:nT {#1} {
         \clist_if_empty:cTF {g__UWMad_CSV_#1} {
@@ -965,25 +1108,10 @@
     }
 }
 %    \end{macrocode}
+%    \end{macro}
 %
 %
 %
-%
-%
-%%^^A ======================================================================= %
-%%^^A                     Collection Creation Commands                        %
-%%^^A ======================================================================= %
-%%
-%%   \subsubsection{Collections}
-%%   In the following subsections, commands that create and manipulate
-%%   various collection data types will be discussed.  The collections
-%%   currently implemented are stacks (LIFO), queues (FIFO), and deques
-%%   (LIFO+FIFO).
-%%
-%%   All of the collection systems are thin abstractions of \LaTeXPL's
-%%   |l3seq| module to avoid developing one-shot systems while allowing more
-%%   endeavoring authors access to the features without learning \LaTeX3{}
-%%   programming.
 %
 %
 %
@@ -991,7 +1119,7 @@
 %^^A                          Stack Creation Commands                        %
 %^^A ======================================================================= %
 %
-%   \subsubsection{Stack System}
+%   \UWFeature{Stacks}
 %   This set of commands is a simple system for creating and working with
 %   stacks.  Stacks are a last-in first-out collection data type; this means
 %   that the data element (in this any unexpanded token/token list) last
@@ -1016,6 +1144,8 @@
 %   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Stack_Define:n}
+%   Define a new Stack.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Stack_Define:n {
@@ -1023,23 +1153,41 @@
         \tl_new:c {g__UWMad_Stack_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Stack_Clear:n}
+%   Clear but do not undefine a defined Stack.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Stack_Clear:n {
     \__UWMad_Stack_IfDefined:nT {#1} {
         \tl_gclear:c   {g__UWMad_Stack_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Stack_Delete:n}
+%   Clear and undefine a defined Stack.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Stack_Delete:n {
     \__UWMad_Stack_IfDefined:nT {#1} {
         \tl_gclear:c   {g__UWMad_Stack_#1}
         \cs_undefine:c {g__UWMad_Stack_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Stack_Push:nn}
+%   Push a value on to a defined Stack.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Stack_Push:nn {
     \__UWMad_Stack_IfDefined:nT {#1} {
         \tl_gput_left:cn {g__UWMad_Stack_#1} {#2}
@@ -1049,20 +1197,36 @@
 %
 \cs_generate_variant:Nn \tl_head:N { c }
 \cs_generate_variant:Nn \tl_tail:N { c }
+%    \end{macrocode}
+%   \end{macro}
 %
+%
+%   \begin{macro}{\UWMad_Stack_Pop:n}
+%   Pop a value off a defined Stack and place it in the
+%   input stream.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Stack_Pop:n {
     \__UWMad_Stack_IfDefined:nT {#1} {
-        \tl_set:Nx \l_tmpa_tl          {\tl_head:c {g__UWMad_Stack_#1}}
-        \tl_set:cx {g__UWMad_Stack_#1} {\tl_tail:c {g__UWMad_Stack_#1}}
+        \tl_set:Nf \l_tmpa_tl          {\tl_head:c {g__UWMad_Stack_#1}}
+        \tl_set:cf {g__UWMad_Stack_#1} {\tl_tail:c {g__UWMad_Stack_#1}}
         \tl_use:N \l_tmpa_tl
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Stack_Walk:nn}
+%   Iterate of the elements of a defined Stack in a FILO sense
+%   with supplied code.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Stack_Walk:nn {
     \tl_map_inline:cn {g__UWMad_Stack_#1} {#2}
 }
 %    \end{macrocode}
+%    \end{macro}
 %
 %
 %
@@ -1070,7 +1234,7 @@
 %^^A                          Queue Creation Commands                        %
 %^^A ======================================================================= %
 %
-%   \subsubsection{Queue System}
+%   \UWFeature{Queues}
 %   This set of commands is a simple system for creating and working with
 %   queue.  Queues are a first-in first-out collection data type; this means
 %   that the data element (in this any unexpanded token/token list) first
@@ -1095,6 +1259,8 @@
 %   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Queue_Define:n}
+%   Define a new Queue.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Queue_Define:n {
@@ -1102,23 +1268,41 @@
         \tl_new:c {g__UWMad_Queue_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Queue_Clear:n}
+%   Clear but do not undefine a defined Queue.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_Queue_Clear:n {
+    \__UWMad_Queue_IfDefined:nT {#1} {
+        \tl_gclear:c {g__UWMad_Queue_#1}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%   \begin{macro}{\UWMad_Queue_Delete:n}
+%   Clear and undefine a defined Queue.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Queue_Delete:n {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \tl_gclear:c    {g__UWMad_Queue_#1}
          \cs_undefine:c {g__UWMad_Queue_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
-\cs_new:Nn \UWMad_Queue_Clear:n {
-    \__UWMad_Queue_IfDefined:nT {#1} {
-        \tl_gclear:c {g__UWMad_Queue_#1}
-    }
-}
+%   \begin{macro}{\UWMad_Queue_Pop:nn}
+%   Push an item on to the start of a defined Queue.
 %
-%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Queue_Push:nn {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \tl_gput_left:cn {g__UWMad_Queue_#1} {{#2}}
@@ -1128,20 +1312,35 @@
 %
 \cs_generate_variant:Nn \tl_head:N { c }
 \cs_generate_variant:Nn \tl_tail:N { c }
+%    \end{macrocode}
+%   \end{macro}
 %
+%
+%   \begin{macro}{\UWMad_Queue_Pop:n}
+%   Pop an item from the end of a defined Queue
+%   and place it in the input stream.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Queue_Pop:n {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \tl_reverse:c   {g__UWMad_Queue_#1}
-        \tl_set:Nx \l_tmpa_tl
+        \tl_set:Nf \l_tmpa_tl
             {\tl_head:c {g__UWMad_Queue_#1}}
-        \tl_set:cx      {g__UWMad_Queue_#1}
+        \tl_set:cf      {g__UWMad_Queue_#1}
             {\tl_tail:c {g__UWMad_Queue_#1}}
         \tl_reverse:c   {g__UWMad_Queue_#1}
         \tl_use:N \l_tmpa_tl
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Queue_Walk:nn}
+%   Iterate of the elements of a defined Queue in a FIFO sense
+%   with supplied code.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Queue_Walk:nn {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \group_begin:
@@ -1150,8 +1349,15 @@
         \group_end:
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Queue_IfEmpty:nTF}
+%   Execute true/false code depending on the emptiness
+%   of a defined Queue.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Queue_IfEmpty:nTF {
     \__UWMad_Queue_IfDefined:nT {#1} {
         \tl_if_empty:cTF {g__UWMad_Queue_#1}{
@@ -1162,13 +1368,14 @@
     }
 }
 %    \end{macrocode}
+%    \end{macro}
 %
 %
 %^^A ======================================================================= %
 %^^A                          Deque Creation Commands                        %
 %^^A ======================================================================= %
 %
-%   \subsubsection{Deque System}
+%   \UWFeature{Deques}
 %   This set of commands is a simple system for creating and working with
 %   double-ended queues (deques, pronounced \textit{deck}).  Deques are a
 %   generalization of stacks and queues in that data can be pushed, popped,
@@ -1192,6 +1399,8 @@
 %   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Deque_Define:n}
+%   Define a new Deque.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Deque_Define:n {
@@ -1199,16 +1408,43 @@
         \seq_new:c {g__UWMad_Deque_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Deque_Clear:n}
+%   Clear but do not undefine a defined Deque.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_Deque_Clear:n {
+    \__UWMad_Deque_IfDefined:nT {#1} {
+        \seq_gclear:c  {g__UWMad_Deque_#1}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%   \begin{macro}{\UWMad_Deque_Clear:n}
+%   Clear and undefine a defined Deque.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Deque_Delete:n {
     \__UWMad_Deque_IfDefined:nT {#1} {
         \seq_gclear:c  {g__UWMad_Deque_#1}
         \cs_undefine:c {g__UWMad_Deque_#1}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{
+%       \UWMad_Deque_PushLeft:nn,
+%       \UWMad_Deque_PushRight:nn}
+%   Push an element on to the left or right of a defined Deque.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Deque_PushLeft:nn {
     \__UWMad_Deque_IfDefined:nT {#1} {
         \seq_gput_left:cn  {g__UWMad_Deque_#1} {#2}
@@ -1219,8 +1455,17 @@
         \seq_gput_right:cn {g__UWMad_Deque_#1} {#2}
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{
+%       \UWMad_Deque_PushLeft:nn,
+%       \UWMad_Deque_PushRight:nn}
+%   Pop an element from the left or right of a defined Deque
+%   and place it into the input stream.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Deque_PopLeft:n {
     \__UWMad_Deque_IfDefined:nT {#1} {
         \seq_gpop_left:cN  {g__UWMad_Deque_#1} \l_tmpa_tl
@@ -1233,15 +1478,22 @@
         \tl_use:N \l_tmpa_tl
     }
 }
+%    \end{macrocode}
+%   \end{macro}
 %
 %
+%   \begin{macro}{
+%       \UWMad_Deque_WalkLeftToRight:nn,
+%       \UWMad_Deque_WalkRightToLeft:nn}
+%   Iterate over the elements left-to-right or right-to-left
+%   of a defined Deque with supplied code.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Deque_WalkLeftToRight:nn {
     \__UWMad_Deque_IfDefined:nT {#1} {
         \seq_map_inline:cn {g__UWMad_Deque_#1} {#2}
     }
 }
-%
-%
 \cs_generate_variant:Nn \seq_reverse:N {c}
 \cs_new:Nn \UWMad_Deque_WalkRightToLeft:nn {
     \__UWMad_Deque_IfDefined:nT {#1} {
@@ -1252,6 +1504,7 @@
     }
 }
 %    \end{macrocode}
+%    \end{macro}
 %
 %
 %
@@ -1261,7 +1514,7 @@
 %^^A                 Hashes (Associative Arrays) with LaTeX3                     %
 %^^A =========================================================================== %
 %
-%   \subsubsection{Hash System}
+%   \UWFeature{Hashes}
 %   This set of commands is a simple system for creating and working with
 %   hashes (more often called associative arrays or dictionaries, but erring
 %   on the side of usablility, Ruby's jargon will be used). Hashes are a
@@ -1308,43 +1561,70 @@
 %   \end{macro}
 %
 %
+%   \begin{macro}{\UWMad_Hash_Define:n}
+%   Define a new Hash.
+%
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Hash_Define:n {
     \__UWMad_Hash_IfUndefined:nT {#1} {
         \prop_new:c {g__UWMad_Hash_#1}
     }
 }
-
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%   \begin{macro}{\UWMad_Hash_Set:nnn}
+%   Set the value of a key of a defined Hash.
+%
+%   \begin{Usage}
+%       \item|\UWMad_Hash_Set:nnn|\marg{HashID}\marg{Key}\marg{Value}
+%   \end{Usage}
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Hash_Set:nnn {
     \__UWMad_Hash_IfDefined:nT {#1} {
         \prop_gput:cxn {g__UWMad_Hash_#1}{#2}{#3}
     }
 }
-
-\cs_new:Nn \UWMad_Hash_Get:nn {
-    \__UWMad_Hash_IfDefined:nT {#1} {
-        \prop_get:cxNTF {g__UWMad_Hash_#1} {#2} \l_tmpa_prop {
-            \tl_use:N \l_tmpa_prop
-        }
-    }
-}
-
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%   \begin{macro}{\UWMad_Hash_Get:nn}
+%   Get the value of a key of a defined Hash and place
+%   it into the input stream.
+%
+%    \begin{macrocode}
 \cs_generate_variant:Nn \prop_get:cn {cf}
-
-\cs_new:Nn \UWMad_Hash_ExpandableGet:nn {
+\cs_new:Nn \UWMad_Hash_Get:nn {
     \__UWMad_Hash_IfDefined:nT {#1} {
         \prop_get:cf {g__UWMad_Hash_#1}{#2}
     }
 }
-
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%   \begin{macro}{\UWMad_Hash_Unset:nn}
+%   Undefine a key-value pair in a defined Hash.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Hash_Unset:nn {
     \__UWMad_Hash_IfDefined:nT {#1} {
         \prop_gremove:cx {g__UWMad_Hash_#1} {#2}
     }
 }
-
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%   \begin{macro}{\UWMad_Hash_IfKeySet:nnTF}
+%   Execute true/false code depending on if a key is set in
+%   a defined Hash.
+%
+%    \begin{macrocode}
 \cs_generate_variant:Nn \tl_to_lowercase:n {f}
-
 \cs_new:Nn \UWMad_Hash_IfKeySet:nnTF {
     \__UWMad_Hash_IfDefined:nT {#1} {
         \prop_if_in:cfTF {g__UWMad_Hash_#1} {\tl_trim_spaces:n{#2}} {
@@ -1354,13 +1634,28 @@
         }
     }
 }
-
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%   \begin{macro}{\UWMad_Hash_Walk:nn}
+%   Iterate over the key-value pairs of a defined Hash with
+%   supplied code. \textbf{No order is gauranteed.}
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Hash_Walk:nn {
     \__UWMad_Hash_IfDefined:nT {#1} {
         \prop_map_inline:cn {g__UWMad_Hash_#1} {#2}
     }
 }
-
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%   \begin{macro}{\UWMad_Hash_Delete:n}
+%   Clear and undefine a defined Hash.
+%
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Hash_Delete:n {
     \__UWMad_Hash_IfDefined:nT {#1} {
         \prop_gclear:c {g__UWMad_Hash_#1}
@@ -1368,6 +1663,7 @@
     }
 }
 %    \end{macrocode}
+%    \end{macro}
 %
 %
 %
@@ -1376,23 +1672,23 @@
 %^^A                         LaTeX2e Abstractions                         %
 %^^A ==================================================================== %
 %
-%   \subsection{\texorpdfstring{\LaTeXe{}}{LaTeX2e} Abstractions}
+%   \UWSubmodule{\texorpdfstring{\LaTeXe{}}{LaTeX2e} Abstractions}
 %
 %   The commands that follow are \LaTeXe{}-like commands that use the
 %   \LaTeXPL{} as the underlying system.  \textbf{The commands are not loaded
 %   by default; they must be invoked by calling the following command.}
 %
-%   \begin{macro}{\LoadLaTeXeAbstractions}
-%   \textbf{This command needs to be invoked to define the abstractions
+%
+%   \UWFeature{Utility Commands}
+%
+%   \begin{macro}{\LoadUtilityAPI}
+%   \textbf{This command needs to be invoked to load these Utilities
 %   for usage.}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \LoadLaTeXeAbstractions { } {
+\DeclareDocumentCommand \LoadUtilityAPI { } {
 %    \end{macrocode}
-%
 %   \end{macro}
-%
-%   \subsubsection{Utility Commands}
 %
 %
 %   \begin{macro}{\IfCommandExists,\IfCommandDoesNotExist}
@@ -1468,6 +1764,12 @@
 %   \end{macro}
 %
 %
+%   Close |\LoadUtilityAPI|.
+%    \begin{macrocode}
+}
+%    \end{macrocode}
+%
+%
 %
 %
 %
@@ -1476,7 +1778,17 @@
 %^^A                      Command Creator System                          %
 %^^A ==================================================================== %
 %
-%   \subsubsection{Command Creator System}
+%   \UWFeature{Command Creators}
+%
+%
+%   \begin{macro}{\LoadCommandAPI}
+%   \textbf{This command needs to be invoked to load these Command Creators
+%   for usage.}
+%
+%    \begin{macrocode}
+\DeclareDocumentCommand \LoadCommandAPI { } {
+%    \end{macrocode}
+%   \end{macro}
 %
 %   \begin{macro}{\MakeCommand,\ReMakeCommand}
 %   This command pair uses the |etoolbox|'s |\csdef| to define a commands
@@ -1494,14 +1806,20 @@
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeCommand { m +m } {
-    \cs_set:cpn {##1} {##2}
-}
-\DeclareDocumentCommand \ReMakeCommand { m +m }{
-    \IfCommandExists{##1}{
-        \cs_set:cpn {##1} {##2}
+\DeclareDocumentCommand \MakeCommand { O{} m +m } {
+    \cs_if_free:cTF {##2} {
+        \cs_set:cpn {##2} ##1 {##3}
     }{
-        \UWMad@ClassWarning{Command~`##1'~is~undefined.}
+        \msg_warning:nnnn
+            {UWMadThesis}{Programming/Defined}{##2}{command}
+    }
+}
+\DeclareDocumentCommand \ReMakeCommand { O{} m +m }{
+    \cs_if_exist:cTF {##2} {
+        \cs_set:cpn {##2} ##1 {##3}
+    }{
+        \msg_error:nnnn
+            {UWMadThesis}{Programming/Undefined}{##2}{command}
     }
 }
 %    \end{macrocode}
@@ -1518,8 +1836,8 @@
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeGlobalCommand { m +m } {
-    \cs_gset:cpn {##1} {##2}
+\DeclareDocumentCommand \MakeGlobalCommand { O{} +m m } {
+    \cs_gset:cpn {##2} ##1 {##3}
 }
 %    \end{macrocode}
 %   \end{macro}
@@ -1538,8 +1856,8 @@
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \MakeExpandedCommand { m +m } {
-    \cs_get:cpx {##1} {##2}
+\DeclareDocumentCommand \MakeExpandedCommand { O{} m +m } {
+    \cs_get:cpx {##2} ##1 {##3}
 }
 %    \end{macrocode}
 %   \end{macro}
@@ -1574,37 +1892,145 @@
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \CopyCommand { m m } {
-    \IfCommandExists{##1} {
-        \IfCommandExists{##2} {
-            \UWMad@ClassWarning{Command~`##2'~is~defined.}
+    \cs_if_free:cTF {##1} {
+        \cs_if_free:cTF {##2} {
+            \cs_gset_eq:cc {##2}{##1}
         }{
+            \msg_warning:nnnn
+                {UWMadThesis}{Programming/Defined}{##2}{command}
         }
-        \cs_gset_eq:cc {##2}{##1}
     }{
-        \UWMad@ClassWarning{Command~`##1'~is~undefined.}
+        \msg_warning:nnnn
+            {UWMadThesis}{Programming/Defined}{##1}{command}
     }
 }
 %    \end{macrocode}
 %   \end{macro}
 %
 %
-%
-%
-%
-%
-%   \subsubsection{Core System Aliases}
-%
-%
-%
-%
-%
-%
-%   This line closes the |\LoadLaTeXeAbstractions| command.
+%   Close |\LoadCommandAPI|.
 %    \begin{macrocode}
 }
 %    \end{macrocode}
 %
 %
+%
+%
+%   \UWFeature{Types}
+%
+%   \begin{macro}{\LoadTypesAPI}
+%   \textbf{This command needs to be invoked to load these Type Commands
+%   for usage.}
+%
+%    \begin{macrocode}
+\DeclareDocumentCommand \LoadTypesAPI { } {
+%    \end{macrocode}
+%   \end{macro}
+%
+%   \begin{macro}{
+%       \BooleanDefineLocal,
+%       \BooleanDefineGlobal,
+%       \BooleanDefineLocalAndSetTrue,
+%       \BooleanDefineLocalAndSetFalse,
+%       \BooleanDefineGlobalAndSetTrue,
+%       \BooleanDefineGlobalAndSetFalse,
+%       \BooleanSetTrue,
+%       \BooleanSetFalse,
+%       \BooleanSetIfTrue,
+%       \BooleanSetIfFalse}
+%   \LaTeXe{} version of the Boolean Type system above.
+%    \begin{macrocode}
+\cs_gset_eq:NN
+    \BooleanDefineLocal             \UWMad_Boolean_DefineLocal:n
+\cs_gset_eq:NN
+    \BooleanDefineGlobal            \UWMad_Boolean_DefineGlobal:n
+\cs_gset_eq:NN
+    \BooleanDefineLocalAndSetTrue   \UWMad_Boolean_DefineLocalAndSetTrue:n
+\cs_gset_eq:NN
+    \BooleanDefineLocalAndSetFalse  \UWMad_Boolean_DefineLocalAndSetFalse:n
+\cs_gset_eq:NN
+    \BooleanDefineGlobalAndSetTrue  \UWMad_Boolean_DefineGlobalAndSetTrue:n
+\cs_gset_eq:NN
+    \BooleanDefineGlobalAndSetFalse \UWMad_Boolean_DefineGlobalAndSetFalse:n
+\cs_gset_eq:NN
+    \BooleanSetTrue                 \UWMad_Boolean_SetTrue:n
+\cs_gset_eq:NN
+    \BooleanSetFalse                \UWMad_Boolean_SetFalse:n
+\cs_gset_eq:NN
+    \BooleanSetIfTrue               \UWMad_Boolean_SetIfTrue:nTF
+\cs_gset_eq:NN
+    \BooleanSetIfFalse              \UWMad_Boolean_SetIfFalse:nTF
+%    \end{macrocode}
+%    \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \LengthDefineLocal,
+%       \LengthDefineGlobal,
+%       \LengthAdd,
+%       \LengthSet,
+%       \LengthOf,
+%       \LengthIf}
+%   \LaTeXe{} version of the Boolean Type system above.
+%    \begin{macrocode}
+\cs_gset_eq:NN \LengthDefineLocal   \UWMad_Length_DefineLocal:nn
+\cs_gset_eq:NN \LengthDefineGlobal  \UWMad_Length_DefineGlobal:nn
+\cs_gset_eq:NN \LengthAdd           \UWMad_Length_Add:nn
+\cs_gset_eq:NN \LengthSet           \UWMad_Length_Set:nn
+\cs_gset_eq:NN \LengthOf            \UWMad_Length_Of:n
+\cs_gset_eq:NN \LengthIf            \UWMad_Length_If:nTF
+%    \end{macrocode}
+%    \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%        \CounterDefineLocal,
+%        \CounterDefineGlobal,
+%        \CounterAdd,
+%        \CounterStep,
+%        \CounterSet,
+%        \CounterSetAndAdd,
+%        \CounterSetAndStep,
+%        \CounterValue,
+%        \CounterIf,
+%        \CounterCompare,
+%        \CounterArabic,
+%        \CounterAlpha,
+%        \CounterALPHA,
+%        \CounterRoman,
+%        \CounterROMAN}
+%   \LaTeXe{} version of the Counter Type system above.
+%    \begin{macrocode}
+\cs_gset_eq:NN \CounterDefineLocal  \UWMad_Counter_DefineLocal:nn
+\cs_gset_eq:NN \CounterDefineGlobal \UWMad_Counter_DefineGlobal:nn
+\cs_gset_eq:NN \CounterAdd          \UWMad_Counter_Add:nn
+\cs_gset_eq:NN \CounterStep         \UWMad_Counter_Step:n
+\cs_gset_eq:NN \CounterSet          \UWMad_Counter_Set:nn
+\cs_gset_eq:NN \CounterSetAndAdd    \UWMad_Counter_SetAndAdd:nn
+\cs_gset_eq:NN \CounterSetAndStep   \UWMad_Counter_SetAndStep:nn
+\cs_gset_eq:NN \CounterValue        \UWMad_Counter_Value:n
+\cs_gset_eq:NN \CounterIf           \UWMad_Counter_If:nTF
+\cs_gset_eq:NN \CounterCompare      \UWMad_Counter_Compare:nnnTF
+\cs_gset_eq:NN \CounterArabic       \UWMad_Counter_arabic:n
+\cs_gset_eq:NN \CounterAlpha        \UWMad_Counter_alpha:n
+\cs_gset_eq:NN \CounterALPHA        \UWMad_Counter_Alpha:n
+\cs_gset_eq:NN \CounterRoman        \UWMad_Counter_roman:n
+\cs_gset_eq:NN \CounterROMAN        \UWMad_Counter_Roman:n
+%    \end{macrocode}
+%    \end{macro}
+%
+%
+%
+%   Close |\LoadTypesAPI|.
+%    \begin{macrocode}
+}
+%    \end{macrocode}
+%
+%
+%
+%   \UWFeature{Collections}
 %
 %
 %
@@ -1615,6 +2041,13 @@
 %   \iffalse
 %<*Code>
 %   \fi
+%
+%
+%   \UWModule{Layout And Styles}
+%
+%
+%
+%
 %    \begin{macrocode}
 \tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
     \geometry{
@@ -1697,6 +2130,10 @@
 %<*Code>
 %\fi
 %
+%
+%   \UWModule{Sectioning}
+%
+%
 %    \begin{macrocode}
 %
 %^^A  =========================================================================== %
@@ -1720,35 +2157,171 @@
 
 \tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
 
-\show\thesubsection
+    \UWMad_Counter_DefineGlobal:nn{Part}{0}
+    \UWMad_Counter_DefineGlobal:nn{Module}{0}
+    \UWMad_Counter_DefineGlobal:nn{Submodule}{0}
+    \UWMad_Counter_DefineGlobal:nn{Feature}{0}
 
-    \UWMad_Counter_DefineGlobal:nn{Chapter}{0}
+    \tl_new:N   \g_UWMad_ThePart_tl
+    \tl_new:N \g_UWMad_TheModule_tl
+    \tl_new:N \g_UWMad_TheSubmodule_tl
+    \tl_new:N \g_UWMad_TheFeature_tl
 
-    \cs_new:Nn \UWMad_Sectioning_PrintModule:nn {
+    \tl_gset:Nn \g_UWMad_ThePart_tl {
+        Part~\UWMad_Counter_Roman:n{Part}
+    }
+    \tl_gset:Nn \g_UWMad_TheModule_tl {
+        Module~\UWMad_Counter_arabic:n{Module}
+    }
+    \tl_gset:Nn \g_UWMad_TheSubmodule_tl {
+        \UWMad_Counter_arabic:n{Module}.
+        \UWMad_Counter_arabic:n{Submodule}
+    }
+    \tl_gset:Nn \g_UWMad_TheFeature_tl {
+        \g_UWMad_TheSubmodule_tl.
+        \UWMad_Counter_arabic:n{Feature}
+    }
+
+    \cs_new:Nn \UWMad_Sectioning_Module:nn {
         \clearpage
+
+        \UWMad_Counter_Step:n {Module}
+        \UWMad_Counter_Set:nn {Submodule}{0}
+        \UWMad_Counter_Set:nn {Feature}{0}
+
         \group_begin:
-            \UWMad_Counter_Step:n {Chapter}
             \null\vskip 0.1em
             \phantomsection
-            \textbf{\LARGE{Module}~
-                \int_to_arabic:n{\UWMad_Counter_Value:n{Chapter}}}
+            \textbf{
+                \LARGE{
+                    \g_UWMad_TheModule_tl
+                }
+            }
             \vskip 0.5em
             \textbf{\Huge{#2}}
-            \vskip 1em
-            \addcontentsline{toc}{chapter}{#1}
-            \par
         \group_end:
+        \addcontentsline{toc}{section}{#1}
+        \vskip 1em
+        \par
     }
 
-\show\Module
+    \cs_new:Nn \UWMad_Sectioning_Submodule:nn {
+        \UWMad_Counter_Step:n {Submodule}
 
-    \DeclareDocumentCommand \Module { o m } {
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \Large{
+                    \g_UWMad_TheSubmodule_tl
+                    \hspace*{0.5em}#2
+                }
+            }
+        \group_end:
+        \addcontentsline{toc}{subsection}{#1}
+        \vskip 0.2em
+        \par
+    }
+
+    \cs_new:Nn \UWMad_Sectioning_Feature:nn {
+        \UWMad_Counter_Step:n {Feature}
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \large{
+                    \g_UWMad_TheFeature_tl
+                    \hspace*{0.5em}#2
+                }
+            }
+        \group_end:
+        \addcontentsline{toc}{subsubsection}{#1}
+        \vskip 0.2em
+        \par
+    }
+
+
+    \DeclareDocumentCommand \UWModule { o m } {
         \IfNoValueTF {#1} {
-            \UWMad_Sectioning_PrintModule:nn{#2}{#2}
+            \UWMad_Sectioning_Module:nn{#2}{#2}
         } {
-            \UWMad_Sectioning_PrintModule:nn{#1}{#2}
+            \UWMad_Sectioning_Module:nn{#1}{#2}
         }
     }
+
+    \DeclareDocumentCommand \UWSubmodule { o m } {
+        \IfNoValueTF {#1} {
+            \UWMad_Sectioning_Submodule:nn{#2}{#2}
+        } {
+            \UWMad_Sectioning_Submodule:nn{#1}{#2}
+        }
+    }
+
+    \DeclareDocumentCommand \UWFeature { o m } {
+        \IfNoValueTF {#1} {
+            \UWMad_Sectioning_Feature:nn{#2}{#2}
+        } {
+            \UWMad_Sectioning_Feature:nn{#1}{#2}
+        }
+    }
+
+    \RenewDocumentCommand   \part { o m } {
+        \UWMad_Counter_Step:n{Part}
+        \cleardoublepage
+        \newgeometry{marginparwidth = 0pt}
+        \group_begin:
+            \vspace*{2in}
+            \phantomsection
+            \begin{center}
+                \textbf{
+                    \huge{\g_UWMad_ThePart_tl}
+                    \vskip 0.30em
+                    \Huge{#2}
+                }
+                \IfNoValueTF{#1} {
+                    \addcontentsline{toc}{part}{#2}
+                } {
+                    \addcontentsline{toc}{part}{#1}
+                }
+            \end{center}
+            \thispagestyle{empty}
+        \group_end:
+        \restoregeometry
+        \clearpage
+    }
+
+% Define some lengths for the documentation.
+    \setstretch{1.30}
+    \setlength{\parindent}{0pt}
+
+    % Play with macrocode env. formatting
+    \let\BeginMacroCode\macrocode
+    \let\EndMacroCode\endmacrocode
+
+    \renewcommand{\macrocode}{
+        \vspace*{-0.90em}
+        \BeginMacroCode
+        \setlength{\parskip}{0em}
+        \setstretch{1.0}
+    }
+    \renewcommand{\endmacrocode}{
+        \EndMacroCode
+        \vspace*{0.5em}
+    }
+
+    % Define the Usage environment
+    \newenvironment{Usage}
+        {   \vskip 0.6em
+            \textsl{Usage}:
+            \begin{list}
+                {}
+                {   \setstretch{1}
+                    \setlength{\topsep}{0em}
+                    \setlength{\itemsep}{0em}
+                    \setlength{\parsep}{0em}
+                    \setlength{\leftmargin}{1em}}}
+        {   \end{list}}
 
 }{}
 
@@ -1976,6 +2549,11 @@
 %   \fi
 %
 %
+%   \UWModule{Math}
+%
+%
+%
+%
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Math_NthRoot:nn {
     \root #1 \of {#2\:\!}
@@ -2101,6 +2679,874 @@
     \let\OldPhi       \Phi       \renewcommand{\Phi}       {\ensuremath{\OldPhi       }\xspace}
     \fi
 %    \end{macrocode}
+%   \iffalse
+%</Code>
+%   \fi
+%   \iffalse
+%<*Code>
+%   \fi
+%
+%^^A =========================================================================== %
+%^^A                       Entry Independent Commands                            %
+%^^A =========================================================================== %
+%
+%
+%  \UWModule{ListOf}
+%
+%   The ListOf Module is a collection of commands that enables the easy
+%   creation and typsetting of Lists.
+%
+%   Lists are taken to be any collection of entries that is to be typeset
+%   with a particular style.  For example, a simple Nomenclature could be
+%   considered a list of (symbol, description) entries to be typeset with a
+%   fixed style for all entires.  The |ListOf| commands create a system
+%   specifically for this scenario.
+%
+%   Of course, as the commands description will show, lists can be much more
+%   complicated that two items.  For the |ListOf| system to function, an
+%   author really only needs to define the |ListOf|, create a command to push
+%   (enqueue) entries on to the |ListOf| queue, and at some point tell the
+%   |ListOf| to typeset the entries it has stored (if display of the content
+%   is desired).
+%
+%
+%
+%
+%   \UWSubmodule{ListOf Commands}
+%
+%   \begin{macro}{\UWMad_ListOf_Define:n}
+%   Define a new |ListOf| with \marg{ID}. This command creates the
+%   commands to store the section commands and title for each group,
+%   the booleans to indicate if the sections should be numbered and
+%   if the sections should be included in the table of contentst
+%   (regardless of numbering), a hash to hold of the user-defined
+%   hooks for the |ListOf|, and a queue to store the entries for
+%   typesetting.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_Define:n {
+    \tl_const:cn {c__ListOf#1-Defined}{}
+%
+    \tl_new:c {l__UWMad_ListOf#1_SectionMain_tl}
+    \tl_new:c {l__UWMad_ListOf#1_SectionGroup_tl}
+    \tl_new:c {l__UWMad_ListOf#1_SectionSubgroup_tl}
+%
+    \tl_new:c {l__UWMad_ListOf#1_TitleMain_tl}
+    \tl_new:c {l__UWMad_ListOf#1_TitleGroup_tl}
+    \tl_new:c {l__UWMad_ListOf#1_TitleSubgroup_tl}
+%
+    \UWMad_Boolean_DefineGlobalSetTrue:n{__ListOf#1-Numbered}
+    \UWMad_Boolean_DefineGlobalSetTrue:n{__ListOf#1-IncludeInTOC}
+    \UWMad_Queue_Define:n               {__ListOf#1-EntryQueue}
+    \UWMad_Hash_Define:n                {__ListOf#1-Hook}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_Delete:n}
+%   Simply undefines all of the commands created in the |Define| command
+%   above for the given \marg{ID}.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_Delete:n {
+    \cs_undefine:c {c__ListOf#1-Defined}
+%
+    \cs_undefine:c {l__UWMad_ListOf#1_SectionMain_tl}
+    \cs_undefine:c {l__UWMad_ListOf#1_SectionGroup_tl}
+    \cs_undefine:c {l__UWMad_ListOf#1_SectionSubgroup_tl}
+%
+    \cs_undefine:c {l__UWMad_ListOf#1_TitleMain_tl}
+    \cs_undefine:c {l__UWMad_ListOf#1_TitleGroup_tl}
+    \cs_undefine:c {l__UWMad_ListOf#1_TitleSubgroup_tl}
+%
+    \UWMad_Boolean_Delete:n {__ListOf#1-Numbered}
+    \UWMad_Boolean_Delete:n {__ListOf#1-IncludeInTOC}
+    \UWMad_Queue_Delete:n   {__ListOf#1-EntryQueue}
+    \UWMad_Hash_Delete:n    {__ListOf#1-Hook}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_IfDefined:nT}
+%   Checks to see if a |ListOf| with \marg{ID} has been created and
+%   errors if not.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_IfDefined:nT {
+    \__UWMad_IfDefined:nnnnT
+        {c__ListOf}
+        {#1}
+        {-Defined}
+        {ListOf}
+        {#2}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_MakeNumbered:n}
+%   Makes the current section of the |ListOf| with \marg{ID} numbered.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_MakeNumbered:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_SetTrue:n {__ListOf#1-Numbered}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_MakeNotNumbered:n}
+%   Makes the current section of the |ListOf| with \marg{ID} unnumbered
+%   (it ``stars'' the section).
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_MakeNotNumbered:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_SetFalse:n {__ListOf#1-Numbered}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_IfNumbered:nTF}
+%   Branches to \marg{True Code} or \marg{False Code} depending on whether
+%   the |ListOf| with \marg{ID} is numbered or not.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_IfNumbered:nTF {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_IfTrue:nTF {__ListOf#1-Numbered} {
+            #2
+        }{
+            #3
+        }
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_IncludeInTOC:n}
+%   Makes the current section of the |ListOf| with \marg{ID} appear in
+%   the Table of Contents (TOC) regardless of if it is numbered/unnumbered.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_IncludeInTOC:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_SetTrue:n {__ListOf#1-IncludeInTOC}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_DoNotIncludeInTOC:n}
+%   Makes the current section of the |ListOf| with \marg{ID} not appear in
+%   the Table of Contents (TOC) regardless of if it is numbered/unnumbered.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_DoNotIncludeInTOC:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_SetFalse:n {__ListOf#1-IncludeInTOC}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_IfIncludeInTOC:n}
+%   Branches to \marg{True Code} or \marg{False Code} depending on whether
+%   the |ListOf| with \marg{ID} is to be included or not.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_IfIncludeInTOC:nTF {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \UWMad_Boolean_IfTrue:nTF {__ListOf#1-IncludeInTOC} {
+            #2
+        }{
+            #3
+        }
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \UWMad_ListOf_SetTitleMain:nn,
+%       \UWMad_ListOf_SetTitleGroup:nn,
+%       \UWMad_ListOf_SetTitleSubgroup:nn}
+%   Sets the value of the title of the sections to \marg{Title} for the
+%   |ListOf| with \marg{ID}
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_SetTitleMain:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_TitleMain_tl}{#2}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_SetTitleGroup:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_TitleGroup_tl}{#2}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_SetTitleSubgroup:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_TitleSubgroup_tl}{#2}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \UWMad_ListOf_GetTitleMain:nn,
+%       \UWMad_ListOf_GetTitleGroup:nn,
+%       \UWMad_ListOf_GetTitleSubgroup:nn}
+%   Gets the value of the title of the sections to \marg{Title} for the
+%   |ListOf| with \marg{ID}
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_GetTitleMain:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_TitleMain_tl}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_GetTitleGroup:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_TitleGroup_tl}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_GetTitleSubgroup:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_TitleSubgroup_tl}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \UWMad_ListOf_SetSectionMain:nn,
+%       \UWMad_ListOf_SetSectionGroup:nn,
+%       \UWMad_ListOf_SetSectionSubgroup:nn}
+%   Sets the value of the sectioning command for a particular group of the
+%   |ListOf| with \marg{ID}.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_SetSectionMain:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_SectionMain_tl}{#2}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_SetSectionGroup:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_SectionGroup_tl}{#2}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_SetSectionSubgroup:nn {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_gset:cn {l__UWMad_ListOf#1_SectionSubgroup_tl}{#2}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{
+%       \UWMad_ListOf_GetSectionMain:nn,
+%       \UWMad_ListOf_GetSectionGroup:nn,
+%       \UWMad_ListOf_GetSectionSubgroup:nn}
+%   Gets the value of the sectioning command for a particular group of the
+%   |ListOf| with \marg{ID}.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_GetSectionMain:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_SectionMain_tl}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_GetSectionGroup:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_SectionGroup_tl}
+    }
+}
+\cs_new:Nn \UWMad_ListOf_GetSectionSubgroup:n {
+    \UWMad_ListOf_IfDefined:nT {#1} {
+        \tl_use:c {l__UWMad_ListOf#1_SectionSubgroup_tl}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_PushEntry:nn}
+%   Pushes \marg{Entry} on to the entry queue of the |ListOf| with \marg{ID}.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_PushEntry:nn {
+    \UWMad_Queue_Push:nn{__ListOf#1-EntryQueue}{#2}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_SetHook:nnn}
+%   Sets a \marg{HookName} to a \marg{HookCode} for the |ListOf|
+%   with \marg{ID}.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_SetHook:nnn {
+    \UWMad_Hash_Set:nnn{__ListOf#1-Hook}{#2}{#3}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_PrintEntries:n}
+%   Prints all entries currently in the |ListOf| queue with \marg{ID} and
+%   clears the queue.  The \texttt{PrePrint} and \texttt{PostPrint} hooks
+%   are also called here.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_PrintEntries:n {
+    \UWMad_Hash_Get:nn   {__ListOf#1-Hook}{PrePrint}
+    \UWMad_Queue_Walk:nn {__ListOf#1-EntryQueue}{##1}
+    \UWMad_Queue_Clear:n {__ListOf#1-EntryQueue}
+    \UWMad_Hash_Get:nn   {__ListOf#1-Hook}{PostPrint}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_PrintTitle:n}
+%   Prints all entries currently in the |ListOf| queue with \marg{ID} and
+%   clears the queue.  The \texttt{PrePrint} and \texttt{PostPrint} hooks
+%   are also called here.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_PrintTitle:nn {
+    \UWMad_ListOf_IfNumbered:nTF {#1} {
+        \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
+            \cs:w\tl_use:c {l__UWMad_ListOf#1_Section#2_tl}\cs_end:
+            {\tl_use:c {l__UWMad_ListOf#1_Title#2_tl}}
+        }{
+            \cs:w\tl_use:c {l__UWMad_ListOf#1_Section#2_tl}\cs_end:*
+            {\tl_use:c {l__UWMad_ListOf#1_Title#2_tl}}
+        }
+    } {
+        \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
+            \phantomsection
+            \addcontentsline
+                {toc}
+                {\tl_use:c {l__UWMad_ListOf#1_Section#2_tl}}
+                {\tl_use:c {l__UWMad_ListOf#1_Title#2_tl}}
+        }{}
+        \cs:w\tl_use:c {l__UWMad_ListOf#1_Section#2_tl}\cs_end:*
+        {\tl_use:c {l__UWMad_ListOf#1_Title#2_tl}}
+    }
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro}{\UWMad_ListOf_StartGroup:nn}
+%   A shortcut command that prints the entires in the current queue
+%   and then starts the next section by printing the title.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_StartGroup:nn {
+    \UWMad_ListOf_PrintEntries:n{#1}
+    \UWMad_ListOf_PrintTitle:nn{#1}{#2}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%    \begin{macrocode}
+%
+%
+%
+% Nomenclature Environmentment ----------------------------------------------------
+\UWMad_Length_DefineGlobal:nn {__Nomenclature-WidestSymbol}         {0pt}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-TitleSkip}            {0em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-PrintSkip}            {1em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryMarginLeft}      {1em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryMarginBottom}    {0.25em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryWidthSymbol}     {0em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryWidthDescription}{0em}
+\UWMad_Length_DefineGlobal:nn   {Nomenclature-EntryPadMiddle}       {0.75em}
+%
+\DeclareDocumentCommand  \ResetColumnWidth { }{
+    \UWMad_Length_Set:nn {__Nomenclature-WidestSymbol}{0pt}
+}
+%
+%
+\cs_generate_variant:Nn \dim_set:Nn {Nf}
+
+\cs_new:Nn \__UWMad_Nomenclature_UpdateWidest:n {
+    \hbox_set:Nn \l_tmpa_box {#1}
+    \dim_set:Nf  \l_tmpa_dim {\box_wd:N \l_tmpa_box}
+    \UWMad_Length_If:nnnTF{__Nomenclature-WidestSymbol} {<} {\l_tmpa_dim} {
+        \UWMad_Length_Set:nn
+            {__Nomenclature-WidestSymbol}
+            {\l_tmpa_dim}
+    }{
+    }
+}
+%
+%
+\cs_new:Nn \__UWMad_Nomenclature_SetEntryWidths: {
+    % Define Symbol minipage width
+    \UWMad_Length_Set:nn {Nomenclature-EntryWidthSymbol} {
+        \UWMad_Length_Of:n{__Nomenclature-WidestSymbol} +
+        \UWMad_Length_Of:n{Nomenclature-EntryPadMiddle}
+    }
+    %
+    % Define Description minipage width
+    \UWMad_Length_Set:nn{Nomenclature-EntryWidthDescription} {
+        0.99\textwidth -
+        \UWMad_Length_Of:n{Nomenclature-EntryWidthSymbol} -
+        \UWMad_Length_Of:n{Nomenclature-EntryMarginLeft}
+    }
+}
+%
+%
+%
+\cs_new:Nn \__UWMad_Nomenclature_Entry:nn {
+    \group_begin:
+        \setstretch{1.1}
+        \skip_horizontal:n{\UWMad_Length_Of:n{Nomenclature-EntryMarginLeft}}
+        \begin{minipage}[t]
+            {\UWMad_Length_Of:n{Nomenclature-EntryWidthSymbol}}
+            #1
+        \end{minipage}
+        \begin{minipage}[t]
+            {\UWMad_Length_Of:n{Nomenclature-EntryWidthDescription}}
+           #2
+        \end{minipage}
+        \skip_vertical:n{\UWMad_Length_Of:n{Nomenclature-EntryMarginBottom}}
+    \group_end:
+}
+%
+%
+%
+%
+\DeclareDocumentEnvironment {Nomenclature} { s O{chapter} G{Nomenclature} } {
+%
+    \UWMad_Hash_IfKeySet:nnTF {SectionToLevel}{#2}{
+    }{
+        \UWMad@ClassError
+            {Nomenclature~environment~received~invalid~section~`#2'}
+    }
+%
+%
+    \UWMad_ListOf_Define:n {Nomenclature}
+%
+    \IfBooleanTF {#1} {
+        \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
+    }{
+        \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
+    }
+%
+%
+    \UWMad_ListOf_SetSectionMain:nn  {Nomenclature} {#2}
+    \UWMad_ListOf_SetSectionGroup:nn {Nomenclature} {
+        \UWMad_Hash_Get:nn{NextSectioningCommand}{#2}
+    }
+    \UWMad_ListOf_SetSectionSubgroup:nn {Nomenclature} {
+        \UWMad_Hash_Get:nn{NextSectioningCommand} {
+            \UWMad_ListOf_GetSectionGroup:n{Nomenclature}
+        }
+    }
+%
+%
+    \DeclareDocumentCommand \Entry { m m } {
+        \UWMad_ListOf_PushEntry:nn {Nomenclature} {
+            \__UWMad_Nomenclature_Entry:nn
+                {##1}
+                {##2}
+        }
+        \__UWMad_Nomenclature_UpdateWidest:n{##1}
+    }
+    \UWMad_ListOf_SetHook:nnn {Nomenclature} {PrePrint} {
+        \__UWMad_Nomenclature_SetEntryWidths:
+    }
+    \UWMad_ListOf_SetHook:nnn {Nomenclature} {PostPrint} {
+        \ResetColumnWidth{}
+    }
+%
+%
+    \UWMad_ListOf_SetTitleMain:nn {Nomenclature}{#3}
+    \UWMad_ListOf_PrintTitle:nn {Nomenclature}{Main}
+%
+%
+%
+    \DeclareDocumentCommand \Group { s G{} } {
+        \IfBooleanTF {##1} {
+            \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
+        }{
+            \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
+        }
+        \UWMad_ListOf_SetTitleGroup:nn {Nomenclature}{##2}
+        \UWMad_ListOf_StartGroup:nnn{Nomenclature}{Group}
+    }
+%
+%
+    \DeclareDocumentCommand \SubGroup { s G{} } {
+        \IfBooleanTF {##1} {
+            \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
+        }{
+            \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
+        }
+        \UWMad_ListOf_SetTitleSubgroup:nn {Nomenclature}{##2}
+        \UWMad_ListOf_StartGroup:nnn{Nomenclature}{Subgroup}
+    }
+%
+}{
+    \UWMad_ListOf_PrintEntries:n {Nomenclature}
+    \UWMad_ListOf_Delete:n{Nomenclature}
+}
+\cs_new:cpn      {Nomenclature*} {\Nomenclature*}
+\cs_new_eq:cN {endNomenclature*} \endNomenclature
+%    \end{macrocode}
+%
+%
+%
+%   \begin{Nomenclature}[subsection]
+%       \Entry{One}{Two}
+%   \end{Nomenclature}
+%
+%   \begin{Nomenclature*}[subsection]{My Nomenclature Name}
+%       \Entry{One}{Two}
+%   \end{Nomenclature*}
+%   \clearpage
+%
+%
+%
+%
+%   \iffalse
+%</Code>
+%   \fi
+%   \iffalse
+%<*Code>
+%   \fi
+%^^A ------------------------------------------------------------------------ %
+%^^A                    Metadata Writing/Importing Routines                   %
+%^^A ------------------------------------------------------------------------ %
+%
+%   \UWModule{PDF and Other Metadata}
+%
+%
+%
+%   Since the metadata (i.e., properties) of a PDF must be set in the preamble
+%   but typically a user defines them in the document, these routines write the
+%   supported metadata that a user may define to an auxiliary file that is
+%   then imported upon recompilation.  It uses the CSV commands above to define
+%   and build the CSV list, and then uses the TeX |\write| to dump it to the file.
+%
+%
+% Used to determine is the list was created
+%
+%    \begin{macrocode}
+%
+% Command used to append the data to the CSV list.  It is called in the
+% metadata commands below
+\UWMad_CSV_Define:n {MetaDataList}
+\newcommand{\PushPDFMetaDataToList}[2]{
+    \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}        % True:    Append the data
+}
+
+
+% If the auxiliary file exists, import it.
+\file_if_exist:nTF{UWMad.PDFMetaData.aux} {
+    \file_input:n {UWMad.PDFMetaData.aux}
+}{
+}
+
+% End-of-Document Commands
+\AtEndDocument{
+    \UWMad_CSV_IfNotEmpty:nTF {MetaDataList} {
+        \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
+        \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
+            UWMad.PDFMetaData.aux
+        }
+        \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
+            \noexpand\ExplSyntaxOff
+                \noexpand\hypersetup{\UWMad_CSV_Get:n{MetaDataList}}
+            \noexpand\ExplSyntaxOn
+        }
+        \iow_close:N \g__UWMad_PDFMetaData_HyperSetup_io
+    }
+}
+
+
+
+% ------------------------------------------------------------------------ %
+%           Metadata Defining/Storing Commands (User's Interface)          %
+% ------------------------------------------------------------------------ %
+% These commands hold the actual information that will be displayed upon typesetting.
+\newcommand{\TheTitle}      {}
+\newcommand{\TheSubtitle}   {}
+\newcommand{\TheAuthor}     {}
+\newcommand{\TheDate}       {}
+\newcommand{\TheDepartment} {}
+\newcommand{\TheDegree}     {}
+\newcommand{\TheSpecialty}  {}
+\newcommand{\TheAdvisor}    {}
+\newcommand{\TheUniversity} {}
+\newcommand{\TheKeywords}   {}
+\newcommand{\TheSubject}    {}
+\newcommand{\TheProducer}   {}
+\newcommand{\TheCreator}    {}
+\newcommand{\Title}      [1] {\renewcommand{\TheTitle}      {#1\xspace}
+    \PushPDFMetaDataToList{pdftitle}    {#1}}
+\newcommand{\Author}     [1] {\renewcommand{\TheAuthor}     {#1\xspace}
+    \PushPDFMetaDataToList{pdfauthor}   {#1}}
+\newcommand{\Subject}    [1] {\renewcommand{\TheSubject}    {#1\xspace}
+    \PushPDFMetaDataToList{pdfsubject}  {#1}}
+\newcommand{\Producer}   [1] {\renewcommand{\TheProducer}   {#1\xspace}
+    \PushPDFMetaDataToList{pdfproducer} {#1}}
+\newcommand{\Creator}    [1] {\renewcommand{\TheCreator}    {#1\xspace}
+    \PushPDFMetaDataToList{pdfcreator}  {#1}}
+\newcommand{\Keywords}   [1] {\renewcommand{\TheKeywords}   {#1\xspace}
+    \PushPDFMetaDataToList{pdfkeywords} {#1}}
+\newcommand{\Subtitle}   [1] {\renewcommand{\TheSubtitle}   {#1\xspace}}
+\newcommand{\Date}       [1] {\renewcommand{\TheDate}       {#1\xspace}}
+\newcommand{\Department} [1] {\renewcommand{\TheDepartment} {#1\xspace}}
+\newcommand{\Degree}     [1] {\renewcommand{\TheDegree}     {#1\xspace}}
+\newcommand{\Specialty}  [1] {\renewcommand{\TheSpecialty}  {#1\xspace}}
+\newcommand{\Advisor}    [1] {\renewcommand{\TheAdvisor}    {#1\xspace}}
+\newcommand{\University} [1] {\renewcommand{\TheUniversity} {#1\xspace}}
+%    \end{macrocode}
+%
+%
+%
+%
+%   \iffalse
+%</Code>
+%   \fi
+%   \iffalse
+%<*Code>
+%   \fi
+%
+%
+%^^A =============================================================================================== %
+%^^A                                      Title Page                                                 %
+%^^A =============================================================================================== %
+%
+%   \UWModule{Special Pages}
+%
+%    \begin{macrocode}
+% That phrase that occurs on every title page design the class author has seen
+\DeclareRobustCommand{\ThatOddPhrase}{\setstretch{1.1}
+    \ifUWMad@IsADissertation
+        A dissertation submitted in partial fulfillment of the requirements for the degree of
+    \else
+        A preliminary report submitted in partial fulfillment of the requirements for the degree of
+    \fi
+}
+
+\DeclareRobustCommand{\MakeTitlePageTitleBlock}{
+    \vspace{0.3in}
+    \LARGE
+    \textsc{\TheTitle}~\\[0.2in]
+    by~\\[0.2in]
+    \Large
+    \TheAuthor
+}
+
+\DeclareRobustCommand{\MakeTitlePageDegreeBlock}{
+    \Large
+    \ThatOddPhrase~\\[0.2in]
+    \TheDegree \\[0.1in]
+    \TheSpecialty
+}
+
+\DeclareRobustCommand{\MakeTitlePageUniversityBlock}{
+    \Large
+    at \\[0.4in]
+    \textsc{\TheUniversity} \\[0.1in]
+    \the\year
+}
+
+
+\DeclareRobustCommand{\MakeTitlePage}{
+    \thispagestyle{empty}
+    \begin{center}
+        \MakeTitlePageTitleBlock
+        \null\vfill
+        \MakeTitlePageDegreeBlock
+        \null\vfill
+        \MakeTitlePageUniversityBlock
+    \end{center}
+    \clearpage
+}
+
+
+
+
+
+
+
+% =============================================================================================== %
+%                                      License Page                                               %
+% =============================================================================================== %
+
+% Author command that will display 'The Author' if \TheAuthor is empty
+\newcommand{\TheLicenseAuthor}{
+    \IfCommandEmpty{\TheAuthor}
+        {The Author}
+        {\TheAuthor}}
+
+% Full Copyright
+\newcommand{\CopyrightTemplate}{
+    \large
+    \copyright{} Copyright by \TheLicenseAuthor(\the\year)\\
+    All Rights Reserved
+}
+
+\newcommand{\MakeCopyright}{
+    \LicensePage{CopyrightTemplate}
+}
+
+
+% --------------------------------------------------------------- %
+%                  Creative Commons Licenses                      %
+% --------------------------------------------------------------- %
+% Creative Commans URL and desired portings
+\newcommand{\CreativeCommonsPorting}{Unported\xspace}
+\newcommand{\CreativeCommons}{}
+\newcommand{\CreativeCommonsFrontOfURL}{http://creativecommons.org/licenses/}
+\newcommand{\CreativeCommonsBackOfURL} {/3.0/}
+\newcommand{\CreativeCommonsURL}[1]{
+    \CreativeCommonsFrontOfURL#1\CreativeCommonsBackOfURL
+}
+
+
+\newif\ifUWMad@CCAttribution  \UWMad@CCAttributionfalse
+\newif\ifUWMad@CCNonCommercial\UWMad@CCNonCommercialfalse
+\newif\ifUWMad@CCShareAlike   \UWMad@CCShareAlikefalse
+\newif\ifUWMad@CCNoDerivatives\UWMad@CCNoDerivativesfalse
+
+\newcommand{\Attribution}   {\UWMad@CCAttributiontrue}
+\newcommand{\NonCommercial} {\UWMad@CCNonCommercialtrue}
+\newcommand{\ShareAlike}    {\UWMad@CCShareAliketrue}
+\newcommand{\NoDerivatives} {\UWMad@CCNoDerivativestrue}
+
+
+\newcommand{\CreativeCommonsModuleBuild}{
+    \ifUWMad@CCAttribution
+        \newcommand{\TheCreativeCommonsLink}{by}
+        \newcommand{\TheCreativeCommonsWords}{Attribution}
+    \fi
+
+    \ifUWMad@CCNonCommercial
+        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-nc}
+        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-NonCommercial}
+    \fi
+
+    \ifUWMad@CCShareAlike
+        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-sa}
+        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-ShareAlike}
+    \fi
+
+    \ifUWMad@CCNoDerivatives
+        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-nd}
+        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-NoDerivs}
+    \fi
+
+}
+
+
+
+% CC: Template for Creative Commons License
+\newcommand{\CreativeCommonsTemplate}{
+    \large
+    \TheLicenseAuthor has licensed this work under a \\
+    \href{\CreativeCommonsURL{\TheCreativeCommonsLink}}
+        {Creative Commons \TheCreativeCommonsWords\xspace 3.0
+        \CreativeCommonsPorting License}\\
+    \the\year
+}
+
+\newcommand{\MakeCreativeCommons}{
+    \CreativeCommonsModuleBuild
+    \LicensePage{CreativeCommonsTemplate}
+}
+
+% CC: Attribution
+\newcommand{\CreativeCommonsBY}{
+    \Attribution
+    \MakeCreativeCommons
+}
+
+% CC: Attribution and Non-commercial
+\newcommand{\CreativeCommonsBYNC}{
+    \Attribution\NonCommercial
+    \MakeCreativeCommons
+}
+
+% CC: Attribution, Non-commercial, and Share-Alike
+\newcommand{\CreativeCommonsBYNCSA}{
+    \Attribution\NonCommercial\ShareAlike
+    \MakeCreativeCommons
+}
+
+% CC: Attribution and Share-Alike
+\newcommand{\CreativeCommonsBYSA}{
+    \Attribution\ShareAlike
+    \MakeCreativeCommons
+}
+
+
+% Create an alias for \CopyrightAllRightsReserved
+\let\Copyright\CopyrightAllRightsReserved
+
+\DeclareRobustCommand{\LicensePage}[1]{
+    \thispagestyle{empty}                                   % No page number displayed
+    \def\UWMad@RequestedLicense{#1}                         % Initialize the requested license command
+
+    \ifthenelse{\equal{\UWMad@RequestedLicense}{copyright}} % If the user supplied 'copyright' as a License Request
+        {\def\UWMad@RequestedLicense{Copyright}}            % it will be switched to 'Copyright' as \copyright IS
+        {}                                                  % defined as the copyright symbol inherently.
+
+    \null\vfill                                             % Fill the page with elastic whitespace
+    \begin{center}
+        \ifx \UWMad@RequestedLicense \UWMad@Undefined       % Checks if the license requested has a command
+            \UWMad@RequestedLicense                         % If not, the input is echoed
+        \else
+            \csname\UWMad@RequestedLicense\endcsname        % If yes, the license command is excuted.
+        \fi
+    \end{center}
+    \clearpage                                              % Clear the page
+}
+%    \end{macrocode}
+%
+%
+%
 %   \iffalse
 %</Code>
 %   \fi
