@@ -7,10 +7,8 @@
       }%
     \endinput
 }%
-\ExplSyntaxOn
-\NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{UWMadThesis}
-    [2013/08/21~v1.0~|~LaTeX2e+~Thesis~Class~for~UW-Madison]
+\ProvidesExplClass
+    {UWMadThesis}{2013/08/21}{1.0}{LaTeX2e+~Thesis~Class~for~UW-Madison}
 \tl_const:Nn \c_UWMad_ClassName_tl        {UWMadThesis}
 \tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin-Madison}
 \tl_const:Nn \c_UWMad_UniversityShort_tl  {UW-Madison}
@@ -77,6 +75,7 @@
     \RequirePackage{amsmath}
     \RequirePackage{amssymb}
     \RequirePackage{amsfonts}
+    \RequirePackage{mathtools}
 }{}
 \bool_if:NTF \g__UWMad_Hyperlinks_bool {
     \RequirePackage{hyperref}
@@ -97,6 +96,77 @@
 }
 \msg_new:nnn {UWMadThesis} {Programming/Defined} {
     The~#2~`#1'~is~already~defined~and~will~not~altered.
+}
+\cs_new:Nn \UWMad_Hook_Prepend:nn{
+    \cs_new_eq:cc  {#1-Default:} {#1}
+    \cs_gset:cn    {#1:}         {#2 \cs:w #1-Default:\cs_end:}
+    \cs_undefine:c {#1}
+    \cs_new_eq:cc  {#1}          {#1:}
+}
+\cs_new:Nn \UWMad_Hook_Append:nn{
+    \cs_new_eq:cc  {#1-Default:} {#1}
+    \cs_gset:cn    {#1:}        {\cs:w #1-Default:\cs_end: #2}
+    \cs_undefine:c {#1}
+    \cs_new_eq:cc  {#1}          {#1:}
+}
+\cs_new:Nn \UWMad_Hook_Prepend:Nn{
+    \cs_new_eq:cN  {\string#1-Default:} #1
+    \cs_gset:cn    {\string#1:}         {#2 \cs:w\string#1-Default:\cs_end:}
+    \cs_undefine:N  #1
+    \cs_new_eq:Nc   #1          {\string#1:}
+}
+\cs_new:Nn \UWMad_Hook_Append:Nn{
+    \cs_new_eq:cN  {\string#1-Default:} #1
+    \cs_gset:cn    {\string#1:}         {\cs:w\string#1-Default:\cs_end: #2}
+    \cs_undefine:N  #1
+    \cs_new_eq:Nc   #1          {\string#1:}
+}
+\cs_new:Nn \__UWMad_Definition_Swap:Nn {
+    \cs_new_eq:cN  {\string#1-Default:}  #1
+    \cs_new:cn     {\string#1-Swap:}    {#2}
+    \cs_undefine:N  #1
+    \cs_gset_eq:Nc  #1          {\string#1-Swap:}
+}
+\cs_new:Nn \__UWMad_Definition_Swap:cn {
+    \cs_new_eq:cc  {#1-Default:} {#1}
+    \cs_new:cn     {#1-Swap:}    {#2}
+    \cs_undefine:c {#1}
+    \cs_gset_eq:cc {#1}          {#1-Swap:}
+}
+\cs_new:Nn \UWMad_Definition_Swap:cn {
+    \cs_if_exist:cTF {#1} {
+        \__UWMad_Definition_Swap:cn{#1}{#2}
+
+        \cs_if_exist:cTF {end#1} {
+            \__UWMad_Definition_Swap:cn{end#1}{#2}
+        }{}
+    } {
+        \cs_new:cn {#1} {#2}
+    }
+}
+\cs_new:Nn \UWMad_Definition_Reset:c {
+    \cs_if_exist:cTF {#1-Default:} {
+        \cs_gset_eq:cc  {#1}          {#1-Default:}
+        \cs_undefine:c  {#1-Default:}
+
+        \cs_if_exist:cTF {end#1-Default:} {
+            \cs_gset_eq:cc  {#1}          {end#1-Default:}
+            \cs_undefine:c  {end#1-Default:}
+        }{}
+    } {}
+}
+\cs_new:Nn \UWMad_Definition_Swap:Nn {
+    \cs_if_exist:NTF #1 {
+        \__UWMad_Definition_Swap:Nn #1 {#2}
+    } {
+        \cs_new:Nn #1 {#2}
+    }
+}
+\cs_new:Nn \UWMad_Definition_Reset:N {
+    \cs_if_exist:cTF {\string#1-Default:} {
+        \cs_gset_eq:Nc  #1  {\string#1-Default:}
+        \cs_undefine:c      {\string#1-Default:}
+    } {}
 }
 \cs_new:Nn \__UWMad_IfDefined:nnnnT{
     \cs_if_exist:cTF {#1#2#3} {
@@ -330,10 +400,10 @@
     \int_to_arabic:n {\UWMad_Counter_Value:n{#1}}
 }
 \cs_new:Nn \UWMad_Counter_alpha:n {
-    \int_to_alpha:n {\UWMad_Counter_Value:n{#1}}
+    \int_to_alph:n {\UWMad_Counter_Value:n{#1}}
 }
 \cs_new:Nn \UWMad_Counter_Alpha:n {
-    \int_to_Alpha:n {\UWMad_Counter_Value:n{#1}}
+    \int_to_Alph:n {\UWMad_Counter_Value:n{#1}}
 }
 \cs_new:Nn \UWMad_Counter_roman:n {
     \int_to_roman:n {\UWMad_Counter_Value:n{#1}}
@@ -712,8 +782,8 @@
 \tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
     \geometry{
         includemp      = true,
-        margin         = 0.80in,
-        marginparwidth = 1.00in,
+        margin         = 0.25in,
+        marginparwidth = 1.65in,
         includehead    = true,
         paper          = letterpaper
     }
@@ -788,15 +858,21 @@
 
 \tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
 
-    \UWMad_Counter_DefineGlobal:nn{Part}{0}
-    \UWMad_Counter_DefineGlobal:nn{Module}{0}
-    \UWMad_Counter_DefineGlobal:nn{Submodule}{0}
-    \UWMad_Counter_DefineGlobal:nn{Feature}{0}
+    \UWMad_Counter_DefineGlobal:nn{Part}          {0}
+    \UWMad_Counter_DefineGlobal:nn{Module}        {0}
+    \UWMad_Counter_DefineGlobal:nn{SubModule}     {0}
+    \UWMad_Counter_DefineGlobal:nn{SubSubModule}  {0}
+    \UWMad_Counter_DefineGlobal:nn{Feature}       {0}
+    \UWMad_Counter_DefineGlobal:nn{SubFeature}    {0}
+    \UWMad_Counter_DefineGlobal:nn{SubSubFeature} {0}
 
     \tl_new:N   \g_UWMad_ThePart_tl
     \tl_new:N \g_UWMad_TheModule_tl
-    \tl_new:N \g_UWMad_TheSubmodule_tl
+    \tl_new:N \g_UWMad_TheSubModule_tl
+    \tl_new:N \g_UWMad_TheSubSubModule_tl
     \tl_new:N \g_UWMad_TheFeature_tl
+    \tl_new:N \g_UWMad_TheSubFeature_tl
+    \tl_new:N \g_UWMad_TheSubSubFeature_tl
 
     \tl_gset:Nn \g_UWMad_ThePart_tl {
         Part~\UWMad_Counter_Roman:n{Part}
@@ -804,21 +880,32 @@
     \tl_gset:Nn \g_UWMad_TheModule_tl {
         Module~\UWMad_Counter_arabic:n{Module}
     }
-    \tl_gset:Nn \g_UWMad_TheSubmodule_tl {
+    \tl_gset:Nn \g_UWMad_TheSubModule_tl {
         \UWMad_Counter_arabic:n{Module}.
-        \UWMad_Counter_arabic:n{Submodule}
+        \UWMad_Counter_arabic:n{SubModule}
+    }
+    \tl_gset:Nn \g_UWMad_TheSubSubModule_tl {
+        \g_UWMad_TheSubModule_tl.
+        \UWMad_Counter_arabic:n{SubSubModule}
     }
     \tl_gset:Nn \g_UWMad_TheFeature_tl {
-        \g_UWMad_TheSubmodule_tl.
-        \UWMad_Counter_arabic:n{Feature}
+        Feature~Set
+    }
+    \tl_gset:Nn \g_UWMad_TheSubFeature_tl {
+        \UWMad_Counter_arabic:n{Feature}.
+        \UWMad_Counter_arabic:n{SubFeature}
+    }
+    \tl_gset:Nn \g_UWMad_TheSubSubFeature_tl {
+        \g_UWMad_TheSubFeature_tl.
+        \UWMad_Counter_arabic:n{SubSubFeature}
     }
 
     \cs_new:Nn \UWMad_Sectioning_Module:nn {
         \clearpage
 
         \UWMad_Counter_Step:n {Module}
-        \UWMad_Counter_Set:nn {Submodule}{0}
-        \UWMad_Counter_Set:nn {Feature}{0}
+        \UWMad_Counter_Set:nn {SubModule}{0}
+        \UWMad_Counter_Set:nn {SubSubModule}{0}
 
         \group_begin:
             \null\vskip 0.1em
@@ -836,15 +923,17 @@
         \par
     }
 
-    \cs_new:Nn \UWMad_Sectioning_Submodule:nn {
-        \UWMad_Counter_Step:n {Submodule}
+    \cs_new:Nn \UWMad_Sectioning_SubModule:nn {
+        \UWMad_Counter_Set:nn {SubSubModule}{0}
+
+        \UWMad_Counter_Step:n {SubModule}
 
         \group_begin:
             \null\vskip 0.1em
             \phantomsection
             \textbf{
                 \Large{
-                    \g_UWMad_TheSubmodule_tl
+                    \g_UWMad_TheSubModule_tl
                     \hspace*{0.5em}#2
                 }
             }
@@ -854,15 +943,15 @@
         \par
     }
 
-    \cs_new:Nn \UWMad_Sectioning_Feature:nn {
-        \UWMad_Counter_Step:n {Feature}
+    \cs_new:Nn \UWMad_Sectioning_SubSubModule:nn {
+        \UWMad_Counter_Step:n {SubSubModule}
 
         \group_begin:
             \null\vskip 0.1em
             \phantomsection
             \textbf{
                 \large{
-                    \g_UWMad_TheFeature_tl
+                    \g_UWMad_TheSubSubModule_tl
                     \hspace*{0.5em}#2
                 }
             }
@@ -880,12 +969,78 @@
         }
     }
 
-    \DeclareDocumentCommand \UWSubmodule { o m } {
+    \DeclareDocumentCommand \UWSubModule { o m } {
         \IfNoValueTF {#1} {
-            \UWMad_Sectioning_Submodule:nn{#2}{#2}
+            \UWMad_Sectioning_SubModule:nn{#2}{#2}
         } {
-            \UWMad_Sectioning_Submodule:nn{#1}{#2}
+            \UWMad_Sectioning_SubModule:nn{#1}{#2}
         }
+    }
+
+    \DeclareDocumentCommand \UWSubSubModule { o m } {
+        \IfNoValueTF {#1} {
+            \UWMad_Sectioning_SubSubModule:nn{#2}{#2}
+        } {
+            \UWMad_Sectioning_SubSubModule:nn{#1}{#2}
+        }
+    }
+    \cs_new:Nn \UWMad_Sectioning_Feature:nn {
+        \clearpage
+
+        \UWMad_Counter_Step:n {Feature}
+        \UWMad_Counter_Set:nn {SubFeature}{0}
+        \UWMad_Counter_Set:nn {SubSubFeature}{0}
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \LARGE{
+                    \g_UWMad_TheFeature_tl
+                }
+            }
+            \vskip 0.5em
+            \textbf{\Huge{#2}}
+        \group_end:
+        \addcontentsline{toc}{section}{#1}
+        \vskip 1em
+        \par
+    }
+
+    \cs_new:Nn \UWMad_Sectioning_SubFeature:nn {
+        \UWMad_Counter_Step:n {SubFeature}
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \Large{
+                    \g_UWMad_TheSubFeature_tl
+                    \hspace*{0.5em}#2
+                }
+            }
+        \group_end:
+        \addcontentsline{toc}{subsection}{#1}
+        \vskip 0.2em
+        \par
+    }
+
+    \cs_new:Nn \UWMad_Sectioning_SubSubFeature:nn {
+        \UWMad_Counter_Step:n {SubSubFeature}
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \large{
+                    \g_UWMad_TheSubSubFeature_tl
+                    \hspace*{0.5em}#2
+                }
+            }
+        \group_end:
+        \addcontentsline{toc}{subsubsection}{#1}
+        \vskip 0.2em
+        \par
     }
 
     \DeclareDocumentCommand \UWFeature { o m } {
@@ -896,6 +1051,21 @@
         }
     }
 
+    \DeclareDocumentCommand \UWSubFeature { o m } {
+        \IfNoValueTF {#1} {
+            \UWMad_Sectioning_SubFeature:nn{#2}{#2}
+        } {
+            \UWMad_Sectioning_SubFeature:nn{#1}{#2}
+        }
+    }
+
+    \DeclareDocumentCommand \UWSubSubFeature { o m } {
+        \IfNoValueTF {#1} {
+            \UWMad_Sectioning_SubSubFeature:nn{#2}{#2}
+        } {
+            \UWMad_Sectioning_SubSubFeature:nn{#1}{#2}
+        }
+    }
     \RenewDocumentCommand   \part { o m } {
         \UWMad_Counter_Step:n{Part}
         \cleardoublepage
@@ -1123,68 +1293,63 @@
                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
                                     {1.5ex \@plus .2ex}%
                                     {\normalfont\normalsize\bfseries}}
-\cs_new:Nn \UWMad_Math_NthRoot:nn {
-    \root #1 \of {#2\:\!}
-}
 \cs_new:Nn \UWMad_Math_SquareRootCore:nn {
-    \setbox0=\hbox{\ensuremath{\NthRootInTeX{#1}{#2}}}
+
+    \setbox0 = \hbox{ $ {
+        \mathpalette{\,\:\!}{{\root #1 \of {#2\:\!}}}
+    }$}
+
     \dimen0=\ht0
     \advance\dimen0-0.2\ht0
     \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}
-    {\box0\lower0.47pt\box2}
+    {\box0\lower0.40pt\box2}
 }
 \DeclareDocumentCommand \Sqrt { O{} m } {
-    \mathchoice{\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
+    \UWMad_Math_SquareRootCore:nn{#1}{#2}
 }
 \newcommand{\bigdiffn}[4]{\dfrac{#1{}^{#4}}{#1 #3{}^{#4}} \left[ #2 \right]}
 \newcommand{\gendiffn}[4]{\dfrac{#1{}^{#4} #2}{#1 #3{}^{#4}}}
 \tl_new:N \g__UWMad_Math_DerivativeToken_tl
-\cs_new:Nn \__UWMad_Math_DerivativeToken:n {
-    \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {
-        \tl_if_empty:nTF {#1} {d} {
-            \tl_if_in:nnTF {#1} {d} {
-                d
+\cs_new:Nn \__UWMad_Math_SetDerivativeToken:n {
+    \tl_if_blank:nTF {#1} {
+        \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {d}
+    }{
+        \tl_if_in:nnTF {#1} {d} {
+            \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {d}
+        }{
+            \tl_if_in:nnTF {#1} {p} {
+                \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {\partial}
             } {
-                \tl_if_in:nnTF {#1} {p} {
-                    \partial
+                \tl_if_in:nnTF {#1} {t} {
+                    \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {D}
                 } {
-                    \tl_if_in:nnTF {#1} {t} {
-                        D
-                    } {
-                        #1
-                    }
+                    \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {d}
                 }
             }
         }
     }
 }
 \DeclareDocumentCommand \diff { O{} +m +m} {
-    \gendiffn{\__UWMad_Math_DerivativeToken:n {#1}}{#2}{#3}{}
+    \__UWMad_Math_SetDerivativeToken:n {#1}
+    \gendiffn{\g__UWMad_Math_DerivativeToken_tl}{#2}{#3}{}
 }
-\newcommand{\diffn}[4][d]{
-    \ifthenelse{\equal{p}{#1}}{
-        \gendiffn{\partial}{#2}{#3}{#4}
-    }{
-        \ifthenelse{\equal{b}{#1}}{
-            \bigdiffn{#2}{#3}{#4}
-        }{
-            \ifthenelse{\equal{bp}{#1}}{
-                \bigdiffn{\partial}{#2}{#3}{#4}
-            }{
-                \gendiffn{#1}{#2}{#3}{#4}
-            }
-        }
-    }
+\DeclareDocumentCommand \diffn { O{} +m +m m} {
+    \__UWMad_Math_SetDerivativeToken:n {#1}
+    \gendiffn{\g__UWMad_Math_DerivativeToken_tl}{#2}{#3}{#4}
+}
+\DeclareDocumentCommand \pdiff { +m +m } {
+    \gendiffn{\partial}{#1}{#2}{}
+}
+\DeclareDocumentCommand \pdiffn { +m +m m } {
+    \gendiffn{\partial}{#1}{#2}{#3}
 }
 \newcommand{\bigdiff}   [2] {\diff[b]{#1}{#2}}
-\newcommand{\pdiff}     [2] {\diff[p]{#1}{#2}}
 \newcommand{\bigpdiff}  [2] {\diff[bp]{#1}{#2}}
 \let\frac\dfrac
+\ExplSyntaxOff
 \newcommand{\subs}      [2][]{\ensuremath{{}_{#1\text{\scriptsize #2}}}}
 \newcommand{\sups}      [2][]{\ensuremath{{}^{#1\text{\scriptsize #2}}}}
+\ExplSyntaxOn
 \newcommand{\oneo}      [1]  {\ensuremath{\frac{1}{#1}}}
 \iffalse
     \let\Oldalpha     \alpha     \renewcommand{\alpha}     {\ensuremath{\Oldalpha     }\xspace}
@@ -1510,14 +1675,13 @@
 \cs_new:cpn      {Nomenclature*} {\Nomenclature*}
 \cs_new_eq:cN {endNomenclature*} \endNomenclature
 \UWMad_CSV_Define:n {MetaDataList}
-\newcommand{\PushPDFMetaDataToList}[2]{
-    \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}        % True:    Append the data
+\cs_new:Nn \UWMad_MetaData_PushToList:nn {
+   \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}        % True:    Append the data
 }
 
-\file_if_exist:nTF{UWMad.PDFMetaData.aux} {
-    \file_input:n {UWMad.PDFMetaData.aux}
-}{
-}
+\file_if_exist:nTF{\jobname.UWMad.PDFMetaData.aux} {
+    \file_input:n {\jobname.UWMad.PDFMetaData.aux}
+}{}
 
 \AtEndDocument{
     \UWMad_CSV_IfNotEmpty:nTF {MetaDataList} {
@@ -1548,17 +1712,17 @@
 \newcommand{\TheProducer}   {}
 \newcommand{\TheCreator}    {}
 \newcommand{\Title}      [1] {\renewcommand{\TheTitle}      {#1\xspace}
-    \PushPDFMetaDataToList{pdftitle}    {#1}}
+    \UWMad_MetaData_PushToList:nn{pdftitle}    {#1}}
 \newcommand{\Author}     [1] {\renewcommand{\TheAuthor}     {#1\xspace}
-    \PushPDFMetaDataToList{pdfauthor}   {#1}}
+    \UWMad_MetaData_PushToList:nn{pdfauthor}   {#1}}
 \newcommand{\Subject}    [1] {\renewcommand{\TheSubject}    {#1\xspace}
-    \PushPDFMetaDataToList{pdfsubject}  {#1}}
+    \UWMad_MetaData_PushToList:nn{pdfsubject}  {#1}}
 \newcommand{\Producer}   [1] {\renewcommand{\TheProducer}   {#1\xspace}
-    \PushPDFMetaDataToList{pdfproducer} {#1}}
+    \UWMad_MetaData_PushToList:nn{pdfproducer} {#1}}
 \newcommand{\Creator}    [1] {\renewcommand{\TheCreator}    {#1\xspace}
-    \PushPDFMetaDataToList{pdfcreator}  {#1}}
+    \UWMad_MetaData_PushToList:nn{pdfcreator}  {#1}}
 \newcommand{\Keywords}   [1] {\renewcommand{\TheKeywords}   {#1\xspace}
-    \PushPDFMetaDataToList{pdfkeywords} {#1}}
+    \UWMad_MetaData_PushToList:nn{pdfkeywords} {#1}}
 \newcommand{\Subtitle}   [1] {\renewcommand{\TheSubtitle}   {#1\xspace}}
 \newcommand{\Date}       [1] {\renewcommand{\TheDate}       {#1\xspace}}
 \newcommand{\Department} [1] {\renewcommand{\TheDepartment} {#1\xspace}}
@@ -1566,158 +1730,4 @@
 \newcommand{\Specialty}  [1] {\renewcommand{\TheSpecialty}  {#1\xspace}}
 \newcommand{\Advisor}    [1] {\renewcommand{\TheAdvisor}    {#1\xspace}}
 \newcommand{\University} [1] {\renewcommand{\TheUniversity} {#1\xspace}}
-\DeclareRobustCommand{\ThatOddPhrase}{\setstretch{1.1}
-    \ifUWMad@IsADissertation
-        A dissertation submitted in partial fulfillment of the requirements for the degree of
-    \else
-        A preliminary report submitted in partial fulfillment of the requirements for the degree of
-    \fi
-}
-
-\DeclareRobustCommand{\MakeTitlePageTitleBlock}{
-    \vspace{0.3in}
-    \LARGE
-    \textsc{\TheTitle}~\\[0.2in]
-    by~\\[0.2in]
-    \Large
-    \TheAuthor
-}
-
-\DeclareRobustCommand{\MakeTitlePageDegreeBlock}{
-    \Large
-    \ThatOddPhrase~\\[0.2in]
-    \TheDegree \\[0.1in]
-    \TheSpecialty
-}
-
-\DeclareRobustCommand{\MakeTitlePageUniversityBlock}{
-    \Large
-    at \\[0.4in]
-    \textsc{\TheUniversity} \\[0.1in]
-    \the\year
-}
-
-\DeclareRobustCommand{\MakeTitlePage}{
-    \thispagestyle{empty}
-    \begin{center}
-        \MakeTitlePageTitleBlock
-        \null\vfill
-        \MakeTitlePageDegreeBlock
-        \null\vfill
-        \MakeTitlePageUniversityBlock
-    \end{center}
-    \clearpage
-}
-
-
-\newcommand{\TheLicenseAuthor}{
-    \IfCommandEmpty{\TheAuthor}
-        {The Author}
-        {\TheAuthor}}
-
-\newcommand{\CopyrightTemplate}{
-    \large
-    \copyright{} Copyright by \TheLicenseAuthor(\the\year)\\
-    All Rights Reserved
-}
-
-\newcommand{\MakeCopyright}{
-    \LicensePage{CopyrightTemplate}
-}
-
-\newcommand{\CreativeCommonsPorting}{Unported\xspace}
-\newcommand{\CreativeCommons}{}
-\newcommand{\CreativeCommonsFrontOfURL}{http://creativecommons.org/licenses/}
-\newcommand{\CreativeCommonsBackOfURL} {/3.0/}
-\newcommand{\CreativeCommonsURL}[1]{
-    \CreativeCommonsFrontOfURL#1\CreativeCommonsBackOfURL
-}
-
-\newif\ifUWMad@CCAttribution  \UWMad@CCAttributionfalse
-\newif\ifUWMad@CCNonCommercial\UWMad@CCNonCommercialfalse
-\newif\ifUWMad@CCShareAlike   \UWMad@CCShareAlikefalse
-\newif\ifUWMad@CCNoDerivatives\UWMad@CCNoDerivativesfalse
-
-\newcommand{\Attribution}   {\UWMad@CCAttributiontrue}
-\newcommand{\NonCommercial} {\UWMad@CCNonCommercialtrue}
-\newcommand{\ShareAlike}    {\UWMad@CCShareAliketrue}
-\newcommand{\NoDerivatives} {\UWMad@CCNoDerivativestrue}
-
-\newcommand{\CreativeCommonsModuleBuild}{
-    \ifUWMad@CCAttribution
-        \newcommand{\TheCreativeCommonsLink}{by}
-        \newcommand{\TheCreativeCommonsWords}{Attribution}
-    \fi
-
-    \ifUWMad@CCNonCommercial
-        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-nc}
-        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-NonCommercial}
-    \fi
-
-    \ifUWMad@CCShareAlike
-        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-sa}
-        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-ShareAlike}
-    \fi
-
-    \ifUWMad@CCNoDerivatives
-        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-nd}
-        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-NoDerivs}
-    \fi
-
-}
-
-\newcommand{\CreativeCommonsTemplate}{
-    \large
-    \TheLicenseAuthor has licensed this work under a \\
-    \href{\CreativeCommonsURL{\TheCreativeCommonsLink}}
-        {Creative Commons \TheCreativeCommonsWords\xspace 3.0
-        \CreativeCommonsPorting License}\\
-    \the\year
-}
-
-\newcommand{\MakeCreativeCommons}{
-    \CreativeCommonsModuleBuild
-    \LicensePage{CreativeCommonsTemplate}
-}
-
-\newcommand{\CreativeCommonsBY}{
-    \Attribution
-    \MakeCreativeCommons
-}
-
-\newcommand{\CreativeCommonsBYNC}{
-    \Attribution\NonCommercial
-    \MakeCreativeCommons
-}
-
-\newcommand{\CreativeCommonsBYNCSA}{
-    \Attribution\NonCommercial\ShareAlike
-    \MakeCreativeCommons
-}
-
-\newcommand{\CreativeCommonsBYSA}{
-    \Attribution\ShareAlike
-    \MakeCreativeCommons
-}
-
-\let\Copyright\CopyrightAllRightsReserved
-
-\DeclareRobustCommand{\LicensePage}[1]{
-    \thispagestyle{empty}                                   % No page number displayed
-    \def\UWMad@RequestedLicense{#1}                         % Initialize the requested license command
-
-    \ifthenelse{\equal{\UWMad@RequestedLicense}{copyright}} % If the user supplied 'copyright' as a License Request
-        {\def\UWMad@RequestedLicense{Copyright}}            % it will be switched to 'Copyright' as \copyright IS
-        {}                                                  % defined as the copyright symbol inherently.
-
-    \null\vfill                                             % Fill the page with elastic whitespace
-    \begin{center}
-        \ifx \UWMad@RequestedLicense \UWMad@Undefined       % Checks if the license requested has a command
-            \UWMad@RequestedLicense                         % If not, the input is echoed
-        \else
-            \csname\UWMad@RequestedLicense\endcsname        % If yes, the license command is excuted.
-        \fi
-    \end{center}
-    \clearpage                                              % Clear the page
-}
 \ExplSyntaxOff

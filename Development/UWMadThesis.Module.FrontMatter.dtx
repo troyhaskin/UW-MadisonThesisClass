@@ -26,7 +26,7 @@
 %   be slowly pulled out as needed.  The good news is that since everything
 %   is more-or-less an abstraction of \TeX{}, it should work together well.
 %
-%   \UWSubmodule{expl3 Package and Identification}
+%   \UWSubModule{expl3 Package and Identification}
 %   The |expl3| package loads the \LaTeXPL{} and is therefore required.
 %   If the package is not recent enough, the class aborts and requests
 %   the user update.
@@ -42,21 +42,15 @@
 }%
 %    \end{macrocode}
 %
-%   Assuming the the |expl3| package is recent enough, we invoke the 
-%   \LaTeXPL{}'s syntax for the duration of the class.
+%   Assuming the the |expl3| package is recent enough, we provide the class
+%   using the \LaTeXPL{}'s provide function.
 %    \begin{macrocode}
-\ExplSyntaxOn
-%    \end{macrocode}
-%
-%   We now identify the \LaTeXe{} system needed and provide the class.
-%    \begin{macrocode}
-\NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{UWMadThesis}
-    [2013/08/21~v1.0~|~LaTeX2e+~Thesis~Class~for~UW-Madison]
+\ProvidesExplClass
+    {UWMadThesis}{2013/08/21}{1.0}{LaTeX2e+~Thesis~Class~for~UW-Madison}
 %    \end{macrocode}
 %
 %
-%   \UWSubmodule{Identification and Defaults}
+%   \UWSubModule{Identification and Defaults}
 %
 %   Now, we define some identification variables (token lists).
 %    \begin{macrocode}
@@ -87,7 +81,7 @@
 %
 %
 %
-%   \UWSubmodule{Options}
+%   \UWSubModule{Options}
 %
 %   First, a command is created to throw a warning if an option that
 %   violates \UWMadLong{}'s dissertation guidelines.
@@ -144,6 +138,13 @@
 \DeclareOption{article} {
     \tl_gset:Nn \g_UWMad_ParentClass_tl {article}
 }
+%    \end{macrocode}
+%
+%   This is a special class option for generating the documentation.
+%   Users should not use this unless they know what they're doing.
+%   The line below the |ParentClass| class prevents the \pkg{thumbpdf}
+%   package from being loaded.
+%    \begin{macrocode}
 \DeclareOption{l3doc} {
     \tl_gset:Nn \g_UWMad_ParentClass_tl {l3doc}
     \tl_const:cn {ver@thumbpdf.sty} {}
@@ -167,7 +168,7 @@
 %
 %
 %
-%   \UWSubmodule{Package Loads}
+%   \UWSubModule{Package Loads}
 %   Load some packages that give nice features and are not
 %   hyperlink sensitive.
 %    \begin{macrocode}
@@ -185,6 +186,7 @@
     \RequirePackage{amsmath}
     \RequirePackage{amssymb}
     \RequirePackage{amsfonts}
+    \RequirePackage{mathtools}
 }{}
 %    \end{macrocode}
 %

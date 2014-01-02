@@ -20,21 +20,19 @@
 %
 %
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_Math_NthRoot:nn {
-    \root #1 \of {#2\:\!}
-}
 \cs_new:Nn \UWMad_Math_SquareRootCore:nn {
-    \setbox0=\hbox{\ensuremath{\NthRootInTeX{#1}{#2}}}
+    
+    \setbox0 = \hbox{ $ {
+        \mathpalette{\,\:\!}{{\root #1 \of {#2\:\!}}}
+    }$}
+    
     \dimen0=\ht0
     \advance\dimen0-0.2\ht0
     \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}
-    {\box0\lower0.47pt\box2}
+    {\box0\lower0.40pt\box2}
 }
 \DeclareDocumentCommand \Sqrt { O{} m } {
-    \mathchoice{\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
-               {\SquareRootCore{#1}{#2}}
+    \UWMad_Math_SquareRootCore:nn{#1}{#2}
 }
 %
 %
@@ -44,54 +42,47 @@
 % ---------------------------------------------------------------------------- %
 \newcommand{\bigdiffn}[4]{\dfrac{#1{}^{#4}}{#1 #3{}^{#4}} \left[ #2 \right]}
 \newcommand{\gendiffn}[4]{\dfrac{#1{}^{#4} #2}{#1 #3{}^{#4}}}
-%
 \tl_new:N \g__UWMad_Math_DerivativeToken_tl
-\cs_new:Nn \__UWMad_Math_DerivativeToken:n {
-    \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {
-        \tl_if_empty:nTF {#1} {d} {
-            \tl_if_in:nnTF {#1} {d} {
-                d
+\cs_new:Nn \__UWMad_Math_SetDerivativeToken:n {
+    \tl_if_blank:nTF {#1} {
+        \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {d}
+    }{
+        \tl_if_in:nnTF {#1} {d} {
+            \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {d}
+        }{
+            \tl_if_in:nnTF {#1} {p} {
+                \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {\partial}
             } {
-                \tl_if_in:nnTF {#1} {p} {
-                    \partial
+                \tl_if_in:nnTF {#1} {t} {
+                    \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {D}
                 } {
-                    \tl_if_in:nnTF {#1} {t} {
-                        D
-                    } {
-                        #1
-                    }
+                    \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {d}
                 }
             }
         }
     }
 }
-%
 \DeclareDocumentCommand \diff { O{} +m +m} {
-    \gendiffn{\__UWMad_Math_DerivativeToken:n {#1}}{#2}{#3}{}
+    \__UWMad_Math_SetDerivativeToken:n {#1}
+    \gendiffn{\g__UWMad_Math_DerivativeToken_tl}{#2}{#3}{}
 }
-%
-\newcommand{\diffn}[4][d]{
-    \ifthenelse{\equal{p}{#1}}{
-        \gendiffn{\partial}{#2}{#3}{#4}
-    }{
-        \ifthenelse{\equal{b}{#1}}{
-            \bigdiffn{#2}{#3}{#4}
-        }{
-            \ifthenelse{\equal{bp}{#1}}{
-                \bigdiffn{\partial}{#2}{#3}{#4}
-            }{
-                \gendiffn{#1}{#2}{#3}{#4}
-            }
-        }
-    }
+\DeclareDocumentCommand \diffn { O{} +m +m m} {
+    \__UWMad_Math_SetDerivativeToken:n {#1}
+    \gendiffn{\g__UWMad_Math_DerivativeToken_tl}{#2}{#3}{#4}
 }
-%
+\DeclareDocumentCommand \pdiff { +m +m } {
+    \gendiffn{\partial}{#1}{#2}{}
+}
+\DeclareDocumentCommand \pdiffn { +m +m m } {
+    \gendiffn{\partial}{#1}{#2}{#3}
+}
 \newcommand{\bigdiff}   [2] {\diff[b]{#1}{#2}}
-\newcommand{\pdiff}     [2] {\diff[p]{#1}{#2}}
 \newcommand{\bigpdiff}  [2] {\diff[bp]{#1}{#2}}
 \let\frac\dfrac
+\ExplSyntaxOff
 \newcommand{\subs}      [2][]{\ensuremath{{}_{#1\text{\scriptsize #2}}}}
 \newcommand{\sups}      [2][]{\ensuremath{{}^{#1\text{\scriptsize #2}}}}
+\ExplSyntaxOn
 \newcommand{\oneo}      [1]  {\ensuremath{\frac{1}{#1}}}
 %
 %

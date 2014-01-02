@@ -34,16 +34,15 @@
 % Command used to append the data to the CSV list.  It is called in the 
 % metadata commands below
 \UWMad_CSV_Define:n {MetaDataList}
-\newcommand{\PushPDFMetaDataToList}[2]{
-    \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}        % True:    Append the data
+\cs_new:Nn \UWMad_MetaData_PushToList:nn {
+   \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}        % True:    Append the data
 }
 
 
 % If the auxiliary file exists, import it.
-\file_if_exist:nTF{UWMad.PDFMetaData.aux} {
-    \file_input:n {UWMad.PDFMetaData.aux}
-}{
-}
+\file_if_exist:nTF{\jobname.UWMad.PDFMetaData.aux} {
+    \file_input:n {\jobname.UWMad.PDFMetaData.aux}
+}{}
 
 % End-of-Document Commands
 \AtEndDocument{
@@ -81,17 +80,17 @@
 \newcommand{\TheProducer}   {}
 \newcommand{\TheCreator}    {}
 \newcommand{\Title}      [1] {\renewcommand{\TheTitle}      {#1\xspace}
-    \PushPDFMetaDataToList{pdftitle}    {#1}}
+    \UWMad_MetaData_PushToList:nn{pdftitle}    {#1}}
 \newcommand{\Author}     [1] {\renewcommand{\TheAuthor}     {#1\xspace}
-    \PushPDFMetaDataToList{pdfauthor}   {#1}}
+    \UWMad_MetaData_PushToList:nn{pdfauthor}   {#1}}
 \newcommand{\Subject}    [1] {\renewcommand{\TheSubject}    {#1\xspace}
-    \PushPDFMetaDataToList{pdfsubject}  {#1}}
+    \UWMad_MetaData_PushToList:nn{pdfsubject}  {#1}}
 \newcommand{\Producer}   [1] {\renewcommand{\TheProducer}   {#1\xspace}
-    \PushPDFMetaDataToList{pdfproducer} {#1}}
+    \UWMad_MetaData_PushToList:nn{pdfproducer} {#1}}
 \newcommand{\Creator}    [1] {\renewcommand{\TheCreator}    {#1\xspace}
-    \PushPDFMetaDataToList{pdfcreator}  {#1}}
+    \UWMad_MetaData_PushToList:nn{pdfcreator}  {#1}}
 \newcommand{\Keywords}   [1] {\renewcommand{\TheKeywords}   {#1\xspace}
-    \PushPDFMetaDataToList{pdfkeywords} {#1}}
+    \UWMad_MetaData_PushToList:nn{pdfkeywords} {#1}}
 \newcommand{\Subtitle}   [1] {\renewcommand{\TheSubtitle}   {#1\xspace}}
 \newcommand{\Date}       [1] {\renewcommand{\TheDate}       {#1\xspace}}
 \newcommand{\Department} [1] {\renewcommand{\TheDepartment} {#1\xspace}}

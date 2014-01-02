@@ -1,12 +1,16 @@
 %<*UserGuide>
-\section{Programming}\label{UG:Programming}
+\UWFeature{Programming}\label{UG:Programming}
 The Programming Module has no immediate user-facing features.
 The Implementation section for this module outlines the programming layer
 and is aimed mainly at authors that wish to utilize its abilities.
 
 
-\LoadCommandAPI{}
-\MakeGlobalCommand{BLAH}{Yo.}
+\ExplSyntaxOn
+\UWMad_Definition_Swap:Nn \equation {BLAH!}
+\equation
+\UWMad_Definition_Reset:N \equation
+\ExplSyntaxOff
+
 
 %</UserGuide>
 %
@@ -43,7 +47,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 %
-%   \UWSubmodule{Utility Commands}
+%   \UWSubModule{Utility Commands}
 %
 %   Define some messages for the rest of the module.
 %    \begin{macrocode}
@@ -60,6 +64,101 @@ and is aimed mainly at authors that wish to utilize its abilities.
     The~#2~`#1'~is~already~defined~and~will~not~altered.
 }
 %    \end{macrocode}
+%
+%
+%
+%   \begin{macro} {
+%       \UWMad_Hook_Prepend:nn,
+%       \UWMad_Hook_Append:nn}
+%   These commands allow additional code to be prepended or appended to a
+%   specified command.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_Hook_Prepend:nn{
+    \cs_new_eq:cc  {#1-Default:} {#1}
+    \cs_gset:cn    {#1:}         {#2 \cs:w #1-Default:\cs_end:}
+    \cs_undefine:c {#1}
+    \cs_new_eq:cc  {#1}          {#1:}
+}
+\cs_new:Nn \UWMad_Hook_Append:nn{
+    \cs_new_eq:cc  {#1-Default:} {#1}
+    \cs_gset:cn    {#1:}        {\cs:w #1-Default:\cs_end: #2}
+    \cs_undefine:c {#1}
+    \cs_new_eq:cc  {#1}          {#1:}
+}
+\cs_new:Nn \UWMad_Hook_Prepend:Nn{
+    \cs_new_eq:cN  {\string#1-Default:} #1
+    \cs_gset:cn    {\string#1:}         {#2 \cs:w\string#1-Default:\cs_end:}
+    \cs_undefine:N  #1
+    \cs_new_eq:Nc   #1          {\string#1:}
+}
+\cs_new:Nn \UWMad_Hook_Append:Nn{
+    \cs_new_eq:cN  {\string#1-Default:} #1
+    \cs_gset:cn    {\string#1:}         {\cs:w\string#1-Default:\cs_end: #2}
+    \cs_undefine:N  #1
+    \cs_new_eq:Nc   #1          {\string#1:}
+}
+%    \end{macrocode}
+%   \end{macro}
+%
+%
+%
+%   \begin{macro} {
+%       \UWMad_Definition_Swap:nn,
+%       \UWMad_Definition_Reset:nn}
+%   These commands \enquote{swap} in a new definition of a command and,
+%   when called, reset it to it's default definition.
+%
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_Definition_Swap:Nn {
+    \cs_new_eq:cN  {\string#1-Default:}  #1
+    \cs_new:cn     {\string#1-Swap:}    {#2}
+    \cs_undefine:N  #1
+    \cs_gset_eq:Nc  #1          {\string#1-Swap:}
+}
+\cs_new:Nn \__UWMad_Definition_Swap:cn {
+    \cs_new_eq:cc  {#1-Default:} {#1}
+    \cs_new:cn     {#1-Swap:}    {#2}
+    \cs_undefine:c {#1}
+    \cs_gset_eq:cc {#1}          {#1-Swap:}
+}
+\cs_new:Nn \UWMad_Definition_Swap:cn {
+    \cs_if_exist:cTF {#1} {
+        \__UWMad_Definition_Swap:cn{#1}{#2}
+
+        \cs_if_exist:cTF {end#1} {
+            \__UWMad_Definition_Swap:cn{end#1}{#2}
+        }{}
+    } {
+        \cs_new:cn {#1} {#2}
+    }
+}
+\cs_new:Nn \UWMad_Definition_Reset:c {
+    \cs_if_exist:cTF {#1-Default:} {
+        \cs_gset_eq:cc  {#1}          {#1-Default:}
+        \cs_undefine:c  {#1-Default:}
+
+        \cs_if_exist:cTF {end#1-Default:} {
+            \cs_gset_eq:cc  {#1}          {end#1-Default:}
+            \cs_undefine:c  {end#1-Default:}
+        }{}
+    } {}
+}
+\cs_new:Nn \UWMad_Definition_Swap:Nn {
+    \cs_if_exist:NTF #1 {
+        \__UWMad_Definition_Swap:Nn #1 {#2}
+    } {
+        \cs_new:Nn #1 {#2}
+    }
+}
+\cs_new:Nn \UWMad_Definition_Reset:N {
+    \cs_if_exist:cTF {\string#1-Default:} {
+        \cs_gset_eq:Nc  #1  {\string#1-Default:}
+        \cs_undefine:c      {\string#1-Default:}
+    } {}
+}
+%    \end{macrocode}
+%   \end{macro}
 %
 %
 %
@@ -132,7 +231,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A ==================================================================== %
 %^^A                        Core Programming Systems                      %
 %^^A ==================================================================== %
-%   \UWSubmodule{Type System}
+%   \UWSubModule{Type System}
 %
 %   The commands in this section form the core of the programming module.
 %   All of the Core systems are written using the \LaTeXPL and have 
@@ -198,7 +297,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                            Boolean System                            %
 %^^A ==================================================================== %
 %
-%   \UWFeature{Boolean System}
+%   \UWSubSubModule{Boolean System}
 %   This subsystem was made to give a \LaTeX{}-like branching system that
 %   can create both local and global switches.
 %
@@ -367,7 +466,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                            Length System                             %
 %^^A ==================================================================== %
 %
-%   \UWFeature{Length System}
+%   \UWSubSubModule{Length System}
 %   This subsystem was made to give a \LaTeX{}-like length system that
 %   can create both local and global lengths.
 %
@@ -500,7 +599,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                            Counter System                            %
 %^^A ==================================================================== %
 %
-%   \UWFeature{Counter System}
+%   \UWSubSubModule{Counter System}
 %   This subsystem was made to give a \LaTeX{}-like counter system that
 %   can create both local and global counters.
 %
@@ -698,10 +797,10 @@ and is aimed mainly at authors that wish to utilize its abilities.
     \int_to_arabic:n {\UWMad_Counter_Value:n{#1}}
 }
 \cs_new:Nn \UWMad_Counter_alpha:n {
-    \int_to_alpha:n {\UWMad_Counter_Value:n{#1}}
+    \int_to_alph:n {\UWMad_Counter_Value:n{#1}}
 }
 \cs_new:Nn \UWMad_Counter_Alpha:n {
-    \int_to_Alpha:n {\UWMad_Counter_Value:n{#1}}
+    \int_to_Alph:n {\UWMad_Counter_Value:n{#1}}
 }
 \cs_new:Nn \UWMad_Counter_roman:n {
     \int_to_roman:n {\UWMad_Counter_Value:n{#1}}
@@ -721,7 +820,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                     Collection Creation Commands                        %
 %^^A ======================================================================= %
 %
-%   \UWSubmodule{Collections}
+%   \UWSubModule{Collections}
 %   In the following subsections, commands that create and manipulate
 %   various collection data types will be discussed.  The collections
 %   currently implemented are comma-separate values (CSVs), stacks (LIFO),
@@ -739,7 +838,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                          CSV Creation Commands                          %
 %^^A ======================================================================= %
 %
-%   \UWFeature{CSVs}
+%   \UWSubSubModule{CSVs}
 %   This set of commands is a simple system for comma-separated value (CSV)
 %   list creation.  It consists of only a few functions: initialize list,
 %   append value, prepend value, get list, and erase list.
@@ -872,7 +971,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                          Stack Creation Commands                        %
 %^^A ======================================================================= %
 %
-%   \UWFeature{Stacks}
+%   \UWSubSubModule{Stacks}
 %   This set of commands is a simple system for creating and working with
 %   stacks.  Stacks are a last-in first-out collection data type; this means
 %   that the data element (in this any unexpanded token/token list) last 
@@ -987,7 +1086,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                          Queue Creation Commands                        %
 %^^A ======================================================================= %
 %
-%   \UWFeature{Queues}
+%   \UWSubSubModule{Queues}
 %   This set of commands is a simple system for creating and working with
 %   queue.  Queues are a first-in first-out collection data type; this means
 %   that the data element (in this any unexpanded token/token list) first 
@@ -1128,7 +1227,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                          Deque Creation Commands                        %
 %^^A ======================================================================= %
 %
-%   \UWFeature{Deques}
+%   \UWSubSubModule{Deques}
 %   This set of commands is a simple system for creating and working with
 %   double-ended queues (deques, pronounced \textit{deck}).  Deques are a
 %   generalization of stacks and queues in that data can be pushed, popped,
@@ -1267,7 +1366,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                 Hashes (Associative Arrays) with LaTeX3                     %
 %^^A =========================================================================== %
 %
-%   \UWFeature{Hashes}
+%   \UWSubSubModule{Hashes}
 %   This set of commands is a simple system for creating and working with
 %   hashes (more often called associative arrays or dictionaries, but erring
 %   on the side of usablility, Ruby's jargon will be used). Hashes are a
@@ -1425,14 +1524,14 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                         LaTeX2e Abstractions                         %
 %^^A ==================================================================== %
 %
-%   \UWSubmodule{\texorpdfstring{\LaTeXe{}}{LaTeX2e} Abstractions}
+%   \UWSubModule{\texorpdfstring{\LaTeXe{}}{LaTeX2e} Abstractions}
 %
 %   The commands that follow are \LaTeXe{}-like commands that use the
 %   \LaTeXPL{} as the underlying system.  \textbf{The commands are not loaded
 %   by default; they must be invoked by calling the following command.}
 %
 %
-%   \UWFeature{Utility Commands}
+%   \UWSubSubModule{Utility Commands}
 %
 %   \begin{macro}{\LoadUtilityAPI}
 %   \textbf{This command needs to be invoked to load these Utilities 
@@ -1531,7 +1630,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %^^A                      Command Creator System                          %
 %^^A ==================================================================== %
 %
-%   \UWFeature{Command Creators}
+%   \UWSubSubModule{Command Creators}
 %
 %
 %   \begin{macro}{\LoadCommandAPI}
@@ -1669,7 +1768,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 %
-%   \UWFeature{Types}
+%   \UWSubSubModule{Types}
 %
 %   \begin{macro}{\LoadTypesAPI}
 %   \textbf{This command needs to be invoked to load these Type Commands
@@ -1783,7 +1882,7 @@ and is aimed mainly at authors that wish to utilize its abilities.
 %
 %
 %
-%   \UWFeature{Collections}
+%   \UWSubSubModule{Collections}
 %
 %
 %
