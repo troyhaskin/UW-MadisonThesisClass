@@ -11,7 +11,7 @@
 %% -----------------------------------------------------------------------
 %% 
 
-% Load docstrip, suppress some logging, and overwrite at own peril.
+% Load docstrip, suppress some logging, and overwrite at my own peril.
 \input docstrip.tex
 \keepsilent
 \askforoverwritefalse
@@ -55,8 +55,8 @@
     }
 }
 
-%   This pulls all of the actual code from Guide.Main into a cls
-%   file the Guide.Main with load via \ProvidesFile{}.
+%   This pulls all of the actual code from main documentation file
+%   into a cls file using the guard <Code>
 \generate{
     \file{UWMadThesis.cls}{
         \from{UWMadThesis.Documentation.dtx}{Code}
