@@ -1,5 +1,63 @@
 %<*UserGuide>
-%
+\UWFeature{Math}\label{UG:Math}
+Derivative tests
+
+\begin{function}{\diff , \pdiff , \tdiff}
+    \begin{syntax}
+        \cs{diff}  \Arg{function} \Arg{variable} \Arg{order}    \\
+        \cs{pdiff} \Arg{function} \Arg{variable} \Arg{order}    \\
+        \cs{tdiff} \Arg{function} \Arg{variable} \Arg{order}
+    \end{syntax}
+    This function set is meant to typeset three different kinds of derivatives: ordinary, partial, and total (i.e., material or Lagragian).
+    The only difference between them is the differential symbol: \cs{diff} uses `$\mathrm{d}$', \cs{pdiff} uses `$\partial$', and \cs{tdiff} used `$\mathrm{D}$'.
+
+    These commands typeset the derivative of a given \Arg{function} with respect to \Arg{variable} of $n$-th \Arg{order} using Leibniz's notation.
+    The \Arg{order} is optional and defaults to empty (first derivative).
+    For example, the input
+    \begin{verbatim}
+        \begin{align}
+            \diff{y}{x}{2} + \diff{y}{x} + y(x)         &= 0    \\[0.50em]
+            \pdiff{T}{t} - \alpha \pdiff{T}{z}{2}       &= 0    \\[0.50em]
+            \tdiff{\rho{u}}{t} + \pdiff{P}{z}  - \rho g &= 0
+        \end{align}
+    \end{verbatim}
+    and is typeset as
+        \begin{align}
+            \diff{y}{x}{2} + \diff{y}{x} + y(x)         &= 0    \\[0.50em]
+            \pdiff{T}{t} - \alpha \pdiff{T}{z}{2}       &= 0    \\[0.50em]
+            \tdiff{(\rho{u})}{t} + \pdiff{P}{z}  - \rho g &= 0
+        \end{align}
+\end{function}
+
+
+\begin{function}{\diffbig,\pdiffbig,\tdiffbig}
+    \begin{syntax}
+        \cs{diffbig}   \oarg{left delim}\oarg{right delim} \Arg{function} \Arg{variable} \Arg{order} \\
+        \cs{pdiffbig}  \oarg{left delim}\oarg{right delim} \Arg{function} \Arg{variable} \Arg{order} \\
+        \cs{tdiffbig}  \oarg{left delim}\oarg{right delim} \Arg{function} \Arg{variable} \Arg{order}
+    \end{syntax}
+    This function set is identical to the non-|big| versions above, except that \Arg{function} is placed to the left of the derivative operator and wrapped by |\left| and |\right|.
+    The default delimiters for the stretch command is `[' and ']', and either can be individually overridden via the two starting optional arguments.
+    For example, the input
+    \begin{verbatim}
+        \begin{align}
+            -\diffbig[{[}][\}]{ p(x) \diff{y}{x} }{x} + q(x) (1 
+                    - \lambda) y(x)  &= 0 \\[0.50em]
+            \tdiffbig[(][)]{ \rho{i} + \frac{1}{2} \rho u^2 }{t} - 
+                    \pdiffbig[(][)]{ \kappa \pdiff{T}{z} }{z} &= 0
+        \end{align}
+    \end{verbatim} 
+    and is typeset as
+        \begin{align}
+            -\diffbig[{[}][\}]{ p(x) \diff{y}{x} }{x} + q(x) (1 - \lambda) y(x)  &= 0 \\[0.50em]
+            \tdiffbig[(][)]{ \rho{i} + \frac{1}{2} \rho u^2 }{t} - 
+            \pdiffbig[(][)]{ \kappa \pdiff{T}{z} }{z} &= 0
+        \end{align}
+\end{function}
+
+
+
+
 %</UserGuide>
 %
 %
@@ -22,14 +80,25 @@
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Math_SquareRootCore:nn {
     
-    \setbox0 = \hbox{ $ {
-        \mathpalette{\,\:\!}{{\root #1 \of {#2\:\!}}}
-    }$}
-    
-    \dimen0=\ht0
-    \advance\dimen0-0.2\ht0
-    \setbox2=\hbox{\vrule height\ht0 depth -\dimen0}
-    {\box0\lower0.40pt\box2}
+    \hbox_set:Nn \l_tmpa_box {
+        ${ \mathpalette
+                {\,\:\!}
+                {\root #1 \of {#2\:\!}}
+        }$
+    }
+    %
+    \dim_set:Nn \l_tmpa_dim {\box_ht:N \l_tmpa_box}
+    \dim_set:Nn \l_tmpb_dim {0.8\l_tmpa_dim}
+    %
+    \hbox_set:Nn \l_tmpb_box { 
+        \vrule height \l_tmpa_dim depth -\l_tmpb_dim
+    }
+    %
+    {
+        \box_use:N \l_tmpa_box
+        \box_move_down:nn {0.40pt}{\box_use:N \l_tmpb_box}
+    }
+
 }
 \DeclareDocumentCommand \Sqrt { O{} m } {
     \UWMad_Math_SquareRootCore:nn{#1}{#2}
@@ -40,52 +109,126 @@
 % ---------------------------------------------------------------------------- %
 %                              Derivative Commands                             %
 % ---------------------------------------------------------------------------- %
-\newcommand{\bigdiffn}[4]{\dfrac{#1{}^{#4}}{#1 #3{}^{#4}} \left[ #2 \right]}
-\newcommand{\gendiffn}[4]{\dfrac{#1{}^{#4} #2}{#1 #3{}^{#4}}}
-\tl_new:N \g__UWMad_Math_DerivativeToken_tl
-\cs_new:Nn \__UWMad_Math_SetDerivativeToken:n {
-    \tl_if_blank:nTF {#1} {
-        \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {d}
-    }{
-        \tl_if_in:nnTF {#1} {d} {
-            \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {d}
-        }{
-            \tl_if_in:nnTF {#1} {p} {
-                \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {\partial}
-            } {
-                \tl_if_in:nnTF {#1} {t} {
-                    \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {D}
-                } {
-                    \tl_gset:Nn \g__UWMad_Math_DerivativeToken_tl {d}
-                }
-            }
-        }
-    }
+\DeclareDocumentCommand \DerivativeGeneral { +m +m m m } {
+    \frac{ #4^{#3} #1      }
+         { #4      #2^{#3} }
 }
-\DeclareDocumentCommand \diff { O{} +m +m} {
-    \__UWMad_Math_SetDerivativeToken:n {#1}
-    \gendiffn{\g__UWMad_Math_DerivativeToken_tl}{#2}{#3}{}
+\DeclareDocumentCommand \DerivativeGeneralBig { +m +m m m m m} {
+    \frac{ #4^{#3}    }
+         { #4 #2^{#3} } \left#5 #1 \right#6
 }
-\DeclareDocumentCommand \diffn { O{} +m +m m} {
-    \__UWMad_Math_SetDerivativeToken:n {#1}
-    \gendiffn{\g__UWMad_Math_DerivativeToken_tl}{#2}{#3}{#4}
+%
+%
+\tl_new:N  \g_UWMad_Math_DerivativeSymbolOrdinary_tl
+\tl_new:N  \g_UWMad_Math_DerivativeSymbolPartial_tl
+\tl_new:N  \g_UWMad_Math_DerivativeSymbolTotal_tl
+\tl_set:Nn \g_UWMad_Math_DerivativeSymbolOrdinary_tl {\mathrm{d}}
+\tl_set:Nn \g_UWMad_Math_DerivativeSymbolPartial_tl  {\partial}
+\tl_set:Nn \g_UWMad_Math_DerivativeSymbolTotal_tl    {\mathrm{D}}
+%
+%
+\DeclareDocumentCommand \DerivativeSymbolOrdinary { m } {
+    \tl_set:Nn \g_UWMad_Math_DerivativeSymbolOrdinary_tl {#1}
 }
-\DeclareDocumentCommand \pdiff { +m +m } {
-    \gendiffn{\partial}{#1}{#2}{}
+\DeclareDocumentCommand \DerivativeSymbolPartial { m } {
+    \tl_set:Nn \g_UWMad_Math_DerivativeSymbolPartial_tl {#1}
 }
-\DeclareDocumentCommand \pdiffn { +m +m m } {
-    \gendiffn{\partial}{#1}{#2}{#3}
+\DeclareDocumentCommand \DerivativeSymbolTotal { m } {
+    \tl_set:Nn \g_UWMad_Math_DerivativeSymbolTotal_tl {#1}
 }
-\newcommand{\bigdiff}   [2] {\diff[b]{#1}{#2}}
-\newcommand{\bigpdiff}  [2] {\diff[bp]{#1}{#2}}
-\let\frac\dfrac
+%
+%
+\DeclareDocumentCommand \diff { +m +m G{} } {
+    \DerivativeGeneral
+        {#1}{#2}{#3}{\g_UWMad_Math_DerivativeSymbolOrdinary_tl}
+}
+\DeclareDocumentCommand \diffbig { O{[} O{]} +m +m G{} } {
+    \DerivativeGeneralBig
+        {#3}{#4}{#5}{\g_UWMad_Math_DerivativeSymbolOrdinary_tl}{#1}{#2}
+}
+%
+%
+\DeclareDocumentCommand \pdiff { +m +m G{} } {
+    \DerivativeGeneral
+        {#1}{#2}{#3}{\g_UWMad_Math_DerivativeSymbolPartial_tl}
+}
+\DeclareDocumentCommand \pdiffbig { O{[} O{]} +m +m G{} } {
+    \DerivativeGeneralBig
+        {#3}{#4}{#5}{\g_UWMad_Math_DerivativeSymbolPartial_tl}{#1}{#2}
+}
+%
+%
+\DeclareDocumentCommand \tdiff { +m +m G{} } {
+    \DerivativeGeneral
+        {#1}{#2}{#3}{\g_UWMad_Math_DerivativeSymbolTotal_tl}
+}
+\DeclareDocumentCommand \tdiffbig { O{[} O{]} +m +m G{} } {
+    \DerivativeGeneralBig
+        {#3}{#4}{#5}{\g_UWMad_Math_DerivativeSymbolTotal_tl}{#1}{#2}
+}
+%
+%
 \ExplSyntaxOff
-\newcommand{\subs}      [2][]{\ensuremath{{}_{#1\text{\scriptsize #2}}}}
-\newcommand{\sups}      [2][]{\ensuremath{{}^{#1\text{\scriptsize #2}}}}
+    \DeclareDocumentCommand \subs { O{} +m } {
+        \ensuremath{{}_{#1\text{\scriptsize #2}}}
+    }
+    \DeclareDocumentCommand \sups { O{} +m } {
+        \ensuremath{{}^{#1\text{\scriptsize #2}}}
+    }
+    \DeclareDocumentCommand \subsups { O{} +m O{} +m } {
+        \ensuremath{{}^{#1\text{\scriptsize #2}}_{#3\text{\scriptsize #4}}}
+    }
 \ExplSyntaxOn
-\newcommand{\oneo}      [1]  {\ensuremath{\frac{1}{#1}}}
+%
+\DeclareDocumentCommand \OneOver { +m } {
+    \frac{1}{#1}
+}
+\DeclareDocumentCommand \oneo { +m } {
+    \OneOver{#1}
+}
+\DeclareDocumentCommand \dd { m } {
+    \mathrm{d}{#1}
+}
+\DeclareDocumentCommand \dprime { } {
+    \prime\prime
+}
+\DeclareDocumentCommand \tprime { } {
+    \prime\prime\prime
+}
+\DeclareDocumentCommand \where { } {
+    \,,\quad\text{ where}
+}
 %
 %
+\DeclareMathOperator*{\Sup}    {Sup}
+\DeclareMathOperator*{\Inf}    {Inf}
+\DeclareMathOperator*{\Lim}    {Lim}
+\DeclareMathOperator*{\Min}    {Min}
+\DeclareMathOperator*{\Max}    {Max}
+\DeclareMathOperator*{\ArgMin} {ArgMin}
+\DeclareMathOperator*{\ArgMax} {ArgMax}
+\DeclareMathOperator{\Abs}     {Abs}
+\DeclareMathOperator{\Ln}      {Ln}
+\DeclareMathOperator{\Log}     {Log}
+\DeclareMathOperator{\Exp}     {Exp}
+\DeclareMathOperator{\Cos}     {Cos}
+\DeclareMathOperator{\Sin}     {Sin}
+\DeclareMathOperator{\Tan}     {Tan}
+\DeclareMathOperator{\Sec}     {Sec}
+\DeclareMathOperator{\Csc}     {Csc}
+\DeclareMathOperator{\Cot}     {Cot}
+\DeclareMathOperator{\Cosh}    {Cosh}
+\DeclareMathOperator{\Sinh}    {Sinh}
+\DeclareMathOperator{\Tanh}    {Tanh}
+\DeclareMathOperator{\ArcSin}  {ArcSin}
+\DeclareMathOperator{\ArcCos}  {ArcCos}
+\DeclareMathOperator{\ArcTan}  {ArcTan}
+\DeclareMathOperator{\ArcSec}  {ArcSec}
+\DeclareMathOperator{\ArcCsc}  {ArcCsc}
+\DeclareMathOperator{\ArcCot}  {ArcCot}
+\DeclareMathOperator{\ArcCosh} {ArcCosh}
+\DeclareMathOperator{\ArcSinh} {ArcSinh}
+\DeclareMathOperator{\ArcTanh} {ArcTanh}
 %
 %
 %

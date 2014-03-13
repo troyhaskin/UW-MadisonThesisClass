@@ -9,6 +9,61 @@ and is aimed mainly at authors that wish to utilize its abilities.
 \UWMad_Definition_Reset:N \equation
 \ExplSyntaxOff
 
+\UWFeature{Math}\label{UG:Math}
+Derivative tests
+
+\begin{function}{\diff , \pdiff , \tdiff}
+    \begin{syntax}
+        \cs{diff}  \Arg{function} \Arg{variable} \Arg{order}    \\
+        \cs{pdiff} \Arg{function} \Arg{variable} \Arg{order}    \\
+        \cs{tdiff} \Arg{function} \Arg{variable} \Arg{order}
+    \end{syntax}
+    This function set is meant to typeset three different kinds of derivatives: ordinary, partial, and total (i.e., material or Lagragian).
+    The only difference between them is the differential symbol: \cs{diff} uses `$\mathrm{d}$', \cs{pdiff} uses `$\partial$', and \cs{tdiff} used `$\mathrm{D}$'.
+
+    These commands typeset the derivative of a given \Arg{function} with respect to \Arg{variable} of $n$-th \Arg{order} using Leibniz's notation.
+    The \Arg{order} is optional and defaults to empty (first derivative).
+    For example, the input
+    \begin{verbatim}
+        \begin{align}
+            \diff{y}{x}{2} + \diff{y}{x} + y(x)         &= 0    \\[0.50em]
+            \pdiff{T}{t} - \alpha \pdiff{T}{z}{2}       &= 0    \\[0.50em]
+            \tdiff{\rho{u}}{t} + \pdiff{P}{z}  - \rho g &= 0
+        \end{align}
+    \end{verbatim}
+    and is typeset as
+        \begin{align}
+            \diff{y}{x}{2} + \diff{y}{x} + y(x)         &= 0    \\[0.50em]
+            \pdiff{T}{t} - \alpha \pdiff{T}{z}{2}       &= 0    \\[0.50em]
+            \tdiff{(\rho{u})}{t} + \pdiff{P}{z}  - \rho g &= 0
+        \end{align}
+\end{function}
+
+\begin{function}{\diffbig,\pdiffbig,\tdiffbig}
+    \begin{syntax}
+        \cs{diffbig}   \oarg{left delim}\oarg{right delim} \Arg{function} \Arg{variable} \Arg{order} \\
+        \cs{pdiffbig}  \oarg{left delim}\oarg{right delim} \Arg{function} \Arg{variable} \Arg{order} \\
+        \cs{tdiffbig}  \oarg{left delim}\oarg{right delim} \Arg{function} \Arg{variable} \Arg{order}
+    \end{syntax}
+    This function set is identical to the non-|big| versions above, except that \Arg{function} is placed to the left of the derivative operator and wrapped by |\left| and |\right|.
+    The default delimiters for the stretch command is `[' and ']', and either can be individually overridden via the two starting optional arguments.
+    For example, the input
+    \begin{verbatim}
+        \begin{align}
+            -\diffbig[{[}][\}]{ p(x) \diff{y}{x} }{x} + q(x) (1
+                    - \lambda) y(x)  &= 0 \\[0.50em]
+            \tdiffbig[(][)]{ \rho{i} + \frac{1}{2} \rho u^2 }{t} -
+                    \pdiffbig[(][)]{ \kappa \pdiff{T}{z} }{z} &= 0
+        \end{align}
+    \end{verbatim}
+    and is typeset as
+        \begin{align}
+            -\diffbig[{[}][\}]{ p(x) \diff{y}{x} }{x} + q(x) (1 - \lambda) y(x)  &= 0 \\[0.50em]
+            \tdiffbig[(][)]{ \rho{i} + \frac{1}{2} \rho u^2 }{t} -
+            \pdiffbig[(][)]{ \kappa \pdiff{T}{z} }{z} &= 0
+        \end{align}
+\end{function}
+
 
 \UWFeature{List Environments}
 \UWSubFeature{Nomenclature}
