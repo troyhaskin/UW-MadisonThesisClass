@@ -133,7 +133,7 @@
 
 \DeclareDocumentCommand \tableofcontents { } {
     \group_begin:
-        \IfCommandEmpty{\contentsname}{
+        \tl_if_empty:nTF {\contentsname}{
             \cs_set_eq:NN \contentsname \g__UWMad_Sectioning_TOCName_tl
         }{}
         \setstretch{1.05}

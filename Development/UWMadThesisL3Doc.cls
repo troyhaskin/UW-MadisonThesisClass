@@ -11,6 +11,22 @@
     {UWMadThesisL3Doc}{2014/03/13}{1.0}{Documentation class for UWMadThesis}
 \ProcessOptions\relax
 \LoadClass[l3doc]{UWMadThesis}[2013/01/01]
+%
+%
+%
+\geometry{
+    includemp      = true,
+    margin         = 0.25in,
+    marginparwidth = 1.65in,
+    includehead    = true,
+    paper          = letterpaper
+}
+%
+%
+%
+%
+%
+%
     \int_new:N \g__UWMad_Sectioning_Part_int
     \int_new:N \g__UWMad_Sectioning_Module_int
     \int_new:N \g__UWMad_Sectioning_SubModule_int
@@ -286,10 +302,6 @@
         \EndMacroCode
         \vspace*{0.5em}
     }
-
-{
-    \cs_show:c {function}
-}
 
     % Define the Usage environment
     \newenvironment{Usage}
