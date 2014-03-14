@@ -1,0 +1,306 @@
+\RequirePackage{expl3}[2013/07/28]
+\@ifpackagelater{expl3}{2013/07/28} {} {%
+    \PackageError{UWMadThesis}{Version of l3kernel is too old}
+      {%
+        Please install an up to date version of l3kernel\MessageBreak
+        using your TeX package manager or from CTAN.
+      }%
+    \endinput
+}%
+\ProvidesExplClass
+    {UWMadThesisL3Doc}{2014/03/13}{1.0}{Documentation class for UWMadThesis}
+\ProcessOptions\relax
+\LoadClass[l3doc]{UWMadThesis}[2013/01/01]
+    \int_new:N \g__UWMad_Sectioning_Part_int
+    \int_new:N \g__UWMad_Sectioning_Module_int
+    \int_new:N \g__UWMad_Sectioning_SubModule_int
+    \int_new:N \g__UWMad_Sectioning_SubSubModule_int
+    \int_new:N \g__UWMad_Sectioning_Feature_int
+    \int_new:N \g__UWMad_Sectioning_SubFeature_int
+    \int_new:N \g__UWMad_Sectioning_SubSubFeature_int
+
+    \tl_new:N \g__UWMad_ThePart_tl
+    \tl_new:N \g__UWMad_TheModule_tl
+    \tl_new:N \g__UWMad_TheSubModule_tl
+    \tl_new:N \g__UWMad_TheSubSubModule_tl
+    \tl_new:N \g__UWMad_TheFeature_tl
+    \tl_new:N \g__UWMad_TheSubFeature_tl
+    \tl_new:N \g__UWMad_TheSubSubFeature_tl
+
+    \tl_gset:Nn \g__UWMad_ThePart_tl {
+        \int_to_Roman:n{\g__UWMad_Sectioning_Part_int}
+    }
+    \tl_gset:Nn \g__UWMad_TheModule_tl {
+        \int_to_arabic:n{\g__UWMad_Sectioning_Module_int}
+    }
+    \tl_gset:Nn \g__UWMad_TheSubModule_tl {
+        \g__UWMad_TheModule_tl.
+        \int_to_arabic:n{\g__UWMad_Sectioning_SubModule_int}
+    }
+    \tl_gset:Nn \g__UWMad_TheSubSubModule_tl {
+        \g__UWMad_TheSubModule_tl.
+        \int_to_arabic:n{\g__UWMad_Sectioning_SubSubModule_int}
+    }
+    \tl_gset:Nn \g__UWMad_TheFeature_tl {
+        \int_to_arabic:n{\g__UWMad_Sectioning_Feature_int}
+    }
+    \tl_gset:Nn \g__UWMad_TheSubFeature_tl {
+        \g__UWMad_TheFeature_tl.
+        \int_to_arabic:n{\g__UWMad_Sectioning_SubFeature_int}
+    }
+    \tl_gset:Nn \g__UWMad_TheSubSubFeature_tl {
+        \g__UWMad_TheSubFeature_tl.
+        \int_to_arabic:n{\g__UWMad_Sectioning_SubSubFeature_int}
+    }
+
+%^^A =================================================================== %
+%^^A                      Implementation Sectioning                      %
+%^^A =================================================================== %
+    \cs_new:Nn \__UWMad_Sectioning_Module:nn {
+        \clearpage
+
+        \int_incr:N \g__UWMad_Sectioning_Module_int
+        \int_set:Nn \g__UWMad_Sectioning_SubModule_int    {0}
+        \int_set:Nn \g__UWMad_Sectioning_SubSubModule_int {0}
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \LARGE{
+                    Module~\g__UWMad_TheModule_tl
+                }
+            }
+            \vskip 0.5em
+            \textbf{\Huge{#2}}
+        \group_end:
+        \addcontentsline{toc}{section}{#1}
+        \vskip 1em
+        \par
+    }
+
+    \cs_new:Nn \__UWMad_Sectioning_SubModule:nn {
+
+        \skip_vertical:n {2em}
+
+        \int_set:Nn \g__UWMad_Sectioning_SubSubModule_int {0}
+        \int_incr:N \g__UWMad_Sectioning_SubModule_int
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \Large{
+                    \g__UWMad_TheSubModule_tl
+                    \hspace*{0.5em}#2
+                }
+            }
+        \group_end:
+        \addcontentsline{toc}{subsection}{#1}
+        \vskip 0.2em
+        \par
+    }
+
+    \cs_new:Nn \__UWMad_Sectioning_SubSubModule:nn {
+
+        \skip_vertical:n {2em}
+
+        \int_incr:N \g__UWMad_Sectioning_SubSubModule_int
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \large{
+                    \g__UWMad_TheSubSubModule_tl
+                    \hspace*{0.5em}#2
+                }
+            }
+        \group_end:
+        \addcontentsline{toc}{subsubsection}{#1}
+        \vskip 0.2em
+        \par
+    }
+
+
+    \DeclareDocumentCommand \UWModule { o m } {
+        \IfNoValueTF {#1} {
+            \__UWMad_Sectioning_Module:nn{#2}{#2}
+        } {
+            \__UWMad_Sectioning_Module:nn{#1}{#2}
+        }
+    }
+
+    \DeclareDocumentCommand \UWSubModule { o m } {
+        \IfNoValueTF {#1} {
+            \__UWMad_Sectioning_SubModule:nn{#2}{#2}
+        } {
+            \__UWMad_Sectioning_SubModule:nn{#1}{#2}
+        }
+    }
+
+    \DeclareDocumentCommand \UWSubSubModule { o m } {
+        \IfNoValueTF {#1} {
+            \__UWMad_Sectioning_SubSubModule:nn{#2}{#2}
+        } {
+            \__UWMad_Sectioning_SubSubModule:nn{#1}{#2}
+        }
+    }
+
+
+
+%^^A =================================================================== %
+%^^A                         User Guide Sectioning                       %
+%^^A =================================================================== %
+    \cs_new:Nn \__UWMad_Sectioning_Feature:nn {
+        \clearpage
+
+        \int_incr:N \g__UWMad_Sectioning_Feature_int
+        \int_set:Nn \g__UWMad_Sectioning_SubFeature_int    {0}
+        \int_set:Nn \g__UWMad_Sectioning_SubSubFeature_int {0}
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \LARGE{
+                    Feature~Set~\g__UWMad_TheFeature_tl
+                }
+            }
+            \vskip 0.5em
+            \textbf{\Huge{#2}}
+        \group_end:
+        \addcontentsline{toc}{section}{#1}
+        \vskip 1em
+        \par
+    }
+
+    \cs_new:Nn \__UWMad_Sectioning_SubFeature:nn {
+
+        \int_incr:N \g__UWMad_Sectioning_SubFeature_int
+        \int_set:Nn \g__UWMad_Sectioning_SubSubFeature_int {0}
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \Large{
+                    \g__UWMad_TheSubFeature_tl
+                    \hspace*{0.5em}#2
+                }
+            }
+        \group_end:
+        \addcontentsline{toc}{subsection}{#1}
+        \vskip 0.2em
+        \par
+    }
+
+    \cs_new:Nn \__UWMad_Sectioning_SubSubFeature:nn {
+
+        \int_incr:N \g__UWMad_Sectioning_SubSubFeature_int
+
+        \group_begin:
+            \null\vskip 0.1em
+            \phantomsection
+            \textbf{
+                \large{
+                    \g__UWMad_TheSubSubFeature_tl
+                    \hspace*{0.5em}#2
+                }
+            }
+        \group_end:
+        \addcontentsline{toc}{subsubsection}{#1}
+        \vskip 0.2em
+        \par
+    }
+
+
+    \DeclareDocumentCommand \UWFeature { o m } {
+        \IfNoValueTF {#1} {
+            \__UWMad_Sectioning_Feature:nn{#2}{#2}
+        } {
+            \__UWMad_Sectioning_Feature:nn{#1}{#2}
+        }
+    }
+
+    \DeclareDocumentCommand \UWSubFeature { o m } {
+        \IfNoValueTF {#1} {
+            \__UWMad_Sectioning_SubFeature:nn{#2}{#2}
+        } {
+            \__UWMad_Sectioning_SubFeature:nn{#1}{#2}
+        }
+    }
+
+    \DeclareDocumentCommand \UWSubSubFeature { o m } {
+        \IfNoValueTF {#1} {
+            \__UWMad_Sectioning_SubSubFeature:nn{#2}{#2}
+        } {
+            \__UWMad_Sectioning_SubSubFeature:nn{#1}{#2}
+        }
+    }
+%
+%
+%
+    \DeclareDocumentCommand   \UWPart { o m } {
+        \int_incr:N \g__UWMad_Sectioning_Part_int
+        \cleardoublepage
+        \newgeometry{marginparwidth = 0pt}
+        \group_begin:
+            \vspace*{2in}
+            \phantomsection
+            \begin{center}
+                \textbf{
+                    \huge{Part~\g__UWMad_ThePart_tl}
+                    \vskip 0.30em
+                    \Huge{#2}
+                }
+                \IfNoValueTF{#1} {
+                    \addcontentsline{toc}{part}{#2}
+                } {
+                    \addcontentsline{toc}{part}{#1}
+                }
+            \end{center}
+            \thispagestyle{empty}
+        \group_end:
+        \restoregeometry
+        \clearpage
+    }
+
+% Define some lengths for the documentation.
+    \setstretch{1.30}
+    \setlength{\parindent}{0pt}
+
+    % Play with macrocode env. formatting
+    \let\BeginMacroCode\macrocode
+    \let\EndMacroCode\endmacrocode
+
+    \renewcommand{\macrocode}{
+        \skip_vertical:n {-0.8em}
+        %\textsc{macrocode}:
+        \BeginMacroCode
+        \skip_vertical:n {-1.1em}
+        \setlength{\parskip}{0em}
+        \setstretch{1.0}
+    }
+    \renewcommand{\endmacrocode}{
+        \EndMacroCode
+        \vspace*{0.5em}
+    }
+
+{
+    \cs_show:c {function}
+}
+
+    % Define the Usage environment
+    \newenvironment{Usage}
+        {   \vskip 0.6em
+            \textsl{Usage}:
+            \begin{list}
+                {}
+                {   \setstretch{1}
+                    \setlength{\topsep}{0em}
+                    \setlength{\itemsep}{0em}
+                    \setlength{\parsep}{0em}
+                    \setlength{\leftmargin}{1em}}}
+        {   \end{list}}
+

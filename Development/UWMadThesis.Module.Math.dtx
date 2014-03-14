@@ -1,61 +1,342 @@
 %<*UserGuide>
 \UWFeature{Math}\label{UG:Math}
-Derivative tests
+As the feature name may suggest, all of the commands in this section deal with mathematical typesetting.
 
-\begin{function}{\diff , \pdiff , \tdiff}
+% ===================================================================== %
+%                             Derivative Commands                       %
+% ===================================================================== %
+\UWSubFeature{Derivative Commands}
+These command set deal with quick and easy typesetting of derivatives.
+
+\begin{function}{\deriv , \pderiv , \tderiv}
     \begin{syntax}
-        \cs{diff}  \Arg{function} \Arg{variable} \Arg{order}    \\
-        \cs{pdiff} \Arg{function} \Arg{variable} \Arg{order}    \\
-        \cs{tdiff} \Arg{function} \Arg{variable} \Arg{order}
+        \cs{deriv}  \Arg{function} \Arg{variable} \Arg{order}    \\
+        \cs{pderiv} \Arg{function} \Arg{variable} \Arg{order}    \\
+        \cs{tderiv} \Arg{function} \Arg{variable} \Arg{order}
     \end{syntax}
     This function set is meant to typeset three different kinds of derivatives: ordinary, partial, and total (i.e., material or Lagragian).
-    The only difference between them is the differential symbol: \cs{diff} uses `$\mathrm{d}$', \cs{pdiff} uses `$\partial$', and \cs{tdiff} used `$\mathrm{D}$'.
+    The only difference between them is the differential symbol: \cs{deriv} uses `$\mathrm{d}$', \cs{pderiv} uses `$\partial$', and \cs{tderiv} used `$\mathrm{D}$'.
 
     These commands typeset the derivative of a given \Arg{function} with respect to \Arg{variable} of $n$-th \Arg{order} using Leibniz's notation.
     The \Arg{order} is optional and defaults to empty (first derivative).
     For example, the input
     \begin{verbatim}
         \begin{align}
-            \diff{y}{x}{2} + \diff{y}{x} + y(x)         &= 0    \\[0.50em]
-            \pdiff{T}{t} - \alpha \pdiff{T}{z}{2}       &= 0    \\[0.50em]
-            \tdiff{\rho{u}}{t} + \pdiff{P}{z}  - \rho g &= 0
+            \deriv{y}{x}{2} + \deriv{y}{x} + y(x)         &= 0    \\[0.50em]
+            \pderiv{T}{t} - \alpha \pderiv{T}{z}{2}       &= 0    \\[0.50em]
+            \tderiv{\rho{u}}{t} + \pderiv{P}{z}  - \rho g &= 0
         \end{align}
     \end{verbatim}
     and is typeset as
         \begin{align}
-            \diff{y}{x}{2} + \diff{y}{x} + y(x)         &= 0    \\[0.50em]
-            \pdiff{T}{t} - \alpha \pdiff{T}{z}{2}       &= 0    \\[0.50em]
-            \tdiff{(\rho{u})}{t} + \pdiff{P}{z}  - \rho g &= 0
+            \deriv{y}{x}{2} + \deriv{y}{x} + y(x)         &= 0    \\[0.50em]
+            \pderiv{T}{t} - \alpha \pderiv{T}{z}{2}       &= 0    \\[0.50em]
+            \tderiv{(\rho{u})}{t} + \pderiv{P}{z}  - \rho g &= 0
         \end{align}
 \end{function}
 
 
-\begin{function}{\diffbig,\pdiffbig,\tdiffbig}
+\begin{function}{\derivbig,\pderivbig,\tderivbig}
     \begin{syntax}
-        \cs{diffbig}   \oarg{left delim}\oarg{right delim} \Arg{function} \Arg{variable} \Arg{order} \\
-        \cs{pdiffbig}  \oarg{left delim}\oarg{right delim} \Arg{function} \Arg{variable} \Arg{order} \\
-        \cs{tdiffbig}  \oarg{left delim}\oarg{right delim} \Arg{function} \Arg{variable} \Arg{order}
+        \cs{derivbig}   \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order} \\
+        \cs{pderivbig}  \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order} \\
+        \cs{tderivbig}  \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order}
     \end{syntax}
-    This function set is identical to the non-|big| versions above, except that \Arg{function} is placed to the left of the derivative operator and wrapped by |\left| and |\right|.
-    The default delimiters for the stretch command is `[' and ']', and either can be individually overridden via the two starting optional arguments.
+    This function set is identical to the non-|big| versions above, except that \Arg{function} is placed to the right of the derivative operator and wrapped by |\left| and |\right|.
+    The default delimiters for the stretch commands are `[' and ']', and either can be individually overridden via the two optional arguments.
     For example, the input
     \begin{verbatim}
         \begin{align}
-            -\diffbig[{[}][\}]{ p(x) \diff{y}{x} }{x} + q(x) (1 
-                    - \lambda) y(x)  &= 0 \\[0.50em]
-            \tdiffbig[(][)]{ \rho{i} + \frac{1}{2} \rho u^2 }{t} - 
-                    \pdiffbig[(][)]{ \kappa \pdiff{T}{z} }{z} &= 0
+            -\derivbig{ p(x) \deriv{y}{x} }{x} + 
+                    q(x) (1 - \lambda) y(x)  &= 0 \\[0.50em]
+            \tderivbig{ \rho{i} + \frac{1}{2} \rho u^2 }[(]{t} - 
+                    \pderivbig[\lvert]{ \kappa \pderiv{T}{z} }{z} &= 0
         \end{align}
     \end{verbatim} 
     and is typeset as
         \begin{align}
-            -\diffbig[{[}][\}]{ p(x) \diff{y}{x} }{x} + q(x) (1 - \lambda) y(x)  &= 0 \\[0.50em]
-            \tdiffbig[(][)]{ \rho{i} + \frac{1}{2} \rho u^2 }{t} - 
-            \pdiffbig[(][)]{ \kappa \pdiff{T}{z} }{z} &= 0
+            -\derivbig{ p(x) \deriv{y}{x} }{x} + 
+                    q(x) (1 - \lambda) y(x)  &= 0 \\[0.50em]
+            \tderivbig{ \rho{i} + \frac{1}{2} \rho u^2 }[(]{t} - 
+                    \pderivbig[\lvert]{ \kappa \pderiv{T}{z} }{z} &= 0
         \end{align}
 \end{function}
 
+\begin{function}{\DerivativeGeneral,\DerivativeGeneralBig}
+    \begin{syntax}
+        \cs{DerivativeGeneral}     \Arg{function} \Arg{variable} \Arg{order} \Arg{symbol}
+        \cs{DerivativeGeneralBig}  \Arg{function} \Arg{variable} \Arg{order} \Arg{symbol} \Arg{left delim} \Arg{right delim}
+    \end{syntax}
+    These commands are lower-level commands used by the |deriv| family above.
+    All of the arguments are mandatory.
+    If a change to the general style of the derivatives or another version of the |deriv| family is desire, these commands are available for usage.
+\end{function}
 
+\begin{function}{\derivSymbol,\pderivSymbol,\tderivSymbol}
+    \begin{syntax}
+        \cs{derivSymbol}
+    \end{syntax}
+    These commands take no arguments and expand to the current symbol used for the associated |deriv| command.
+    The defaults require math mode to be typeset.
+    Therefore, |$\pderivSymbol$| will be appear as $\pderivSymbol$.
+\end{function}
+
+
+\begin{function}{\derivSymbolChange,\pderivSymbolChange,\tderivSymbolChange}
+    \begin{syntax}
+        \cs{derivSymbolChange} \Arg{symbol} \\[0.50em]
+    \end{syntax}
+    These commands will \textsc{temporarily} change the symbol used by the associated |deriv| commands.
+    The symbol will revert back to the original, default value after leaving the \TeX{} group where the switch was made (more often than not for \LaTeX{} users, this means ``upon exiting an environment'').
+    For example:
+    \begin{verbatim}
+        \begin{equation}
+            \deriv{U}{t} =
+            \derivSymbolChange{\delta}
+            \deriv{Q}{t} - \deriv{W}{t}
+        \end{equation}
+    \end{verbatim}
+    typesets as
+    \begin{equation}
+            \deriv{U}{t} =
+            \derivSymbolChange{\delta}
+            \deriv{Q}{t} - \deriv{W}{t}
+    \end{equation}
+    and now, after the environment, the \cs{derivSymbol} is once again `$\derivSymbol$'.
+\end{function}
+
+\begin{function}{\derivSymbolChangeDefault,\pderivSymbolChangeDefault,\tderivSymbolChangeDefault}
+    \begin{syntax}
+        \cs{derivSymbolChangeDefault} \Arg{symbol} \\[0.50em]
+    \end{syntax}
+    These commands will \textsc{permanently} change the symbol used by the associated |deriv| commands.
+    For example:
+    \begin{verbatim}
+        \begin{equation}
+            \deriv{U}{t} =
+            \derivSymbolChangeDefault{\delta}
+            \deriv{Q}{t} - \deriv{W}{t}
+        \end{equation}
+    \end{verbatim}
+    typesets as
+    \begin{equation}
+            \deriv{U}{t} =
+            \derivSymbolChangeDefault{\delta}
+            \deriv{Q}{t} - \deriv{W}{t}
+    \end{equation}
+    and now, after the environment, the \cs{derivSymbol} is `$\derivSymbol$'.
+\end{function}
+
+
+
+\begin{function}{\DelimiterChangeDefault}
+    \begin{syntax}
+        \cs{DelimiterChangeDefault} \Arg{left delim} \Arg{right delim}
+    \end{syntax}
+    This command changes the default delimiters used by the |big| commands above.
+    Any valid delimiters can be used.
+    For example:
+    \begin{verbatim}
+        \DelimiterChangeDefault{(}{)}
+        \begin{equation}
+            -\derivbig{ p(x) \deriv{y}{x} }{x} + 
+                    q(x) (1 - \lambda) y(x) = 0 \\[0.50em]
+        \end{equation}
+    \end{verbatim} 
+    and is typeset as
+    \DelimiterChangeDefault{(}{)}
+    \begin{equation}
+        -\derivbig{ p(x) \deriv{y}{x} }{x} + 
+                q(x) (1 - \lambda) y(x) = 0 \\[0.50em]
+    \end{equation}
+    and notice that the \cs{derivSymbol} is still $\derivSymbol$.
+\end{function}
+
+
+
+
+
+% ===================================================================== %
+%                                 Operators                             %
+% ===================================================================== %
+\UWSubFeature{Operators}
+These operators are added to the standard set using the \AmS{} operator system.
+Some are new while others are simply in a camel-cased versions of the standard ones.
+
+\begin{function}{\Sup,\Inf}
+    Supremum and Infinum operators using the math operator system.
+    For example, the input
+    \begin{verbatim}
+        \begin{align}
+            \Inf_{x \in \mathbb{R}} \{0 < x  < 1\} &= 0 \\[0.50em]
+            \Sup_{x \in \mathbb{R}} \{0 < x  < 1\} &= 1
+        \end{align}
+    \end{verbatim}
+    is typeset as
+    \begin{align}
+        \Inf_{x \in \mathbb{R}} 
+            \{0 \LessThan x \LessThan 1\} &= 0 \\[0.50em]
+        \Sup_{x \in \mathbb{R}}
+            \{0 \LessThan x \LessThan 1\} &= 1
+    \end{align}
+\end{function}
+
+\begin{function}{\Lim}
+    The limit operator:
+    \begin{verbatim}
+        \begin{equation}
+            \Lim_{n \rightarrow \infty} \left(1 + \frac{1}{n}\right)^n = \mathrm{e}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+        \begin{equation}
+            \Lim_{n \rightarrow \infty} \left(1 + \frac{1}{n}\right)^n = \mathrm{e}
+        \end{equation}
+\end{function}
+
+\begin{function}{\Min,\Max}
+    The maximum and minimum value operators
+    \begin{verbatim}
+        \begin{equation}
+            \begin{align}
+                \Min_{x \in \mathbb{R}} \Sin(x) &= -1 \\[0.50em]
+                \Max_{x \in \mathbb{R}} \Sin(x) &= +1
+            \end{align}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+    \begin{align}
+        \Min_{x \in \mathbb{R}} \Sin(x) &= -1 \\[0.50em]
+        \Max_{x \in \mathbb{R}} \Sin(x) &= +1
+    \end{align}
+\end{function}
+
+\begin{function}{\ArgMin,\ArgMax}
+    The maximum and minimum argument operators
+    \begin{verbatim}
+        \begin{equation}
+            \begin{align}
+                \ArgMin_{x \in \mathbb{R}} \Sin(x) &= \frac{3\pi}{2} + 2 \pi n \\[0.50em]
+                \ArgMax_{x \in \mathbb{R}} \Sin(x) &= \frac{\pi}{2} + 2 \pi n
+            \end{align}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+    \begin{align}
+                \ArgMin_{x \in \mathbb{R}} \Sin(x) &= \frac{3\pi}{2} + 2 \pi n \\[0.50em]
+                \ArgMax_{x \in \mathbb{R}} \Sin(x) &= \frac{\pi}{2} + 2 \pi n
+    \end{align}
+\end{function}
+
+\begin{function}{\Abs,\Ln,\Log,\Exp}
+    Common set of operators in uppercase form.
+\end{function}
+
+\begin{function}{\Cos,\Sin,\Tan,\Sec,\Csc,\Cot}
+    Standard trigonometric functions and their reciprocals.
+\end{function}
+\begin{function}{\Cosh,\Sinh,\Tanh,\Sech,\Csch,\Coth}
+    Hyperbolic trigonometric functions and their reciprocals.
+\end{function}
+\begin{function}{\ArcCos,\ArcSin,\ArcTan,\ArcSec,\ArcCsc,\ArcCot}
+    Standard inverse trigonometric functions and their reciprocals.
+\end{function}
+\begin{function}{\ArcCosh,\ArcSinh,\ArcTanh,\ArcSech,\ArcCsch,\ArcCoth}
+    Hyperbolic inverse trigonometric functions and their reciprocals.
+\end{function}
+
+
+
+% ===================================================================== %
+%                          Miscellaneous Commands                       %
+% ===================================================================== %
+\UWSubFeature{Miscellaneous Commands}
+
+\begin{function}{\Sqrt}
+    \begin{syntax}
+        \cs{Sqrt} \oarg{n} \Arg{argument}
+    \end{syntax}
+    This command typesets the \oarg{n}-th root of a given \Arg{argument} with a closing tail.
+    This command differs from the default \cs{sqrt} in appearance only:
+    \begin{equation}
+        \sqrt[3]{\frac{f(x)}{g(x)}} = \Sqrt[3]{\frac{f(x)}{g(x)}}
+    \end{equation}
+\end{function}
+
+\begin{function}{\IfMathModeTF}
+    \begin{syntax}
+        \cs{IfMathModeTF} \Arg{math mode code} \Arg{text mode code}
+    \end{syntax}
+    This is an abstraction of |expl3|'s |\mode_if_math:TF| function.
+    It was added to give more control on the following \cs{subs} and \cs{sups} commands since |expl3|'s syntax is disabled to make |_| a subscript shift and not a letter.
+\end{function}
+
+\begin{function}{\subs,\sups,\subsups}
+    \begin{syntax}
+        \cs{subs}    \oarg{space} \Arg{text subscript} \\[0.50em]
+        \cs{sups}    \oarg{space} \Arg{text superscript} \\[0.50em]
+        \cs{subsups} \oarg{subscript space} \Arg{text subscript} \oarg{superscript space} \Arg{text superscript}
+    \end{syntax}
+    These command typeset a subscript or superscript \textsc{in text mode}.
+    They are useful if the subscript or superscript are not variable, and therefore should be in non-math text, or for making subscripts or superscripts in text mode.
+    The optional argument \oarg{space} is meant for adjusting the spacing of the scripts and exists in \textsc{in math mode}, so technically, any valid math statement can be used.
+    However, it is encouraged to only use this argument for spacing.
+    For example, the input |`T\subs{P}, $T\subs{P}$, $T_P$'| is typeset as `T\subs{P}, $T\subs{P}$, $T_P$', and the input |`T\subs[\!]{P}, T\subs[\:]{P}'| is typeset as `T\subs[\!]{P}, T\subs[\:]{P}'.
+    T\sups{P}
+\end{function}
+
+\begin{function}{\OneOver,\oneo}
+    \begin{syntax}
+        \cs{OneOver}  \Arg{denominator}
+    \end{syntax}
+    A simple command the typesets a fraction whose numerator is always one.
+    For example, the input
+    \begin{verbatim}
+        \begin{equation}
+            \OneOver{\Sqrt{x^2 + 1}}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+        \begin{equation}
+            \OneOver{\Sqrt{x^2 + 1}}
+        \end{equation}
+\end{function}
+
+\begin{function}{\dd}
+    \begin{syntax}
+        \cs{dd}  \Arg{variable}
+    \end{syntax}
+    A simple command the typesets a non-math `d' in math mode and is meant to be used for differentials.
+    For example, the input
+    \begin{verbatim}
+        \derivSymbolChangeDefault{\mathrm{d}}
+        \begin{equation}
+            f(b) - f(a) = \int_a^b \deriv{f}{t} \dd{t}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+        \derivSymbolChangeDefault{\mathrm{d}}
+        \begin{equation}
+            f(b) - f(a) = \int_a^b \deriv{f}{t} \dd{t}
+        \end{equation}
+\end{function}
+
+\begin{function}{\dprime,\tprime}
+    \begin{syntax}
+        \cs{dprime}
+    \end{syntax}
+    These commands take no arguments and simply mean `double prime' and `triple prime'.
+    For example, the input
+    \begin{verbatim}
+        \begin{equation}
+            q^\prime = q^\dprime 2\pi{R} = q^\tprime \pi{R^2}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+        \begin{equation}
+            q^\prime = q^\dprime 2\pi{R} = q^\tprime \pi{R^2}
+        \end{equation}
+\end{function}
 
 
 %</UserGuide>
@@ -78,126 +359,134 @@ Derivative tests
 %
 %
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_Math_SquareRootCore:nn {
-    
-    \hbox_set:Nn \l_tmpa_box {
-        ${ \mathpalette
-                {\,\:\!}
-                {\root #1 \of {#2\:\!}}
-        }$
-    }
-    %
-    \dim_set:Nn \l_tmpa_dim {\box_ht:N \l_tmpa_box}
-    \dim_set:Nn \l_tmpb_dim {0.8\l_tmpa_dim}
-    %
-    \hbox_set:Nn \l_tmpb_box { 
-        \vrule height \l_tmpa_dim depth -\l_tmpb_dim
-    }
-    %
-    {
-        \box_use:N \l_tmpa_box
-        \box_move_down:nn {0.40pt}{\box_use:N \l_tmpb_box}
-    }
-
-}
-\DeclareDocumentCommand \Sqrt { O{} m } {
-    \UWMad_Math_SquareRootCore:nn{#1}{#2}
+%
+%
+%
+\tex_everydisplay:D \exp_after:wN {
+    \tex_the:D \tex_everydisplay:D
+    \cs_set_eq:NN \frac \dfrac
 }
 %
 %
 %
-% ---------------------------------------------------------------------------- %
-%                              Derivative Commands                             %
-% ---------------------------------------------------------------------------- %
+%
+%
+% =========================================================================== %
+%                             Derivative Commands                             %
+% =========================================================================== %
+%
+\tl_new:N   \g_UWMad_Math_derivSymbol_tl
+\tl_gset:Nn \g_UWMad_Math_derivSymbol_tl   {\mathrm{d}}
+\tl_new:N   \g_UWMad_Math_pderivSymbol_tl
+\tl_gset:Nn \g_UWMad_Math_pderivSymbol_tl  {\partial}
+\tl_new:N   \g_UWMad_Math_tderivSymbol_tl
+\tl_gset:Nn \g_UWMad_Math_tderivSymbol_tl  {\mathrm{D}}
+\tl_new:N   \g_UWMad_Math_DelimiterDefaultLeft_tl
+\tl_gset:Nn \g_UWMad_Math_DelimiterDefaultLeft_tl  {[}
+\tl_new:N   \g_UWMad_Math_DelimiterDefaultRight_tl
+\tl_gset:Nn \g_UWMad_Math_DelimiterDefaultRight_tl {]}
+\tl_new:N   \l_UWMad_Math_DelimiterLeft_tl
+\tl_new:N   \l_UWMad_Math_DelimiterRight_tl
+%
+%
+\DeclareDocumentCommand \derivSymbol { } {
+    \g_UWMad_Math_derivSymbol_tl
+}
+\DeclareDocumentCommand \pderivSymbol { } {
+    \g_UWMad_Math_pderivSymbol_tl
+}
+\DeclareDocumentCommand \tderivSymbol { } {
+    \g_UWMad_Math_tderivSymbol_tl
+}
+%
+%
+\DeclareDocumentCommand \derivSymbolChange { m } {
+    \tl_set:Nn \g_UWMad_Math_derivSymbol_tl {#1}
+}
+\DeclareDocumentCommand \pderivSymbolChange { m } {
+    \tl_set:Nn \g_UWMad_Math_pderivSymbol_tl {#1}
+}
+\DeclareDocumentCommand \tderivSymbolChange { m } {
+    \tl_set:Nn \g_UWMad_Math_tderivSymbol_tl {#1}
+}
+%
+%
+\DeclareDocumentCommand \derivSymbolChangeDefault { m } {
+    \tl_gset:Nn \g_UWMad_Math_derivSymbol_tl {#1}
+}
+\DeclareDocumentCommand \pderivSymbolChangeDefault { m } {
+    \tl_gset:Nn \g_UWMad_Math_pderivSymbol_tl {#1}
+}
+\DeclareDocumentCommand \tderivSymbolChangeDefault { m } {
+    \tl_gset:Nn \g_UWMad_Math_tderivSymbol_tl {#1}
+}
+%
+%
+\DeclareDocumentCommand \DelimiterChangeDefault { m m } {
+    \tl_gset:Nn  \g_UWMad_Math_DelimiterDefaultLeft_tl  {#1}
+    \tl_gset:Nn  \g_UWMad_Math_DelimiterDefaultRight_tl {#2}
+}
+%
+%
 \DeclareDocumentCommand \DerivativeGeneral { +m +m m m } {
     \frac{ #4^{#3} #1      }
          { #4      #2^{#3} }
 }
 \DeclareDocumentCommand \DerivativeGeneralBig { +m +m m m m m} {
+
+    \IfNoValueTF {#5} {
+        \tl_set_eq:NN 
+            \l_UWMad_Math_DelimiterLeft_tl
+            \g_UWMad_Math_DelimiterDefaultLeft_tl
+    } {
+        \tl_set:Nn \l_UWMad_Math_DelimiterLeft_tl {#5}
+    }
+
+    \IfNoValueTF {#6} {
+        \tl_set_eq:NN 
+            \l_UWMad_Math_DelimiterRight_tl
+            \g_UWMad_Math_DelimiterDefaultRight_tl
+    } {
+        \tl_set:Nn \l_UWMad_Math_DelimiterRight_tl {#6}
+    }
+
     \frac{ #4^{#3}    }
-         { #4 #2^{#3} } \left#5 #1 \right#6
+         { #4 #2^{#3} }
+    \!\!
+    \left\l_UWMad_Math_DelimiterLeft_tl
+        #1 
+    \right\l_UWMad_Math_DelimiterRight_tl
 }
 %
 %
-\tl_new:N  \g_UWMad_Math_DerivativeSymbolOrdinary_tl
-\tl_new:N  \g_UWMad_Math_DerivativeSymbolPartial_tl
-\tl_new:N  \g_UWMad_Math_DerivativeSymbolTotal_tl
-\tl_set:Nn \g_UWMad_Math_DerivativeSymbolOrdinary_tl {\mathrm{d}}
-\tl_set:Nn \g_UWMad_Math_DerivativeSymbolPartial_tl  {\partial}
-\tl_set:Nn \g_UWMad_Math_DerivativeSymbolTotal_tl    {\mathrm{D}}
-%
-%
-\DeclareDocumentCommand \DerivativeSymbolOrdinary { m } {
-    \tl_set:Nn \g_UWMad_Math_DerivativeSymbolOrdinary_tl {#1}
-}
-\DeclareDocumentCommand \DerivativeSymbolPartial { m } {
-    \tl_set:Nn \g_UWMad_Math_DerivativeSymbolPartial_tl {#1}
-}
-\DeclareDocumentCommand \DerivativeSymbolTotal { m } {
-    \tl_set:Nn \g_UWMad_Math_DerivativeSymbolTotal_tl {#1}
-}
-%
-%
-\DeclareDocumentCommand \diff { +m +m G{} } {
+\DeclareDocumentCommand \deriv { +m +m G{} } {
     \DerivativeGeneral
-        {#1}{#2}{#3}{\g_UWMad_Math_DerivativeSymbolOrdinary_tl}
+        {#1}{#2}{#3}{\derivSymbol}
 }
-\DeclareDocumentCommand \diffbig { O{[} O{]} +m +m G{} } {
-    \DerivativeGeneralBig
-        {#3}{#4}{#5}{\g_UWMad_Math_DerivativeSymbolOrdinary_tl}{#1}{#2}
-}
-%
-%
-\DeclareDocumentCommand \pdiff { +m +m G{} } {
+\DeclareDocumentCommand \pderiv { +m +m G{} } {
     \DerivativeGeneral
-        {#1}{#2}{#3}{\g_UWMad_Math_DerivativeSymbolPartial_tl}
+        {#1}{#2}{#3}{\pderivSymbol}
 }
-\DeclareDocumentCommand \pdiffbig { O{[} O{]} +m +m G{} } {
-    \DerivativeGeneralBig
-        {#3}{#4}{#5}{\g_UWMad_Math_DerivativeSymbolPartial_tl}{#1}{#2}
-}
-%
-%
-\DeclareDocumentCommand \tdiff { +m +m G{} } {
+\DeclareDocumentCommand \tderiv { +m +m G{} } {
     \DerivativeGeneral
-        {#1}{#2}{#3}{\g_UWMad_Math_DerivativeSymbolTotal_tl}
+        {#1}{#2}{#3}{\tderivSymbol}
 }
-\DeclareDocumentCommand \tdiffbig { O{[} O{]} +m +m G{} } {
+%
+%
+\DeclareDocumentCommand \derivbig { o +m o +m G{} } {
     \DerivativeGeneralBig
-        {#3}{#4}{#5}{\g_UWMad_Math_DerivativeSymbolTotal_tl}{#1}{#2}
+        {#2}{#4}{#5}{\derivSymbol}{#1}{#3}
+}
+\DeclareDocumentCommand \pderivbig { o +m o +m G{} } {
+    \DerivativeGeneralBig
+        {#2}{#4}{#5}{\pderivSymbol}{#1}{#3}
+}
+\DeclareDocumentCommand \tderivbig { o +m o +m G{} } {
+    \DerivativeGeneralBig
+        {#2}{#4}{#5}{\tderivSymbol}{#1}{#3}
 }
 %
 %
-\ExplSyntaxOff
-    \DeclareDocumentCommand \subs { O{} +m } {
-        \ensuremath{{}_{#1\text{\scriptsize #2}}}
-    }
-    \DeclareDocumentCommand \sups { O{} +m } {
-        \ensuremath{{}^{#1\text{\scriptsize #2}}}
-    }
-    \DeclareDocumentCommand \subsups { O{} +m O{} +m } {
-        \ensuremath{{}^{#1\text{\scriptsize #2}}_{#3\text{\scriptsize #4}}}
-    }
-\ExplSyntaxOn
-%
-\DeclareDocumentCommand \OneOver { +m } {
-    \frac{1}{#1}
-}
-\DeclareDocumentCommand \oneo { +m } {
-    \OneOver{#1}
-}
-\DeclareDocumentCommand \dd { m } {
-    \mathrm{d}{#1}
-}
-\DeclareDocumentCommand \dprime { } {
-    \prime\prime
-}
-\DeclareDocumentCommand \tprime { } {
-    \prime\prime\prime
-}
-\DeclareDocumentCommand \where { } {
-    \,,\quad\text{ where}
-}
 %
 %
 \DeclareMathOperator*{\Sup}    {Sup}
@@ -220,8 +509,11 @@ Derivative tests
 \DeclareMathOperator{\Cosh}    {Cosh}
 \DeclareMathOperator{\Sinh}    {Sinh}
 \DeclareMathOperator{\Tanh}    {Tanh}
-\DeclareMathOperator{\ArcSin}  {ArcSin}
+\DeclareMathOperator{\Sech}    {Sech}
+\DeclareMathOperator{\Csch}    {Csch}
+\DeclareMathOperator{\Coth}    {Coth}
 \DeclareMathOperator{\ArcCos}  {ArcCos}
+\DeclareMathOperator{\ArcSin}  {ArcSin}
 \DeclareMathOperator{\ArcTan}  {ArcTan}
 \DeclareMathOperator{\ArcSec}  {ArcSec}
 \DeclareMathOperator{\ArcCsc}  {ArcCsc}
@@ -229,54 +521,93 @@ Derivative tests
 \DeclareMathOperator{\ArcCosh} {ArcCosh}
 \DeclareMathOperator{\ArcSinh} {ArcSinh}
 \DeclareMathOperator{\ArcTanh} {ArcTanh}
+\DeclareMathOperator{\ArcSech} {ArcSech}
+\DeclareMathOperator{\ArcCsch} {ArcCsch}
+\DeclareMathOperator{\ArcCoth} {ArcCoth}
 %
 %
 %
 %
-% ===================================================================================== %
-%                   Make greek letters work in and out of MathMode                      %
-% ===================================================================================== %
-\iffalse
-    \let\Oldalpha     \alpha     \renewcommand{\alpha}     {\ensuremath{\Oldalpha     }\xspace}
-    \let\Oldbeta      \beta      \renewcommand{\beta}      {\ensuremath{\Oldbeta      }\xspace}
-    \let\Oldgamma     \gamma     \renewcommand{\gamma}     {\ensuremath{\Oldgamma     }\xspace}
-    \let\Olddelta     \delta     \renewcommand{\delta}     {\ensuremath{\Olddelta     }\xspace}
-    \let\Oldepsilon   \epsilon   \renewcommand{\epsilon}   {\ensuremath{\Oldepsilon   }\xspace}
-    \let\Oldvarepsilon\varepsilon\renewcommand{\varepsilon}{\ensuremath{\Oldvarepsilon}\xspace}
-    \let\Oldzeta      \zeta      \renewcommand{\zeta}      {\ensuremath{\Oldzeta      }\xspace}
-    \let\Oldeta       \eta       \renewcommand{\eta}       {\ensuremath{\Oldeta       }\xspace}
-    \let\Oldtheta     \theta     \renewcommand{\theta}     {\ensuremath{\Oldtheta     }\xspace}
-    \let\Oldvartheta  \vartheta  \renewcommand{\vartheta}  {\ensuremath{\Oldvartheta  }\xspace}
-    \let\Oldkappa     \kappa     \renewcommand{\kappa}     {\ensuremath{\Oldkappa     }\xspace}
-    \let\Oldlambda    \lambda    \renewcommand{\lambda}    {\ensuremath{\Oldlambda    }\xspace}
-    \let\Oldmu        \mu        \renewcommand{\mu}        {\ensuremath{\Oldmu        }\xspace}
-    \let\Oldnu        \nu        \renewcommand{\nu}        {\ensuremath{\Oldnu        }\xspace}
-    \let\Oldxi        \xi        \renewcommand{\xi}        {\ensuremath{\Oldxi        }\xspace}
-    \let\Oldpi        \pi        \renewcommand{\pi}        {\ensuremath{\Oldpi        }\xspace}
-    \let\Oldvarpi     \varpi     \renewcommand{\varpi}     {\ensuremath{\Oldvarpi     }\xspace}
-    \let\Oldrho       \rho       \renewcommand{\rho}       {\ensuremath{\Oldrho       }\xspace}
-    \let\Oldvarrho    \varrho    \renewcommand{\varrho}    {\ensuremath{\Oldvarrho    }\xspace}
-    \let\Oldsigma     \sigma     \renewcommand{\sigma}     {\ensuremath{\Oldsigma     }\xspace}
-    \let\Oldvarsigma  \varsigma  \renewcommand{\varsigma}  {\ensuremath{\Oldvarsigma  }\xspace}
-    \let\Oldtau       \tau       \renewcommand{\tau}       {\ensuremath{\Oldtau       }\xspace}
-    \let\Oldupsilon   \upsilon   \renewcommand{\upsilon}   {\ensuremath{\Oldupsilon   }\xspace}
-    \let\Oldphi       \phi       \renewcommand{\phi}       {\ensuremath{\Oldphi       }\xspace}
-    \let\Oldvarphi    \varphi    \renewcommand{\varphi}    {\ensuremath{\Oldvarphi    }\xspace}
-    \let\Oldchi       \chi       \renewcommand{\chi}       {\ensuremath{\Oldchi       }\xspace}
-    \let\Oldpsi       \psi       \renewcommand{\psi}       {\ensuremath{\Oldpsi       }\xspace}
-    \let\Oldomega     \omega     \renewcommand{\omega}     {\ensuremath{\Oldomega     }\xspace}
-    \let\OldGamma     \Gamma     \renewcommand{\Gamma}     {\ensuremath{\OldGamma     }\xspace}
-    \let\OldLambda    \Lambda    \renewcommand{\Lambda}    {\ensuremath{\OldLambda    }\xspace}
-    \let\OldSigma     \Sigma     \renewcommand{\Sigma}     {\ensuremath{\OldSigma     }\xspace}
-    \let\OldPsi       \Psi       \renewcommand{\Psi}       {\ensuremath{\OldPsi       }\xspace}
-    \let\OldDelta     \Delta     \renewcommand{\Delta}     {\ensuremath{\OldDelta     }\xspace}
-    \let\OldXi        \Xi        \renewcommand{\Xi}        {\ensuremath{\OldXi        }\xspace}
-    \let\OldUpsilon   \Upsilon   \renewcommand{\Upsilon}   {\ensuremath{\OldUpsilon   }\xspace}
-    \let\OldOmega     \Omega     \renewcommand{\Omega}     {\ensuremath{\OldOmega     }\xspace}
-    \let\OldTheta     \Theta     \renewcommand{\Theta}     {\ensuremath{\OldTheta     }\xspace}
-    \let\OldPi        \Pi        \renewcommand{\Pi}        {\ensuremath{\OldPi        }\xspace}
-    \let\OldPhi       \Phi       \renewcommand{\Phi}       {\ensuremath{\OldPhi       }\xspace}
-    \fi
+%
+% ===================================================================== %
+%                          Miscellaneous Commands                       %
+% ===================================================================== %
+\cs_new:Nn \UWMad_Math_RootWithTail:nn {
+
+    \hbox_set:Nn \l_tmpa_box {
+        $
+            \mathchoice
+                {\root #1 \of {#2\:\!}}
+                {\root #1 \of {#2\:\!}}
+                {\root #1 \of {#2\:\!}}
+                {\root #1 \of {#2\:\!}}
+        $
+    }
+    %
+    \dim_set:Nn \l_tmpa_dim {\box_ht:N \l_tmpa_box}
+    \dim_set:Nn \l_tmpb_dim {0.8\l_tmpa_dim}
+    %
+    \hbox_set:Nn \l_tmpb_box {
+        \tex_vrule:D height \l_tmpa_dim depth -\l_tmpb_dim
+    }
+    %
+    \box_use:N \l_tmpa_box
+    \box_move_down:nn {0.40pt}{\box_use:N \l_tmpb_box}
+}
+\DeclareDocumentCommand \Sqrt { O{} m } {
+    \UWMad_Math_RootWithTail:nn{#1}{#2}
+}
+%
+%
+\DeclareExpandableDocumentCommand \IfMathModeTF { +m +m } {
+    \mode_if_math:TF {
+        #1
+    }{
+        $#2$
+    }
+}
+\ExplSyntaxOff
+    \DeclareDocumentCommand \subs { O{} +m } {%
+        \IfMathModeTF{%
+            _{\!\!\:#1\text{\scriptsize #2}}%
+        }{%
+            _{\!#1\text{\scriptsize #2}}%
+        }%
+    }%
+    \DeclareDocumentCommand \sups { O{} +m } {%
+        \IfMathModeTF{%
+            ^{#1\text{\scriptsize #2}}%
+        }{%
+            ^{#1\text{\scriptsize #2}}%
+        }%
+    }%
+    \DeclareDocumentCommand \subsups { O{} +m O{} +m } {%
+        \IfMathModeTF{%
+            _{#1\text{\scriptsize #2}}^{\!\!\:#3\text{\scriptsize #4}}%
+        }{%
+            _{#1\text{\scriptsize #2}}^{\!\!\!#3\text{\scriptsize #4}}%
+        }%
+    }%
+\ExplSyntaxOn
+%
+\DeclareDocumentCommand \OneOver { +m } {
+    \frac{1}{#1}
+}
+\DeclareDocumentCommand \oneo { +m } {
+    \OneOver{#1}
+}
+\DeclareDocumentCommand \dd { m } {
+    \mathrm{d}{#1}
+}
+\DeclareDocumentCommand \dprime { } {
+    {\prime\prime}
+}
+\DeclareDocumentCommand \tprime { } {
+    {\prime\prime\prime}
+}
+\DeclareDocumentCommand \LessThan        { } {<}
+\DeclareDocumentCommand \GreaterThanThan { } {>}
+%
 %    \end{macrocode}
 %   \iffalse
 %</Code>

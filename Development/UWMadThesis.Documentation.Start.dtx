@@ -4,13 +4,13 @@
 %<*PROTECT>
 %   \fi
 %   \iffalse
-\documentclass[l3doc,full]{UWMadThesis}
+\documentclass{UWMadThesisL3Doc}
 %
     % \usepackage[english]{babel}
 
     \ExplSyntaxOn
     \DeclareDocumentCommand \LaTeXPL { } {
-        \LaTeX3PL
+        \texttt{expl3}
     }
     \ExplSyntaxOff
 
@@ -44,7 +44,7 @@
 %   \title{UWMadThesis Manual}
 %   \author{Troy C. Haskin}
 %
-%   \part{User Guide}
+%   \UWPart{User Guide}
 %   \input{UWMadThesis.Documentation.UserGuide.dtx}
 %   \GetFileInfo{UWMadThesis.cls}
 %   \StopEventually{}

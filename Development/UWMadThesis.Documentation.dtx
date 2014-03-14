@@ -2,13 +2,13 @@
 %<*PROTECT>
 %   \fi
 %   \iffalse
-\documentclass[l3doc,full]{UWMadThesis}
+\documentclass{UWMadThesisL3Doc}
 %
     % \usepackage[english]{babel}
 
     \ExplSyntaxOn
     \DeclareDocumentCommand \LaTeXPL { } {
-        \LaTeX3PL
+        \texttt{expl3}
     }
     \ExplSyntaxOff
 
@@ -42,7 +42,7 @@
 %   \title{UWMadThesis Manual}
 %   \author{Troy C. Haskin}
 %
-%   \part{User Guide}
+%   \UWPart{User Guide}
 %   \input{UWMadThesis.Documentation.UserGuide.dtx}
 %   \GetFileInfo{UWMadThesis.cls}
 %   \StopEventually{}
@@ -66,7 +66,7 @@
 %   \fi
 %
 %
-%   \part{Implementation}
+%   \UWPart{Implementation}
 %   \UWModule{Front Matter}
 %
 %   Much of this class is written using the \LaTeX3 Programming Layer;
@@ -236,8 +236,8 @@
 %    \begin{macrocode}
 \bool_if:NTF \g__UWMad_MathTweaks_bool {
     \RequirePackage{amsmath}
-    \RequirePackage{amssymb}
     \RequirePackage{amsfonts}
+    \RequirePackage{amssymb}
     \RequirePackage{mathtools}
 }{}
 %    \end{macrocode}
@@ -2252,284 +2252,6 @@
 }
 
 
-\tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
-
-    \UWMad_Counter_DefineGlobal:nn{Part}          {0}
-    \UWMad_Counter_DefineGlobal:nn{Module}        {0}
-    \UWMad_Counter_DefineGlobal:nn{SubModule}     {0}
-    \UWMad_Counter_DefineGlobal:nn{SubSubModule}  {0}
-    \UWMad_Counter_DefineGlobal:nn{Feature}       {0}
-    \UWMad_Counter_DefineGlobal:nn{SubFeature}    {0}
-    \UWMad_Counter_DefineGlobal:nn{SubSubFeature} {0}
-
-    \tl_new:N   \g_UWMad_ThePart_tl
-    \tl_new:N \g_UWMad_TheModule_tl
-    \tl_new:N \g_UWMad_TheSubModule_tl
-    \tl_new:N \g_UWMad_TheSubSubModule_tl
-    \tl_new:N \g_UWMad_TheFeature_tl
-    \tl_new:N \g_UWMad_TheSubFeature_tl
-    \tl_new:N \g_UWMad_TheSubSubFeature_tl
-
-    \tl_gset:Nn \g_UWMad_ThePart_tl {
-        Part~\UWMad_Counter_Roman:n{Part}
-    }
-    \tl_gset:Nn \g_UWMad_TheModule_tl {
-        Module~\UWMad_Counter_arabic:n{Module}
-    }
-    \tl_gset:Nn \g_UWMad_TheSubModule_tl {
-        \UWMad_Counter_arabic:n{Module}.
-        \UWMad_Counter_arabic:n{SubModule}
-    }
-    \tl_gset:Nn \g_UWMad_TheSubSubModule_tl {
-        \g_UWMad_TheSubModule_tl.
-        \UWMad_Counter_arabic:n{SubSubModule}
-    }
-    \tl_gset:Nn \g_UWMad_TheFeature_tl {
-        Feature~Set
-    }
-    \tl_gset:Nn \g_UWMad_TheSubFeature_tl {
-        \UWMad_Counter_arabic:n{Feature}.
-        \UWMad_Counter_arabic:n{SubFeature}
-    }
-    \tl_gset:Nn \g_UWMad_TheSubSubFeature_tl {
-        \g_UWMad_TheSubFeature_tl.
-        \UWMad_Counter_arabic:n{SubSubFeature}
-    }
-
-    \cs_new:Nn \UWMad_Sectioning_Module:nn {
-        \clearpage
-
-        \UWMad_Counter_Step:n {Module}
-        \UWMad_Counter_Set:nn {SubModule}{0}
-        \UWMad_Counter_Set:nn {SubSubModule}{0}
-
-        \group_begin:
-            \null\vskip 0.1em
-            \phantomsection
-            \textbf{
-                \LARGE{
-                    \g_UWMad_TheModule_tl
-                }
-            }
-            \vskip 0.5em
-            \textbf{\Huge{#2}}
-        \group_end:
-        \addcontentsline{toc}{section}{#1}
-        \vskip 1em
-        \par
-    }
-
-    \cs_new:Nn \UWMad_Sectioning_SubModule:nn {
-        \UWMad_Counter_Set:nn {SubSubModule}{0}
-
-        \UWMad_Counter_Step:n {SubModule}
-
-        \group_begin:
-            \null\vskip 0.1em
-            \phantomsection
-            \textbf{
-                \Large{
-                    \g_UWMad_TheSubModule_tl
-                    \hspace*{0.5em}#2
-                }
-            }
-        \group_end:
-        \addcontentsline{toc}{subsection}{#1}
-        \vskip 0.2em
-        \par
-    }
-
-    \cs_new:Nn \UWMad_Sectioning_SubSubModule:nn {
-        \UWMad_Counter_Step:n {SubSubModule}
-
-        \group_begin:
-            \null\vskip 0.1em
-            \phantomsection
-            \textbf{
-                \large{
-                    \g_UWMad_TheSubSubModule_tl
-                    \hspace*{0.5em}#2
-                }
-            }
-        \group_end:
-        \addcontentsline{toc}{subsubsection}{#1}
-        \vskip 0.2em
-        \par
-    }
-
-
-    \DeclareDocumentCommand \UWModule { o m } {
-        \IfNoValueTF {#1} {
-            \UWMad_Sectioning_Module:nn{#2}{#2}
-        } {
-            \UWMad_Sectioning_Module:nn{#1}{#2}
-        }
-    }
-
-    \DeclareDocumentCommand \UWSubModule { o m } {
-        \IfNoValueTF {#1} {
-            \UWMad_Sectioning_SubModule:nn{#2}{#2}
-        } {
-            \UWMad_Sectioning_SubModule:nn{#1}{#2}
-        }
-    }
-
-    \DeclareDocumentCommand \UWSubSubModule { o m } {
-        \IfNoValueTF {#1} {
-            \UWMad_Sectioning_SubSubModule:nn{#2}{#2}
-        } {
-            \UWMad_Sectioning_SubSubModule:nn{#1}{#2}
-        }
-    }
-%
-%
-%
-    \cs_new:Nn \UWMad_Sectioning_Feature:nn {
-        \clearpage
-
-        \UWMad_Counter_Step:n {Feature}
-        \UWMad_Counter_Set:nn {SubFeature}{0}
-        \UWMad_Counter_Set:nn {SubSubFeature}{0}
-
-        \group_begin:
-            \null\vskip 0.1em
-            \phantomsection
-            \textbf{
-                \LARGE{
-                    \g_UWMad_TheFeature_tl
-                }
-            }
-            \vskip 0.5em
-            \textbf{\Huge{#2}}
-        \group_end:
-        \addcontentsline{toc}{section}{#1}
-        \vskip 1em
-        \par
-    }
-
-    \cs_new:Nn \UWMad_Sectioning_SubFeature:nn {
-        \UWMad_Counter_Step:n {SubFeature}
-
-        \group_begin:
-            \null\vskip 0.1em
-            \phantomsection
-            \textbf{
-                \Large{
-                    \g_UWMad_TheSubFeature_tl
-                    \hspace*{0.5em}#2
-                }
-            }
-        \group_end:
-        \addcontentsline{toc}{subsection}{#1}
-        \vskip 0.2em
-        \par
-    }
-
-    \cs_new:Nn \UWMad_Sectioning_SubSubFeature:nn {
-        \UWMad_Counter_Step:n {SubSubFeature}
-
-        \group_begin:
-            \null\vskip 0.1em
-            \phantomsection
-            \textbf{
-                \large{
-                    \g_UWMad_TheSubSubFeature_tl
-                    \hspace*{0.5em}#2
-                }
-            }
-        \group_end:
-        \addcontentsline{toc}{subsubsection}{#1}
-        \vskip 0.2em
-        \par
-    }
-
-
-    \DeclareDocumentCommand \UWFeature { o m } {
-        \IfNoValueTF {#1} {
-            \UWMad_Sectioning_Feature:nn{#2}{#2}
-        } {
-            \UWMad_Sectioning_Feature:nn{#1}{#2}
-        }
-    }
-
-    \DeclareDocumentCommand \UWSubFeature { o m } {
-        \IfNoValueTF {#1} {
-            \UWMad_Sectioning_SubFeature:nn{#2}{#2}
-        } {
-            \UWMad_Sectioning_SubFeature:nn{#1}{#2}
-        }
-    }
-
-    \DeclareDocumentCommand \UWSubSubFeature { o m } {
-        \IfNoValueTF {#1} {
-            \UWMad_Sectioning_SubSubFeature:nn{#2}{#2}
-        } {
-            \UWMad_Sectioning_SubSubFeature:nn{#1}{#2}
-        }
-    }
-%
-%
-%
-    \RenewDocumentCommand   \part { o m } {
-        \UWMad_Counter_Step:n{Part}
-        \cleardoublepage
-        \newgeometry{marginparwidth = 0pt}
-        \group_begin:
-            \vspace*{2in}
-            \phantomsection
-            \begin{center}
-                \textbf{
-                    \huge{\g_UWMad_ThePart_tl}
-                    \vskip 0.30em
-                    \Huge{#2}
-                }
-                \IfNoValueTF{#1} {
-                    \addcontentsline{toc}{part}{#2}
-                } {
-                    \addcontentsline{toc}{part}{#1}
-                }
-            \end{center}
-            \thispagestyle{empty}
-        \group_end:
-        \restoregeometry
-        \clearpage
-    }
-
-% Define some lengths for the documentation.
-    \setstretch{1.30}
-    \setlength{\parindent}{0pt}
-
-    % Play with macrocode env. formatting
-    \let\BeginMacroCode\macrocode
-    \let\EndMacroCode\endmacrocode
-
-    \renewcommand{\macrocode}{
-        \vspace*{-0.90em}
-        \BeginMacroCode
-        \setlength{\parskip}{0em}
-        \setstretch{1.0}
-    }
-    \renewcommand{\endmacrocode}{
-        \EndMacroCode
-        \vspace*{0.5em}
-    }
-
-    % Define the Usage environment
-    \newenvironment{Usage}
-        {   \vskip 0.6em
-            \textsl{Usage}:
-            \begin{list}
-                {}
-                {   \setstretch{1}
-                    \setlength{\topsep}{0em}
-                    \setlength{\itemsep}{0em}
-                    \setlength{\parsep}{0em}
-                    \setlength{\leftmargin}{1em}}}
-        {   \end{list}}
-
-}{}
-
-
 
 %^^A  =========================================================================== %
 %^^A                           New Appendix Command                               %
@@ -2759,126 +2481,134 @@
 %
 %
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_Math_SquareRootCore:nn {
-
-    \hbox_set:Nn \l_tmpa_box {
-        ${ \mathpalette
-                {\,\:\!}
-                {\root #1 \of {#2\:\!}}
-        }$
-    }
-    %
-    \dim_set:Nn \l_tmpa_dim {\box_ht:N \l_tmpa_box}
-    \dim_set:Nn \l_tmpb_dim {0.8\l_tmpa_dim}
-    %
-    \hbox_set:Nn \l_tmpb_box {
-        \vrule height \l_tmpa_dim depth -\l_tmpb_dim
-    }
-    %
-    {
-        \box_use:N \l_tmpa_box
-        \box_move_down:nn {0.40pt}{\box_use:N \l_tmpb_box}
-    }
-
-}
-\DeclareDocumentCommand \Sqrt { O{} m } {
-    \UWMad_Math_SquareRootCore:nn{#1}{#2}
+%
+%
+%
+\tex_everydisplay:D \exp_after:wN {
+    \tex_the:D \tex_everydisplay:D
+    \cs_set_eq:NN \frac \dfrac
 }
 %
 %
 %
-% ---------------------------------------------------------------------------- %
-%                              Derivative Commands                             %
-% ---------------------------------------------------------------------------- %
+%
+%
+% =========================================================================== %
+%                             Derivative Commands                             %
+% =========================================================================== %
+%
+\tl_new:N   \g_UWMad_Math_derivSymbol_tl
+\tl_gset:Nn \g_UWMad_Math_derivSymbol_tl   {\mathrm{d}}
+\tl_new:N   \g_UWMad_Math_pderivSymbol_tl
+\tl_gset:Nn \g_UWMad_Math_pderivSymbol_tl  {\partial}
+\tl_new:N   \g_UWMad_Math_tderivSymbol_tl
+\tl_gset:Nn \g_UWMad_Math_tderivSymbol_tl  {\mathrm{D}}
+\tl_new:N   \g_UWMad_Math_DelimiterDefaultLeft_tl
+\tl_gset:Nn \g_UWMad_Math_DelimiterDefaultLeft_tl  {[}
+\tl_new:N   \g_UWMad_Math_DelimiterDefaultRight_tl
+\tl_gset:Nn \g_UWMad_Math_DelimiterDefaultRight_tl {]}
+\tl_new:N   \l_UWMad_Math_DelimiterLeft_tl
+\tl_new:N   \l_UWMad_Math_DelimiterRight_tl
+%
+%
+\DeclareDocumentCommand \derivSymbol { } {
+    \g_UWMad_Math_derivSymbol_tl
+}
+\DeclareDocumentCommand \pderivSymbol { } {
+    \g_UWMad_Math_pderivSymbol_tl
+}
+\DeclareDocumentCommand \tderivSymbol { } {
+    \g_UWMad_Math_tderivSymbol_tl
+}
+%
+%
+\DeclareDocumentCommand \derivSymbolChange { m } {
+    \tl_set:Nn \g_UWMad_Math_derivSymbol_tl {#1}
+}
+\DeclareDocumentCommand \pderivSymbolChange { m } {
+    \tl_set:Nn \g_UWMad_Math_pderivSymbol_tl {#1}
+}
+\DeclareDocumentCommand \tderivSymbolChange { m } {
+    \tl_set:Nn \g_UWMad_Math_tderivSymbol_tl {#1}
+}
+%
+%
+\DeclareDocumentCommand \derivSymbolChangeDefault { m } {
+    \tl_gset:Nn \g_UWMad_Math_derivSymbol_tl {#1}
+}
+\DeclareDocumentCommand \pderivSymbolChangeDefault { m } {
+    \tl_gset:Nn \g_UWMad_Math_pderivSymbol_tl {#1}
+}
+\DeclareDocumentCommand \tderivSymbolChangeDefault { m } {
+    \tl_gset:Nn \g_UWMad_Math_tderivSymbol_tl {#1}
+}
+%
+%
+\DeclareDocumentCommand \DelimiterChangeDefault { m m } {
+    \tl_gset:Nn  \g_UWMad_Math_DelimiterDefaultLeft_tl  {#1}
+    \tl_gset:Nn  \g_UWMad_Math_DelimiterDefaultRight_tl {#2}
+}
+%
+%
 \DeclareDocumentCommand \DerivativeGeneral { +m +m m m } {
     \frac{ #4^{#3} #1      }
          { #4      #2^{#3} }
 }
 \DeclareDocumentCommand \DerivativeGeneralBig { +m +m m m m m} {
+
+    \IfNoValueTF {#5} {
+        \tl_set_eq:NN
+            \l_UWMad_Math_DelimiterLeft_tl
+            \g_UWMad_Math_DelimiterDefaultLeft_tl
+    } {
+        \tl_set:Nn \l_UWMad_Math_DelimiterLeft_tl {#5}
+    }
+
+    \IfNoValueTF {#6} {
+        \tl_set_eq:NN
+            \l_UWMad_Math_DelimiterRight_tl
+            \g_UWMad_Math_DelimiterDefaultRight_tl
+    } {
+        \tl_set:Nn \l_UWMad_Math_DelimiterRight_tl {#6}
+    }
+
     \frac{ #4^{#3}    }
-         { #4 #2^{#3} } \left#5 #1 \right#6
+         { #4 #2^{#3} }
+    \!\!
+    \left\l_UWMad_Math_DelimiterLeft_tl
+        #1
+    \right\l_UWMad_Math_DelimiterRight_tl
 }
 %
 %
-\tl_new:N  \g_UWMad_Math_DerivativeSymbolOrdinary_tl
-\tl_new:N  \g_UWMad_Math_DerivativeSymbolPartial_tl
-\tl_new:N  \g_UWMad_Math_DerivativeSymbolTotal_tl
-\tl_set:Nn \g_UWMad_Math_DerivativeSymbolOrdinary_tl {\mathrm{d}}
-\tl_set:Nn \g_UWMad_Math_DerivativeSymbolPartial_tl  {\partial}
-\tl_set:Nn \g_UWMad_Math_DerivativeSymbolTotal_tl    {\mathrm{D}}
-%
-%
-\DeclareDocumentCommand \DerivativeSymbolOrdinary { m } {
-    \tl_set:Nn \g_UWMad_Math_DerivativeSymbolOrdinary_tl {#1}
-}
-\DeclareDocumentCommand \DerivativeSymbolPartial { m } {
-    \tl_set:Nn \g_UWMad_Math_DerivativeSymbolPartial_tl {#1}
-}
-\DeclareDocumentCommand \DerivativeSymbolTotal { m } {
-    \tl_set:Nn \g_UWMad_Math_DerivativeSymbolTotal_tl {#1}
-}
-%
-%
-\DeclareDocumentCommand \diff { +m +m G{} } {
+\DeclareDocumentCommand \deriv { +m +m G{} } {
     \DerivativeGeneral
-        {#1}{#2}{#3}{\g_UWMad_Math_DerivativeSymbolOrdinary_tl}
+        {#1}{#2}{#3}{\derivSymbol}
 }
-\DeclareDocumentCommand \diffbig { O{[} O{]} +m +m G{} } {
-    \DerivativeGeneralBig
-        {#3}{#4}{#5}{\g_UWMad_Math_DerivativeSymbolOrdinary_tl}{#1}{#2}
-}
-%
-%
-\DeclareDocumentCommand \pdiff { +m +m G{} } {
+\DeclareDocumentCommand \pderiv { +m +m G{} } {
     \DerivativeGeneral
-        {#1}{#2}{#3}{\g_UWMad_Math_DerivativeSymbolPartial_tl}
+        {#1}{#2}{#3}{\pderivSymbol}
 }
-\DeclareDocumentCommand \pdiffbig { O{[} O{]} +m +m G{} } {
-    \DerivativeGeneralBig
-        {#3}{#4}{#5}{\g_UWMad_Math_DerivativeSymbolPartial_tl}{#1}{#2}
-}
-%
-%
-\DeclareDocumentCommand \tdiff { +m +m G{} } {
+\DeclareDocumentCommand \tderiv { +m +m G{} } {
     \DerivativeGeneral
-        {#1}{#2}{#3}{\g_UWMad_Math_DerivativeSymbolTotal_tl}
+        {#1}{#2}{#3}{\tderivSymbol}
 }
-\DeclareDocumentCommand \tdiffbig { O{[} O{]} +m +m G{} } {
+%
+%
+\DeclareDocumentCommand \derivbig { o +m o +m G{} } {
     \DerivativeGeneralBig
-        {#3}{#4}{#5}{\g_UWMad_Math_DerivativeSymbolTotal_tl}{#1}{#2}
+        {#2}{#4}{#5}{\derivSymbol}{#1}{#3}
+}
+\DeclareDocumentCommand \pderivbig { o +m o +m G{} } {
+    \DerivativeGeneralBig
+        {#2}{#4}{#5}{\pderivSymbol}{#1}{#3}
+}
+\DeclareDocumentCommand \tderivbig { o +m o +m G{} } {
+    \DerivativeGeneralBig
+        {#2}{#4}{#5}{\tderivSymbol}{#1}{#3}
 }
 %
 %
-\ExplSyntaxOff
-    \DeclareDocumentCommand \subs { O{} +m } {
-        \ensuremath{{}_{#1\text{\scriptsize #2}}}
-    }
-    \DeclareDocumentCommand \sups { O{} +m } {
-        \ensuremath{{}^{#1\text{\scriptsize #2}}}
-    }
-    \DeclareDocumentCommand \subsups { O{} +m O{} +m } {
-        \ensuremath{{}^{#1\text{\scriptsize #2}}_{#3\text{\scriptsize #4}}}
-    }
-\ExplSyntaxOn
-%
-\DeclareDocumentCommand \OneOver { +m } {
-    \frac{1}{#1}
-}
-\DeclareDocumentCommand \oneo { +m } {
-    \OneOver{#1}
-}
-\DeclareDocumentCommand \dd { m } {
-    \mathrm{d}{#1}
-}
-\DeclareDocumentCommand \dprime { } {
-    \prime\prime
-}
-\DeclareDocumentCommand \tprime { } {
-    \prime\prime\prime
-}
-\DeclareDocumentCommand \where { } {
-    \,,\quad\text{ where}
-}
 %
 %
 \DeclareMathOperator*{\Sup}    {Sup}
@@ -2901,8 +2631,11 @@
 \DeclareMathOperator{\Cosh}    {Cosh}
 \DeclareMathOperator{\Sinh}    {Sinh}
 \DeclareMathOperator{\Tanh}    {Tanh}
-\DeclareMathOperator{\ArcSin}  {ArcSin}
+\DeclareMathOperator{\Sech}    {Sech}
+\DeclareMathOperator{\Csch}    {Csch}
+\DeclareMathOperator{\Coth}    {Coth}
 \DeclareMathOperator{\ArcCos}  {ArcCos}
+\DeclareMathOperator{\ArcSin}  {ArcSin}
 \DeclareMathOperator{\ArcTan}  {ArcTan}
 \DeclareMathOperator{\ArcSec}  {ArcSec}
 \DeclareMathOperator{\ArcCsc}  {ArcCsc}
@@ -2910,54 +2643,93 @@
 \DeclareMathOperator{\ArcCosh} {ArcCosh}
 \DeclareMathOperator{\ArcSinh} {ArcSinh}
 \DeclareMathOperator{\ArcTanh} {ArcTanh}
+\DeclareMathOperator{\ArcSech} {ArcSech}
+\DeclareMathOperator{\ArcCsch} {ArcCsch}
+\DeclareMathOperator{\ArcCoth} {ArcCoth}
 %
 %
 %
 %
-% ===================================================================================== %
-%                   Make greek letters work in and out of MathMode                      %
-% ===================================================================================== %
-\iffalse
-    \let\Oldalpha     \alpha     \renewcommand{\alpha}     {\ensuremath{\Oldalpha     }\xspace}
-    \let\Oldbeta      \beta      \renewcommand{\beta}      {\ensuremath{\Oldbeta      }\xspace}
-    \let\Oldgamma     \gamma     \renewcommand{\gamma}     {\ensuremath{\Oldgamma     }\xspace}
-    \let\Olddelta     \delta     \renewcommand{\delta}     {\ensuremath{\Olddelta     }\xspace}
-    \let\Oldepsilon   \epsilon   \renewcommand{\epsilon}   {\ensuremath{\Oldepsilon   }\xspace}
-    \let\Oldvarepsilon\varepsilon\renewcommand{\varepsilon}{\ensuremath{\Oldvarepsilon}\xspace}
-    \let\Oldzeta      \zeta      \renewcommand{\zeta}      {\ensuremath{\Oldzeta      }\xspace}
-    \let\Oldeta       \eta       \renewcommand{\eta}       {\ensuremath{\Oldeta       }\xspace}
-    \let\Oldtheta     \theta     \renewcommand{\theta}     {\ensuremath{\Oldtheta     }\xspace}
-    \let\Oldvartheta  \vartheta  \renewcommand{\vartheta}  {\ensuremath{\Oldvartheta  }\xspace}
-    \let\Oldkappa     \kappa     \renewcommand{\kappa}     {\ensuremath{\Oldkappa     }\xspace}
-    \let\Oldlambda    \lambda    \renewcommand{\lambda}    {\ensuremath{\Oldlambda    }\xspace}
-    \let\Oldmu        \mu        \renewcommand{\mu}        {\ensuremath{\Oldmu        }\xspace}
-    \let\Oldnu        \nu        \renewcommand{\nu}        {\ensuremath{\Oldnu        }\xspace}
-    \let\Oldxi        \xi        \renewcommand{\xi}        {\ensuremath{\Oldxi        }\xspace}
-    \let\Oldpi        \pi        \renewcommand{\pi}        {\ensuremath{\Oldpi        }\xspace}
-    \let\Oldvarpi     \varpi     \renewcommand{\varpi}     {\ensuremath{\Oldvarpi     }\xspace}
-    \let\Oldrho       \rho       \renewcommand{\rho}       {\ensuremath{\Oldrho       }\xspace}
-    \let\Oldvarrho    \varrho    \renewcommand{\varrho}    {\ensuremath{\Oldvarrho    }\xspace}
-    \let\Oldsigma     \sigma     \renewcommand{\sigma}     {\ensuremath{\Oldsigma     }\xspace}
-    \let\Oldvarsigma  \varsigma  \renewcommand{\varsigma}  {\ensuremath{\Oldvarsigma  }\xspace}
-    \let\Oldtau       \tau       \renewcommand{\tau}       {\ensuremath{\Oldtau       }\xspace}
-    \let\Oldupsilon   \upsilon   \renewcommand{\upsilon}   {\ensuremath{\Oldupsilon   }\xspace}
-    \let\Oldphi       \phi       \renewcommand{\phi}       {\ensuremath{\Oldphi       }\xspace}
-    \let\Oldvarphi    \varphi    \renewcommand{\varphi}    {\ensuremath{\Oldvarphi    }\xspace}
-    \let\Oldchi       \chi       \renewcommand{\chi}       {\ensuremath{\Oldchi       }\xspace}
-    \let\Oldpsi       \psi       \renewcommand{\psi}       {\ensuremath{\Oldpsi       }\xspace}
-    \let\Oldomega     \omega     \renewcommand{\omega}     {\ensuremath{\Oldomega     }\xspace}
-    \let\OldGamma     \Gamma     \renewcommand{\Gamma}     {\ensuremath{\OldGamma     }\xspace}
-    \let\OldLambda    \Lambda    \renewcommand{\Lambda}    {\ensuremath{\OldLambda    }\xspace}
-    \let\OldSigma     \Sigma     \renewcommand{\Sigma}     {\ensuremath{\OldSigma     }\xspace}
-    \let\OldPsi       \Psi       \renewcommand{\Psi}       {\ensuremath{\OldPsi       }\xspace}
-    \let\OldDelta     \Delta     \renewcommand{\Delta}     {\ensuremath{\OldDelta     }\xspace}
-    \let\OldXi        \Xi        \renewcommand{\Xi}        {\ensuremath{\OldXi        }\xspace}
-    \let\OldUpsilon   \Upsilon   \renewcommand{\Upsilon}   {\ensuremath{\OldUpsilon   }\xspace}
-    \let\OldOmega     \Omega     \renewcommand{\Omega}     {\ensuremath{\OldOmega     }\xspace}
-    \let\OldTheta     \Theta     \renewcommand{\Theta}     {\ensuremath{\OldTheta     }\xspace}
-    \let\OldPi        \Pi        \renewcommand{\Pi}        {\ensuremath{\OldPi        }\xspace}
-    \let\OldPhi       \Phi       \renewcommand{\Phi}       {\ensuremath{\OldPhi       }\xspace}
-    \fi
+%
+% ===================================================================== %
+%                          Miscellaneous Commands                       %
+% ===================================================================== %
+\cs_new:Nn \UWMad_Math_RootWithTail:nn {
+
+    \hbox_set:Nn \l_tmpa_box {
+        $
+            \mathchoice
+                {\root #1 \of {#2\:\!}}
+                {\root #1 \of {#2\:\!}}
+                {\root #1 \of {#2\:\!}}
+                {\root #1 \of {#2\:\!}}
+        $
+    }
+    %
+    \dim_set:Nn \l_tmpa_dim {\box_ht:N \l_tmpa_box}
+    \dim_set:Nn \l_tmpb_dim {0.8\l_tmpa_dim}
+    %
+    \hbox_set:Nn \l_tmpb_box {
+        \tex_vrule:D height \l_tmpa_dim depth -\l_tmpb_dim
+    }
+    %
+    \box_use:N \l_tmpa_box
+    \box_move_down:nn {0.40pt}{\box_use:N \l_tmpb_box}
+}
+\DeclareDocumentCommand \Sqrt { O{} m } {
+    \UWMad_Math_RootWithTail:nn{#1}{#2}
+}
+%
+%
+\DeclareExpandableDocumentCommand \IfMathModeTF { +m +m } {
+    \mode_if_math:TF {
+        #1
+    }{
+        $#2$
+    }
+}
+\ExplSyntaxOff
+    \DeclareDocumentCommand \subs { O{} +m } {%
+        \IfMathModeTF{%
+            _{\!\!\:#1\text{\scriptsize #2}}%
+        }{%
+            _{\!#1\text{\scriptsize #2}}%
+        }%
+    }%
+    \DeclareDocumentCommand \sups { O{} +m } {%
+        \IfMathModeTF{%
+            ^{#1\text{\scriptsize #2}}%
+        }{%
+            ^{#1\text{\scriptsize #2}}%
+        }%
+    }%
+    \DeclareDocumentCommand \subsups { O{} +m O{} +m } {%
+        \IfMathModeTF{%
+            _{#1\text{\scriptsize #2}}^{\!\!\:#3\text{\scriptsize #4}}%
+        }{%
+            _{#1\text{\scriptsize #2}}^{\!\!\!#3\text{\scriptsize #4}}%
+        }%
+    }%
+\ExplSyntaxOn
+%
+\DeclareDocumentCommand \OneOver { +m } {
+    \frac{1}{#1}
+}
+\DeclareDocumentCommand \oneo { +m } {
+    \OneOver{#1}
+}
+\DeclareDocumentCommand \dd { m } {
+    \mathrm{d}{#1}
+}
+\DeclareDocumentCommand \dprime { } {
+    {\prime\prime}
+}
+\DeclareDocumentCommand \tprime { } {
+    {\prime\prime\prime}
+}
+\DeclareDocumentCommand \LessThan        { } {<}
+\DeclareDocumentCommand \GreaterThanThan { } {>}
+%
 %    \end{macrocode}
 %   \iffalse
 %</Code>
