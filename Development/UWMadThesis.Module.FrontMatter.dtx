@@ -65,6 +65,7 @@
 %   where \LaTeXPL{}'s syntax will be turned off, we define some aliases.
 %    \begin{macrocode}
 \cs_new_eq:NN \UWMadClassName    \c_UWMad_ClassName_tl
+\cs_new_eq:NN \UWMadClass        \c_UWMad_ClassName_tl
 \cs_new_eq:NN \UWMadLong         \c_UWMad_UniversityLong_tl
 \cs_new_eq:NN \UWMadShort        \c_UWMad_UniversityShort_tl
 \cs_new_eq:NN \UWMadClassVersion \c_UWMad_ClassVersion_tl
@@ -171,6 +172,16 @@
 %   \UWSubModule{Package Loads}
 %   Load some packages that give nice features and are not
 %   hyperlink sensitive.
+%
+%   If links were not negated by the options, \pkg{bookmark} and 
+%   \pkg{hyperref} are loaded.
+%    \begin{macrocode}
+\bool_if:NTF \g__UWMad_Hyperlinks_bool {
+    \RequirePackage{hyperref}
+    \RequirePackage{bookmark}
+}{}
+%    \end{macrocode}
+%
 %    \begin{macrocode}
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
@@ -187,15 +198,6 @@
     \RequirePackage{amsfonts}
     \RequirePackage{amssymb}
     \RequirePackage{mathtools}
-}{}
-%    \end{macrocode}
-%
-%   If links were not negated by the options, \pkg{bookmark} and 
-%   \pkg{hyperred} are loaded.
-%    \begin{macrocode}
-\bool_if:NTF \g__UWMad_Hyperlinks_bool {
-    \RequirePackage{hyperref}
-    \RequirePackage{bookmark}
 }{}
 %    \end{macrocode}
 %

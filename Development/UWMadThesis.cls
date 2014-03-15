@@ -15,6 +15,7 @@
 \tl_const:Nn \c_UWMad_ClassVersion_tl     {1.0}
 \tl_const:Nn \c_UWMad_ClassVersionDate_tl {2012/01/09}
 \cs_new_eq:NN \UWMadClassName    \c_UWMad_ClassName_tl
+\cs_new_eq:NN \UWMadClass        \c_UWMad_ClassName_tl
 \cs_new_eq:NN \UWMadLong         \c_UWMad_UniversityLong_tl
 \cs_new_eq:NN \UWMadShort        \c_UWMad_UniversityShort_tl
 \cs_new_eq:NN \UWMadClassVersion \c_UWMad_ClassVersion_tl
@@ -65,6 +66,10 @@
 \ExecuteOptions{oneside,12pt}
 \ProcessOptions\relax
 \LoadClass{\g_UWMad_ParentClass_tl}[1995/12/01]
+\bool_if:NTF \g__UWMad_Hyperlinks_bool {
+    \RequirePackage{hyperref}
+    \RequirePackage{bookmark}
+}{}
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
 \RequirePackage{array}
@@ -76,10 +81,6 @@
     \RequirePackage{amsfonts}
     \RequirePackage{amssymb}
     \RequirePackage{mathtools}
-}{}
-\bool_if:NTF \g__UWMad_Hyperlinks_bool {
-    \RequirePackage{hyperref}
-    \RequirePackage{bookmark}
 }{}
 \RequirePackage[noabbrev]{cleveref}
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
@@ -779,15 +780,6 @@
 \cs_gset_eq:NN \CounterRoman        \UWMad_Counter_roman:n
 \cs_gset_eq:NN \CounterROMAN        \UWMad_Counter_Roman:n
 }
-\tl_if_in:NnTF \g_UWMad_ParentClass_tl {l3doc} {
-    \geometry{
-        includemp      = true,
-        margin         = 0.25in,
-        marginparwidth = 1.65in,
-        includehead    = true,
-        paper          = letterpaper
-    }
-} {
     \geometry{
         margin      = 1.0in,
         includehead = true,
@@ -816,10 +808,9 @@
         position=above,
         skip=0.5em
     }
-}
 \definecolor{UWMadGreen}{rgb}{0,0.7,0}
 \bool_if:NTF \g__UWMad_Hyperlinks_bool {
-    \hypersetup{
+    \hypersetup {
         colorlinks         = true       ,
         linkcolor          = blue       ,
         citecolor          = UWMadGreen ,
@@ -832,7 +823,7 @@
         hypertexnames      = true       ,
         bookmarksopenlevel = 3          ,
         bookmarksopen      = true       ,
-        unicode
+        unicode            = true
     }
 } {}
 \pagestyle{myheadings}
@@ -930,7 +921,7 @@
 
 \DeclareDocumentCommand \tableofcontents { } {
     \group_begin:
-        \IfCommandEmpty{\contentsname}{
+        \tl_if_empty:nTF {\contentsname}{
             \cs_set_eq:NN \contentsname \g__UWMad_Sectioning_TOCName_tl
         }{}
         \setstretch{1.05}
@@ -1516,58 +1507,378 @@
 \cs_new_eq:cN {endNomenclature*} \endNomenclature
 \UWMad_CSV_Define:n {MetaDataList}
 \cs_new:Nn \UWMad_MetaData_PushToList:nn {
-   \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}        % True:    Append the data
+   \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}
 }
+
+\bool_new:N \g__UWMad_MetaData_GenerateAux_bool
+\bool_new:N \g__UWMad_MetaData_IsDocument_bool
 
 \file_if_exist:nTF{\jobname.UWMad.PDFMetaData.aux} {
     \file_input:n {\jobname.UWMad.PDFMetaData.aux}
 }{}
 
+\AtBeginDocument{
+    \UWMad_CSV_IfNotEmpty:nTF{MetaDataList} {
+        \exp_args:Nx \hypersetup {\UWMad_CSV_Get:n{MetaDataList}}
+    } { }
+    \bool_gset_true:N \g__UWMad_MetaData_IsDocument_bool
+}
 \AtEndDocument{
-    \UWMad_CSV_IfNotEmpty:nTF {MetaDataList} {
-        \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
-        \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
-            UWMad.PDFMetaData.aux
+    \bool_if:NTF \g__UWMad_MetaData_GenerateAux_bool {
+        \UWMad_CSV_IfNotEmpty:nTF {MetaDataList} {
+            \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
+            \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
+                \jobname.UWMad.PDFMetaData.aux
+            }
+            \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
+                \noexpand\ExplSyntaxOff
+                    \noexpand\hypersetup{\UWMad_CSV_Get:n{MetaDataList}}
+                \noexpand\ExplSyntaxOn
+            }
+            \iow_close:N \g__UWMad_PDFMetaData_HyperSetup_io
         }
-        \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
-            \noexpand\ExplSyntaxOff
-                \noexpand\hypersetup{\UWMad_CSV_Get:n{MetaDataList}}
-            \noexpand\ExplSyntaxOn
-        }
-        \iow_close:N \g__UWMad_PDFMetaData_HyperSetup_io
     }
 }
 
-\newcommand{\TheTitle}      {}
-\newcommand{\TheSubtitle}   {}
-\newcommand{\TheAuthor}     {}
-\newcommand{\TheDate}       {}
-\newcommand{\TheDepartment} {}
-\newcommand{\TheDegree}     {}
-\newcommand{\TheSpecialty}  {}
-\newcommand{\TheAdvisor}    {}
-\newcommand{\TheUniversity} {}
-\newcommand{\TheKeywords}   {}
-\newcommand{\TheSubject}    {}
-\newcommand{\TheProducer}   {}
-\newcommand{\TheCreator}    {}
-\newcommand{\Title}      [1] {\renewcommand{\TheTitle}      {#1\xspace}
-    \UWMad_MetaData_PushToList:nn{pdftitle}    {#1}}
-\newcommand{\Author}     [1] {\renewcommand{\TheAuthor}     {#1\xspace}
-    \UWMad_MetaData_PushToList:nn{pdfauthor}   {#1}}
-\newcommand{\Subject}    [1] {\renewcommand{\TheSubject}    {#1\xspace}
-    \UWMad_MetaData_PushToList:nn{pdfsubject}  {#1}}
-\newcommand{\Producer}   [1] {\renewcommand{\TheProducer}   {#1\xspace}
-    \UWMad_MetaData_PushToList:nn{pdfproducer} {#1}}
-\newcommand{\Creator}    [1] {\renewcommand{\TheCreator}    {#1\xspace}
-    \UWMad_MetaData_PushToList:nn{pdfcreator}  {#1}}
-\newcommand{\Keywords}   [1] {\renewcommand{\TheKeywords}   {#1\xspace}
-    \UWMad_MetaData_PushToList:nn{pdfkeywords} {#1}}
-\newcommand{\Subtitle}   [1] {\renewcommand{\TheSubtitle}   {#1\xspace}}
-\newcommand{\Date}       [1] {\renewcommand{\TheDate}       {#1\xspace}}
-\newcommand{\Department} [1] {\renewcommand{\TheDepartment} {#1\xspace}}
-\newcommand{\Degree}     [1] {\renewcommand{\TheDegree}     {#1\xspace}}
-\newcommand{\Specialty}  [1] {\renewcommand{\TheSpecialty}  {#1\xspace}}
-\newcommand{\Advisor}    [1] {\renewcommand{\TheAdvisor}    {#1\xspace}}
-\newcommand{\University} [1] {\renewcommand{\TheUniversity} {#1\xspace}}
+\tl_new:N \g__UWMad_ThesisInfo_Title_tl
+\tl_new:N \g__UWMad_ThesisInfo_Author_tl
+\tl_new:N \g__UWMad_ThesisInfo_DefenseDate_tl
+\tl_new:N \g__UWMad_ThesisInfo_Department_tl
+\tl_new:N \g__UWMad_ThesisInfo_Program_tl
+\tl_new:N \g__UWMad_ThesisInfo_Degree_tl
+\tl_new:N \g__UWMad_ThesisInfo_Advisor_tl
+\tl_new:N \g__UWMad_ThesisInfo_Institution_tl
+\DeclareDocumentCommand \Title { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Title_tl {#1}
+    \title{#1}
+    \UWMad_MetaData_PushToList:nn{pdftitle}    {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+}
+\DeclareDocumentCommand \Author { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Author_tl {#1}
+    \author{#1}
+    \UWMad_MetaData_PushToList:nn{pdfauthor}   {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+}
+\DeclareDocumentCommand \DefenseDate { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Date_tl {#1}
+}
+\cs_gset_eq:NN \Date \DefenseDate
+\DeclareDocumentCommand \Department { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Department_tl {#1}
+}
+\DeclareDocumentCommand \Program { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Program_tl {#1}
+}
+\DeclareDocumentCommand \Degree { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {#1}
+}
+\DeclareDocumentCommand \Advisor { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Advisor_tl {#1}
+}
+\DeclareDocumentCommand \Institution { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Institution_tl {#1}
+}
+\cs_set_eq:NN \University \Institution
+\DeclareDocumentCommand \TheTitle { } {
+    \g__UWMad_ThesisInfo_Title_tl
+}
+\DeclareDocumentCommand \TheAuthor { } {
+    \g__UWMad_ThesisInfo_Author_tl
+}
+\DeclareDocumentCommand \TheDefenseDate { m } {
+    \g__UWMad_ThesisInfo_DefenseDate_tl
+}
+\cs_gset_eq:NN \TheDefenseDate \DefenseDate
+\DeclareDocumentCommand \TheDepartment { m } {
+    \g__UWMad_ThesisInfo_Department_tl
+}
+\DeclareDocumentCommand \TheProgram { m } {
+    \g__UWMad_ThesisInfo_Program_tl
+}
+\DeclareDocumentCommand \TheDegree { m } {
+    \g__UWMad_ThesisInfo_Degree_tl
+}
+\DeclareDocumentCommand \TheAdvisor { m } {
+    \g__UWMad_ThesisInfo_Advisor_tl
+}
+\DeclareDocumentCommand \TheInstitution { m } {
+    \g__UWMad_ThesisInfo_Institution_tl
+}
+\cs_set_eq:NN \TheUniversity \TheInstitution
+\tl_new:N \g__UWMad_PDFMetaData_Subject_tl
+\tl_new:N \g__UWMad_PDFMetaData_Keywords_tl
+\tl_new:N \g__UWMad_PDFMetaData_Producer_tl
+\tl_new:N \g__UWMad_PDFMetaData_Creator_tl
+\DeclareDocumentCommand \Subject { m } {
+    \tl_gset:Nn \g__UWMad_PDFMetaData_Subject_tl {#1}
+    \UWMad_MetaData_PushToList:nn{pdfsubject}  {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+}
+\DeclareDocumentCommand \Keywords { m } {
+    \tl_gset:Nn \g__UWMad_PDFMetaData_Keywords_tl {#1}
+    \UWMad_MetaData_PushToList:nn{pdfproducer} {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+}
+\DeclareDocumentCommand \Producer { m } {
+    \tl_gset:Nn \g__UWMad_PDFMetaData_Producer_tl {#1}
+    \UWMad_MetaData_PushToList:nn{pdfcreator}  {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+}
+\DeclareDocumentCommand \Creator { m } {
+    \tl_gset:Nn \g__UWMad_PDFMetaData_Creator_tl {#1}
+    \UWMad_MetaData_PushToList:nn{pdfkeywords} {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+}
+\DeclareDocumentCommand \TheSubject { } {
+    \g__UWMad_PDFMetaData_Subject_tl
+}
+\DeclareDocumentCommand \TheKeywords { } {
+    \g__UWMad_PDFMetaData_Keywords_tl
+}
+\DeclareDocumentCommand \TheProducer { } {
+    \g__UWMad_PDFMetaData_Producer_tl
+}
+\DeclareDocumentCommand \TheCreator { } {
+    \g__UWMad_PDFMetaData_Creator_tl
+}
+\DeclareDocumentCommand \FulfillmentClause { } {
+    {
+    \setstretch{1.1}
+    A~\TheDocument{}~submitted~in~partial~fulfillment~of~the~
+    requirements~for~the~degree~of
+    }
+}
+
+\DeclareDocumentCommand \TitlePageTitle { } {
+    {
+        \huge
+        \textsc {\TheTitle{}}
+    }
+}
+
+\DeclareDocumentCommand \TitlePageAuthor { } {
+    {
+        \large
+        by  \\[0.50em]
+        \TheAuthor{}
+    }
+}
+
+\DeclareDocumentCommand \TitlePageFulFillment { } {
+    \FulfillmentClause{}
+}
+
+\DeclareDocumentCommand \TitlePageDegree { } {
+    \TheDegree{}
+}
+
+\DeclareDocumentCommand \TitlePageProgram { } {
+    \TheProgram{}
+}
+
+\DeclareDocumentCommand \TitlePageInstitution { } {
+    \textsc{\TheInstitution{}}
+}
+
+\DeclareDocumentCommand \MakeTitlePage { } {
+    \thispagestyle{empty}
+    \begin{center}
+        \TitlePageTitle{}       \\[1.0em]
+        \TitlePageAuthor{}      \\[1.0em]
+        \TitlePageFulFillment{} \\[1.0em]
+        \TitlePageDegree{}      \\[1.0em]
+        \TitlePageProgram{}     \\[1.0em]
+        \vfill
+        \TitlePageInstitution{}
+    \end{center}
+    \clearpage
+}
+
+\show\title
+
+\newcommand{\AllRightsReserved}{
+    \large
+    \copyright{} Copyright by \TheLicenseAuthor(\the\year)\\
+    All Rights Reserved
+}
+\cs_gset_eq:NN \Copyright \AllRightsReserved
+\tl_new:N    \g__UWMad_CCLicense_Porting_tl
+\tl_new:N    \g__UWMad_CCLicense_Version_tl
+\tl_new:N    \g__UWMad_CCLicense_TypeAbbreviation_tl
+\tl_new:N    \g__UWMad_CCLicense_TypeWords_tl
+\tl_new:N    \g__UWMad_CCLicense_URL_Front_tl
+\tl_new:N    \g__UWMad_CCLicense_URL_Middle_tl
+\tl_new:N    \g__UWMad_CCLicense_URL_Back_tl
+\tl_new:N    \g__UWMad_CCLicense_URL_tl
+\tl_const:Nn \g__UWMad_CCLicense_Valid_Prefix {__UWMad_CCLicense_Valid_}
+\bool_new:N \g__UWMad_CCLicense_UseCreativeCommons_bool
+\bool_new:N \g__UWMad_CCLicense_UseAttribution_bool
+\bool_new:N \g__UWMad_CCLicense_UseShareAlike_bool
+\bool_new:N \g__UWMad_CCLicense_UseNoDerivatives_bool
+\bool_new:N \g__UWMad_CCLicense_UseNonCommercial_bool
+\bool_new:N \g__UWMad_CCLicense_IsValid_bool
+\bool_gset_true:N \g__UWMad_CCLicense_UseAttribution_bool
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by :}      {}
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-sa :}   {}
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nd :}   {}
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc :}   {}
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc-sa :}{}
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc-nd :}{}
+\tl_gset:Nn \g__UWMad_CCLicense_Porting_tl {
+    International
+}
+\tl_gset:Nn \g__UWMad_CCLicense_Version_tl {
+    4.0
+}
+\tl_gset:Nn \g__UWMad_CCLicense_URL_Front_tl {
+    creativecommons.org/licenses/
+}
+\tl_gset:Nn \g__UWMad_CCLicense_URL_Middle_tl {
+    \g__UWMad_CCLicense_TypeAbbreviation_tl/
+}
+\tl_gset:Nn \g__UWMad_CCLicense_URL_Back_tl {
+    \g__UWMad_CCLicense_Version_tl
+}
+\tl_gset:Nn \g__UWMad_CCLicense_URL_tl {
+    http://
+    \g__UWMad_CCLicense_URL_Front_tl
+    \g__UWMad_CCLicense_URL_Middle_tl
+    \g__UWMad_CCLicense_URL_Back_tl
+}
+\cs_new:Nn \__UWMad_CCLicense_CreateType: {
+
+        \bool_if:NTF \g__UWMad_CCLicense_UseAttribution_bool {
+
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+                by
+            }
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+                Attribution
+            }
+
+        } { }
+
+        \bool_if:NTF \g__UWMad_CCLicense_UseNonCommercial_bool {
+
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+                -nc
+            }
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+                -NonCommercial
+            }
+
+        } { }
+
+        \bool_if:NTF \g__UWMad_CCLicense_UseShareAlike_bool {
+
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+                -sa
+            }
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+                -ShareAlike
+            }
+
+        } { }
+
+        \bool_if:NTF \g__UWMad_CCLicense_UseNoDerivatives_bool {
+
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+                -nd
+            }
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+                -NoDerivatives
+            }
+
+        } { }
+}
+\cs_new:Nn \__UWMad_CCLicense_CheckTypeValidity: {
+    \cs_if_exist:cTF {
+        \g__UWMad_CCLicense_Valid_Prefix
+        \g__UWMad_CCLicense_TypeAbbreviation_tl :
+    } {
+
+        \bool_gset_true:N \g__UWMad_CCLicense_IsValid_bool
+
+    } {
+
+        \msg_new:nnn {UWMadThesis} {CCLicense / InvalidLicenseType} {
+            The~license~type~`\g__UWMad_CCLicense_TypeAbbreviation_tl'~
+            is~not~a~valid~Creative~Commons~license.
+        }
+        \msg_error:nn {UWMadThesis} {CCLicense / InvalidLicenseType}
+
+    }
+}
+\cs_new:Nn \__UWMad_CCLicense_PrintPage: {
+
+    {
+        \clearpage
+        \thispagestyle{empty}
+        \null
+        \tex_vfill:D
+        \phantomsection
+        \addcontentsline {toc} {chapter} {License}
+        \begin{center}
+            \Large
+            \iffalse
+            This~work~is~released~under~a~
+            Creative~Commons~
+            \g__UWMad_CCLicense_TypeWords_tl{}~
+            \g__UWMad_CCLicense_Version_tl{}~
+            \g__UWMad_CCLicense_Porting_tl{}~
+            license.\\[0.1em]
+
+            (\g__UWMad_CCLicense_URL_tl{})
+            \fi
+
+            This~work~is~released~under~a~
+            \href {\g__UWMad_CCLicense_URL_tl} {
+                Creative~Commons~
+                \g__UWMad_CCLicense_TypeWords_tl{}~
+                \g__UWMad_CCLicense_Version_tl{}~
+                \g__UWMad_CCLicense_Porting_tl{}
+            }~
+            license.\\[0.1em]
+
+            (\g__UWMad_CCLicense_URL_tl{}/)
+        \end{center}
+    }
+}
+\DeclareDocumentCommand \CreativeCommons { } {
+    \bool_gset_true:N \g__UWMad_CCLicense_UseCreativeCommons_bool
+}
+\DeclareDocumentCommand \NonCommercial { } {
+    \bool_gset_true:N \g__UWMad_CCLicense_UseNonCommercial_bool
+}
+\DeclareDocumentCommand \ShareAlike { } {
+    \bool_gset_true:N \g__UWMad_CCLicense_UseShareAlike_bool
+}
+\DeclareDocumentCommand \NoDerivatives { } {
+    \bool_gset_true:N \g__UWMad_CCLicense_UseNoDerivatives_bool
+}
+\DeclareDocumentEnvironment {LicensePage} { } { } {
+
+    \bool_if:NTF \g__UWMad_CCLicense_UseCreativeCommons_bool {
+        \__UWMad_CCLicense_CreateType:
+        \__UWMad_CCLicense_CheckTypeValidity:
+        \bool_if:NTF \g__UWMad_CCLicense_IsValid_bool {
+            \__UWMad_CCLicense_PrintPage:
+        } { }
+    } { }
+
+}
+
 \ExplSyntaxOff

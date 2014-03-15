@@ -1,7 +1,7 @@
-\UWFeature{Programming}\label{UG:Programming}
+\UWFeature{Programming}
 The Programming Module has no immediate user-facing features.
 The Implementation section for this module outlines the programming layer
-and is aimed mainly at authors that wish to utilize its abilities.
+and is intended for average use.
 
 \UWFeature{Math}\label{UG:Math}
 As the feature name may suggest, all of the commands in this section deal with mathematical typesetting.
@@ -327,4 +327,65 @@ Some are new while others are simply in a camel-cased versions of the standard o
 \UWFeature{List Environments}
 \UWSubFeature{Nomenclature}
 \UWSubFeature{Acronym}
+
+
+\UWFeature{Thesis and PDF Information}
+
+In order for the \RefSubFeature{Title Page} to function properly, a certain amount of information about the thesis must be given.
+The \UWMadClass{} has a set of commands to provide both the thesis information and PDF metadata to \LaTeX{}.
+
+It is highly encouraged to use all of these commands in the preamble such that any PDF metadata can be directly set before typesetting begins.
+If the commands are used within the |document| environment, it will require another \LaTeX{} compilation to include the metadata since \UWMadClass{} will automatically right the information to a an external file.
+
+\UWSubFeature{Required}
+These commands are required for the document to be typeset properly.
+It is encouraged to use these commands in the preamble of the document.
+
+\begin{function} {
+    \Title,
+    \Author,
+    \Degree,
+    \Program,
+    \DefenseDate,
+    \Date,
+    \Institution,
+    \University}
+    \begin{syntax}
+        \vspace*{3pt}
+        \setstretch{1.30}
+        \cs{Title}          \marg{title}
+        \cs{Author}         \marg{author name}
+        \cs{Degree}         \marg{degree}
+        \cs{Program}        \marg{program}
+        \cs{DefenseDate}    \marg{defense date}
+        \cs{Date}           \marg{defense date}
+        \cs{Institution}    \marg{institution name}
+        \cs{University}     \marg{institution name}
+    \end{syntax}
+    The commands \cs{DefenseDate} and \cs{Date} are aliases to the same variable.
+    Also, \cs{Institution} and \cs{University}  are aliases to the same variable.
+
+    Since \marg{defense date} has no parsing performed on it, it may be entered any which way and will be typeset as-entered.
+\end{function}
+
+\UWSubFeature{Optional}
+
+
+\UWFeature{Special Pages}
+
+\UWSubFeature{Title Page}
+This is a replace for the default \cs{maketitlepage}.
+Per the example provided by the \UWMadLong{} Graduate School's sample, the sample page flows (in order): thesis title, author by-line, partial fulfillment clause, degree, program, university identification, oral defense date, and oral committee list.
+The styles can be re-worked by redefining the commands as presented in the \RefSubModule{MakeTitlePage} implementation.
+The formatting of the commands is standard \LaTeXe{} to facilitate customization.
+
+\textsc{Note:} The \cs{MakeTitlePage} command needs the required thesis information from the commands described in the \RefSubFeature[Required subsection]{Required}.
+
+\UWSubFeature{License Page}
+
+\begin{LicensePage}
+    \CreativeCommons
+    \NonCommercial
+    \ShareAlike
+\end{LicensePage}
 

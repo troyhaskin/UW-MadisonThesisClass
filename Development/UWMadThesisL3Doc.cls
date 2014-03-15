@@ -91,6 +91,7 @@
             \textbf{\Huge{#2}}
         \group_end:
         \addcontentsline{toc}{section}{#1}
+        \label{Module:#1}
         \vskip 1em
         \par
     }
@@ -113,6 +114,7 @@
             }
         \group_end:
         \addcontentsline{toc}{subsection}{#1}
+        \label{SubModule:#1}
         \vskip 0.2em
         \par
     }
@@ -134,6 +136,7 @@
             }
         \group_end:
         \addcontentsline{toc}{subsubsection}{#1}
+        \label{SubSubModule:#1}
         \vskip 0.2em
         \par
     }
@@ -164,6 +167,32 @@
     }
 
 
+%^^A =================================================================== %
+%^^A                     Implementation Referencing                      %
+%^^A =================================================================== %
+    \DeclareDocumentCommand \RefModule { o m } {
+        \IfNoValueTF {#1} {
+            \hyperref[Module:#2]{#2}
+        } {
+            \hyperref[Module:#2]{#1}
+        }
+    }
+    \DeclareDocumentCommand \RefSubModule { o m } {
+        \IfNoValueTF {#1} {
+            \hyperref[SubModule:#2]{#2}
+        } {
+            \hyperref[SubModule:#2]{#1}
+        }
+    }
+    \DeclareDocumentCommand \RefSubSubModule { o m } {
+        \IfNoValueTF {#1} {
+            \hyperref[SubSubModule:#2]{#2}
+        } {
+            \hyperref[SubSubModule:#2]{#1}
+        }
+    }
+
+
 
 %^^A =================================================================== %
 %^^A                         User Guide Sectioning                       %
@@ -187,6 +216,7 @@
             \textbf{\Huge{#2}}
         \group_end:
         \addcontentsline{toc}{section}{#1}
+        \label{Feature:#1}
         \vskip 1em
         \par
     }
@@ -207,6 +237,7 @@
             }
         \group_end:
         \addcontentsline{toc}{subsection}{#1}
+        \label{SubFeature:#1}
         \vskip 0.2em
         \par
     }
@@ -226,6 +257,7 @@
             }
         \group_end:
         \addcontentsline{toc}{subsubsection}{#1}
+        \label{SubSubFeature:#1}
         \vskip 0.2em
         \par
     }
@@ -254,6 +286,36 @@
             \__UWMad_Sectioning_SubSubFeature:nn{#1}{#2}
         }
     }
+%
+%
+%
+%^^A =================================================================== %
+%^^A                       User Guide Referencing                        %
+%^^A =================================================================== %
+    \DeclareDocumentCommand \RefFeature { o m } {
+        \IfNoValueTF {#1} {
+            \hyperref[Feature:#2]{#2}
+        } {
+            \hyperref[Feature:#2]{#1}
+        }
+    }
+    \DeclareDocumentCommand \RefSubFeature { o m } {
+        \IfNoValueTF {#1} {
+            \hyperref[SubFeature:#2]{#2}
+        } {
+            \hyperref[SubFeature:#2]{#1}
+        }
+    }
+    \DeclareDocumentCommand \RefSubSubFeature { o m } {
+        \IfNoValueTF {#1} {
+            \hyperref[SubSubFeature:#2]{#2}
+        } {
+            \hyperref[SubSubFeature:#2]{#1}
+        }
+    }
+%
+%
+%
 %
 %
 %

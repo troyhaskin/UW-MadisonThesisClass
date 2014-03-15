@@ -1,5 +1,24 @@
 %<*UserGuide>
-%
+
+\UWFeature{Special Pages}
+
+\UWSubFeature{Title Page}
+This is a replace for the default \cs{maketitlepage}.
+Per the example provided by the \UWMadLong{} Graduate School's sample, the sample page flows (in order): thesis title, author by-line, partial fulfillment clause, degree, program, university identification, oral defense date, and oral committee list.
+The styles can be re-worked by redefining the commands as presented in the \RefSubModule{MakeTitlePage} implementation.
+The formatting of the commands is standard \LaTeXe{} to facilitate customization.
+
+\textsc{Note:} The \cs{MakeTitlePage} command needs the required thesis information from the commands described in the \RefSubFeature[Required subsection]{Required}.
+
+\UWSubFeature{License Page}
+
+\begin{LicensePage}
+    \CreativeCommons
+    \NonCommercial
+    \ShareAlike
+\end{LicensePage}
+
+
 %</UserGuide>
 %
 %
@@ -14,196 +33,297 @@
 %   \fi
 %
 %
-%^^A =============================================================================================== %
-%^^A                                      Title Page                                                 %
-%^^A =============================================================================================== %
+%^^A ====================================================================== %
+%^^A                            Title Page                                  %
+%^^A ====================================================================== %
 %
 %   \UWModule{Special Pages}
 %
+%   \UWSubModule{MakeTitlePage}
+%
 %    \begin{macrocode}
 % That phrase that occurs on every title page design the class author has seen
-\DeclareRobustCommand{\ThatOddPhrase}{\setstretch{1.1}
-    \ifUWMad@IsADissertation
-        A dissertation submitted in partial fulfillment of the requirements for the degree of
-    \else
-        A preliminary report submitted in partial fulfillment of the requirements for the degree of
-    \fi
+\DeclareDocumentCommand \FulfillmentClause { } {
+    {
+    \setstretch{1.1}
+    A~\TheDocument{}~submitted~in~partial~fulfillment~of~the~
+    requirements~for~the~degree~of
+    }
 }
 
-\DeclareRobustCommand{\MakeTitlePageTitleBlock}{
-    \vspace{0.3in}
-    \LARGE
-    \textsc{\TheTitle}~\\[0.2in]
-    by~\\[0.2in]
-    \Large
-    \TheAuthor
+\DeclareDocumentCommand \TitlePageTitle { } {
+    {
+        \huge
+        \textsc {\TheTitle{}}
+    }
 }
 
-\DeclareRobustCommand{\MakeTitlePageDegreeBlock}{
-    \Large
-    \ThatOddPhrase~\\[0.2in]
-    \TheDegree \\[0.1in]
-    \TheSpecialty
+\DeclareDocumentCommand \TitlePageAuthor { } {
+    {
+        \large
+        by  \\[0.50em]
+        \TheAuthor{}
+    }
 }
 
-\DeclareRobustCommand{\MakeTitlePageUniversityBlock}{
-    \Large
-    at \\[0.4in]
-    \textsc{\TheUniversity} \\[0.1in]
-    \the\year
+\DeclareDocumentCommand \TitlePageFulFillment { } {
+    \FulfillmentClause{}
+}
+
+\DeclareDocumentCommand \TitlePageDegree { } {
+    \TheDegree{}
+}
+
+\DeclareDocumentCommand \TitlePageProgram { } {
+    \TheProgram{}
+}
+
+\DeclareDocumentCommand \TitlePageInstitution { } {
+    \textsc{\TheInstitution{}}
 }
 
 
-\DeclareRobustCommand{\MakeTitlePage}{
+\DeclareDocumentCommand \MakeTitlePage { } {
     \thispagestyle{empty}
     \begin{center}
-        \MakeTitlePageTitleBlock
-        \null\vfill
-        \MakeTitlePageDegreeBlock
-        \null\vfill
-        \MakeTitlePageUniversityBlock
+        \TitlePageTitle{}       \\[1.0em]
+        \TitlePageAuthor{}      \\[1.0em]
+        \TitlePageFulFillment{} \\[1.0em]
+        \TitlePageDegree{}      \\[1.0em]
+        \TitlePageProgram{}     \\[1.0em]
+        \vfill
+        \TitlePageInstitution{}
     \end{center}
     \clearpage
 }
 
+\show\title
 
 
 
 
 
 
-% =============================================================================================== %
-%                                      License Page                                               %
-% =============================================================================================== %
 
-% Author command that will display 'The Author' if \TheAuthor is empty
-\newcommand{\TheLicenseAuthor}{
-    \IfCommandEmpty{\TheAuthor}
-        {The Author}
-        {\TheAuthor}}
 
+%^^A ====================================================================== %
+%^^A                            License Page                                %
+%^^A ====================================================================== %
+%
 % Full Copyright
-\newcommand{\CopyrightTemplate}{
+\newcommand{\AllRightsReserved}{
     \large
     \copyright{} Copyright by \TheLicenseAuthor(\the\year)\\
     All Rights Reserved
 }
-
-\newcommand{\MakeCopyright}{
-    \LicensePage{CopyrightTemplate}
+\cs_gset_eq:NN \Copyright \AllRightsReserved
+%
+%
+%
+%
+%
+%^^A ====================================================================== %
+%^^A                       Creative Commons Licenses                        %
+%^^A ====================================================================== %
+%
+%   Token lists
+\tl_new:N    \g__UWMad_CCLicense_Porting_tl
+\tl_new:N    \g__UWMad_CCLicense_Version_tl
+\tl_new:N    \g__UWMad_CCLicense_TypeAbbreviation_tl
+\tl_new:N    \g__UWMad_CCLicense_TypeWords_tl
+\tl_new:N    \g__UWMad_CCLicense_URL_Front_tl
+\tl_new:N    \g__UWMad_CCLicense_URL_Middle_tl
+\tl_new:N    \g__UWMad_CCLicense_URL_Back_tl
+\tl_new:N    \g__UWMad_CCLicense_URL_tl
+\tl_const:Nn \g__UWMad_CCLicense_Valid_Prefix {__UWMad_CCLicense_Valid_}
+%
+%   Booleans
+\bool_new:N \g__UWMad_CCLicense_UseCreativeCommons_bool
+\bool_new:N \g__UWMad_CCLicense_UseAttribution_bool
+\bool_new:N \g__UWMad_CCLicense_UseShareAlike_bool
+\bool_new:N \g__UWMad_CCLicense_UseNoDerivatives_bool
+\bool_new:N \g__UWMad_CCLicense_UseNonCommercial_bool
+\bool_new:N \g__UWMad_CCLicense_IsValid_bool
+\bool_gset_true:N \g__UWMad_CCLicense_UseAttribution_bool
+%
+%   Valid license types
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by :}      {}
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-sa :}   {}
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nd :}   {}
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc :}   {}
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc-sa :}{}
+\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc-nd :}{}
+%
+%   Defaults
+\tl_gset:Nn \g__UWMad_CCLicense_Porting_tl {
+    International
 }
-
-
-% --------------------------------------------------------------- %
-%                  Creative Commons Licenses                      %
-% --------------------------------------------------------------- %
-% Creative Commans URL and desired portings
-\newcommand{\CreativeCommonsPorting}{Unported\xspace}
-\newcommand{\CreativeCommons}{}
-\newcommand{\CreativeCommonsFrontOfURL}{http://creativecommons.org/licenses/}
-\newcommand{\CreativeCommonsBackOfURL} {/3.0/}
-\newcommand{\CreativeCommonsURL}[1]{
-    \CreativeCommonsFrontOfURL#1\CreativeCommonsBackOfURL
+\tl_gset:Nn \g__UWMad_CCLicense_Version_tl {
+    4.0
 }
-
-
-\newif\ifUWMad@CCAttribution  \UWMad@CCAttributionfalse
-\newif\ifUWMad@CCNonCommercial\UWMad@CCNonCommercialfalse
-\newif\ifUWMad@CCShareAlike   \UWMad@CCShareAlikefalse
-\newif\ifUWMad@CCNoDerivatives\UWMad@CCNoDerivativesfalse
-
-\newcommand{\Attribution}   {\UWMad@CCAttributiontrue}
-\newcommand{\NonCommercial} {\UWMad@CCNonCommercialtrue}
-\newcommand{\ShareAlike}    {\UWMad@CCShareAliketrue}
-\newcommand{\NoDerivatives} {\UWMad@CCNoDerivativestrue}
-
-
-\newcommand{\CreativeCommonsModuleBuild}{
-    \ifUWMad@CCAttribution
-        \newcommand{\TheCreativeCommonsLink}{by}
-        \newcommand{\TheCreativeCommonsWords}{Attribution}
-    \fi
+%
+%   URL definitions
+\tl_gset:Nn \g__UWMad_CCLicense_URL_Front_tl {
+    creativecommons.org/licenses/
+}
+\tl_gset:Nn \g__UWMad_CCLicense_URL_Middle_tl {
+    \g__UWMad_CCLicense_TypeAbbreviation_tl/
+}
+\tl_gset:Nn \g__UWMad_CCLicense_URL_Back_tl {
+    \g__UWMad_CCLicense_Version_tl
+}
+\tl_gset:Nn \g__UWMad_CCLicense_URL_tl {
+    http://
+    \g__UWMad_CCLicense_URL_Front_tl
+    \g__UWMad_CCLicense_URL_Middle_tl
+    \g__UWMad_CCLicense_URL_Back_tl
+}
+%
+%
+%
+%   Type Creator
+\cs_new:Nn \__UWMad_CCLicense_CreateType: {
     
-    \ifUWMad@CCNonCommercial
-        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-nc}
-        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-NonCommercial}
-    \fi
-        
-    \ifUWMad@CCShareAlike
-        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-sa}
-        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-ShareAlike}
-    \fi 
-        
-    \ifUWMad@CCNoDerivatives
-        \xdef\TheCreativeCommonsLink{\TheCreativeCommonsLink-nd}
-        \xdef\TheCreativeCommonsWords{\TheCreativeCommonsWords-NoDerivs}
-    \fi
-    
+        \bool_if:NTF \g__UWMad_CCLicense_UseAttribution_bool {
+
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+                by
+            }
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+                Attribution
+            }
+
+        } { }
+
+        \bool_if:NTF \g__UWMad_CCLicense_UseNonCommercial_bool {
+
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+                -nc
+            }
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+                -NonCommercial
+            }
+
+        } { }
+
+        \bool_if:NTF \g__UWMad_CCLicense_UseShareAlike_bool {
+
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+                -sa
+            }
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+                -ShareAlike
+            }
+
+        } { }
+
+        \bool_if:NTF \g__UWMad_CCLicense_UseNoDerivatives_bool {
+
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+                -nd
+            }
+            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+                -NoDerivatives
+            }
+
+        } { }
+}
+%
+%
+%
+%   Type Validator
+\cs_new:Nn \__UWMad_CCLicense_CheckTypeValidity: {
+    \cs_if_exist:cTF {
+        \g__UWMad_CCLicense_Valid_Prefix 
+        \g__UWMad_CCLicense_TypeAbbreviation_tl :
+    } {
+
+        \bool_gset_true:N \g__UWMad_CCLicense_IsValid_bool
+
+    } {
+
+        \msg_new:nnn {UWMadThesis} {CCLicense / InvalidLicenseType} {
+            The~license~type~`\g__UWMad_CCLicense_TypeAbbreviation_tl'~
+            is~not~a~valid~Creative~Commons~license.
+        }
+        \msg_error:nn {UWMadThesis} {CCLicense / InvalidLicenseType}
+
+    }
+}
+%
+%
+%
+%   Page Printer
+\cs_new:Nn \__UWMad_CCLicense_PrintPage: {
+
+    {
+        \clearpage
+        \thispagestyle{empty}
+        \null
+        \tex_vfill:D
+        \phantomsection
+        \addcontentsline {toc} {chapter} {License}
+        \begin{center}
+            \Large
+            \iffalse
+            This~work~is~released~under~a~
+            Creative~Commons~
+            \g__UWMad_CCLicense_TypeWords_tl{}~
+            \g__UWMad_CCLicense_Version_tl{}~
+            \g__UWMad_CCLicense_Porting_tl{}~
+            license.\\[0.1em]
+
+            (\g__UWMad_CCLicense_URL_tl{})
+            \fi
+            
+            This~work~is~released~under~a~
+            \href {\g__UWMad_CCLicense_URL_tl} {
+                Creative~Commons~
+                \g__UWMad_CCLicense_TypeWords_tl{}~
+                \g__UWMad_CCLicense_Version_tl{}~
+                \g__UWMad_CCLicense_Porting_tl{}
+            }~
+            license.\\[0.1em]
+
+            (\g__UWMad_CCLicense_URL_tl{}/)
+        \end{center}
+    }
+}
+%
+%
+%   User front ends
+\DeclareDocumentCommand \CreativeCommons { } {
+    \bool_gset_true:N \g__UWMad_CCLicense_UseCreativeCommons_bool
+}
+\DeclareDocumentCommand \NonCommercial { } {
+    \bool_gset_true:N \g__UWMad_CCLicense_UseNonCommercial_bool
+}
+\DeclareDocumentCommand \ShareAlike { } {
+    \bool_gset_true:N \g__UWMad_CCLicense_UseShareAlike_bool
+}
+\DeclareDocumentCommand \NoDerivatives { } {
+    \bool_gset_true:N \g__UWMad_CCLicense_UseNoDerivatives_bool
+}
+%
+%
+%
+%
+%
+%^^A ====================================================================== %
+%^^A                        License Page environment                        %
+%^^A ====================================================================== %
+\DeclareDocumentEnvironment {LicensePage} { } { } {
+
+    \bool_if:NTF \g__UWMad_CCLicense_UseCreativeCommons_bool {
+        \__UWMad_CCLicense_CreateType:
+        \__UWMad_CCLicense_CheckTypeValidity:
+        \bool_if:NTF \g__UWMad_CCLicense_IsValid_bool {
+            \__UWMad_CCLicense_PrintPage:
+        } { }
+    } { }
+
 }
 
-
-
-% CC: Template for Creative Commons License
-\newcommand{\CreativeCommonsTemplate}{
-    \large
-    \TheLicenseAuthor has licensed this work under a \\
-    \href{\CreativeCommonsURL{\TheCreativeCommonsLink}}
-        {Creative Commons \TheCreativeCommonsWords\xspace 3.0
-        \CreativeCommonsPorting License}\\
-    \the\year
-}
-
-\newcommand{\MakeCreativeCommons}{
-    \CreativeCommonsModuleBuild
-    \LicensePage{CreativeCommonsTemplate}
-}
-
-% CC: Attribution
-\newcommand{\CreativeCommonsBY}{
-    \Attribution
-    \MakeCreativeCommons
-}
-
-% CC: Attribution and Non-commercial
-\newcommand{\CreativeCommonsBYNC}{
-    \Attribution\NonCommercial
-    \MakeCreativeCommons
-}
-
-% CC: Attribution, Non-commercial, and Share-Alike
-\newcommand{\CreativeCommonsBYNCSA}{
-    \Attribution\NonCommercial\ShareAlike
-    \MakeCreativeCommons
-}
-
-% CC: Attribution and Share-Alike
-\newcommand{\CreativeCommonsBYSA}{
-    \Attribution\ShareAlike
-    \MakeCreativeCommons
-}
-
-
-% Create an alias for \CopyrightAllRightsReserved
-\let\Copyright\CopyrightAllRightsReserved
-
-\DeclareRobustCommand{\LicensePage}[1]{
-    \thispagestyle{empty}                                   % No page number displayed
-    \def\UWMad@RequestedLicense{#1}                         % Initialize the requested license command
-    
-    \ifthenelse{\equal{\UWMad@RequestedLicense}{copyright}} % If the user supplied 'copyright' as a License Request
-        {\def\UWMad@RequestedLicense{Copyright}}            % it will be switched to 'Copyright' as \copyright IS
-        {}                                                  % defined as the copyright symbol inherently.
-    
-    \null\vfill                                             % Fill the page with elastic whitespace
-    \begin{center}
-        \ifx \UWMad@RequestedLicense \UWMad@Undefined       % Checks if the license requested has a command
-            \UWMad@RequestedLicense                         % If not, the input is echoed
-        \else
-            \csname\UWMad@RequestedLicense\endcsname        % If yes, the license command is excuted.
-        \fi
-    \end{center}
-    \clearpage                                              % Clear the page
-}
 %    \end{macrocode}
 %
 %
