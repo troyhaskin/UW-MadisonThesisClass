@@ -98,13 +98,37 @@
 }
 %    \end{macrocode}
 %
+%   This command is used to suppress warning issued from
+%   \UWMadClass{}. The first argument is a coonditional that
+%   would normally determine if a warning were to be thrown, but the
+%   decision is now superceeded by a switch to determine if warnings
+%   are disabled or not.
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_ThrowWarnings:NTF {
+    \bool_if:NTF \g__UWMad_ThrowWarnings_bool {
+        \bool_if:NTF #1 {
+            #2
+        } {
+            #3
+        }
+    } {}
+}
+\cs_new:Nn \__UWMad_ThrowWarnings:TF {
+    \bool_if:NTF \g__UWMad_ThrowWarnings_bool {
+        #1
+    } {
+        #2
+    }
+}
+%    \end{macrocode}
+%
 %   Now, declare booleans for the option processing.  All new booleans
 %   are false by default.
 %    \begin{macrocode}
 \bool_new:N       \g__UWMad_MathTweaks_bool
 \bool_gset_true:N \g__UWMad_MathTweaks_bool
-\bool_new:N       \g__UWMad_PDFMetaDataTweaks_bool
-\bool_gset_true:N \g__UWMad_PDFMetaDataTweaks_bool
+\bool_new:N       \g__UWMad_ThrowWarnings_bool
+\bool_gset_true:N \g__UWMad_ThrowWarnings_bool
 \bool_new:N       \g__UWMad_Hyperlinks_bool
 \bool_gset_true:N \g__UWMad_Hyperlinks_bool
 %    \end{macrocode}
@@ -114,11 +138,11 @@
 \DeclareOption{NoMath} {
     \bool_gset_false:N \g__UWMad_MathTweaks_bool
 }
-\DeclareOption{NoPDFMeta} {
-    \bool_gset_false:N \g__UWMad_PDFMetaDataTweaks_bool
-}
 \DeclareOption{NoLinks} {
     \bool_gset_false:N \g__UWMad_Hyperlinks_bool
+}
+\DeclareOption{Quiet} {
+    \bool_gset_false:N \g__UWMad_ThrowWarnings_bool
 }
 %    \end{macrocode}
 %
@@ -126,10 +150,14 @@
 %   8.5 by 11 paper for single-sided printing.
 %    \begin{macrocode}
 \DeclareOption{a4paper} {
-    \__UWMad_FrontMatter_StyleWarning:N{\CurrentOption}
+    \__UWMad_ThrowWarnings:TF {
+        \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
+    } { }
 }
 \DeclareOption{twoside} {
-    \__UWMad_FrontMatter_StyleWarning:N{\CurrentOption}
+    \__UWMad_ThrowWarnings:TF {
+        \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
+    } { }
 }
 %    \end{macrocode}
 %
@@ -179,7 +207,12 @@
 \bool_if:NTF \g__UWMad_Hyperlinks_bool {
     \RequirePackage{hyperref}
     \RequirePackage{bookmark}
-}{}
+} {
+    \DeclareDocumentCommand \href { o m m } {
+        #3
+    }
+    \cs_gset_eq:NN \phantomsection \relax
+}
 %    \end{macrocode}
 %
 %    \begin{macrocode}
@@ -198,7 +231,7 @@
     \RequirePackage{amsfonts}
     \RequirePackage{amssymb}
     \RequirePackage{mathtools}
-}{}
+} { }
 %    \end{macrocode}
 %
 %   And now we load some packages that give nice features and are

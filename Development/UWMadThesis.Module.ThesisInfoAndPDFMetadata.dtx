@@ -1,0 +1,402 @@
+%<*UserGuide>
+
+\UWFeature{Thesis and PDF Information}
+
+\vskip3em
+In order for the \RefSubFeature{Title Page} to function properly, a certain amount of information about the thesis must be given.
+The \UWMadClass{} has a set of commands to provide both the thesis information and PDF metadata to \LaTeX{}.
+
+It is highly encouraged to use all of these commands in the preamble such that any PDF metadata can be directly set before the document begins.
+If the commands are used within the |document| environment, it will require another \LaTeX{} compilation to include the metadata since \UWMadClass{} will automatically write the information to an external file.
+
+\UWSubFeature{Required}
+    These commands are required for the document to be typeset properly.
+    It is encouraged to use these commands in the preamble of the document.
+
+    \begin{function} {
+        \Title,
+        \Author,
+        \Program,
+        \Degree
+    }
+        \begin{syntax}
+            \vspace*{3pt}
+            \setstretch{1.30}
+            \cs{Title}   \marg{title}
+            \cs{Author}  \marg{author name}
+            \cs{Program} \marg{program}
+            \cs{Degree}  \marg{degree}
+        \end{syntax}
+        Each of these commands must be used once; if not, their respective variables be empty while being typeset.
+        They can, of course, be used more than once, but the additional usages would only redefine the value of the associated variable.
+    \end{function}
+
+    \begin{function} {
+        \DefenceDate,
+        \DefenseDate,
+        \Date
+    }
+        \begin{syntax}
+            \vspace*{3pt}
+            \setstretch{1.30}
+            \cs{DefenseDate} \marg{defense date}
+            \cs{DefenceDate} \marg{defense date}
+            \cs{Date}        \marg{defense date}
+        \end{syntax}
+        Only one of these commands is needed since they all point to the same variable \marg{defense date}.
+        The aliases were created for personal preference only.
+
+        Since \marg{defense date} has no parsing performed on it, it may be entered any which way and will be typeset as-entered.
+    \end{function}
+
+    \begin{function} {
+        \Institution,
+        \University
+    }
+        \begin{syntax}
+            \vspace*{3pt}
+            \setstretch{1.30}
+            \cs{Institution} \marg{institution name}
+            \cs{University}  \marg{institution name}
+        \end{syntax}
+        Only one of these commands is needed since they both point to the same variable \marg{institution name}.
+        The aliases were created for personal preference only.
+    \end{function}
+
+    \begin{function} {\CommitteeMember}
+        \begin{syntax}
+            \vspace*{3pt}
+            \setstretch{1.30}
+            \cs{CommitteeMember} \marg{member name} \marg{member position}
+        \end{syntax}
+        \cs{CommitteeMember} can be used as many times as required.
+        However, if the list of members becomes too large, formatting of the \RefSubFeature[title page]{Title Page} will suffer.
+        This may be fixed in the future but would require a much more sophisticated template for the title page (possibly using |expl3| |coffins|).
+    \end{function}
+
+
+\UWSubFeature{Optional}
+These commands are not required for the document to be typeset properly.
+However, they do provide metadata for the PDF (e.g., keywords and document subject) that is convenient for searching and categorization.
+It is encouraged to use these commands in the preamble of the document.
+
+\begin{function} {
+    \Advisor,
+    \Adviser
+    }
+    \begin{syntax}
+        \vspace*{3pt}
+        \setstretch{1.305}
+        \cs{Advisor} \marg{advisor name} \marg{advisor position}
+        \cs{Adviser} \marg{advisor name} \marg{advisor position}
+    \end{syntax}
+    Using either of these commands automatically adds the advisor/adviser to the top of the committee list created by \cs{CommitteeMember}.
+    Also, on the title page's committee list, the advisor/adviser is marked as such by ``(Advisor)'' or ``(Adviser)''.
+    This is a rare exception where the choice of alias has a side-effect.
+\end{function}
+
+
+
+\begin{function} {
+    \Subject,
+    \Keywords
+    }
+    \begin{syntax}
+        \vspace*{3pt}
+        \setstretch{1.305}
+        \cs{Subject}  \marg{document subject}
+        \cs{Keywords} \marg{list of keywords}
+    \end{syntax}
+\end{function}
+
+
+
+\begin{function} {
+    \Producer,
+    \Creator
+    }
+    \begin{syntax}
+        \vspace*{3pt}
+        \setstretch{1.305}
+        \cs{Producer} \marg{pdf producer}
+        \cs{Creator}  \marg{pdf creator}
+    \end{syntax}
+\end{function}
+
+
+
+%</UserGuide>
+%
+%
+%
+%
+%
+%
+%<*Documentation>
+%<<Verbatim
+%   \iffalse
+%<*Code>
+%   \fi
+%^^A ------------------------------------------------------------------------ %
+%^^A                    Metadata Writing/Importing Routines                   %
+%^^A ------------------------------------------------------------------------ %
+%
+%   \UWModule{PDF and Other Metadata}
+%
+%   Since the metadata (i.e., properties) of a PDF must be set in the preamble
+%   but typically a user defines them in the document, these routines write the
+%   supported metadata that a user may define to an auxiliary file that is
+%   then imported upon recompilation.  It uses the CSV commands above to define
+%   and build the CSV list, and then uses the TeX |\write| to dump it to the file.
+%
+%
+% Used to determine is the list was created
+%
+%    \begin{macrocode}
+%
+% Command used to append the data to the CSV list.  It is called in the 
+% metadata commands below
+\UWMad_CSV_Define:n {MetaDataList}
+\cs_new:Nn \UWMad_MetaData_PushToList:nn {
+   \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}
+}
+
+\bool_new:N \g__UWMad_MetaData_GenerateAux_bool
+\bool_new:N \g__UWMad_MetaData_IsDocument_bool
+
+\file_if_exist:nTF{\jobname.UWMad.PDFMetaData.aux} {
+    \file_input:n {\jobname.UWMad.PDFMetaData.aux}
+}{}
+
+\AtBeginDocument{
+    \UWMad_CSV_IfNotEmpty:nTF{MetaDataList} {
+        \exp_args:Nx \hypersetup {\UWMad_CSV_Get:n{MetaDataList}}
+    } { }
+    \bool_gset_true:N \g__UWMad_MetaData_IsDocument_bool
+}
+\AtEndDocument{
+    \bool_if:NTF \g__UWMad_MetaData_GenerateAux_bool {
+        \UWMad_CSV_IfNotEmpty:nTF {MetaDataList} {
+            \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
+            \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
+                \jobname.UWMad.PDFMetaData.aux
+            }
+            \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
+                \noexpand\ExplSyntaxOff
+                    \noexpand\hypersetup{\UWMad_CSV_Get:n{MetaDataList}}
+                \noexpand\ExplSyntaxOn
+            }
+            \iow_close:N \g__UWMad_PDFMetaData_HyperSetup_io
+        } { }
+    } { }
+}
+
+
+
+% ------------------------------------------------------------------------ %
+%           Metadata Defining/Storing Commands (User's Interface)          %
+% ------------------------------------------------------------------------ %
+%
+\tl_new:N \g__UWMad_ThesisInfo_Title_tl
+\tl_new:N \g__UWMad_ThesisInfo_Author_tl
+\tl_new:N \g__UWMad_ThesisInfo_DefenseDate_tl
+\tl_new:N \g__UWMad_ThesisInfo_Department_tl
+\tl_new:N \g__UWMad_ThesisInfo_Program_tl
+\tl_new:N \g__UWMad_ThesisInfo_Degree_tl
+\tl_new:N \g__UWMad_ThesisInfo_AdvisorName_tl
+\tl_new:N \g__UWMad_ThesisInfo_AdvisorPosition_tl
+\tl_new:N \g__UWMad_ThesisInfo_AdvisorAssociation_tl
+\tl_new:N \g__UWMad_ThesisInfo_AdvisorMarker_tl
+\tl_new:N \g__UWMad_ThesisInfo_Institution_tl
+%
+%
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Title_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Author_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_DefenseDate_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Program_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Institution_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+%
+%
+%
+%   User front-ends (Required)
+\DeclareDocumentCommand \Title { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Title_tl {#1}
+    \title{#1}
+    \UWMad_MetaData_PushToList:nn{pdftitle}    {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Title_bool
+}
+\DeclareDocumentCommand \Author { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Author_tl {#1}
+    \author{#1}
+    \UWMad_MetaData_PushToList:nn{pdfauthor}   {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Author_bool
+}
+\DeclareDocumentCommand \Program { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Program_tl {#1}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Program_bool
+}
+\DeclareDocumentCommand \Degree { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {#1}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+}
+\DeclareDocumentCommand \DefenseDate { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DefenseDate_tl {#1}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_DefenseDate_bool
+}
+\cs_gset_eq:NN \DefenceDate \DefenseDate
+\cs_gset_eq:NN \Date        \DefenseDate
+\DeclareDocumentCommand \Institution { m } {
+    \tl_gset:Nn       \g__UWMad_ThesisInfo_Institution_tl {#1}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Institution_bool
+}
+\cs_set_eq:NN \University \Institution
+%
+%
+%   User front-ends (Optional)
+\DeclareDocumentCommand \Department { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Department_tl {#1}
+}
+\DeclareDocumentCommand \Advisor { m m m } {
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Advisor}
+ }
+\DeclareDocumentCommand \Adviser { m m m } {
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Adviser}
+}
+%
+%
+%
+%
+%   User front-end accessors
+\DeclareDocumentCommand \TheTitle { } {
+    \g__UWMad_ThesisInfo_Title_tl
+}
+\DeclareDocumentCommand \TheAuthor { } {
+    \g__UWMad_ThesisInfo_Author_tl
+}
+\DeclareDocumentCommand \TheProgram { m } {
+    \g__UWMad_ThesisInfo_Program_tl
+}
+\DeclareDocumentCommand \TheDegree { m } {
+    \g__UWMad_ThesisInfo_Degree_tl
+}
+\DeclareDocumentCommand \TheDefenseDate { m } {
+    \g__UWMad_ThesisInfo_DefenseDate_tl
+}
+\cs_gset_eq:NN \TheDefenceDate \TheDefenseDate
+\cs_gset_eq:NN \TheDate        \TheDefenseDate
+\DeclareDocumentCommand \TheInstitution { m } {
+    \g__UWMad_ThesisInfo_Institution_tl
+}
+\cs_set_eq:NN \TheUniversity \TheInstitution
+%
+\DeclareDocumentCommand \TheDepartment { m } {
+    \g__UWMad_ThesisInfo_Department_tl
+}
+\DeclareDocumentCommand \TheAdvisor { m } {
+    \g__UWMad_ThesisInfo_AdvisorName_tl
+}
+%
+%
+%
+\int_new:N \l__UWMad_ThesisInfo_CommitteeCount_int
+\UWMad_ListOf_Define:n {CommitteeList}
+\DeclareDocumentCommand \CommitteeMember { m m m } {
+    \int_incr:N \l__UWMad_ThesisInfo_CommitteeCount_int
+    \UWMad_ListOf_PushEntry:nn {CommitteeList} {
+        #1,~#2,~#3\skip_vertical:n{-1em}
+    }
+}
+\DeclareDocumentCommand \PrintCommitteeMemberList { } {
+    \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
+        \g__UWMad_ThesisInfo_AdvisorName_tl{},~
+        \g__UWMad_ThesisInfo_AdvisorPosition_tl{},~
+        \g__UWMad_ThesisInfo_AdvisorAssociation_tl{}~
+        (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
+        \skip_vertical:n{-1em}
+    } { }
+    \UWMad_ListOf_PrintEntries:n {CommitteeList}
+}
+%
+%
+%
+%
+%
+\tl_new:N \g__UWMad_PDFMetaData_Subject_tl
+\tl_new:N \g__UWMad_PDFMetaData_Keywords_tl
+\tl_new:N \g__UWMad_PDFMetaData_Producer_tl
+\tl_new:N \g__UWMad_PDFMetaData_Creator_tl
+%
+%
+%
+%   User front-end (Optional)
+\DeclareDocumentCommand \Subject { m } {
+    \tl_gset:Nn \g__UWMad_PDFMetaData_Subject_tl {#1}
+    \UWMad_MetaData_PushToList:nn{pdfsubject}  {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+}
+\DeclareDocumentCommand \Keywords { m } {
+    \tl_gset:Nn \g__UWMad_PDFMetaData_Keywords_tl {#1}
+    \UWMad_MetaData_PushToList:nn{pdfproducer} {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+}
+\DeclareDocumentCommand \Producer { m } {
+    \tl_gset:Nn \g__UWMad_PDFMetaData_Producer_tl {#1}
+    \UWMad_MetaData_PushToList:nn{pdfcreator}  {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+}
+\DeclareDocumentCommand \Creator { m } {
+    \tl_gset:Nn \g__UWMad_PDFMetaData_Creator_tl {#1}
+    \UWMad_MetaData_PushToList:nn{pdfkeywords} {#1}
+    \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
+        \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
+    } { }
+}
+%
+%
+%
+%   User front-end accessors.
+\DeclareDocumentCommand \TheSubject { } {
+    \g__UWMad_PDFMetaData_Subject_tl
+}
+\DeclareDocumentCommand \TheKeywords { } {
+    \g__UWMad_PDFMetaData_Keywords_tl
+}
+\DeclareDocumentCommand \TheProducer { } {
+    \g__UWMad_PDFMetaData_Producer_tl
+}
+\DeclareDocumentCommand \TheCreator { } {
+    \g__UWMad_PDFMetaData_Creator_tl
+}
+%
+%    \end{macrocode}
+%
+%
+%
+%
+%   \iffalse
+%</Code>
+%   \fi
+%Verbatim
+%</Documentation>

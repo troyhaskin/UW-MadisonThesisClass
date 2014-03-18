@@ -51,7 +51,7 @@
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_Define:n {
-    \tl_const:cn {c__ListOf#1-Defined}{}
+    \tl_const:cn {c__UWMad_ListOf#1_IsDefined_tl}{}
 %
     \tl_new:c {l__UWMad_ListOf#1_SectionMain_tl}
     \tl_new:c {l__UWMad_ListOf#1_SectionGroup_tl}
@@ -61,10 +61,12 @@
     \tl_new:c {l__UWMad_ListOf#1_TitleGroup_tl}
     \tl_new:c {l__UWMad_ListOf#1_TitleSubgroup_tl}
 %
-    \UWMad_Boolean_DefineGlobalSetTrue:n{__ListOf#1-Numbered}
-    \UWMad_Boolean_DefineGlobalSetTrue:n{__ListOf#1-IncludeInTOC}
-    \UWMad_Queue_Define:n               {__ListOf#1-EntryQueue}
-    \UWMad_Hash_Define:n                {__ListOf#1-Hook}
+    \bool_new:c       {l__UWMad_ListOf#1_IsNumbered_bool}
+    \bool_gset_true:c {l__UWMad_ListOf#1_IsNumbered_bool}
+    \bool_new:c       {l__UWMad_ListOf#1_IncludeInTOC_bool}
+    \bool_gset_true:c {l__UWMad_ListOf#1_IncludeInTOC_bool}
+    \UWMad_Queue_Define:n               {__ListOf#1_EntryQueue}
+    \UWMad_Hash_Define:n                {__ListOf#1_Hook}
 }
 %    \end{macrocode}
 %   \end{macro}
@@ -77,7 +79,7 @@
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_Delete:n {
-    \cs_undefine:c {c__ListOf#1-Defined}
+    \cs_undefine:c {c__UWMad_ListOf#1_IsDefined_tl}
 %
     \cs_undefine:c {l__UWMad_ListOf#1_SectionMain_tl}
     \cs_undefine:c {l__UWMad_ListOf#1_SectionGroup_tl}
@@ -87,10 +89,13 @@
     \cs_undefine:c {l__UWMad_ListOf#1_TitleGroup_tl}
     \cs_undefine:c {l__UWMad_ListOf#1_TitleSubgroup_tl}
 %
-    \UWMad_Boolean_Delete:n {__ListOf#1-Numbered}
-    \UWMad_Boolean_Delete:n {__ListOf#1-IncludeInTOC}
-    \UWMad_Queue_Delete:n   {__ListOf#1-EntryQueue}
-    \UWMad_Hash_Delete:n    {__ListOf#1-Hook}
+
+    \show\bool_new:N
+
+    \cs_undefine:c {l__UWMad_ListOf#1_IsNumbered_bool}
+    \cs_undefine:c {l__UWMad_ListOf#1_IncludeInTOC_bool}
+    \UWMad_Queue_Delete:n   {__ListOf#1_EntryQueue}
+    \UWMad_Hash_Delete:n    {__ListOf#1_Hook}
 }
 %    \end{macrocode}
 %   \end{macro}
@@ -104,9 +109,9 @@
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_IfDefined:nT {
     \__UWMad_IfDefined:nnnnT
-        {c__ListOf}
+        {c__UWMad_ListOf}
         {#1}
-        {-Defined}
+        {_IsDefined_tl}
         {ListOf}
         {#2}
 }
@@ -121,7 +126,7 @@
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_MakeNumbered:n {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_SetTrue:n {__ListOf#1-Numbered}
+        \bool_set_true:c {l__UWMad_ListOf#1_IsNumbered_bool}
     }
 }
 %    \end{macrocode}
@@ -136,7 +141,7 @@
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_MakeNotNumbered:n {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_SetFalse:n {__ListOf#1-Numbered}
+        \bool_set_false:c {l__UWMad_ListOf#1_IsNumbered_bool}
     }
 }
 %    \end{macrocode}
@@ -151,7 +156,7 @@
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_IfNumbered:nTF {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_IfTrue:nTF {__ListOf#1-Numbered} {
+        \bool_if:cTF {c__UWMad_ListOf#1_IsNumbered_bool} {
             #2
         }{
             #3
@@ -170,7 +175,7 @@
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_IncludeInTOC:n {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_SetTrue:n {__ListOf#1-IncludeInTOC}
+        \bool_set_true:c {c__UWMad_ListOf#1_IncludeInTOC_bool}
     }
 }
 %    \end{macrocode}
@@ -185,7 +190,7 @@
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_DoNotIncludeInTOC:n {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_SetFalse:n {__ListOf#1-IncludeInTOC}
+        \bool_set_false:c {c__UWMad_ListOf#1_IncludeInTOC_bool}
     }
 }
 %    \end{macrocode}
@@ -200,7 +205,7 @@
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_IfIncludeInTOC:nTF {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_IfTrue:nTF {__ListOf#1-IncludeInTOC} {
+        \bool_if:cTF {c__UWMad_ListOf#1_IncludeInTOC_bool} {
             #2
         }{
             #3
@@ -222,17 +227,17 @@
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_SetTitleMain:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_TitleMain_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_TitleMain_tl}{#2}
     }
 }
 \cs_new:Nn \UWMad_ListOf_SetTitleGroup:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_TitleGroup_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_TitleGroup_tl}{#2}
     }
 }
 \cs_new:Nn \UWMad_ListOf_SetTitleSubgroup:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_TitleSubgroup_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_TitleSubgroup_tl}{#2}
     }
 }
 %    \end{macrocode}
@@ -278,17 +283,17 @@
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_SetSectionMain:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_SectionMain_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_SectionMain_tl}{#2}
     }
 }
 \cs_new:Nn \UWMad_ListOf_SetSectionGroup:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_SectionGroup_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_SectionGroup_tl}{#2}
     }
 }
 \cs_new:Nn \UWMad_ListOf_SetSectionSubgroup:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_SectionSubgroup_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_SectionSubgroup_tl}{#2}
     }
 }
 %    \end{macrocode}
@@ -329,7 +334,7 @@
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_PushEntry:nn {
-    \UWMad_Queue_Push:nn{__ListOf#1-EntryQueue}{#2}
+    \UWMad_Queue_Push:nn{__ListOf#1_EntryQueue}{#2}
 }
 %    \end{macrocode}
 %   \end{macro}
@@ -342,7 +347,7 @@
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_SetHook:nnn {
-    \UWMad_Hash_Set:nnn{__ListOf#1-Hook}{#2}{#3}
+    \UWMad_Hash_Set:nnn{__ListOf#1_Hook}{#2}{#3}
 }
 %    \end{macrocode}
 %   \end{macro}
@@ -356,10 +361,10 @@
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_PrintEntries:n {
-    \UWMad_Hash_Get:nn   {__ListOf#1-Hook}{PrePrint}
-    \UWMad_Queue_Walk:nn {__ListOf#1-EntryQueue}{##1}
-    \UWMad_Queue_Clear:n {__ListOf#1-EntryQueue}
-    \UWMad_Hash_Get:nn   {__ListOf#1-Hook}{PostPrint}
+    \UWMad_Hash_Get:nn   {__ListOf#1_Hook}{PrePrint}
+    \UWMad_Queue_Walk:nn {__ListOf#1_EntryQueue}{##1}
+    \UWMad_Queue_Clear:n {__ListOf#1_EntryQueue}
+    \UWMad_Hash_Get:nn   {__ListOf#1_Hook}{PostPrint}
 }
 %    \end{macrocode}
 %   \end{macro}

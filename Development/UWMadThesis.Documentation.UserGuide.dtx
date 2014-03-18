@@ -331,44 +331,131 @@ Some are new while others are simply in a camel-cased versions of the standard o
 
 \UWFeature{Thesis and PDF Information}
 
+\Advisor{Michael Corradini}{Professor} {Engineering Physics}
+\CommitteeMember{Christopher Rutland}{Professor} {Mechanical Engineering}
+\CommitteeMember{Robert Witt}{Professor}{Engineering Physics}
+\PrintCommitteeMemberList{}
+
+\Adviser{Michael Corradini}{Professor} {Engineering Physics}
+\CommitteeMember{Christopher Rutland}{Professor} {Mechanical Engineering}
+\CommitteeMember{Robert Witt}{Professor}{Engineering Physics}
+\PrintCommitteeMemberList{}
+
+\vskip3em
 In order for the \RefSubFeature{Title Page} to function properly, a certain amount of information about the thesis must be given.
 The \UWMadClass{} has a set of commands to provide both the thesis information and PDF metadata to \LaTeX{}.
 
-It is highly encouraged to use all of these commands in the preamble such that any PDF metadata can be directly set before typesetting begins.
-If the commands are used within the |document| environment, it will require another \LaTeX{} compilation to include the metadata since \UWMadClass{} will automatically right the information to a an external file.
+It is highly encouraged to use all of these commands in the preamble such that any PDF metadata can be directly set before the document begins.
+If the commands are used within the |document| environment, it will require another \LaTeX{} compilation to include the metadata since \UWMadClass{} will automatically write the information to an external file.
 
 \UWSubFeature{Required}
-These commands are required for the document to be typeset properly.
+    These commands are required for the document to be typeset properly.
+    It is encouraged to use these commands in the preamble of the document.
+
+    \begin{function} {
+        \Title,
+        \Author,
+        \Program,
+        \Degree
+    }
+        \begin{syntax}
+            \vspace*{3pt}
+            \setstretch{1.30}
+            \cs{Title}   \marg{title}
+            \cs{Author}  \marg{author name}
+            \cs{Program} \marg{program}
+            \cs{Degree}  \marg{degree}
+        \end{syntax}
+        Each of these commands must be used once; if not, their respective variables be empty while being typeset.
+        They can, of course, be used more than once, but the additional usages would only redefine the value of the associated variable.
+    \end{function}
+
+    \begin{function} {
+        \DefenceDate,
+        \DefenseDate,
+        \Date
+    }
+        \begin{syntax}
+            \vspace*{3pt}
+            \setstretch{1.30}
+            \cs{DefenseDate} \marg{defense date}
+            \cs{DefenceDate} \marg{defense date}
+            \cs{Date}        \marg{defense date}
+        \end{syntax}
+        Only one of these commands is needed since they all point to the same variable \marg{defense date}.
+        The aliases were created for personal preference only.
+
+        Since \marg{defense date} has no parsing performed on it, it may be entered any which way and will be typeset as-entered.
+    \end{function}
+
+    \begin{function} {
+        \Institution,
+        \University
+    }
+        \begin{syntax}
+            \vspace*{3pt}
+            \setstretch{1.30}
+            \cs{Institution} \marg{institution name}
+            \cs{University}  \marg{institution name}
+        \end{syntax}
+        Only one of these commands is needed since they both point to the same variable \marg{institution name}.
+        The aliases were created for personal preference only.
+    \end{function}
+
+    \begin{function} {\CommitteeMember}
+        \begin{syntax}
+            \vspace*{3pt}
+            \setstretch{1.30}
+            \cs{CommitteeMember} \marg{member name} \marg{member position}
+        \end{syntax}
+        \cs{CommitteeMember} can be used as many times as required.
+        However, if the list of members becomes too large, formatting of the \RefSubFeature[title page]{Title Page} will suffer.
+        This may be fixed in the future but would require a much more sophisticated template for the title page (possibly using |expl3| |coffins|).
+    \end{function}
+
+\UWSubFeature{Optional}
+These commands are not required for the document to be typeset properly.
+However, they do provide metadata for the PDF (e.g., keywords and document subject) that is convenient for searching and categorization.
 It is encouraged to use these commands in the preamble of the document.
 
 \begin{function} {
-    \Title,
-    \Author,
-    \Degree,
-    \Program,
-    \DefenseDate,
-    \Date,
-    \Institution,
-    \University}
+    \Advisor,
+    \Adviser
+    }
     \begin{syntax}
         \vspace*{3pt}
-        \setstretch{1.30}
-        \cs{Title}          \marg{title}
-        \cs{Author}         \marg{author name}
-        \cs{Degree}         \marg{degree}
-        \cs{Program}        \marg{program}
-        \cs{DefenseDate}    \marg{defense date}
-        \cs{Date}           \marg{defense date}
-        \cs{Institution}    \marg{institution name}
-        \cs{University}     \marg{institution name}
+        \setstretch{1.305}
+        \cs{Advisor} \marg{advisor name} \marg{advisor position}
+        \cs{Adviser} \marg{advisor name} \marg{advisor position}
     \end{syntax}
-    The commands \cs{DefenseDate} and \cs{Date} are aliases to the same variable.
-    Also, \cs{Institution} and \cs{University}  are aliases to the same variable.
-
-    Since \marg{defense date} has no parsing performed on it, it may be entered any which way and will be typeset as-entered.
+    Using either of these commands automatically adds the advisor/adviser to the top of the committee list created by \cs{CommitteeMember}.
+    Also, on the title page's committee list, the advisor/adviser is marked as such by ``(Advisor)'' or ``(Adviser)''.
+    This is a rare exception where the choice of alias has a side-effect.
 \end{function}
 
-\UWSubFeature{Optional}
+\begin{function} {
+    \Subject,
+    \Keywords
+    }
+    \begin{syntax}
+        \vspace*{3pt}
+        \setstretch{1.305}
+        \cs{Subject}  \marg{document subject}
+        \cs{Keywords} \marg{list of keywords}
+    \end{syntax}
+\end{function}
+
+\begin{function} {
+    \Producer,
+    \Creator
+    }
+    \begin{syntax}
+        \vspace*{3pt}
+        \setstretch{1.305}
+        \cs{Producer} \marg{pdf producer}
+        \cs{Creator}  \marg{pdf creator}
+    \end{syntax}
+\end{function}
 
 
 \UWFeature{Special Pages}

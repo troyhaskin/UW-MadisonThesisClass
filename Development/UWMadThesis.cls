@@ -31,26 +31,46 @@
         {#1}
    \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
 }
+\cs_new:Nn \__UWMad_ThrowWarnings:NTF {
+    \bool_if:NTF \g__UWMad_ThrowWarnings_bool {
+        \bool_if:NTF #1 {
+            #2
+        } {
+            #3
+        }
+    } {}
+}
+\cs_new:Nn \__UWMad_ThrowWarnings:TF {
+    \bool_if:NTF \g__UWMad_ThrowWarnings_bool {
+        #1
+    } {
+        #2
+    }
+}
 \bool_new:N       \g__UWMad_MathTweaks_bool
 \bool_gset_true:N \g__UWMad_MathTweaks_bool
-\bool_new:N       \g__UWMad_PDFMetaDataTweaks_bool
-\bool_gset_true:N \g__UWMad_PDFMetaDataTweaks_bool
+\bool_new:N       \g__UWMad_ThrowWarnings_bool
+\bool_gset_true:N \g__UWMad_ThrowWarnings_bool
 \bool_new:N       \g__UWMad_Hyperlinks_bool
 \bool_gset_true:N \g__UWMad_Hyperlinks_bool
 \DeclareOption{NoMath} {
     \bool_gset_false:N \g__UWMad_MathTweaks_bool
 }
-\DeclareOption{NoPDFMeta} {
-    \bool_gset_false:N \g__UWMad_PDFMetaDataTweaks_bool
-}
 \DeclareOption{NoLinks} {
     \bool_gset_false:N \g__UWMad_Hyperlinks_bool
 }
+\DeclareOption{Quiet} {
+    \bool_gset_false:N \g__UWMad_ThrowWarnings_bool
+}
 \DeclareOption{a4paper} {
-    \__UWMad_FrontMatter_StyleWarning:N{\CurrentOption}
+    \__UWMad_ThrowWarnings:TF {
+        \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
+    } { }
 }
 \DeclareOption{twoside} {
-    \__UWMad_FrontMatter_StyleWarning:N{\CurrentOption}
+    \__UWMad_ThrowWarnings:TF {
+        \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
+    } { }
 }
 \DeclareOption{article} {
     \tl_gset:Nn \g_UWMad_ParentClass_tl {article}
@@ -69,7 +89,12 @@
 \bool_if:NTF \g__UWMad_Hyperlinks_bool {
     \RequirePackage{hyperref}
     \RequirePackage{bookmark}
-}{}
+} {
+    \DeclareDocumentCommand \href { o m m } {
+        #3
+    }
+    \cs_gset_eq:NN \phantomsection \relax
+}
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
 \RequirePackage{array}
@@ -81,7 +106,7 @@
     \RequirePackage{amsfonts}
     \RequirePackage{amssymb}
     \RequirePackage{mathtools}
-}{}
+} { }
 \RequirePackage[noabbrev]{cleveref}
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
 \RequirePackage{subfig}
@@ -1224,52 +1249,57 @@
 \DeclareDocumentCommand \LessThan        { } {<}
 \DeclareDocumentCommand \GreaterThanThan { } {>}
 \cs_new:Nn \UWMad_ListOf_Define:n {
-    \tl_const:cn {c__ListOf#1-Defined}{}
+    \tl_const:cn {c__UWMad_ListOf#1_IsDefined_tl}{}
     \tl_new:c {l__UWMad_ListOf#1_SectionMain_tl}
     \tl_new:c {l__UWMad_ListOf#1_SectionGroup_tl}
     \tl_new:c {l__UWMad_ListOf#1_SectionSubgroup_tl}
     \tl_new:c {l__UWMad_ListOf#1_TitleMain_tl}
     \tl_new:c {l__UWMad_ListOf#1_TitleGroup_tl}
     \tl_new:c {l__UWMad_ListOf#1_TitleSubgroup_tl}
-    \UWMad_Boolean_DefineGlobalSetTrue:n{__ListOf#1-Numbered}
-    \UWMad_Boolean_DefineGlobalSetTrue:n{__ListOf#1-IncludeInTOC}
-    \UWMad_Queue_Define:n               {__ListOf#1-EntryQueue}
-    \UWMad_Hash_Define:n                {__ListOf#1-Hook}
+    \bool_new:c       {l__UWMad_ListOf#1_IsNumbered_bool}
+    \bool_gset_true:c {l__UWMad_ListOf#1_IsNumbered_bool}
+    \bool_new:c       {l__UWMad_ListOf#1_IncludeInTOC_bool}
+    \bool_gset_true:c {l__UWMad_ListOf#1_IncludeInTOC_bool}
+    \UWMad_Queue_Define:n               {__ListOf#1_EntryQueue}
+    \UWMad_Hash_Define:n                {__ListOf#1_Hook}
 }
 \cs_new:Nn \UWMad_ListOf_Delete:n {
-    \cs_undefine:c {c__ListOf#1-Defined}
+    \cs_undefine:c {c__UWMad_ListOf#1_IsDefined_tl}
     \cs_undefine:c {l__UWMad_ListOf#1_SectionMain_tl}
     \cs_undefine:c {l__UWMad_ListOf#1_SectionGroup_tl}
     \cs_undefine:c {l__UWMad_ListOf#1_SectionSubgroup_tl}
     \cs_undefine:c {l__UWMad_ListOf#1_TitleMain_tl}
     \cs_undefine:c {l__UWMad_ListOf#1_TitleGroup_tl}
     \cs_undefine:c {l__UWMad_ListOf#1_TitleSubgroup_tl}
-    \UWMad_Boolean_Delete:n {__ListOf#1-Numbered}
-    \UWMad_Boolean_Delete:n {__ListOf#1-IncludeInTOC}
-    \UWMad_Queue_Delete:n   {__ListOf#1-EntryQueue}
-    \UWMad_Hash_Delete:n    {__ListOf#1-Hook}
+
+    \show\bool_new:N
+
+    \cs_undefine:c {l__UWMad_ListOf#1_IsNumbered_bool}
+    \cs_undefine:c {l__UWMad_ListOf#1_IncludeInTOC_bool}
+    \UWMad_Queue_Delete:n   {__ListOf#1_EntryQueue}
+    \UWMad_Hash_Delete:n    {__ListOf#1_Hook}
 }
 \cs_new:Nn \UWMad_ListOf_IfDefined:nT {
     \__UWMad_IfDefined:nnnnT
-        {c__ListOf}
+        {c__UWMad_ListOf}
         {#1}
-        {-Defined}
+        {_IsDefined_tl}
         {ListOf}
         {#2}
 }
 \cs_new:Nn \UWMad_ListOf_MakeNumbered:n {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_SetTrue:n {__ListOf#1-Numbered}
+        \bool_set_true:c {l__UWMad_ListOf#1_IsNumbered_bool}
     }
 }
 \cs_new:Nn \UWMad_ListOf_MakeNotNumbered:n {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_SetFalse:n {__ListOf#1-Numbered}
+        \bool_set_false:c {l__UWMad_ListOf#1_IsNumbered_bool}
     }
 }
 \cs_new:Nn \UWMad_ListOf_IfNumbered:nTF {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_IfTrue:nTF {__ListOf#1-Numbered} {
+        \bool_if:cTF {c__UWMad_ListOf#1_IsNumbered_bool} {
             #2
         }{
             #3
@@ -1278,17 +1308,17 @@
 }
 \cs_new:Nn \UWMad_ListOf_IncludeInTOC:n {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_SetTrue:n {__ListOf#1-IncludeInTOC}
+        \bool_set_true:c {c__UWMad_ListOf#1_IncludeInTOC_bool}
     }
 }
 \cs_new:Nn \UWMad_ListOf_DoNotIncludeInTOC:n {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_SetFalse:n {__ListOf#1-IncludeInTOC}
+        \bool_set_false:c {c__UWMad_ListOf#1_IncludeInTOC_bool}
     }
 }
 \cs_new:Nn \UWMad_ListOf_IfIncludeInTOC:nTF {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \UWMad_Boolean_IfTrue:nTF {__ListOf#1-IncludeInTOC} {
+        \bool_if:cTF {c__UWMad_ListOf#1_IncludeInTOC_bool} {
             #2
         }{
             #3
@@ -1297,17 +1327,17 @@
 }
 \cs_new:Nn \UWMad_ListOf_SetTitleMain:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_TitleMain_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_TitleMain_tl}{#2}
     }
 }
 \cs_new:Nn \UWMad_ListOf_SetTitleGroup:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_TitleGroup_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_TitleGroup_tl}{#2}
     }
 }
 \cs_new:Nn \UWMad_ListOf_SetTitleSubgroup:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_TitleSubgroup_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_TitleSubgroup_tl}{#2}
     }
 }
 \cs_new:Nn \UWMad_ListOf_GetTitleMain:n {
@@ -1327,17 +1357,17 @@
 }
 \cs_new:Nn \UWMad_ListOf_SetSectionMain:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_SectionMain_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_SectionMain_tl}{#2}
     }
 }
 \cs_new:Nn \UWMad_ListOf_SetSectionGroup:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_SectionGroup_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_SectionGroup_tl}{#2}
     }
 }
 \cs_new:Nn \UWMad_ListOf_SetSectionSubgroup:nn {
     \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_gset:cn {l__UWMad_ListOf#1_SectionSubgroup_tl}{#2}
+        \tl_set:cn {l__UWMad_ListOf#1_SectionSubgroup_tl}{#2}
     }
 }
 \cs_new:Nn \UWMad_ListOf_GetSectionMain:n {
@@ -1356,16 +1386,16 @@
     }
 }
 \cs_new:Nn \UWMad_ListOf_PushEntry:nn {
-    \UWMad_Queue_Push:nn{__ListOf#1-EntryQueue}{#2}
+    \UWMad_Queue_Push:nn{__ListOf#1_EntryQueue}{#2}
 }
 \cs_new:Nn \UWMad_ListOf_SetHook:nnn {
-    \UWMad_Hash_Set:nnn{__ListOf#1-Hook}{#2}{#3}
+    \UWMad_Hash_Set:nnn{__ListOf#1_Hook}{#2}{#3}
 }
 \cs_new:Nn \UWMad_ListOf_PrintEntries:n {
-    \UWMad_Hash_Get:nn   {__ListOf#1-Hook}{PrePrint}
-    \UWMad_Queue_Walk:nn {__ListOf#1-EntryQueue}{##1}
-    \UWMad_Queue_Clear:n {__ListOf#1-EntryQueue}
-    \UWMad_Hash_Get:nn   {__ListOf#1-Hook}{PostPrint}
+    \UWMad_Hash_Get:nn   {__ListOf#1_Hook}{PrePrint}
+    \UWMad_Queue_Walk:nn {__ListOf#1_EntryQueue}{##1}
+    \UWMad_Queue_Clear:n {__ListOf#1_EntryQueue}
+    \UWMad_Hash_Get:nn   {__ListOf#1_Hook}{PostPrint}
 }
 \cs_new:Nn \UWMad_ListOf_PrintTitle:nn {
     \UWMad_ListOf_IfNumbered:nTF {#1} {
@@ -1536,8 +1566,8 @@
                 \noexpand\ExplSyntaxOn
             }
             \iow_close:N \g__UWMad_PDFMetaData_HyperSetup_io
-        }
-    }
+        } { }
+    } { }
 }
 
 \tl_new:N \g__UWMad_ThesisInfo_Title_tl
@@ -1546,8 +1576,18 @@
 \tl_new:N \g__UWMad_ThesisInfo_Department_tl
 \tl_new:N \g__UWMad_ThesisInfo_Program_tl
 \tl_new:N \g__UWMad_ThesisInfo_Degree_tl
-\tl_new:N \g__UWMad_ThesisInfo_Advisor_tl
+\tl_new:N \g__UWMad_ThesisInfo_AdvisorName_tl
+\tl_new:N \g__UWMad_ThesisInfo_AdvisorPosition_tl
+\tl_new:N \g__UWMad_ThesisInfo_AdvisorAssociation_tl
+\tl_new:N \g__UWMad_ThesisInfo_AdvisorMarker_tl
 \tl_new:N \g__UWMad_ThesisInfo_Institution_tl
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Title_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Author_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_DefenseDate_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Program_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Institution_bool
+\bool_new:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
 \DeclareDocumentCommand \Title { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Title_tl {#1}
     \title{#1}
@@ -1555,6 +1595,7 @@
     \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
         \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
     } { }
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Title_bool
 }
 \DeclareDocumentCommand \Author { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Author_tl {#1}
@@ -1563,39 +1604,49 @@
     \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
         \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
     } { }
-}
-\DeclareDocumentCommand \DefenseDate { m } {
-    \tl_gset:Nn \g__UWMad_ThesisInfo_Date_tl {#1}
-}
-\cs_gset_eq:NN \Date \DefenseDate
-\DeclareDocumentCommand \Department { m } {
-    \tl_gset:Nn \g__UWMad_ThesisInfo_Department_tl {#1}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Author_bool
 }
 \DeclareDocumentCommand \Program { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Program_tl {#1}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Program_bool
 }
 \DeclareDocumentCommand \Degree { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {#1}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
 }
-\DeclareDocumentCommand \Advisor { m } {
-    \tl_gset:Nn \g__UWMad_ThesisInfo_Advisor_tl {#1}
+\DeclareDocumentCommand \DefenseDate { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DefenseDate_tl {#1}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_DefenseDate_bool
 }
+\cs_gset_eq:NN \DefenceDate \DefenseDate
+\cs_gset_eq:NN \Date        \DefenseDate
 \DeclareDocumentCommand \Institution { m } {
-    \tl_gset:Nn \g__UWMad_ThesisInfo_Institution_tl {#1}
+    \tl_gset:Nn       \g__UWMad_ThesisInfo_Institution_tl {#1}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Institution_bool
 }
 \cs_set_eq:NN \University \Institution
+\DeclareDocumentCommand \Department { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Department_tl {#1}
+}
+\DeclareDocumentCommand \Advisor { m m m } {
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Advisor}
+ }
+\DeclareDocumentCommand \Adviser { m m m } {
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Adviser}
+}
 \DeclareDocumentCommand \TheTitle { } {
     \g__UWMad_ThesisInfo_Title_tl
 }
 \DeclareDocumentCommand \TheAuthor { } {
     \g__UWMad_ThesisInfo_Author_tl
-}
-\DeclareDocumentCommand \TheDefenseDate { m } {
-    \g__UWMad_ThesisInfo_DefenseDate_tl
-}
-\cs_gset_eq:NN \TheDefenseDate \DefenseDate
-\DeclareDocumentCommand \TheDepartment { m } {
-    \g__UWMad_ThesisInfo_Department_tl
 }
 \DeclareDocumentCommand \TheProgram { m } {
     \g__UWMad_ThesisInfo_Program_tl
@@ -1603,13 +1654,39 @@
 \DeclareDocumentCommand \TheDegree { m } {
     \g__UWMad_ThesisInfo_Degree_tl
 }
-\DeclareDocumentCommand \TheAdvisor { m } {
-    \g__UWMad_ThesisInfo_Advisor_tl
+\DeclareDocumentCommand \TheDefenseDate { m } {
+    \g__UWMad_ThesisInfo_DefenseDate_tl
 }
+\cs_gset_eq:NN \TheDefenceDate \TheDefenseDate
+\cs_gset_eq:NN \TheDate        \TheDefenseDate
 \DeclareDocumentCommand \TheInstitution { m } {
     \g__UWMad_ThesisInfo_Institution_tl
 }
 \cs_set_eq:NN \TheUniversity \TheInstitution
+\DeclareDocumentCommand \TheDepartment { m } {
+    \g__UWMad_ThesisInfo_Department_tl
+}
+\DeclareDocumentCommand \TheAdvisor { m } {
+    \g__UWMad_ThesisInfo_AdvisorName_tl
+}
+\int_new:N \l__UWMad_ThesisInfo_CommitteeCount_int
+\UWMad_ListOf_Define:n {CommitteeList}
+\DeclareDocumentCommand \CommitteeMember { m m m } {
+    \int_incr:N \l__UWMad_ThesisInfo_CommitteeCount_int
+    \UWMad_ListOf_PushEntry:nn {CommitteeList} {
+        #1,~#2,~#3\skip_vertical:n{-1em}
+    }
+}
+\DeclareDocumentCommand \PrintCommitteeMemberList { } {
+    \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
+        \g__UWMad_ThesisInfo_AdvisorName_tl{},~
+        \g__UWMad_ThesisInfo_AdvisorPosition_tl{},~
+        \g__UWMad_ThesisInfo_AdvisorAssociation_tl{}~
+        (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
+        \skip_vertical:n{-1em}
+    } { }
+    \UWMad_ListOf_PrintEntries:n {CommitteeList}
+}
 \tl_new:N \g__UWMad_PDFMetaData_Subject_tl
 \tl_new:N \g__UWMad_PDFMetaData_Keywords_tl
 \tl_new:N \g__UWMad_PDFMetaData_Producer_tl
