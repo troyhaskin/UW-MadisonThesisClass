@@ -328,18 +328,29 @@ Some are new while others are simply in a camel-cased versions of the standard o
 \UWSubFeature{Nomenclature}
 \UWSubFeature{Acronym}
 
+\begin{Acronym}
+    \Entry{One}{Two}
+    \Entry{Three}{Two}
+    \Entry{Thirteen}{Two}
+\end{Acronym}
+
+\begin{Nomenclature}
+    \Entry{One}{Typesets the material in vertical mode constrained to the given width and stores the
+result in the hcoffin i. The standard poles for the hcoffin i are then set up based on the
+size of the typeset material. These functions are useful for setting the entire contents of
+an environment in a coffin.}
+    \Entry{Two}{Typesets the material in vertical mode constrained to the given width and stores the
+result in the hcoffin i. The standard poles for the hcoffin i are then set up based on the
+size of the typeset material. These functions are useful for setting the entire contents of
+an environment in a coffin.}
+\end{Nomenclature}
+
+\clearpage
+
+\Acro{Thirteen}
+
 
 \UWFeature{Thesis and PDF Information}
-
-\Advisor{Michael Corradini}{Professor} {Engineering Physics}
-\CommitteeMember{Christopher Rutland}{Professor} {Mechanical Engineering}
-\CommitteeMember{Robert Witt}{Professor}{Engineering Physics}
-\PrintCommitteeMemberList{}
-
-\Adviser{Michael Corradini}{Professor} {Engineering Physics}
-\CommitteeMember{Christopher Rutland}{Professor} {Mechanical Engineering}
-\CommitteeMember{Robert Witt}{Professor}{Engineering Physics}
-\PrintCommitteeMemberList{}
 
 \vskip3em
 In order for the \RefSubFeature{Title Page} to function properly, a certain amount of information about the thesis must be given.
@@ -371,8 +382,8 @@ If the commands are used within the |document| environment, it will require anot
     \end{function}
 
     \begin{function} {
-        \DefenceDate,
         \DefenseDate,
+        \DefenceDate,
         \Date
     }
         \begin{syntax}
