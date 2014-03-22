@@ -325,25 +325,233 @@ Some are new while others are simply in a camel-cased versions of the standard o
 
 
 \UWFeature{List Environments}
+
+The \UWMadClass{} has a special set of functions from creating list environments (called |ListOf| in the implementation).
+The functions use queues and associative arrays to store and use data before it is typeset.
+These data structures allow for operations to be carried out without writing external files or repeating compilation; of course, there is added memory usage which could lead to problems on older systems.
+
+The primary motivation for such a system was the creation of a nomenclature environment and, subsequently, an acronym environment/system.
+These two similar features are discussed here.
+
 \UWSubFeature{Nomenclature}
+The |Nomenclature| environment is, by default, a list of |(symbol, description)| entries.
+There is a user option for changing the system to a list of |(symbol, units, description)| entries if a separate unit column is desired.
+For every set of entries, the nomenclature system measures the width of the |symbol| and (if present) |units| to determine the maximum width of the |description| such that no text overflows into the margins of the page.
+
+When first adding entries to a nomenclature, the symbols are part of the so-called Main group.
+The Main group has a title and a section level associated with it.
+By default, the Main group title is ``Nomenclature'' and the section is ``chapter''.
+The entries can be put into two lower sectioned groups using the \cs{Group} and \cs{Subgroup} commands described below.
+The grouping commands allows a set of symbols to be classified as ``Greek Symbols'' while another is ``Subscripts''.
+The default titles for these lower groups are empty by default and the default section is ``section'' and ``subsection''.
+
+All of these defaults can be changed by the \cs{NomenclatureSetup} command described below.
+
+\UWSubSubFeature{Command Descriptions}
+
+A sketch of the |Nomenclature| implementation would be: \vskip-0.50em
+    \hspace{1em}|\begin{Nomenclature}|\oarg{section}\marg{title}    \vskip-0.25em
+    \hspace{3em}|\Entry|\marg{symbol}\marg{description}             \vskip-1em
+    \hspace{3em}|\Group|\marg{group title}                          \vskip-1em
+    \hspace{6em}|\Entry|\marg{symbol}\marg{description}             \vskip-1em
+    \hspace{6em}|\Subgroup|\marg{subgroup title}                    \vskip-1em
+    \hspace{9em}|\Entry|\marg{symbol}\marg{description}             \vskip-0.25em
+    \hspace{1em}|\end{Nomenclature}|                                \vskip-0.50em
+
+The square brace-delimited \oarg{section} is \textsc{optional} and overrides the default Main group section.
+The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the default Main group title.
+
+\begin{function}{\Entry}
+    \begin{syntax}
+        \cs{Entry}\marg{symbol}\marg{description}
+        \cs{Entry}\marg{symbol}\marg{units}\marg{description}
+    \end{syntax}
+    Within the environment, entries are added to the nomenclature using the \cs{Entry} command above.
+    All arguments are required.
+    The second version above is if a units column is requested (see \RefSubSubFeature{Customization}).
+\end{function}
+
+\begin{function}{\Group,\Subgroup}
+    \begin{syntax}
+        \cs{Group}\marg{group title}
+        \cs{Subgroup}\marg{subgroup title}
+    \end{syntax}
+    Creates a group or subgroup with the indicated title and using the default section.
+    The default section can be changed by the user (see \RefSubSubFeature{Customization}).
+\end{function}
+
+\UWSubSubFeature{Examples}
+As an example, the following input
+\begin{verbatim}
+    \begin{Nomenclature}[subsubsection]{Symbol Table}
+        \Entry{$\rho$}{Density}
+        \Entry{LongNotRealSymbol}{
+            In publishing and graphic design, lorem ipsum is a placeholder
+            text commonly used to demonstrate the graphic elements of a
+            document or visual presentation. By replacing the distraction
+            of meaningful content with filler text of scrambled Latin it
+            allows viewers to focus on graphical elements such as font,
+            typography, and layout.}
+        \Entry{$\mu$}{Viscosity}
+    \end{Nomenclature}
+\end{verbatim}
+would be typeset as:
+
+\setcounter{section}{1}
+\NomenclatureSetup{include-in-toc = false}
+
+\rule{\textwidth}{0.1em}
+    \begin{Nomenclature}[subsection]{Symbol Table}
+        \Entry{$\rho$}{Density}
+        \Entry{LongNotRealSymbol}{
+            In publishing and graphic design, lorem ipsum is a placeholder
+            text commonly used to demonstrate the graphic elements of a
+            document or visual presentation. By replacing the distraction
+            of meaningful content with filler text of scrambled Latin it
+            allows viewers to focus on graphical elements such as font,
+            typography, and layout.}
+        \Entry{$\mu$}{Viscosity}
+    \end{Nomenclature}
+\rule{\textwidth}{0.1em}
+As can be seen, the symbol column is as wide as the widest symbol (plus some padding) and lengthy text can be put into the description without penalty.
+Of course, this example is purposefully extreme.
+We can tweak the example a bit more by putting the second two items under a group:
+
+\rule{\textwidth}{0.1em}
+    \begin{Nomenclature}[subsection]{Symbol Table}
+        \Entry{$\rho$}{Density}
+
+        \Group{Group 1 Title}
+        \Entry{LongNotRealSymbol}{
+            In publishing and graphic design, lorem ipsum is a placeholder
+            text commonly used to demonstrate the graphic elements of a
+            document or visual presentation. By replacing the distraction
+            of meaningful content with filler text of scrambled Latin it
+            allows viewers to focus on graphical elements such as font,
+            typography, and layout.}
+        \Entry{$\mu$}{Viscosity}
+    \end{Nomenclature}
+\rule{\textwidth}{0.1em}
+By default, the section level used by \cs{Group} is one below that of the main nomenclature section; therefore, since the nomenclature's section level is defined as |subsection|, the \cs{Group} is a |subsubsection|.
+Not shown: using \cs{Subgroup} would typeset the title as a |paragraph| in this example.
+
+\UWSubSubFeature{Customization}
+
+As mentioned, there are several options available to the user for customizing the nomenclature.
+These options are set by giving a comma-separate list of key-value pairs to the function \cs{NomenclatureSetup}
+
+\begin{function}{\NomenclatureSetup}
+    \begin{syntax}
+        \cs{NomenclatureSetup}\marg{key-value CSV}
+    \end{syntax}
+    The format is more appropriately shown as
+    \begin{verbatim}
+        \NomenclatureSetup {
+            key-one = option,
+            key-two = {option two},
+            ...
+            key-n =  {option n},
+        }
+    \end{verbatim}
+    A table of the keys, meaning, defaults, and allow value is given in \cref{Table:NomenclatureKeyValue}.
+\end{function}
+
+\clearpage
 \UWSubFeature{Acronym}
 
-\begin{Acronym}[section]
-    \Entry{One}{Two}
-    \Entry{Three}{Two}
-    \Entry{Thirteen}{Two}
-\end{Acronym}
+\UWSubSubFeature{Description}
+The |Acronym| environment is a specialized extension of the |Nomenclature| environment.
+It has the same basic syntax, but a |units| column is not supported.
+Also, instead of \cs{Entry} taking |(symbol, description)| pairs, it takes |(acronym,meaning)| pairs.
+Lastly, it comes equipped with a new command: \cs{Acro}.
 
-\begin{Nomenclature}[section]
-    \Entry{One}{Typesets the material in vertical mode constrained to the given width and stores the
-result in the hcoffin i. The standard poles for the hcoffin i are then set up based on the
-size of the typeset material. These functions are useful for setting the entire contents of
-an environment in a coffin.}
-    \Entry{Two}{Typesets the material in vertical mode constrained to the given width and stores the
-result in the hcoffin i. The standard poles for the hcoffin i are then set up based on the
-size of the typeset material. These functions are useful for setting the entire contents of
-an environment in a coffin.}
-\end{Nomenclature}
+\begin{function}{\Acro}
+    \begin{syntax}
+        \cs{Acro}\marg{acronym}
+    \end{syntax}
+    \cs{Acro} is meant to be used throughout the document to reference back to the |Acronym| environment where it was defined.
+    If an |Acronym| environment contains the line |\Entry{TBD}{To be determined}|, the first usage of |\Arco{TBD}| will be typeset as `To be determined (TBD)' while subsequent uses will simply be `TBD'.
+    Also, if links are not turned off (they are on by default), the acronym will be a link back to the original environment entry.
+\end{function}
+
+\begin{function}{\AcronymSetup}
+    \begin{syntax}
+        \cs{AcronymSetup}\marg{key-value CSV}
+    \end{syntax}
+    An exact copy of \cs{NomenclatureSetup}.
+\end{function}
+
+\UWSubSubFeature{Example}
+The following input
+\begin{verbatim}
+    \AcronymSetup {
+        main-section  = section,
+        main-title = {Acronym Table},
+        entry-padding = 1in
+    }
+    \begin{Acronym}
+        \Entry{RCCS}{Reactor Cavity Cooling System}
+        \Entry{NRC}{Nuclear Regulatory Commission}
+    \end{Acronym}
+\end{verbatim}
+is typeset as
+
+\clearpage
+
+\rule{\textwidth}{0.1em}
+    \AcronymSetup {
+        main-section  = section,
+        main-title = {Acronym Table},
+        entry-padding = 1in
+    }
+    \begin{Acronym}
+        \Entry{RCCS}{Reactor Cavity Cooling System}
+        \Entry{NRC}{Nuclear Regulatory Commission}
+    \end{Acronym}
+\rule{\textwidth}{0.1em}
+
+The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
+
+\begin{table}[H]
+\begin{center}
+    \caption{List of key-value pairs for Nomenclature customization.}
+    \label{Table:NomenclatureKeyValue}
+    \begin{tabular}{c c c c}
+        \toprule
+        Key & Meaning & Default & Allow value \\
+        \midrule
+        title-skip          & Vertical space following the printed title     & 0pt          & dimension \\[10pt]
+        print-skip          & Vertical space following a printing of entries & 1em          & dimension \\[10pt]
+        entry-margin-left   & Horizontal margin left of an entry             & 1em          & dimension \\[10pt]
+        entry-margin-bottom & Vertical margin below a printed entry          & 0.25em       & dimension \\[10pt]
+        entry-padding       & Horizontal space between columns               & 0.75em       & dimension \\[10pt]
+        main-section        & Section level for Main group                   & chapter      & section \\[10pt]
+        group-section       & Section level for \cs{Group} command           & section      & section \\[10pt]
+        subgroup-section    & Section level for \cs{Subgroup} command        & subsection   &  section \\[10pt]
+        main-title          & Title for the nomenclature                     & Nomenclature & any text \\[10pt]
+        group-title         & Title for the \cs{Group} command               & ---          & any text \\[10pt]
+        subgroup-title      & Title for the \cs{Subgroup} command            & ---          &  any text \\[10pt]
+        include-in-toc      & Include the nomenclature in the TOC            & true         & boolean \\[10pt]
+        with-units          & Include a units column                         & false        & boolean \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[H]
+\begin{center}
+    \caption{Additional key-value pairs for Acronym environment.}
+    \label{Table:AcronymKeyValue}
+    \begin{tabular}{c c c c}
+        \toprule
+        Key & Meaning & Default & Allow value \\
+        \midrule
+        use-links           & Create hyperlink to Acronym entry  & true & boolean \\[10pt]
+        link-color          & Color of hyperlink text            & blue & color   \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+\end{table}
 
 
 \UWFeature{Thesis and PDF Information}
