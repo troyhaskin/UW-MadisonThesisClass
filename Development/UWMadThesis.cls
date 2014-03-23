@@ -86,15 +86,6 @@
 \ExecuteOptions{oneside,12pt}
 \ProcessOptions\relax
 \LoadClass{\g_UWMad_ParentClass_tl}[1995/12/01]
-\bool_if:NTF \g__UWMad_Hyperlinks_bool {
-    \RequirePackage{hyperref}
-    \RequirePackage{bookmark}
-} {
-    \DeclareDocumentCommand \href { o m m } {
-        #3
-    }
-    \cs_gset_eq:NN \phantomsection \relax
-}
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
 \RequirePackage{array}
@@ -111,6 +102,15 @@
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
 \RequirePackage{subfig}
 \RequirePackage{caption}
+\bool_if:NTF \g__UWMad_Hyperlinks_bool {
+    \RequirePackage{hyperref}
+    \RequirePackage{bookmark}
+} {
+    \DeclareDocumentCommand \href { o m m } {
+        #3
+    }
+    \cs_gset_eq:NN \phantomsection \relax
+}
 \msg_new:nnn {UWMadThesis} {Programming/UnregisteredVariable} {
     `#1'~is~not~a~registered~#2.~~The~#2~must~be~defined~
     before~usage~by~the~function~\string\UWMad_#2_DefineLocal:n~or~
@@ -2048,12 +2048,55 @@
 
 \show\title
 
-\newcommand{\AllRightsReserved}{
-    \large
-    \copyright{} Copyright by \TheLicenseAuthor(\the\year)\\
-    All Rights Reserved
+\DeclareDocumentEnvironment {LicensePage} { } {
+    \tl_new:N  \g__UWMad_LicensePage_Year_tl
+    \tl_new:N  \g__UWMad_LicensePage_Owner_tl
+    \tl_gset:Nn \g__UWMad_LicensePage_Owner_tl {
+        \g__UWMad_ThesisInfo_Author_tl
+    }
+    \tl_gset:Nn \g__UWMad_LicensePage_Year_tl {
+        \the\year
+    }
+    \DeclareDocumentCommand \LicenseOwner { m } {
+        \tl_gset:Nn \g__UWMad_LicensePage_Owner_tl {
+            ##1
+        }
+    }
+    \DeclareDocumentCommand \TheLicenseOwner { } {
+        \g__UWMad_LicensePage_Owner_tl
+    }
+    \DeclareDocumentCommand \LicenseYear { m } {
+        \tl_gset:Nn \g__UWMad_LicensePage_Year_tl {
+            ##1
+        }
+    }
+    \DeclareDocumentCommand \TheLicenseYear { } {
+        \g__UWMad_LicensePage_Year_tl
+    }
+\bool_new:N   \l__UWMad_Copyright_UseCopyright_bool
+\cs_new_eq:NN \CopyrightSymbol \copyright
+
+\cs_new:Nn \__UWMad_Copyright_PrintPage: {
+    \clearpage
+    \thispagestyle{empty}
+    \tex_hbox:D{}
+    \tex_vfill:D
+    \phantomsection
+    \addcontentsline {toc} {chapter} {License}
+    \begin{center}
+        \Large
+        Copyright~\CopyrightSymbol{}~
+        \g__UWMad_LicensePage_Year_tl{}~
+        by~
+        g__UWMad_LicensePage_Owner_tl{}
+    \end{center}
 }
-\cs_gset_eq:NN \Copyright \AllRightsReserved
+
+\DeclareDocumentCommand \Copyright { } {
+    \bool_set_true:N \l__UWMad_Copyright_UseCopyright_bool
+}
+\cs_gset_eq:NN \AllRightsReserved \Copyright
+
 \tl_new:N    \g__UWMad_CCLicense_Porting_tl
 \tl_new:N    \g__UWMad_CCLicense_Version_tl
 \tl_new:N    \g__UWMad_CCLicense_TypeAbbreviation_tl
@@ -2062,7 +2105,6 @@
 \tl_new:N    \g__UWMad_CCLicense_URL_Middle_tl
 \tl_new:N    \g__UWMad_CCLicense_URL_Back_tl
 \tl_new:N    \g__UWMad_CCLicense_URL_tl
-\tl_const:Nn \g__UWMad_CCLicense_Valid_Prefix {__UWMad_CCLicense_Valid_}
 \bool_new:N \g__UWMad_CCLicense_UseCreativeCommons_bool
 \bool_new:N \g__UWMad_CCLicense_UseAttribution_bool
 \bool_new:N \g__UWMad_CCLicense_UseShareAlike_bool
@@ -2070,12 +2112,12 @@
 \bool_new:N \g__UWMad_CCLicense_UseNonCommercial_bool
 \bool_new:N \g__UWMad_CCLicense_IsValid_bool
 \bool_gset_true:N \g__UWMad_CCLicense_UseAttribution_bool
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by :}      {}
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-sa :}   {}
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nd :}   {}
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc :}   {}
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc-sa :}{}
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc-nd :}{}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by :}      {}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by-sa :}   {}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nd :}   {}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc :}   {}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc-sa :}{}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc-nd :}{}
 \tl_gset:Nn \g__UWMad_CCLicense_Porting_tl {
     International
 }
@@ -2145,7 +2187,7 @@
 }
 \cs_new:Nn \__UWMad_CCLicense_CheckTypeValidity: {
     \cs_if_exist:cTF {
-        \g__UWMad_CCLicense_Valid_Prefix
+        g__UWMad_CCLicense_Valid_
         \g__UWMad_CCLicense_TypeAbbreviation_tl :
     } {
 
@@ -2166,23 +2208,12 @@
     {
         \clearpage
         \thispagestyle{empty}
-        \null
+        \tex_hbox:D{}
         \tex_vfill:D
         \phantomsection
         \addcontentsline {toc} {chapter} {License}
         \begin{center}
             \Large
-            \iffalse
-            This~work~is~released~under~a~
-            Creative~Commons~
-            \g__UWMad_CCLicense_TypeWords_tl{}~
-            \g__UWMad_CCLicense_Version_tl{}~
-            \g__UWMad_CCLicense_Porting_tl{}~
-            license.\\[0.1em]
-
-            (\g__UWMad_CCLicense_URL_tl{})
-            \fi
-
             This~work~is~released~under~a~
             \href {\g__UWMad_CCLicense_URL_tl} {
                 Creative~Commons~
@@ -2191,8 +2222,8 @@
                 \g__UWMad_CCLicense_Porting_tl{}
             }~
             license.\\[0.1em]
-
-            (\g__UWMad_CCLicense_URL_tl{}/)
+            \g__UWMad_LicensePage_Owner_tl{},~
+            \g__UWMad_LicensePage_Year_tl{}
         \end{center}
     }
 }
@@ -2208,7 +2239,7 @@
 \DeclareDocumentCommand \NoDerivatives { } {
     \bool_gset_true:N \g__UWMad_CCLicense_UseNoDerivatives_bool
 }
-\DeclareDocumentEnvironment {LicensePage} { } { } {
+} {
 
     \bool_if:NTF \g__UWMad_CCLicense_UseCreativeCommons_bool {
         \__UWMad_CCLicense_CreateType:
@@ -2218,6 +2249,9 @@
         } { }
     } { }
 
-}
+    \bool_if:NTF \g__UWMad_Copyright_UseCopyright_bool {
+        \__UWMad_Copyright_PrintPage:
+    } { }
 
+}
 \ExplSyntaxOff

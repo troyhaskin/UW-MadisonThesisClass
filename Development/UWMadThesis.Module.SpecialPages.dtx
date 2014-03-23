@@ -12,6 +12,61 @@ The formatting of the commands is standard \LaTeXe{} to facilitate customization
 
 \UWSubFeature{License Page}
 
+There are two main licenses \UWMadClass{} supports: Copyright and Creative Commons.
+If an author wishes to use these supported licenses to create a license page, all of the commands listed must be placed within a |LicensePage| environment, or the commands will not work (by design).
+
+To declare a simple Copyright input
+\begin{verbatim}
+    \begin{LicensePage}
+        \Copyright
+    \end{LicensePage}
+\end{verbatim}
+To declare a simple Creative Commons input
+\begin{verbatim}
+    \begin{LicensePage}
+        \CreativeCommons
+    \end{LicensePage}
+\end{verbatim}
+There are more features for the Creative Commons license and are discussed below.
+
+The above examples will automatically create a page using default values for license owner (the \RefSubFeature[thesis author]{Required}), year (the current year), and license specifics (outlined below).
+If either is incorrect for the current usage, use the following commands:
+\begin{function} {
+        \LicenseOwner,
+        \LicenseYear
+}
+    \begin{syntax}
+        \vspace*{3pt}
+        \setstretch{1.30}
+        \cs{LicenseOwner} \marg{owner name}
+        \cs{LicenseYear}  \marg{year}
+    \end{syntax}
+    These commands override the default values with the supplied, mandatory argument.
+\end{function}
+
+\UWSubSubFeature{Copyright}
+The Copyright Act of 1976 (\href{http://www.copyright.gov/title17}{Title 17 of the United States Code}, section 106) lists the following six exclusive rights the owner of copyright and any other sanctioned parties have:
+\begin{enumerate}
+    \item{to reproduce the copyrighted work in copies or phonorecords}
+    \item{to prepare derivative works based upon the copyrighted work}
+    \item{  to distribute copies or phonorecords of the copyrighted work to the public by sale or other transfer of ownership, or by rental, lease, or lending}
+    \item{in the case of literary, musical, dramatic, and choreographic works, pantomimes, and motion pictures and other audiovisual works, to perform the copyrighted work publicly}
+    \item{in the case of literary, musical, dramatic, and choreographic works, pantomimes, and pictorial, graphic, or sculptural works, including the individual images of a motion picture or other audiovisual work, to display the copyrighted work publicly}
+    \item{in the case of sound recordings, to perform the copyrighted work publicly by means of a digital audio transmission}
+\end{enumerate}
+There are a number of exceptions and limitations to these rights as outlined by subsequent sections (Title 17 of the United States Code, sections 107 -- 122), but these will not be discussed.
+Under section 302 of the Copyright Act, the exclusive rights granted to a singular author of a work persist for 70 years following her death.
+
+Section 401 of the Copyright Act requires a Form of Notice of copyright.
+It consists of the elements: the copyright symbol \copyright{} (or the word ``Copyright''), the year of first publication (with more requirements for derivative works), and the name of the owner of the copyright (or some other designation).
+All works containing this notice of copyright fall under the protection of the Copyright Law of the United States.
+
+Section 408 of the Copyright Act states: for any work produced after 1978, ``the owner of copyright or of any exclusive right in the work may obtain registration of the copyright claim by delivering to the Copyright Office the deposit specified by this section, together with the application and fee''.
+In others words, a copy of the work can be submitted to the Copyright Office and subsequently placed in the Library of Congress for official recognition of copyright.
+However, registration is not compulsory since ``[s]uch registration is not a condition of copyright protection''.
+
+\UWSubSubFeature{Creative Commons}
+
 \begin{LicensePage}
     \CreativeCommons
     \NonCommercial
@@ -103,24 +158,78 @@ The formatting of the commands is standard \LaTeXe{} to facilitate customization
 
 
 
-
-
-
+%    \end{macrocode}
+%   \UWSubModule{LicensePage}
+%    \begin{macrocode}
 %^^A ====================================================================== %
 %^^A                            License Page                                %
 %^^A ====================================================================== %
+\DeclareDocumentEnvironment {LicensePage} { } {
 %
-% Full Copyright
-\newcommand{\AllRightsReserved}{
-    \large
-    \copyright{} Copyright by \TheLicenseAuthor(\the\year)\\
-    All Rights Reserved
+    \tl_new:N  \g__UWMad_LicensePage_Year_tl
+    \tl_new:N  \g__UWMad_LicensePage_Owner_tl
+%
+    \tl_gset:Nn \g__UWMad_LicensePage_Owner_tl {
+        \g__UWMad_ThesisInfo_Author_tl
+    }
+    \tl_gset:Nn \g__UWMad_LicensePage_Year_tl {
+        \the\year
+    }
+%
+    \DeclareDocumentCommand \LicenseOwner { m } {
+        \tl_gset:Nn \g__UWMad_LicensePage_Owner_tl {
+            ##1
+        }
+    }
+    \DeclareDocumentCommand \TheLicenseOwner { } {
+        \g__UWMad_LicensePage_Owner_tl
+    }
+%
+    \DeclareDocumentCommand \LicenseYear { m } {
+        \tl_gset:Nn \g__UWMad_LicensePage_Year_tl {
+            ##1
+        }
+    }
+    \DeclareDocumentCommand \TheLicenseYear { } {
+        \g__UWMad_LicensePage_Year_tl
+    }
+%
+%
+%
+%
+%    \end{macrocode}
+%   \UWSubSubModule{Copyright}
+%    \begin{macrocode}
+\bool_new:N   \l__UWMad_Copyright_UseCopyright_bool
+\cs_new_eq:NN \CopyrightSymbol \copyright
+
+\cs_new:Nn \__UWMad_Copyright_PrintPage: {
+    \clearpage
+    \thispagestyle{empty}
+    \tex_hbox:D{}
+    \tex_vfill:D
+    \phantomsection
+    \addcontentsline {toc} {chapter} {License}
+    \begin{center}
+        \Large
+        Copyright~\CopyrightSymbol{}~
+        \g__UWMad_LicensePage_Year_tl{}~
+        by~
+        g__UWMad_LicensePage_Owner_tl{}
+    \end{center}
 }
-\cs_gset_eq:NN \Copyright \AllRightsReserved
+
+\DeclareDocumentCommand \Copyright { } {
+    \bool_set_true:N \l__UWMad_Copyright_UseCopyright_bool
+}
+\cs_gset_eq:NN \AllRightsReserved \Copyright
+
 %
 %
 %
-%
+%    \end{macrocode}
+%   \UWSubSubModule{Creative Commons}
+%    \begin{macrocode}
 %
 %^^A ====================================================================== %
 %^^A                       Creative Commons Licenses                        %
@@ -135,7 +244,6 @@ The formatting of the commands is standard \LaTeXe{} to facilitate customization
 \tl_new:N    \g__UWMad_CCLicense_URL_Middle_tl
 \tl_new:N    \g__UWMad_CCLicense_URL_Back_tl
 \tl_new:N    \g__UWMad_CCLicense_URL_tl
-\tl_const:Nn \g__UWMad_CCLicense_Valid_Prefix {__UWMad_CCLicense_Valid_}
 %
 %   Booleans
 \bool_new:N \g__UWMad_CCLicense_UseCreativeCommons_bool
@@ -147,12 +255,12 @@ The formatting of the commands is standard \LaTeXe{} to facilitate customization
 \bool_gset_true:N \g__UWMad_CCLicense_UseAttribution_bool
 %
 %   Valid license types
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by :}      {}
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-sa :}   {}
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nd :}   {}
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc :}   {}
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc-sa :}{}
-\cs_new:cn {\g__UWMad_CCLicense_Valid_Prefix by-nc-nd :}{}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by :}      {}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by-sa :}   {}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nd :}   {}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc :}   {}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc-sa :}{}
+\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc-nd :}{}
 %
 %   Defaults
 \tl_gset:Nn \g__UWMad_CCLicense_Porting_tl {
@@ -234,7 +342,7 @@ The formatting of the commands is standard \LaTeXe{} to facilitate customization
 %   Type Validator
 \cs_new:Nn \__UWMad_CCLicense_CheckTypeValidity: {
     \cs_if_exist:cTF {
-        \g__UWMad_CCLicense_Valid_Prefix 
+        g__UWMad_CCLicense_Valid_ 
         \g__UWMad_CCLicense_TypeAbbreviation_tl :
     } {
 
@@ -259,23 +367,12 @@ The formatting of the commands is standard \LaTeXe{} to facilitate customization
     {
         \clearpage
         \thispagestyle{empty}
-        \null
+        \tex_hbox:D{}
         \tex_vfill:D
         \phantomsection
         \addcontentsline {toc} {chapter} {License}
         \begin{center}
             \Large
-            \iffalse
-            This~work~is~released~under~a~
-            Creative~Commons~
-            \g__UWMad_CCLicense_TypeWords_tl{}~
-            \g__UWMad_CCLicense_Version_tl{}~
-            \g__UWMad_CCLicense_Porting_tl{}~
-            license.\\[0.1em]
-
-            (\g__UWMad_CCLicense_URL_tl{})
-            \fi
-            
             This~work~is~released~under~a~
             \href {\g__UWMad_CCLicense_URL_tl} {
                 Creative~Commons~
@@ -284,8 +381,8 @@ The formatting of the commands is standard \LaTeXe{} to facilitate customization
                 \g__UWMad_CCLicense_Porting_tl{}
             }~
             license.\\[0.1em]
-
-            (\g__UWMad_CCLicense_URL_tl{}/)
+            \g__UWMad_LicensePage_Owner_tl{},~
+            \g__UWMad_LicensePage_Year_tl{}
         \end{center}
     }
 }
@@ -309,10 +406,7 @@ The formatting of the commands is standard \LaTeXe{} to facilitate customization
 %
 %
 %
-%^^A ====================================================================== %
-%^^A                        License Page environment                        %
-%^^A ====================================================================== %
-\DeclareDocumentEnvironment {LicensePage} { } { } {
+} {
 
     \bool_if:NTF \g__UWMad_CCLicense_UseCreativeCommons_bool {
         \__UWMad_CCLicense_CreateType:
@@ -322,11 +416,13 @@ The formatting of the commands is standard \LaTeXe{} to facilitate customization
         } { }
     } { }
 
-}
+    \bool_if:NTF \g__UWMad_Copyright_UseCopyright_bool {
+        \__UWMad_Copyright_PrintPage:
+    } { }
 
+}
+%
 %    \end{macrocode}
-%
-%
 %
 %   \iffalse
 %</Code>

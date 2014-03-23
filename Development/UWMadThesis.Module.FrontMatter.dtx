@@ -200,21 +200,6 @@
 %   \UWSubModule{Package Loads}
 %   Load some packages that give nice features and are not
 %   hyperlink sensitive.
-%
-%   If links were not negated by the options, \pkg{bookmark} and 
-%   \pkg{hyperref} are loaded.
-%    \begin{macrocode}
-\bool_if:NTF \g__UWMad_Hyperlinks_bool {
-    \RequirePackage{hyperref}
-    \RequirePackage{bookmark}
-} {
-    \DeclareDocumentCommand \href { o m m } {
-        #3
-    }
-    \cs_gset_eq:NN \phantomsection \relax
-}
-%    \end{macrocode}
-%
 %    \begin{macrocode}
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
@@ -223,6 +208,7 @@
 \RequirePackage{setspace}
 \RequirePackage{geometry}
 %    \end{macrocode}
+%
 %
 %   If math was not negated by options, the \AmS{} suite is loaded.
 %    \begin{macrocode}
@@ -241,6 +227,21 @@
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
 \RequirePackage{subfig}
 \RequirePackage{caption}
+%    \end{macrocode}
+%
+%
+%   If links were not negated by the options, \pkg{bookmark} and 
+%   \pkg{hyperref} are loaded.
+%    \begin{macrocode}
+\bool_if:NTF \g__UWMad_Hyperlinks_bool {
+    \RequirePackage{hyperref}
+    \RequirePackage{bookmark}
+} {
+    \DeclareDocumentCommand \href { o m m } {
+        #3
+    }
+    \cs_gset_eq:NN \phantomsection \relax
+}
 %    \end{macrocode}
 %
 %   \iffalse

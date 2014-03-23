@@ -685,6 +685,61 @@ The formatting of the commands is standard \LaTeXe{} to facilitate customization
 
 \UWSubFeature{License Page}
 
+There are two main licenses \UWMadClass{} supports: Copyright and Creative Commons.
+If an author wishes to use these supported licenses to create a license page, all of the commands listed must be placed within a |LicensePage| environment, or the commands will not work (by design).
+
+To declare a simple Copyright input
+\begin{verbatim}
+    \begin{LicensePage}
+        \Copyright
+    \end{LicensePage}
+\end{verbatim}
+To declare a simple Creative Commons input
+\begin{verbatim}
+    \begin{LicensePage}
+        \CreativeCommons
+    \end{LicensePage}
+\end{verbatim}
+There are more features for the Creative Commons license and are discussed below.
+
+The above examples will automatically create a page using default values for license owner (the \RefSubFeature[thesis author]{Required}), year (the current year), and license specifics (outlined below).
+If either is incorrect for the current usage, use the following commands:
+\begin{function} {
+        \LicenseOwner,
+        \LicenseYear
+}
+    \begin{syntax}
+        \vspace*{3pt}
+        \setstretch{1.30}
+        \cs{LicenseOwner} \marg{owner name}
+        \cs{LicenseYear}  \marg{year}
+    \end{syntax}
+    These commands override the default values with the supplied, mandatory argument.
+\end{function}
+
+\UWSubSubFeature{Copyright}
+The Copyright Act of 1976 (\href{http://www.copyright.gov/title17}{Title 17 of the United States Code}, section 106) lists the following six exclusive rights the owner of copyright and any other sanctioned parties have:
+\begin{enumerate}
+    \item{to reproduce the copyrighted work in copies or phonorecords}
+    \item{to prepare derivative works based upon the copyrighted work}
+    \item{  to distribute copies or phonorecords of the copyrighted work to the public by sale or other transfer of ownership, or by rental, lease, or lending}
+    \item{in the case of literary, musical, dramatic, and choreographic works, pantomimes, and motion pictures and other audiovisual works, to perform the copyrighted work publicly}
+    \item{in the case of literary, musical, dramatic, and choreographic works, pantomimes, and pictorial, graphic, or sculptural works, including the individual images of a motion picture or other audiovisual work, to display the copyrighted work publicly}
+    \item{in the case of sound recordings, to perform the copyrighted work publicly by means of a digital audio transmission}
+\end{enumerate}
+There are a number of exceptions and limitations to these rights as outlined by subsequent sections (Title 17 of the United States Code, sections 107 -- 122), but these will not be discussed.
+Under section 302 of the Copyright Act, the exclusive rights granted to a singular author of a work persist for 70 years following her death.
+
+Section 401 of the Copyright Act requires a Form of Notice of copyright.
+It consists of the elements: the copyright symbol \copyright{} (or the word ``Copyright''), the year of first publication (with more requirements for derivative works), and the name of the owner of the copyright (or some other designation).
+All works containing this notice of copyright fall under the protection of the Copyright Law of the United States.
+
+Section 408 of the Copyright Act states: for any work produced after 1978, ``the owner of copyright or of any exclusive right in the work may obtain registration of the copyright claim by delivering to the Copyright Office the deposit specified by this section, together with the application and fee''.
+In others words, a copy of the work can be submitted to the Copyright Office and subsequently placed in the Library of Congress for official recognition of copyright.
+However, registration is not compulsory since ``[s]uch registration is not a condition of copyright protection''.
+
+\UWSubSubFeature{Creative Commons}
+
 \begin{LicensePage}
     \CreativeCommons
     \NonCommercial
