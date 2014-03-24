@@ -2,7 +2,6 @@
 
 \UWFeature{Thesis and PDF Information}
 
-\vskip3em
 In order for the \RefSubFeature{Title Page} to function properly, a certain amount of information about the thesis must be given.
 The \UWMadClass{} has a set of commands to provide both the thesis information and PDF metadata to \LaTeX{}.
 
@@ -20,8 +19,6 @@ If the commands are used within the |document| environment, it will require anot
         \Degree
     }
         \begin{syntax}
-            \vspace*{3pt}
-            \setstretch{1.30}
             \cs{Title}   \marg{title}
             \cs{Author}  \marg{author name}
             \cs{Program} \marg{program}
@@ -33,15 +30,11 @@ If the commands are used within the |document| environment, it will require anot
 
     \begin{function} {
         \DefenseDate,
-        \DefenceDate,
-        \Date
+        \DefenceDate
     }
         \begin{syntax}
-            \vspace*{3pt}
-            \setstretch{1.30}
             \cs{DefenseDate} \marg{defense date}
             \cs{DefenceDate} \marg{defense date}
-            \cs{Date}        \marg{defense date}
         \end{syntax}
         Only one of these commands is needed since they all point to the same variable \marg{defense date}.
         The aliases were created for personal preference only.
@@ -54,8 +47,6 @@ If the commands are used within the |document| environment, it will require anot
         \University
     }
         \begin{syntax}
-            \vspace*{3pt}
-            \setstretch{1.30}
             \cs{Institution} \marg{institution name}
             \cs{University}  \marg{institution name}
         \end{syntax}
@@ -65,8 +56,6 @@ If the commands are used within the |document| environment, it will require anot
 
     \begin{function} {\CommitteeMember}
         \begin{syntax}
-            \vspace*{3pt}
-            \setstretch{1.30}
             \cs{CommitteeMember} \marg{member name} \marg{member position}
         \end{syntax}
         \cs{CommitteeMember} can be used as many times as required.
@@ -85,8 +74,6 @@ It is encouraged to use these commands in the preamble of the document.
     \Adviser
     }
     \begin{syntax}
-        \vspace*{3pt}
-        \setstretch{1.305}
         \cs{Advisor} \marg{advisor name} \marg{advisor position}
         \cs{Adviser} \marg{advisor name} \marg{advisor position}
     \end{syntax}
@@ -102,11 +89,12 @@ It is encouraged to use these commands in the preamble of the document.
     \Keywords
     }
     \begin{syntax}
-        \vspace*{3pt}
-        \setstretch{1.305}
         \cs{Subject}  \marg{document subject}
         \cs{Keywords} \marg{list of keywords}
     \end{syntax}
+    These commands set the subject and keyword portions of the PDF metadata.
+    The \marg{document subject} is typically a one-ish line description of the document.
+    The \marg{list of keywords} can be a long, punctuation-delimited list (e.g., comma or semicolon) of keywords.
 \end{function}
 
 
@@ -116,11 +104,24 @@ It is encouraged to use these commands in the preamble of the document.
     \Creator
     }
     \begin{syntax}
-        \vspace*{3pt}
-        \setstretch{1.305}
         \cs{Producer} \marg{pdf producer}
         \cs{Creator}  \marg{pdf creator}
     \end{syntax}
+    These commands set the PDF Producer and PDF Creator fields of the metadata.
+    These fields are a little confusing in their intended usage.
+    The best explanation found is
+    \begin{description}
+        \item[Creator]  {The application used to create the original document which became the PDF.}
+        \item[Producer] {The application used to convert the original document into the PDF.}
+    \end{description}
+    These are very thin distinctions and complicated by the typical workflow of a \LaTeX{} document: installing a \TeX{} distribution, editing a text file in \TeX{}/\LaTeX{} editor, and running the document through a \TeX{} engine with the \LaTeX{} format.
+    In order to give credit at all levels (while maintaining proper separation of the processes involved), it is recommended to state the editor and \TeX{} format used as the creator and state the engine and distribution used as the creator.
+    For example, this document would declare the following:
+    \begin{verbatim}
+        \Creator{TeXnicCenter 2.02, LaTeX2e+}
+        \Producer{pdfTeX 1.40.14, MiKTeX 2.9}
+    \end{verbatim}
+    But as stated before, this is all optional.
 \end{function}
 
 

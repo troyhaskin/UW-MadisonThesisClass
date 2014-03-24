@@ -98,7 +98,7 @@
     \RequirePackage{amssymb}
     \RequirePackage{mathtools}
 } { }
-\RequirePackage[noabbrev]{cleveref}
+\RequirePackage[noabbrev,nameinlink]{cleveref}
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
 \RequirePackage{subfig}
 \RequirePackage{caption}
@@ -146,6 +146,11 @@
     \cs_gset:cn    {\string#1:}         {\cs:w\string#1-Default:\cs_end: #2}
     \cs_undefine:N  #1
     \cs_new_eq:Nc   #1          {\string#1:}
+}
+\UWMad_Hook_Prepend:Nn \@verbatim {
+    \setlength{\topsep}{0pt}
+    \setlength{\partopsep}{0pt}
+    \setstretch{0.90}
 }
 \cs_new:Nn \__UWMad_Definition_Swap:Nn {
     \cs_new_eq:cN  {\string#1-Default:}  #1
@@ -2032,6 +2037,10 @@
     \textsc{\TheInstitution{}}
 }
 
+\DeclareDocumentCommand \TitlePageDefenseDate { } {
+    Date of final oral examination:~\TheDefenseDate{}
+}
+
 \DeclareDocumentCommand \MakeTitlePage { } {
     \thispagestyle{empty}
     \begin{center}
@@ -2042,144 +2051,131 @@
         \TitlePageProgram{}     \\[1.0em]
         \vfill
         \TitlePageInstitution{}
+        \vfill
     \end{center}
+    \TitlePageDefenseDate{}
+    \TitlePageProgram{}     \\[1.0em]
+    \PrintCommitteeMemberList{}
     \clearpage
 }
 
-\show\title
-
-\DeclareDocumentEnvironment {LicensePage} { } {
-    \tl_new:N  \g__UWMad_LicensePage_Year_tl
-    \tl_new:N  \g__UWMad_LicensePage_Owner_tl
-    \tl_gset:Nn \g__UWMad_LicensePage_Owner_tl {
-        \g__UWMad_ThesisInfo_Author_tl
-    }
-    \tl_gset:Nn \g__UWMad_LicensePage_Year_tl {
-        \the\year
-    }
-    \DeclareDocumentCommand \LicenseOwner { m } {
-        \tl_gset:Nn \g__UWMad_LicensePage_Owner_tl {
-            ##1
-        }
-    }
-    \DeclareDocumentCommand \TheLicenseOwner { } {
-        \g__UWMad_LicensePage_Owner_tl
-    }
-    \DeclareDocumentCommand \LicenseYear { m } {
-        \tl_gset:Nn \g__UWMad_LicensePage_Year_tl {
-            ##1
-        }
-    }
-    \DeclareDocumentCommand \TheLicenseYear { } {
-        \g__UWMad_LicensePage_Year_tl
-    }
-\bool_new:N   \l__UWMad_Copyright_UseCopyright_bool
-\cs_new_eq:NN \CopyrightSymbol \copyright
-
-\cs_new:Nn \__UWMad_Copyright_PrintPage: {
+\cs_new:Nn \__UWMad_LicensePage_StartPage: {
     \clearpage
     \thispagestyle{empty}
     \tex_hbox:D{}
     \tex_vfill:D
     \phantomsection
     \addcontentsline {toc} {chapter} {License}
+}
+\bool_new:N   \l__UWMad_Copyright_UseCopyright_bool
+\cs_set_eq:NN \CopyrightSymbol \copyright
+
+\cs_set:Nn \__UWMad_Copyright_LicenseText: {
     \begin{center}
-        \Large
         Copyright~\CopyrightSymbol{}~
-        \g__UWMad_LicensePage_Year_tl{}~
+        \l__UWMad_LicensePage_Year_tl{}~
         by~
-        g__UWMad_LicensePage_Owner_tl{}
+        \l__UWMad_LicensePage_Owner_tl{}
     \end{center}
 }
-
-\DeclareDocumentCommand \Copyright { } {
-    \bool_set_true:N \l__UWMad_Copyright_UseCopyright_bool
+\cs_set:Nn \__UWMad_Copyright_PrintPage: {
+    \__UWMad_LicensePage_StartPage:
+    \__UWMad_Copyright_LicenseText:
 }
-\cs_gset_eq:NN \AllRightsReserved \Copyright
-
-\tl_new:N    \g__UWMad_CCLicense_Porting_tl
-\tl_new:N    \g__UWMad_CCLicense_Version_tl
-\tl_new:N    \g__UWMad_CCLicense_TypeAbbreviation_tl
-\tl_new:N    \g__UWMad_CCLicense_TypeWords_tl
-\tl_new:N    \g__UWMad_CCLicense_URL_Front_tl
-\tl_new:N    \g__UWMad_CCLicense_URL_Middle_tl
-\tl_new:N    \g__UWMad_CCLicense_URL_Back_tl
-\tl_new:N    \g__UWMad_CCLicense_URL_tl
-\bool_new:N \g__UWMad_CCLicense_UseCreativeCommons_bool
-\bool_new:N \g__UWMad_CCLicense_UseAttribution_bool
-\bool_new:N \g__UWMad_CCLicense_UseShareAlike_bool
-\bool_new:N \g__UWMad_CCLicense_UseNoDerivatives_bool
-\bool_new:N \g__UWMad_CCLicense_UseNonCommercial_bool
-\bool_new:N \g__UWMad_CCLicense_IsValid_bool
-\bool_gset_true:N \g__UWMad_CCLicense_UseAttribution_bool
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by :}      {}
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by-sa :}   {}
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nd :}   {}
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc :}   {}
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc-sa :}{}
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc-nd :}{}
-\tl_gset:Nn \g__UWMad_CCLicense_Porting_tl {
+\tl_new:N    \l__UWMad_CCLicense_Porting_tl
+\tl_new:N    \l__UWMad_CCLicense_Version_tl
+\tl_new:N    \l__UWMad_CCLicense_TypeAbbreviation_tl
+\tl_new:N    \l__UWMad_CCLicense_TypeWords_tl
+\tl_new:N    \l__UWMad_CCLicense_URL_Front_tl
+\tl_new:N    \l__UWMad_CCLicense_URL_Middle_tl
+\tl_new:N    \l__UWMad_CCLicense_URL_Back_tl
+\tl_new:N    \l__UWMad_CCLicense_URL_tl
+\tl_new:N    \l__UWMad_CCLicense_http_tl
+\tl_new:N    \l__UWMad_CCLicense_URLText_tl
+\bool_new:N \l__UWMad_CCLicense_UseCreativeCommons_bool
+\bool_new:N \l__UWMad_CCLicense_UseAttribution_bool
+\bool_new:N \l__UWMad_CCLicense_UseShareAlike_bool
+\bool_new:N \l__UWMad_CCLicense_UseNoDerivatives_bool
+\bool_new:N \l__UWMad_CCLicense_UseNonCommercial_bool
+\bool_new:N \l__UWMad_CCLicense_IsValid_bool
+\bool_set_true:N \l__UWMad_CCLicense_UseAttribution_bool
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by :}      {}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by-sa :}   {}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by-nd :}   {}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by-nc :}   {}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by-nc-sa :}{}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by-nc-nd :}{}
+\tl_gset:Nn \l__UWMad_CCLicense_Porting_tl {
     International
 }
-\tl_gset:Nn \g__UWMad_CCLicense_Version_tl {
+\tl_gset:Nn \l__UWMad_CCLicense_Version_tl {
     4.0
 }
-\tl_gset:Nn \g__UWMad_CCLicense_URL_Front_tl {
-    creativecommons.org/licenses/
+\tl_set:Nn \l__UWMad_CCLicense_URL_Front_tl {
+    creativecommons.org/licenses
 }
-\tl_gset:Nn \g__UWMad_CCLicense_URL_Middle_tl {
-    \g__UWMad_CCLicense_TypeAbbreviation_tl/
+\tl_set:Nn \l__UWMad_CCLicense_URL_Middle_tl {
+    /\l__UWMad_CCLicense_TypeAbbreviation_tl
 }
-\tl_gset:Nn \g__UWMad_CCLicense_URL_Back_tl {
-    \g__UWMad_CCLicense_Version_tl
+\tl_set:Nn \l__UWMad_CCLicense_URL_Back_tl {
+    /\l__UWMad_CCLicense_Version_tl
 }
-\tl_gset:Nn \g__UWMad_CCLicense_URL_tl {
+\tl_set:Nn \l__UWMad_CCLicense_URL_tl {
     http://
-    \g__UWMad_CCLicense_URL_Front_tl
-    \g__UWMad_CCLicense_URL_Middle_tl
-    \g__UWMad_CCLicense_URL_Back_tl
+    \l__UWMad_CCLicense_URL_Front_tl
+    \l__UWMad_CCLicense_URL_Middle_tl
+    \l__UWMad_CCLicense_URL_Back_tl
+}
+\tl_set:Nn \l__UWMad_CCLicense_http_tl {
+    http://
+}
+\tl_set:Nn \l__UWMad_CCLicense_URLText_tl {
+    Creative~Commons~
+    \l__UWMad_CCLicense_TypeWords_tl{}~
+    \l__UWMad_CCLicense_Version_tl{}~
+    \l__UWMad_CCLicense_Porting_tl{}
 }
 \cs_new:Nn \__UWMad_CCLicense_CreateType: {
 
-        \bool_if:NTF \g__UWMad_CCLicense_UseAttribution_bool {
+        \bool_if:NTF \l__UWMad_CCLicense_UseAttribution_bool {
 
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeAbbreviation_tl {
                 by
             }
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeWords_tl {
                 Attribution
             }
 
         } { }
 
-        \bool_if:NTF \g__UWMad_CCLicense_UseNonCommercial_bool {
+        \bool_if:NTF \l__UWMad_CCLicense_UseNonCommercial_bool {
 
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeAbbreviation_tl {
                 -nc
             }
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeWords_tl {
                 -NonCommercial
             }
 
         } { }
 
-        \bool_if:NTF \g__UWMad_CCLicense_UseShareAlike_bool {
+        \bool_if:NTF \l__UWMad_CCLicense_UseShareAlike_bool {
 
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeAbbreviation_tl {
                 -sa
             }
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeWords_tl {
                 -ShareAlike
             }
 
         } { }
 
-        \bool_if:NTF \g__UWMad_CCLicense_UseNoDerivatives_bool {
+        \bool_if:NTF \l__UWMad_CCLicense_UseNoDerivatives_bool {
 
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeAbbreviation_tl {
                 -nd
             }
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeWords_tl {
                 -NoDerivatives
             }
 
@@ -2187,71 +2183,120 @@
 }
 \cs_new:Nn \__UWMad_CCLicense_CheckTypeValidity: {
     \cs_if_exist:cTF {
-        g__UWMad_CCLicense_Valid_
-        \g__UWMad_CCLicense_TypeAbbreviation_tl :
+        l__UWMad_CCLicense_Valid_
+        \l__UWMad_CCLicense_TypeAbbreviation_tl :
     } {
 
-        \bool_gset_true:N \g__UWMad_CCLicense_IsValid_bool
+        \bool_set_true:N \l__UWMad_CCLicense_IsValid_bool
 
     } {
 
         \msg_new:nnn {UWMadThesis} {CCLicense / InvalidLicenseType} {
-            The~license~type~`\g__UWMad_CCLicense_TypeAbbreviation_tl'~
+            The~license~type~`\l__UWMad_CCLicense_TypeAbbreviation_tl'~
             is~not~a~valid~Creative~Commons~license.
         }
         \msg_error:nn {UWMadThesis} {CCLicense / InvalidLicenseType}
 
     }
 }
-\cs_new:Nn \__UWMad_CCLicense_PrintPage: {
-
-    {
-        \clearpage
-        \thispagestyle{empty}
-        \tex_hbox:D{}
-        \tex_vfill:D
-        \phantomsection
-        \addcontentsline {toc} {chapter} {License}
-        \begin{center}
-            \Large
-            This~work~is~released~under~a~
-            \href {\g__UWMad_CCLicense_URL_tl} {
-                Creative~Commons~
-                \g__UWMad_CCLicense_TypeWords_tl{}~
-                \g__UWMad_CCLicense_Version_tl{}~
-                \g__UWMad_CCLicense_Porting_tl{}
-            }~
-            license.\\[0.1em]
-            \g__UWMad_LicensePage_Owner_tl{},~
-            \g__UWMad_LicensePage_Year_tl{}
-        \end{center}
-    }
+\cs_new:Nn \__UWMad_CCLicense_LicenseText: {
+    \begin{center}
+        \large
+        This~work~is~released~under~a~
+       \tl_show:N \l__UWMad_CCLicense_URL_tl
+        \href {\l__UWMad_CCLicense_URL_tl} {
+            \l__UWMad_CCLicense_URLText_tl
+        }~
+        license.\\[0.1em]
+        \l__UWMad_LicensePage_Owner_tl{},~
+        \l__UWMad_LicensePage_Year_tl{}
+    \end{center}
 }
+\cs_new:Nn \__UWMad_CCLicense_PrintPage: {
+    \__UWMad_LicensePage_StartPage:
+    \__UWMad_CCLicense_LicenseText:
+}
+    \tl_new:N  \l__UWMad_LicensePage_Year_tl
+    \tl_new:N  \l__UWMad_LicensePage_Owner_tl
+    \tl_set:Nn \l__UWMad_LicensePage_Owner_tl {
+        \g__UWMad_ThesisInfo_Author_tl
+    }
+    \tl_set:Nn \l__UWMad_LicensePage_Year_tl {
+        \the\year
+    }
+\DeclareDocumentEnvironment {LicensePage} { } {
+    \DeclareDocumentCommand \LicenseOwner { m } {
+        \tl_set:Nn \l__UWMad_LicensePage_Owner_tl {
+            ##1
+        }
+    }
+    \DeclareDocumentCommand \TheLicenseOwner { } {
+        \l__UWMad_LicensePage_Owner_tl
+    }
+    \DeclareDocumentCommand \LicenseYear { m } {
+        \tl_set:Nn \l__UWMad_LicensePage_Year_tl {
+            ##1
+        }
+    }
+    \DeclareDocumentCommand \TheLicenseYear { } {
+        \l__UWMad_LicensePage_Year_tl
+    }
+\DeclareDocumentCommand \Copyright { } {
+    \bool_set_true:N \l__UWMad_Copyright_UseCopyright_bool
+}
+\cs_set_eq:NN \AllRightsReserved \Copyright
 \DeclareDocumentCommand \CreativeCommons { } {
-    \bool_gset_true:N \g__UWMad_CCLicense_UseCreativeCommons_bool
+    \bool_set_true:N \l__UWMad_CCLicense_UseCreativeCommons_bool
+}
+\DeclareDocumentCommand \Attribution { } {
+    \bool_set_true:N \l__UWMad_CCLicense_UseAttribution_bool
 }
 \DeclareDocumentCommand \NonCommercial { } {
-    \bool_gset_true:N \g__UWMad_CCLicense_UseNonCommercial_bool
+    \bool_set_true:N \l__UWMad_CCLicense_UseNonCommercial_bool
 }
 \DeclareDocumentCommand \ShareAlike { } {
-    \bool_gset_true:N \g__UWMad_CCLicense_UseShareAlike_bool
+    \bool_set_true:N \l__UWMad_CCLicense_UseShareAlike_bool
 }
-\DeclareDocumentCommand \NoDerivatives { } {
-    \bool_gset_true:N \g__UWMad_CCLicense_UseNoDerivatives_bool
+\DeclareDocumentCommand \NoDerivs { } {
+    \bool_set_true:N \l__UWMad_CCLicense_UseNoDerivatives_bool
+}
+\DeclareDocumentCommand \CCVersion { m } {
+    \tl_set:Nn \l__UWMad_CCLicense_Version_tl {##1}
+}
+\DeclareDocumentCommand \CCPorting { m } {
+    \tl_set:Nn \l__UWMad_CCLicense_Porting_tl {##1}
+}
+\DeclareDocumentCommand \CCURL { m } {
+    \tl_set:Nn \l__UWMad_CCLicense_URL_Front_tl  {##1}
+    \tl_set:Nn \l__UWMad_CCLicense_URL_Middle_tl {/.}
+    \tl_set:Nn \l__UWMad_CCLicense_URL_Back_tl   {}
+}
+\DeclareDocumentCommand \CCURLText { m } {
+    \tl_set:Nn \l__UWMad_CCLicense_URLText_tl {##1}
 }
 } {
 
-    \bool_if:NTF \g__UWMad_CCLicense_UseCreativeCommons_bool {
-        \__UWMad_CCLicense_CreateType:
-        \__UWMad_CCLicense_CheckTypeValidity:
-        \bool_if:NTF \g__UWMad_CCLicense_IsValid_bool {
-            \__UWMad_CCLicense_PrintPage:
-        } { }
-    } { }
+    \bool_if:nTF {  \l__UWMad_CCLicense_UseCreativeCommons_bool &&
+                    \l__UWMad_Copyright_UseCopyright_bool       } {
+        \msg_new:nnn { UWMadThesis } { SpecialPages / MultipleLicenses } {
+            Both~Creative~Commons~and~Copyright~have~been~declared.~
+            Please,~pick~one.
+        }
+        \msg_error:nn { UWMadThesis } { SpecialPages / MultipleLicenses }
+    } {
 
-    \bool_if:NTF \g__UWMad_Copyright_UseCopyright_bool {
-        \__UWMad_Copyright_PrintPage:
-    } { }
+        \bool_if:NTF \l__UWMad_CCLicense_UseCreativeCommons_bool {
+            \__UWMad_CCLicense_CreateType:
+            \__UWMad_CCLicense_CheckTypeValidity:
+            \bool_if:NTF \l__UWMad_CCLicense_IsValid_bool {
+                \__UWMad_CCLicense_PrintPage:
+            } { }
+        } { }
+
+        \bool_if:NTF \l__UWMad_Copyright_UseCopyright_bool {
+            \__UWMad_Copyright_PrintPage:
+        } { }
+    }
 
 }
 \ExplSyntaxOff

@@ -1,5 +1,7 @@
 %<*UserGuide>
 
+
+
 \UWFeature{Special Pages}
 
 \UWSubFeature{Title Page}
@@ -65,13 +67,201 @@ Section 408 of the Copyright Act states: for any work produced after 1978, ``the
 In others words, a copy of the work can be submitted to the Copyright Office and subsequently placed in the Library of Congress for official recognition of copyright.
 However, registration is not compulsory since ``[s]uch registration is not a condition of copyright protection''.
 
-\UWSubSubFeature{Creative Commons}
+\begin{function}{\Copyright}
+    \begin{syntax}
+        \cs{Copyright}
+    \end{syntax}
+    Using this command within a |LicensePage| environment will print a Copyright Notice at the bottom of a page and place a link in the table of contents.
+\end{function}
 
-\begin{LicensePage}
-    \CreativeCommons
-    \NonCommercial
-    \ShareAlike
-\end{LicensePage}
+An example of usage (along with a redefined owner and year) would be
+\begin{verbatim}
+    \begin{LicensePage}
+        \LicenseOwner{Theodore Huxton}
+        \LicenseYear{3001}
+        \Copyright
+    \end{LicensePage}
+\end{verbatim}
+This input would generate the following text at the bottom of a new page (with a link in the table of contents:
+
+\ExplSyntaxOn
+    \cs_gset_eq:NN \UWMadCopyrightPageText \__UWMad_Copyright_LicenseText:
+\ExplSyntaxOff
+\begin{center}
+    \begin{LicensePage}
+        \LicenseOwner{Theodore Huxton}
+        \LicenseYear{3001}
+        \UWMadCopyrightPageText
+    \end{LicensePage}
+\end{center}
+\ExplSyntaxOn
+    \cs_undefine:N \UWMadCopyrightPageText
+\ExplSyntaxOff
+
+\UWSubSubFeature{Creative Commons}
+Creative Commons (CC) is a collective set of licenses that is most aptly described as ``some rights reserved''.
+That is, while Copyright requires explicit permission of the author for a lot of uses, Creative Commons immediately waives those rights.
+Why is this a good thing?
+To quote from \href{http://creativecommons.org/about}{CreativeCommons.org}:
+\begin{quote}
+Creative Commons is a nonprofit organization that enables the sharing and use of creativity and knowledge through free legal tools. ...
+
+If you want to give people the right to share, use, and even build upon a work you've created, you should consider publishing it under a Creative Commons license. CC gives you flexibility (for example, you can choose to allow only non-commercial uses) and protects the people who use your work, so they don't have to worry about copyright infringement, as long as they abide by the conditions you have specified.
+\end{quote}
+
+
+Therefore, the goal of CC is to begin from the ''most free'' license of public domain (termed CC0) and then add on conditions for legal use of the material.
+CC license are copyright licenses in that (aside from CC0) that author retains certain ownership rights, but a subset of the rights are relaxed or waived to encourage free sharing and extension of the work.
+To this end, Creative Commons defines the following four conditions:
+\begin{description}
+    \item[Attribution]{
+        Appropriate credit must be given to the original author, a link to the license provided, and indication of any changes that were made.
+        This may be done in any reasonable manner, but not in any way that suggests the licensor endorses the new author or her use. 
+    }
+    \item[ShareAlike] {
+        If the work is remixed, transformed, or built upon the licensed material, the author of the new work \textsc{must distribute} the contributions under the same license as the original.
+    }
+    \item[NoDerivs] {
+        If the work is remixed, transformed, or built upon the licensed material, the author of the new work \textsc{may not} distribute the modified material.
+    }
+    \item[NonCommercial] {
+        The licensed work \textsc{may not} be used the material for commercial purposes.
+    }
+\end{description}
+These conditions are then combined into six, non-contradictory licenses.
+The licenses are ``layered'' into Legal Code (the official text determining the delineating usage), the License deed (non-legal text aimed to be non-lawyer readable), and machine readable code (the license put into an HTML-like style for search engines).
+The CC licenses and associated links) for the latest version are
+\begin{description}
+    \item[CC BY]{
+        \hfill\\
+        Attribution only (
+        \href{http://creativecommons.org/licenses/by/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-SA]{
+        \hfill\\
+        Attribution and ShareAlike (
+        \href{http://creativecommons.org/licenses/by-sa/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-sa/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-ND]{
+        \hfill\\
+        Attribution and NoDerivs (
+        \href{http://creativecommons.org/licenses/by-nd/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-nd/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-NC]{
+        \hfill\\
+        Attribution and NonCommerical (
+        \href{http://creativecommons.org/licenses/by-nc/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-nc/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-NC-SA]{
+        \hfill\\
+        Attribution, NonCommercial, and ShareAlike (
+        \href{http://creativecommons.org/licenses/by-nc-sa/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-NC-ND]{
+        \hfill\\
+        Attribution, NonCommercial, and NoDerivs (
+        \href{http://creativecommons.org/licenses/by-nc-nd/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-nc-nd/4.0/legalcode}{Legal Code}
+        ).
+    }
+\end{description}
+
+Prior to version 4.0 (the current one), there were a number of ``ports'' of the licenses to particular locales to deal with the specifics of individual countries.
+However, with the release of version 4.0 of the CC licenses, usage of the international version is highly encouraged as ports will be made ``\href{http://wiki.creativecommons.org/License_Versions#International_License_Development_Process}{only where a compelling need is demonstrated}''.
+As such, version 4.0 International is the default license base for the \UWMadClass{} class.
+Of course, this choice can be changed.
+
+\begin{function}{\CreativeCommons}
+    \begin{syntax}
+        \cs{CreativeCommons}
+    \end{syntax}
+    Using this command within a |LicensePage| environment will declare you have chosen a Creative Commons license.
+    By default, the license will be ``Creative Commons Attribution 4.0 International''.
+\end{function}
+
+\begin{function}{
+    \Attribution,
+    \ShareAlike,
+    \NonCommercial,
+    \NoDerivs}
+    \begin{syntax}
+        \cs{Attribution}
+        \cs{ShareAlike}
+        \cs{NonCommercial}
+        \cs{NoDerivs}
+    \end{syntax}
+    Using any of these commands (in any order) within a |LicensePage| environment will declare you have chosen to add the associated condition to the license of the work.
+    However, since all six licensees require Attribution, it is always on by default but should be included for clarity.
+\end{function}
+An example of usage would be
+\begin{verbatim}
+    \begin{LicensePage}
+        \CreativeCommons
+        \Attribution
+        \NonCommercial
+        \ShareAlike
+    \end{LicensePage}
+\end{verbatim}
+This input would generate the following text at the bottom of a new page (with a link in the table of contents):
+\begin{center}
+    \begin{LicensePage}
+        \NonCommercial
+        \ShareAlike
+        \ExplSyntaxOn
+            \__UWMad_CCLicense_CreateType:
+            \__UWMad_CCLicense_LicenseText:
+        \ExplSyntaxOff
+    \end{LicensePage}
+\end{center}
+Notice that since neither the \cs{LicenseOwner} nor \cs{LicenseYear} commands were used, the author of this document and then-current year were used as defaults.
+
+\begin{function}{
+    \CCVersion,
+    \CCPorting,
+    \CCURL,
+    \CCURLText}
+    \begin{syntax}
+        \cs{CCVersion}\marg{CC version}
+        \cs{CCPorting}\marg{CC porting}
+        \cs{CCURL}    \marg{CC link}
+        \cs{CCURLText}\marg{CC link text}
+    \end{syntax}
+    These commands exist to override the default 4.0 International Creative Commons license.
+    The link provided \textsc{should not} contain |http://| nor end with a |/|.
+    Use these commands only if there is a compelling reason not to use the latest version of the license.
+\end{function}
+An example of usage would be
+\begin{verbatim}
+    \begin{LicensePage}
+        \CreativeCommons
+        \CCVersion{3.0}
+        \CCPorting{United States}
+        \CCURL{creativecommons.org/licenses/by/3.0/us}
+        \CCURLText{Creative Commons Attribution 3.0 United States}
+    \end{LicensePage}
+\end{verbatim}
+This input would generate the following text at the bottom of a new page (with a link in the table of contents):
+\begin{center}
+    \begin{LicensePage}
+        \CCVersion{3.0}
+        \CCPorting{United States}
+        \CCURL{creativecommons.org/licenses/by/3.0/us}
+        \CCURLText{Creative Commons Attribution 3.0 United States}
+        \ExplSyntaxOn
+            \__UWMad_CCLicense_LicenseText:
+        \ExplSyntaxOff
+    \end{LicensePage}
+\end{center}
 
 
 %</UserGuide>
@@ -137,6 +327,10 @@ However, registration is not compulsory since ``[s]uch registration is not a con
     \textsc{\TheInstitution{}}
 }
 
+\DeclareDocumentCommand \TitlePageDefenseDate { } {
+    Date of final oral examination:~\TheDefenseDate{}
+}
+
 
 \DeclareDocumentCommand \MakeTitlePage { } {
     \thispagestyle{empty}
@@ -148,11 +342,13 @@ However, registration is not compulsory since ``[s]uch registration is not a con
         \TitlePageProgram{}     \\[1.0em]
         \vfill
         \TitlePageInstitution{}
+        \vfill
     \end{center}
+    \TitlePageDefenseDate{}
+    \TitlePageProgram{}     \\[1.0em]
+    \PrintCommitteeMemberList{}
     \clearpage
 }
-
-\show\title
 
 
 
@@ -160,131 +356,118 @@ However, registration is not compulsory since ``[s]uch registration is not a con
 
 %    \end{macrocode}
 %   \UWSubModule{LicensePage}
+%   First, the support code for defining \cs{Copyright} and
+%   \cs{CreativeCommons} will be given.
+%   Then the user front-end will be given through the |LicensePage|
+%   environment.
+%
 %    \begin{macrocode}
-%^^A ====================================================================== %
-%^^A                            License Page                                %
-%^^A ====================================================================== %
-\DeclareDocumentEnvironment {LicensePage} { } {
-%
-    \tl_new:N  \g__UWMad_LicensePage_Year_tl
-    \tl_new:N  \g__UWMad_LicensePage_Owner_tl
-%
-    \tl_gset:Nn \g__UWMad_LicensePage_Owner_tl {
-        \g__UWMad_ThesisInfo_Author_tl
-    }
-    \tl_gset:Nn \g__UWMad_LicensePage_Year_tl {
-        \the\year
-    }
-%
-    \DeclareDocumentCommand \LicenseOwner { m } {
-        \tl_gset:Nn \g__UWMad_LicensePage_Owner_tl {
-            ##1
-        }
-    }
-    \DeclareDocumentCommand \TheLicenseOwner { } {
-        \g__UWMad_LicensePage_Owner_tl
-    }
-%
-    \DeclareDocumentCommand \LicenseYear { m } {
-        \tl_gset:Nn \g__UWMad_LicensePage_Year_tl {
-            ##1
-        }
-    }
-    \DeclareDocumentCommand \TheLicenseYear { } {
-        \g__UWMad_LicensePage_Year_tl
-    }
-%
-%
-%
-%
-%    \end{macrocode}
-%   \UWSubSubModule{Copyright}
-%    \begin{macrocode}
-\bool_new:N   \l__UWMad_Copyright_UseCopyright_bool
-\cs_new_eq:NN \CopyrightSymbol \copyright
-
-\cs_new:Nn \__UWMad_Copyright_PrintPage: {
+\cs_new:Nn \__UWMad_LicensePage_StartPage: {
     \clearpage
     \thispagestyle{empty}
     \tex_hbox:D{}
     \tex_vfill:D
     \phantomsection
     \addcontentsline {toc} {chapter} {License}
+}
+%
+%    \end{macrocode}
+%   \UWSubSubModule{Copyright}
+%    \begin{macrocode}
+\bool_new:N   \l__UWMad_Copyright_UseCopyright_bool
+\cs_set_eq:NN \CopyrightSymbol \copyright
+
+\cs_set:Nn \__UWMad_Copyright_LicenseText: {
     \begin{center}
-        \Large
         Copyright~\CopyrightSymbol{}~
-        \g__UWMad_LicensePage_Year_tl{}~
+        \l__UWMad_LicensePage_Year_tl{}~
         by~
-        g__UWMad_LicensePage_Owner_tl{}
+        \l__UWMad_LicensePage_Owner_tl{}
     \end{center}
 }
-
-\DeclareDocumentCommand \Copyright { } {
-    \bool_set_true:N \l__UWMad_Copyright_UseCopyright_bool
+%
+\cs_set:Nn \__UWMad_Copyright_PrintPage: {
+    \__UWMad_LicensePage_StartPage:
+    \__UWMad_Copyright_LicenseText:
 }
-\cs_gset_eq:NN \AllRightsReserved \Copyright
-
+%
 %
 %
 %
 %    \end{macrocode}
-%   \UWSubSubModule{Creative Commons}
-%    \begin{macrocode}
+%
+%
+%
 %
 %^^A ====================================================================== %
 %^^A                       Creative Commons Licenses                        %
 %^^A ====================================================================== %
 %
+%   \UWSubSubModule{Creative Commons}
+%    \begin{macrocode}
 %   Token lists
-\tl_new:N    \g__UWMad_CCLicense_Porting_tl
-\tl_new:N    \g__UWMad_CCLicense_Version_tl
-\tl_new:N    \g__UWMad_CCLicense_TypeAbbreviation_tl
-\tl_new:N    \g__UWMad_CCLicense_TypeWords_tl
-\tl_new:N    \g__UWMad_CCLicense_URL_Front_tl
-\tl_new:N    \g__UWMad_CCLicense_URL_Middle_tl
-\tl_new:N    \g__UWMad_CCLicense_URL_Back_tl
-\tl_new:N    \g__UWMad_CCLicense_URL_tl
+\tl_new:N    \l__UWMad_CCLicense_Porting_tl
+\tl_new:N    \l__UWMad_CCLicense_Version_tl
+\tl_new:N    \l__UWMad_CCLicense_TypeAbbreviation_tl
+\tl_new:N    \l__UWMad_CCLicense_TypeWords_tl
+\tl_new:N    \l__UWMad_CCLicense_URL_Front_tl
+\tl_new:N    \l__UWMad_CCLicense_URL_Middle_tl
+\tl_new:N    \l__UWMad_CCLicense_URL_Back_tl
+\tl_new:N    \l__UWMad_CCLicense_URL_tl
+\tl_new:N    \l__UWMad_CCLicense_http_tl
+\tl_new:N    \l__UWMad_CCLicense_URLText_tl
 %
 %   Booleans
-\bool_new:N \g__UWMad_CCLicense_UseCreativeCommons_bool
-\bool_new:N \g__UWMad_CCLicense_UseAttribution_bool
-\bool_new:N \g__UWMad_CCLicense_UseShareAlike_bool
-\bool_new:N \g__UWMad_CCLicense_UseNoDerivatives_bool
-\bool_new:N \g__UWMad_CCLicense_UseNonCommercial_bool
-\bool_new:N \g__UWMad_CCLicense_IsValid_bool
-\bool_gset_true:N \g__UWMad_CCLicense_UseAttribution_bool
+\bool_new:N \l__UWMad_CCLicense_UseCreativeCommons_bool
+\bool_new:N \l__UWMad_CCLicense_UseAttribution_bool
+\bool_new:N \l__UWMad_CCLicense_UseShareAlike_bool
+\bool_new:N \l__UWMad_CCLicense_UseNoDerivatives_bool
+\bool_new:N \l__UWMad_CCLicense_UseNonCommercial_bool
+\bool_new:N \l__UWMad_CCLicense_IsValid_bool
+\bool_set_true:N \l__UWMad_CCLicense_UseAttribution_bool
 %
 %   Valid license types
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by :}      {}
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by-sa :}   {}
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nd :}   {}
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc :}   {}
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc-sa :}{}
-\cs_new:cn {g__UWMad_CCLicense_Valid_ by-nc-nd :}{}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by :}      {}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by-sa :}   {}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by-nd :}   {}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by-nc :}   {}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by-nc-sa :}{}
+\cs_new:cn {l__UWMad_CCLicense_Valid_ by-nc-nd :}{}
 %
 %   Defaults
-\tl_gset:Nn \g__UWMad_CCLicense_Porting_tl {
+\tl_gset:Nn \l__UWMad_CCLicense_Porting_tl {
     International
 }
-\tl_gset:Nn \g__UWMad_CCLicense_Version_tl {
+\tl_gset:Nn \l__UWMad_CCLicense_Version_tl {
     4.0
 }
 %
 %   URL definitions
-\tl_gset:Nn \g__UWMad_CCLicense_URL_Front_tl {
-    creativecommons.org/licenses/
+\tl_set:Nn \l__UWMad_CCLicense_URL_Front_tl {
+    creativecommons.org/licenses
 }
-\tl_gset:Nn \g__UWMad_CCLicense_URL_Middle_tl {
-    \g__UWMad_CCLicense_TypeAbbreviation_tl/
+\tl_set:Nn \l__UWMad_CCLicense_URL_Middle_tl {
+    /\l__UWMad_CCLicense_TypeAbbreviation_tl
 }
-\tl_gset:Nn \g__UWMad_CCLicense_URL_Back_tl {
-    \g__UWMad_CCLicense_Version_tl
+\tl_set:Nn \l__UWMad_CCLicense_URL_Back_tl {
+    /\l__UWMad_CCLicense_Version_tl
 }
-\tl_gset:Nn \g__UWMad_CCLicense_URL_tl {
+\tl_set:Nn \l__UWMad_CCLicense_URL_tl {
     http://
-    \g__UWMad_CCLicense_URL_Front_tl
-    \g__UWMad_CCLicense_URL_Middle_tl
-    \g__UWMad_CCLicense_URL_Back_tl
+    \l__UWMad_CCLicense_URL_Front_tl
+    \l__UWMad_CCLicense_URL_Middle_tl
+    \l__UWMad_CCLicense_URL_Back_tl
+}
+\tl_set:Nn \l__UWMad_CCLicense_http_tl {
+    http://
+}
+%
+%
+\tl_set:Nn \l__UWMad_CCLicense_URLText_tl {
+    Creative~Commons~
+    \l__UWMad_CCLicense_TypeWords_tl{}~
+    \l__UWMad_CCLicense_Version_tl{}~
+    \l__UWMad_CCLicense_Porting_tl{}
 }
 %
 %
@@ -292,45 +475,45 @@ However, registration is not compulsory since ``[s]uch registration is not a con
 %   Type Creator
 \cs_new:Nn \__UWMad_CCLicense_CreateType: {
     
-        \bool_if:NTF \g__UWMad_CCLicense_UseAttribution_bool {
+        \bool_if:NTF \l__UWMad_CCLicense_UseAttribution_bool {
 
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeAbbreviation_tl {
                 by
             }
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeWords_tl {
                 Attribution
             }
 
         } { }
 
-        \bool_if:NTF \g__UWMad_CCLicense_UseNonCommercial_bool {
+        \bool_if:NTF \l__UWMad_CCLicense_UseNonCommercial_bool {
 
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeAbbreviation_tl {
                 -nc
             }
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeWords_tl {
                 -NonCommercial
             }
 
         } { }
 
-        \bool_if:NTF \g__UWMad_CCLicense_UseShareAlike_bool {
+        \bool_if:NTF \l__UWMad_CCLicense_UseShareAlike_bool {
 
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeAbbreviation_tl {
                 -sa
             }
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeWords_tl {
                 -ShareAlike
             }
 
         } { }
 
-        \bool_if:NTF \g__UWMad_CCLicense_UseNoDerivatives_bool {
+        \bool_if:NTF \l__UWMad_CCLicense_UseNoDerivatives_bool {
 
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeAbbreviation_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeAbbreviation_tl {
                 -nd
             }
-            \tl_put_right:Nn \g__UWMad_CCLicense_TypeWords_tl {
+            \tl_put_right:Nn \l__UWMad_CCLicense_TypeWords_tl {
                 -NoDerivatives
             }
 
@@ -342,16 +525,16 @@ However, registration is not compulsory since ``[s]uch registration is not a con
 %   Type Validator
 \cs_new:Nn \__UWMad_CCLicense_CheckTypeValidity: {
     \cs_if_exist:cTF {
-        g__UWMad_CCLicense_Valid_ 
-        \g__UWMad_CCLicense_TypeAbbreviation_tl :
+        l__UWMad_CCLicense_Valid_ 
+        \l__UWMad_CCLicense_TypeAbbreviation_tl :
     } {
 
-        \bool_gset_true:N \g__UWMad_CCLicense_IsValid_bool
+        \bool_set_true:N \l__UWMad_CCLicense_IsValid_bool
 
     } {
 
         \msg_new:nnn {UWMadThesis} {CCLicense / InvalidLicenseType} {
-            The~license~type~`\g__UWMad_CCLicense_TypeAbbreviation_tl'~
+            The~license~type~`\l__UWMad_CCLicense_TypeAbbreviation_tl'~
             is~not~a~valid~Creative~Commons~license.
         }
         \msg_error:nn {UWMadThesis} {CCLicense / InvalidLicenseType}
@@ -362,63 +545,137 @@ However, registration is not compulsory since ``[s]uch registration is not a con
 %
 %
 %   Page Printer
-\cs_new:Nn \__UWMad_CCLicense_PrintPage: {
-
-    {
-        \clearpage
-        \thispagestyle{empty}
-        \tex_hbox:D{}
-        \tex_vfill:D
-        \phantomsection
-        \addcontentsline {toc} {chapter} {License}
-        \begin{center}
-            \Large
-            This~work~is~released~under~a~
-            \href {\g__UWMad_CCLicense_URL_tl} {
-                Creative~Commons~
-                \g__UWMad_CCLicense_TypeWords_tl{}~
-                \g__UWMad_CCLicense_Version_tl{}~
-                \g__UWMad_CCLicense_Porting_tl{}
-            }~
-            license.\\[0.1em]
-            \g__UWMad_LicensePage_Owner_tl{},~
-            \g__UWMad_LicensePage_Year_tl{}
-        \end{center}
-    }
+\cs_new:Nn \__UWMad_CCLicense_LicenseText: {
+    \begin{center}
+        \large
+        This~work~is~released~under~a~
+       \tl_show:N \l__UWMad_CCLicense_URL_tl
+        \href {\l__UWMad_CCLicense_URL_tl} {
+            \l__UWMad_CCLicense_URLText_tl
+        }~
+        license.\\[0.1em]
+        \l__UWMad_LicensePage_Owner_tl{},~
+        \l__UWMad_LicensePage_Year_tl{}
+    \end{center}
 }
+\cs_new:Nn \__UWMad_CCLicense_PrintPage: {
+    \__UWMad_LicensePage_StartPage:
+    \__UWMad_CCLicense_LicenseText:
+}
+%
+%    \end{macrocode}
+%^^A ====================================================================== %
+%^^A                            License Page                                %
+%^^A ====================================================================== %
+%
+%   \UWSubSubModule{LicensePage Proper}
+%
+%
+%    \begin{macrocode}
+%
+    \tl_new:N  \l__UWMad_LicensePage_Year_tl
+    \tl_new:N  \l__UWMad_LicensePage_Owner_tl
+%
+    \tl_set:Nn \l__UWMad_LicensePage_Owner_tl {
+        \g__UWMad_ThesisInfo_Author_tl
+    }
+    \tl_set:Nn \l__UWMad_LicensePage_Year_tl {
+        \the\year
+    }
+%
+%
+%
+\DeclareDocumentEnvironment {LicensePage} { } {
+%
+%
+%
+    \DeclareDocumentCommand \LicenseOwner { m } {
+        \tl_set:Nn \l__UWMad_LicensePage_Owner_tl {
+            ##1
+        }
+    }
+    \DeclareDocumentCommand \TheLicenseOwner { } {
+        \l__UWMad_LicensePage_Owner_tl
+    }
+%
+    \DeclareDocumentCommand \LicenseYear { m } {
+        \tl_set:Nn \l__UWMad_LicensePage_Year_tl {
+            ##1
+        }
+    }
+    \DeclareDocumentCommand \TheLicenseYear { } {
+        \l__UWMad_LicensePage_Year_tl
+    }
+%
+%
+%
+\DeclareDocumentCommand \Copyright { } {
+    \bool_set_true:N \l__UWMad_Copyright_UseCopyright_bool
+}
+\cs_set_eq:NN \AllRightsReserved \Copyright
+%
 %
 %
 %   User front ends
 \DeclareDocumentCommand \CreativeCommons { } {
-    \bool_gset_true:N \g__UWMad_CCLicense_UseCreativeCommons_bool
+    \bool_set_true:N \l__UWMad_CCLicense_UseCreativeCommons_bool
+}
+\DeclareDocumentCommand \Attribution { } {
+    \bool_set_true:N \l__UWMad_CCLicense_UseAttribution_bool
 }
 \DeclareDocumentCommand \NonCommercial { } {
-    \bool_gset_true:N \g__UWMad_CCLicense_UseNonCommercial_bool
+    \bool_set_true:N \l__UWMad_CCLicense_UseNonCommercial_bool
 }
 \DeclareDocumentCommand \ShareAlike { } {
-    \bool_gset_true:N \g__UWMad_CCLicense_UseShareAlike_bool
+    \bool_set_true:N \l__UWMad_CCLicense_UseShareAlike_bool
 }
-\DeclareDocumentCommand \NoDerivatives { } {
-    \bool_gset_true:N \g__UWMad_CCLicense_UseNoDerivatives_bool
+\DeclareDocumentCommand \NoDerivs { } {
+    \bool_set_true:N \l__UWMad_CCLicense_UseNoDerivatives_bool
 }
 %
 %
+\DeclareDocumentCommand \CCVersion { m } {
+    \tl_set:Nn \l__UWMad_CCLicense_Version_tl {##1}
+}
 %
+\DeclareDocumentCommand \CCPorting { m } {
+    \tl_set:Nn \l__UWMad_CCLicense_Porting_tl {##1}
+}
+%
+\DeclareDocumentCommand \CCURL { m } {
+    \tl_set:Nn \l__UWMad_CCLicense_URL_Front_tl  {##1}
+    \tl_set:Nn \l__UWMad_CCLicense_URL_Middle_tl {/.}
+    \tl_set:Nn \l__UWMad_CCLicense_URL_Back_tl   {}
+}
+%
+\DeclareDocumentCommand \CCURLText { m } {
+    \tl_set:Nn \l__UWMad_CCLicense_URLText_tl {##1}
+}
 %
 %
 } {
 
-    \bool_if:NTF \g__UWMad_CCLicense_UseCreativeCommons_bool {
-        \__UWMad_CCLicense_CreateType:
-        \__UWMad_CCLicense_CheckTypeValidity:
-        \bool_if:NTF \g__UWMad_CCLicense_IsValid_bool {
-            \__UWMad_CCLicense_PrintPage:
-        } { }
-    } { }
+    \bool_if:nTF {  \l__UWMad_CCLicense_UseCreativeCommons_bool &&
+                    \l__UWMad_Copyright_UseCopyright_bool       } {
+        \msg_new:nnn { UWMadThesis } { SpecialPages / MultipleLicenses } {
+            Both~Creative~Commons~and~Copyright~have~been~declared.~
+            Please,~pick~one.
+        }
+        \msg_error:nn { UWMadThesis } { SpecialPages / MultipleLicenses }
+    } {
 
-    \bool_if:NTF \g__UWMad_Copyright_UseCopyright_bool {
-        \__UWMad_Copyright_PrintPage:
-    } { }
+        \bool_if:NTF \l__UWMad_CCLicense_UseCreativeCommons_bool {
+            \__UWMad_CCLicense_CreateType:
+            \__UWMad_CCLicense_CheckTypeValidity:
+            \bool_if:NTF \l__UWMad_CCLicense_IsValid_bool {
+                \__UWMad_CCLicense_PrintPage:
+            } { }
+        } { }
+
+        \bool_if:NTF \l__UWMad_Copyright_UseCopyright_bool {
+            \__UWMad_Copyright_PrintPage:
+        } { }
+    }
 
 }
 %

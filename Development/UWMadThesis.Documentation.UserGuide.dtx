@@ -556,7 +556,6 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 
 \UWFeature{Thesis and PDF Information}
 
-\vskip3em
 In order for the \RefSubFeature{Title Page} to function properly, a certain amount of information about the thesis must be given.
 The \UWMadClass{} has a set of commands to provide both the thesis information and PDF metadata to \LaTeX{}.
 
@@ -574,8 +573,6 @@ If the commands are used within the |document| environment, it will require anot
         \Degree
     }
         \begin{syntax}
-            \vspace*{3pt}
-            \setstretch{1.30}
             \cs{Title}   \marg{title}
             \cs{Author}  \marg{author name}
             \cs{Program} \marg{program}
@@ -587,15 +584,11 @@ If the commands are used within the |document| environment, it will require anot
 
     \begin{function} {
         \DefenseDate,
-        \DefenceDate,
-        \Date
+        \DefenceDate
     }
         \begin{syntax}
-            \vspace*{3pt}
-            \setstretch{1.30}
             \cs{DefenseDate} \marg{defense date}
             \cs{DefenceDate} \marg{defense date}
-            \cs{Date}        \marg{defense date}
         \end{syntax}
         Only one of these commands is needed since they all point to the same variable \marg{defense date}.
         The aliases were created for personal preference only.
@@ -608,8 +601,6 @@ If the commands are used within the |document| environment, it will require anot
         \University
     }
         \begin{syntax}
-            \vspace*{3pt}
-            \setstretch{1.30}
             \cs{Institution} \marg{institution name}
             \cs{University}  \marg{institution name}
         \end{syntax}
@@ -619,8 +610,6 @@ If the commands are used within the |document| environment, it will require anot
 
     \begin{function} {\CommitteeMember}
         \begin{syntax}
-            \vspace*{3pt}
-            \setstretch{1.30}
             \cs{CommitteeMember} \marg{member name} \marg{member position}
         \end{syntax}
         \cs{CommitteeMember} can be used as many times as required.
@@ -638,8 +627,6 @@ It is encouraged to use these commands in the preamble of the document.
     \Adviser
     }
     \begin{syntax}
-        \vspace*{3pt}
-        \setstretch{1.305}
         \cs{Advisor} \marg{advisor name} \marg{advisor position}
         \cs{Adviser} \marg{advisor name} \marg{advisor position}
     \end{syntax}
@@ -653,11 +640,12 @@ It is encouraged to use these commands in the preamble of the document.
     \Keywords
     }
     \begin{syntax}
-        \vspace*{3pt}
-        \setstretch{1.305}
         \cs{Subject}  \marg{document subject}
         \cs{Keywords} \marg{list of keywords}
     \end{syntax}
+    These commands set the subject and keyword portions of the PDF metadata.
+    The \marg{document subject} is typically a one-ish line description of the document.
+    The \marg{list of keywords} can be a long, punctuation-delimited list (e.g., comma or semicolon) of keywords.
 \end{function}
 
 \begin{function} {
@@ -665,11 +653,24 @@ It is encouraged to use these commands in the preamble of the document.
     \Creator
     }
     \begin{syntax}
-        \vspace*{3pt}
-        \setstretch{1.305}
         \cs{Producer} \marg{pdf producer}
         \cs{Creator}  \marg{pdf creator}
     \end{syntax}
+    These commands set the PDF Producer and PDF Creator fields of the metadata.
+    These fields are a little confusing in their intended usage.
+    The best explanation found is
+    \begin{description}
+        \item[Creator]  {The application used to create the original document which became the PDF.}
+        \item[Producer] {The application used to convert the original document into the PDF.}
+    \end{description}
+    These are very thin distinctions and complicated by the typical workflow of a \LaTeX{} document: installing a \TeX{} distribution, editing a text file in \TeX{}/\LaTeX{} editor, and running the document through a \TeX{} engine with the \LaTeX{} format.
+    In order to give credit at all levels (while maintaining proper separation of the processes involved), it is recommended to state the editor and \TeX{} format used as the creator and state the engine and distribution used as the creator.
+    For example, this document would declare the following:
+    \begin{verbatim}
+        \Creator{TeXnicCenter 2.02, LaTeX2e+}
+        \Producer{pdfTeX 1.40.14, MiKTeX 2.9}
+    \end{verbatim}
+    But as stated before, this is all optional.
 \end{function}
 
 
@@ -738,11 +739,198 @@ Section 408 of the Copyright Act states: for any work produced after 1978, ``the
 In others words, a copy of the work can be submitted to the Copyright Office and subsequently placed in the Library of Congress for official recognition of copyright.
 However, registration is not compulsory since ``[s]uch registration is not a condition of copyright protection''.
 
-\UWSubSubFeature{Creative Commons}
+\begin{function}{\Copyright}
+    \begin{syntax}
+        \cs{Copyright}
+    \end{syntax}
+    Using this command within a |LicensePage| environment will print a Copyright Notice at the bottom of a page and place a link in the table of contents.
+\end{function}
 
-\begin{LicensePage}
-    \CreativeCommons
-    \NonCommercial
-    \ShareAlike
-\end{LicensePage}
+An example of usage (along with a redefined owner and year) would be
+\begin{verbatim}
+    \begin{LicensePage}
+        \LicenseOwner{Theodore Huxton}
+        \LicenseYear{3001}
+        \Copyright
+    \end{LicensePage}
+\end{verbatim}
+This input would generate the following text at the bottom of a new page (with a link in the table of contents:
+
+\ExplSyntaxOn
+    \cs_gset_eq:NN \UWMadCopyrightPageText \__UWMad_Copyright_LicenseText:
+\ExplSyntaxOff
+\begin{center}
+    \begin{LicensePage}
+        \LicenseOwner{Theodore Huxton}
+        \LicenseYear{3001}
+        \UWMadCopyrightPageText
+    \end{LicensePage}
+\end{center}
+\ExplSyntaxOn
+    \cs_undefine:N \UWMadCopyrightPageText
+\ExplSyntaxOff
+
+\UWSubSubFeature{Creative Commons}
+Creative Commons (CC) is a collective set of licenses that is most aptly described as ``some rights reserved''.
+That is, while Copyright requires explicit permission of the author for a lot of uses, Creative Commons immediately waives those rights.
+Why is this a good thing?
+To quote from \href{http://creativecommons.org/about}{CreativeCommons.org}:
+\begin{quote}
+Creative Commons is a nonprofit organization that enables the sharing and use of creativity and knowledge through free legal tools. ...
+
+If you want to give people the right to share, use, and even build upon a work you've created, you should consider publishing it under a Creative Commons license. CC gives you flexibility (for example, you can choose to allow only non-commercial uses) and protects the people who use your work, so they don't have to worry about copyright infringement, as long as they abide by the conditions you have specified.
+\end{quote}
+
+Therefore, the goal of CC is to begin from the ''most free'' license of public domain (termed CC0) and then add on conditions for legal use of the material.
+CC license are copyright licenses in that (aside from CC0) that author retains certain ownership rights, but a subset of the rights are relaxed or waived to encourage free sharing and extension of the work.
+To this end, Creative Commons defines the following four conditions:
+\begin{description}
+    \item[Attribution]{
+        Appropriate credit must be given to the original author, a link to the license provided, and indication of any changes that were made.
+        This may be done in any reasonable manner, but not in any way that suggests the licensor endorses the new author or her use.
+    }
+    \item[ShareAlike] {
+        If the work is remixed, transformed, or built upon the licensed material, the author of the new work \textsc{must distribute} the contributions under the same license as the original.
+    }
+    \item[NoDerivs] {
+        If the work is remixed, transformed, or built upon the licensed material, the author of the new work \textsc{may not} distribute the modified material.
+    }
+    \item[NonCommercial] {
+        The licensed work \textsc{may not} be used the material for commercial purposes.
+    }
+\end{description}
+These conditions are then combined into six, non-contradictory licenses.
+The licenses are ``layered'' into Legal Code (the official text determining the delineating usage), the License deed (non-legal text aimed to be non-lawyer readable), and machine readable code (the license put into an HTML-like style for search engines).
+The CC licenses and associated links) for the latest version are
+\begin{description}
+    \item[CC BY]{
+        \hfill\\
+        Attribution only (
+        \href{http://creativecommons.org/licenses/by/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-SA]{
+        \hfill\\
+        Attribution and ShareAlike (
+        \href{http://creativecommons.org/licenses/by-sa/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-sa/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-ND]{
+        \hfill\\
+        Attribution and NoDerivs (
+        \href{http://creativecommons.org/licenses/by-nd/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-nd/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-NC]{
+        \hfill\\
+        Attribution and NonCommerical (
+        \href{http://creativecommons.org/licenses/by-nc/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-nc/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-NC-SA]{
+        \hfill\\
+        Attribution, NonCommercial, and ShareAlike (
+        \href{http://creativecommons.org/licenses/by-nc-sa/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-NC-ND]{
+        \hfill\\
+        Attribution, NonCommercial, and NoDerivs (
+        \href{http://creativecommons.org/licenses/by-nc-nd/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-nc-nd/4.0/legalcode}{Legal Code}
+        ).
+    }
+\end{description}
+
+Prior to version 4.0 (the current one), there were a number of ``ports'' of the licenses to particular locales to deal with the specifics of individual countries.
+However, with the release of version 4.0 of the CC licenses, usage of the international version is highly encouraged as ports will be made ``\href{http://wiki.creativecommons.org/License_Versions#International_License_Development_Process}{only where a compelling need is demonstrated}''.
+As such, version 4.0 International is the default license base for the \UWMadClass{} class.
+Of course, this choice can be changed.
+
+\begin{function}{\CreativeCommons}
+    \begin{syntax}
+        \cs{CreativeCommons}
+    \end{syntax}
+    Using this command within a |LicensePage| environment will declare you have chosen a Creative Commons license.
+    By default, the license will be ``Creative Commons Attribution 4.0 International''.
+\end{function}
+
+\begin{function}{
+    \Attribution,
+    \ShareAlike,
+    \NonCommercial,
+    \NoDerivs}
+    \begin{syntax}
+        \cs{Attribution}
+        \cs{ShareAlike}
+        \cs{NonCommercial}
+        \cs{NoDerivs}
+    \end{syntax}
+    Using any of these commands (in any order) within a |LicensePage| environment will declare you have chosen to add the associated condition to the license of the work.
+    However, since all six licensees require Attribution, it is always on by default but should be included for clarity.
+\end{function}
+An example of usage would be
+\begin{verbatim}
+    \begin{LicensePage}
+        \CreativeCommons
+        \Attribution
+        \NonCommercial
+        \ShareAlike
+    \end{LicensePage}
+\end{verbatim}
+This input would generate the following text at the bottom of a new page (with a link in the table of contents):
+\begin{center}
+    \begin{LicensePage}
+        \NonCommercial
+        \ShareAlike
+        \ExplSyntaxOn
+            \__UWMad_CCLicense_CreateType:
+            \__UWMad_CCLicense_LicenseText:
+        \ExplSyntaxOff
+    \end{LicensePage}
+\end{center}
+Notice that since neither the \cs{LicenseOwner} nor \cs{LicenseYear} commands were used, the author of this document and then-current year were used as defaults.
+
+\begin{function}{
+    \CCVersion,
+    \CCPorting,
+    \CCURL,
+    \CCURLText}
+    \begin{syntax}
+        \cs{CCVersion}\marg{CC version}
+        \cs{CCPorting}\marg{CC porting}
+        \cs{CCURL}    \marg{CC link}
+        \cs{CCURLText}\marg{CC link text}
+    \end{syntax}
+    These commands exist to override the default 4.0 International Creative Commons license.
+    The link provided \textsc{should not} contain |http://| nor end with a |/|.
+    Use these commands only if there is a compelling reason not to use the latest version of the license.
+\end{function}
+An example of usage would be
+\begin{verbatim}
+    \begin{LicensePage}
+        \CreativeCommons
+        \CCVersion{3.0}
+        \CCPorting{United States}
+        \CCURL{creativecommons.org/licenses/by/3.0/us}
+        \CCURLText{Creative Commons Attribution 3.0 United States}
+    \end{LicensePage}
+\end{verbatim}
+This input would generate the following text at the bottom of a new page (with a link in the table of contents):
+\begin{center}
+    \begin{LicensePage}
+        \CCVersion{3.0}
+        \CCPorting{United States}
+        \CCURL{creativecommons.org/licenses/by/3.0/us}
+        \CCURLText{Creative Commons Attribution 3.0 United States}
+        \ExplSyntaxOn
+            \__UWMad_CCLicense_LicenseText:
+        \ExplSyntaxOff
+    \end{LicensePage}
+\end{center}
 
