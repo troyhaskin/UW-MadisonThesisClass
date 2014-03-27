@@ -2230,7 +2230,7 @@
         pdfpagelayout      = OneColumn  ,
         plainpages         = false      ,
         hypertexnames      = true       ,
-        bookmarksopenlevel = 3          ,
+        bookmarksopenlevel = 1          ,
         bookmarksopen      = true       ,
         unicode            = true
     }
@@ -2516,6 +2516,19 @@
 \cs_set_eq:NN \TableOfContents \tableofcontents
 \cs_set_eq:NN \ListOfTables    \listoftables
 \cs_set_eq:NN \ListOfFigures   \listoffigures
+%    \end{macrocode}
+%
+%   User-level commands to change the default names.
+%    \begin{macrocode}
+\DeclareDocumentCommand \TableOfContentsName { m } {
+    \tl_gset:Nn \g__UWMad_TOC_Name_TOC_tl {#1}
+}
+\DeclareDocumentCommand \ListOfTablesName { m } {
+    \tl_gset:Nn \g__UWMad_TOC_Name_LOT_tl {#1}
+}
+\DeclareDocumentCommand \ListOfFiguresName { m } {
+    \tl_gset:Nn \g__UWMad_TOC_Name_LOF_tl {#1}
+}
 %    \end{macrocode}
 %
 %   \UWSubModule{Section-Level Commands}

@@ -380,6 +380,87 @@ This input would generate the following text at the bottom of a new page (with a
 \end{center}
 
 
+\UWFeature{Sectioning}
+
+Sectioning concerns the overall structure of your document into chunks called sections.
+The default sections in \LaTeXe{} are |part|, |chapter|, |section|, |subsection|, |subsubsection|, |paragraph|, and |subparagraph|.
+The \UWMadClass{} Class defines some new section commands and makes some other adjustments to the default commands.
+
+\UWSubFeature{Front Matter}
+Front Matter (or preliminary pages) is the whole of content that precedes the main document (i.e., the first unstarred chapter).
+\UWMadShort{} requires that these pages are numbered in lower roman numerals and have that page number in the upper right-hand corner.
+This requirement is automatically  handled by the class.
+The Front Matter commands are all semantically named and set as starred (unnumbered) chapters.
+
+\begin{function} {
+    \dedications,
+    \acknowledgements,
+    \abstract,
+    \umiabstract,
+    \preface
+    }
+    \begin{syntax}
+        \cs{dedications}      \marg{title}
+        \cs{acknowledgements} \marg{title}
+        \cs{abstract}         \marg{title}
+        \cs{umiabstract}      \marg{title}
+        \cs{preface}          \marg{title}
+    \end{syntax}
+    The title \textsc{is optional}.
+    If the title is omitted, the default is a capitalized version of the command's name.
+    For example, |\dedications| will have the title \enquote{Dedications}.
+\end{function}
+
+\UWSubFeature{Appendix}
+The standard method of including appendices in \LaTeX{} is calling for some initialization to be done by using the \cs{appendix} command and then using the \cs{chapter} commands.
+The \UWMadClass{} class takes a different approach to encourage good semantic mark-up in \LaTeX{} documents and, therefore, redefines \cs{appendix}.
+
+\begin{function} {
+    \appendix
+    }
+    \begin{syntax}
+        \cs{appendix} \oarg{short title}\marg{title}
+        \cs{appendix}*\oarg{short title}\marg{title}
+    \end{syntax}
+    The appendix commands now acts like a \cs{chapter} commands and is typeset in the Table of Contents as one.
+
+    \textsc{Note}:
+    The usage \cs{appendix} should be after all the chapter material is set since some of the \cs{chapter} internals are changed.
+    Once the \cs{appendix} command is used, there is no mechanism to switch the internals back.
+\end{function}
+
+\UWSubFeature{Table of Contents Tweaks}
+Invoking the Table of Contents, List of Tables, and List of Figures commands now puts the start of those sections into the Table of Contents as chapters.
+
+\begin{function} {
+    \TableOfContentsName,
+    \ListOfTablesName,
+    \ListOfFiguresName
+    }
+    \begin{syntax}
+        \cs{TableOfContentsName}\marg{toc title}
+        \cs{ListOfTablesName}   \marg{lot title}
+        \cs{ListOfFiguresName}  \marg{lof title}
+    \end{syntax}
+    These commands redefine the title used in the associated sections.
+    The defaults for the TOC, LOT, and LOF are, respectively, \enquote{Table of Contents}, \enquote{List of Tables}, and \enquote{List of Figures}.
+\end{function}
+
+\begin{function} {
+    \TableOfContents,
+    \ListOfTables,
+    \ListOfFigures
+    }
+    \begin{syntax}
+        \cs{TableOfContents}
+        \cs{ListOfTables}
+        \cs{ListOfFigures}
+    \end{syntax}
+    Camel-cased versions of the standard \LaTeX{} commands.
+    These exist due to the preferences of the \UWMadClass{} author.
+\end{function}
+
+
 \UWFeature{List Environments}
 
 The \UWMadClass{} has a special set of functions from creating list environments (called |ListOf| in the implementation).

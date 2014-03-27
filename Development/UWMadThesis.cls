@@ -846,7 +846,7 @@
         pdfpagelayout      = OneColumn  ,
         plainpages         = false      ,
         hypertexnames      = true       ,
-        bookmarksopenlevel = 3          ,
+        bookmarksopenlevel = 1          ,
         bookmarksopen      = true       ,
         unicode            = true
     }
@@ -1024,6 +1024,15 @@
 \cs_set_eq:NN \TableOfContents \tableofcontents
 \cs_set_eq:NN \ListOfTables    \listoftables
 \cs_set_eq:NN \ListOfFigures   \listoffigures
+\DeclareDocumentCommand \TableOfContentsName { m } {
+    \tl_gset:Nn \g__UWMad_TOC_Name_TOC_tl {#1}
+}
+\DeclareDocumentCommand \ListOfTablesName { m } {
+    \tl_gset:Nn \g__UWMad_TOC_Name_LOT_tl {#1}
+}
+\DeclareDocumentCommand \ListOfFiguresName { m } {
+    \tl_gset:Nn \g__UWMad_TOC_Name_LOF_tl {#1}
+}
 \tl_const:Nn \c__UWMad_SectionsLevel_part_tl            {-1}
 \tl_const:Nn \c__UWMad_SectionsLevel_chapter_tl         {0}
 \tl_const:Nn \c__UWMad_SectionsLevel_section_tl         {1}
