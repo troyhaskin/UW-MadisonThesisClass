@@ -857,13 +857,7 @@
 \setlength{\parindent}{ 0pt}
 \setlength{\parskip}  {10pt}
 \setlength{\headsep}  {15pt}
-
-\tl_new:N  \g_UWMad_Sectioning_Chapter_PageStyle_tl
-\tl_set:Nn \g_UWMad_Sectioning_Chapter_PageStyle_tl {
-
-}
 \cs_gset_eq:NN \UWMad_Sectioning_DefaultChapter: \@chapter
-\cs_undefine:N \@chapter
 \cs_new:Nn \UWMad_Sectioning_Chapter: {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {
@@ -872,8 +866,6 @@
     \UWMad_Sectioning_DefaultChapter:
 }
 \cs_gset_eq:NN \@chapter \UWMad_Sectioning_Chapter:
-
-
 \int_new:N  \g__UWMad_Appendix_Counter_int
 \int_set:Nn \g__UWMad_Appendix_Counter_int {0}
 \cs_new:Nn \__UWMad_Appendix_Initialize:{
@@ -892,7 +884,7 @@
     \int_compare:nNnTF {\g__UWMad_Appendix_Counter_int} = {0} {
         \__UWMad_Appendix_Initialize:
     } { }
-    \int_incr:N \g__UWMad_Appendix_Counter_int
+    \int_gincr:N \g__UWMad_Appendix_Counter_int
 
     \IfBooleanTF { #1 } {
         \chapter*{#3}
@@ -904,75 +896,99 @@
         }
     }
 }
-
-\iffalse
-\renewcommand{\appendix}{
-    \UWMad_Counter_Compare:nnnTF{Appendix}{=}{0} {
-        \AppendixInitializer
-    }{}
-    \UWMad_Counter_Step:n{Appendix}
-    \chapter
-}
-\fi
-
-\UWMad_Counter_DefineGlobal:nn{FrontMatter}{0}
-
-\cs_new:Nn \__UWMad_Sectioning_FrontMatterRegister:nn {
+\int_new:N \g__UWMad_FrontMatter_Counter_int
+\cs_new:Nn \__UWMad_FrontMatter_Register:nn {
     \addcontentsline{toc}{#1}{#2}
-    \UWMad_Counter_Step:n{FrontMatter}
+    \int_gincr:N \g__UWMad_FrontMatter_Counter_int
 }
-
+\tl_new:N   \g__UWMad_FrontMatter_Title_Dedications_tl
+\tl_new:N   \g__UWMad_FrontMatter_Title_Acknowledgments_tl
+\tl_new:N   \g__UWMad_FrontMatter_Title_Abstract_tl
+\tl_new:N   \g__UWMad_FrontMatter_Title_UMIAbstract_tl
+\tl_new:N   \g__UWMad_FrontMatter_Title_Preface_tl
+\tl_gset:Nn \g__UWMad_FrontMatter_Title_Dedications_tl
+    {Dedications}
+\tl_gset:Nn \g__UWMad_FrontMatter_Title_Acknowledgments_tl
+    {Acknowledgments}
+\tl_gset:Nn \g__UWMad_FrontMatter_Title_Abstract_tl
+    {Abstract}
+\tl_gset:Nn \g__UWMad_FrontMatter_Title_UMIAbstract_tl
+    {Abstract}
+\tl_gset:Nn \g__UWMad_FrontMatter_Title_Preface_tl
+    {Preface}
 \cs_undefine:N \abstract
 \cs_undefine:N \endabstract
 
-\DeclareDocumentCommand \dedications     { O{Dedications}    } {
-    \chapter*{#1}
-    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+\DeclareDocumentCommand \dedications { g } {
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Dedications_tl
+            {#1}
+    }
+    \chapter*{\g__UWMad_FrontMatter_Name_Dedications_tl}
+    \__UWMad_FrontMatter_Register:nn {chapter} {
+        \g__UWMad_FrontMatter_Name_Dedications_tl
+    }
 }
-\DeclareDocumentCommand \acknowledgments { O{acknowledgments}} {
-    \chapter*{#1}
-    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+\DeclareDocumentCommand \acknowledgments { g } {
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Acknowledgments_tl
+            {#1}
+    }
+    \chapter*{\g__UWMad_FrontMatter_Name_Acknowledgments_tl}
+    \__UWMad_FrontMatter_Register:nn {chapter} {
+        \g__UWMad_FrontMatter_Name_Acknowledgments_tl
+    }
 }
-\DeclareDocumentCommand \abstract        { O{Abstract}       } {
-    \chapter*{#1}
-    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+\DeclareDocumentCommand \abstract { g } {
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Abstract_tl
+            {#1}
+    }
+    \chapter*{\g__UWMad_FrontMatter_Name_Abstract_tl}
+    \__UWMad_FrontMatter_Register:nn {chapter} {
+        \g__UWMad_FrontMatter_Name_Abstract_tl
+    }
 }
-\DeclareDocumentCommand \umiabstract     { O{Abstract}       } {
-    \chapter*{#1}
-    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+\DeclareDocumentCommand \umiabstract { g } {
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_FrontMatter_Name_UMIAbstract_tl
+            {#1}
+    }
+    \chapter*{\g__UWMad_FrontMatter_Name_UMIAbstract_tl}
+    \__UWMad_FrontMatter_Register:nn {chapter} {
+        \g__UWMad_FrontMatter_Name_UMIAbstract_tl
+    }
 }
-\DeclareDocumentCommand \preface         { O{Preface}        } {
-    \chapter*{#1}
-    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+\DeclareDocumentCommand \preface { g } {
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Preface_tl
+            {#1}
+    }
+    \chapter*{\g__UWMad_FrontMatter_Name_Preface_tl}
+    \__UWMad_FrontMatter_Register:nn {chapter} {
+        \g__UWMad_FrontMatter_Name_Preface_tl
+    }
 }
-
-
-\cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
-\cs_gset_eq:NN \ListOfTablesDefault    \listoftables
-\cs_gset_eq:NN \ListOfFiguresDefault   \listoffigures
-
+\cs_gset_eq:NN \UWMad_TOC_Default_TableOfContents: \tableofcontents
+\cs_gset_eq:NN \UWMad_TOC_Default_ListOfTables:    \listoftables
+\cs_gset_eq:NN \UWMad_TOC_Default_ListOfFigures:   \listoffigures
 \cs_undefine:N \tableofcontents
 \cs_undefine:N \listoftables
 \cs_undefine:N \listoffigures
-\cs_undefine:N \contentsname
-
-\tl_new:N   \g__UWMad_Sectioning_TOCName_tl
-\tl_gset:Nn \g__UWMad_Sectioning_TOCName_tl {Table~of~Contents}
-
-\tl_new:N   \g__UWMad_Sectioning_LOTName_tl
-\tl_gset:Nn \g__UWMad_Sectioning_LOTName_tl {List~of~Tables}
-
-\tl_new:N   \g__UWMad_Sectioning_LOFName_tl
-\tl_gset:Nn \g__UWMad_Sectioning_LOFName_tl {List~of~Figures}
-
+\tl_new:N   \g__UWMad_TOC_Name_TOC_tl
+\tl_new:N   \g__UWMad_TOC_Name_LOT_tl
+\tl_new:N   \g__UWMad_TOC_Name_LOF_tl
+\tl_gset:Nn \g__UWMad_TOC_Name_TOC_tl {Table~of~Contents}
+\tl_gset:Nn \g__UWMad_TOC_Name_LOT_tl {List~of~Tables}
+\tl_gset:Nn \g__UWMad_TOC_Name_LOF_tl {List~of~Figures}
 \DeclareDocumentCommand \tableofcontents { } {
+
+    \cs_gset_eq:NN \contentsname \g__UWMad_TOC_Name_TOC_tl
+
     \group_begin:
-        \tl_if_empty:nTF {\contentsname}{
-            \cs_set_eq:NN \contentsname \g__UWMad_Sectioning_TOCName_tl
-        }{}
         \setstretch{1.05}
         \phantomsection
-        \__UWMad_Sectioning_FrontMatterRegister:nn
+        \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\contentsname}
         \TableOfContentsDefault
@@ -980,10 +996,12 @@
     \group_end:
 }
 \DeclareDocumentCommand \listoftables { } {
+
+    \cs_set_eq:NN \listtablename \g__UWMad_TOC_Name_LOT_tl
+
     \group_begin:
-        \cs_set_eq:NN \listtablename \g__UWMad_Sectioning_LOTName_tl
         \setstretch{1.05}
-        \__UWMad_Sectioning_FrontMatterRegister:nn
+        \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listtablename}
         \ListOfTablesDefault
@@ -991,21 +1009,21 @@
     \group_end:
 }
 \DeclareDocumentCommand \listoffigures { } {
+
+    \cs_set_eq:NN \listfigurename \g__UWMad_TOC_Name_LOF_tl
+
     \group_begin:
-        \cs_set_eq:NN \listfigurename \g__UWMad_Sectioning_LOFName_tl
         \setstretch{1.05}
-        \__UWMad_Sectioning_FrontMatterRegister:nn
+        \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listfigurename}
         \ListOfFiguresDefault
         \clearpage
     \group_end:
 }
-
 \cs_set_eq:NN \TableOfContents \tableofcontents
 \cs_set_eq:NN \ListOfTables    \listoftables
 \cs_set_eq:NN \ListOfFigures   \listoffigures
-\UWMad_Hash_Define:n {SectionToLevel}
 \tl_const:Nn \c__UWMad_SectionsLevel_part_tl            {-1}
 \tl_const:Nn \c__UWMad_SectionsLevel_chapter_tl         {0}
 \tl_const:Nn \c__UWMad_SectionsLevel_section_tl         {1}
@@ -1026,11 +1044,6 @@
             {#1}
     }
 }
-\cs_new:Nn \UWMad_SectionToLevel:n {
-    \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_SectionsLevel_ #1 _tl}
-    }
-}
 \tl_const:cn {c__UWMad_LevelsSection_-1_tl} {part}
 \tl_const:cn {c__UWMad_LevelsSection_ 0_tl} {chapter}
 \tl_const:cn {c__UWMad_LevelsSection_ 1_tl} {section}
@@ -1038,41 +1051,38 @@
 \tl_const:cn {c__UWMad_LevelsSection_ 3_tl} {subsubsection}
 \tl_const:cn {c__UWMad_LevelsSection_ 4_tl} {paragraph}
 \tl_const:cn {c__UWMad_LevelsSection_ 5_tl} {subparagraph}
-\cs_new:Nn \UWMad_LevelToSection:n {
-    \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_LevelsSection_ #1 _tl}
-    }
-}
 \tl_const:Nn \c__UWMad_NextSection_part_tl            {chapter}
 \tl_const:Nn \c__UWMad_NextSection_chapter_tl         {section}
 \tl_const:Nn \c__UWMad_NextSection_section_tl         {subsection}
 \tl_const:Nn \c__UWMad_NextSection_subsection_tl      {subsubsection}
 \tl_const:Nn \c__UWMad_NextSection_subsubsection_tl   {paragraph}
 \tl_const:Nn \c__UWMad_NextSection_paragraph_tl       {subparagraph}
-\cs_new:Nn \UWMad_NextSection:n {
-    \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_NextSection_ #1 _tl}
-    }
-}
 \tl_const:Nn \c__UWMad_PreviousSection_chapter_tl         {part}
 \tl_const:Nn \c__UWMad_PreviousSection_section_tl         {chapter}
 \tl_const:Nn \c__UWMad_PreviousSection_subsection_tl      {section}
 \tl_const:Nn \c__UWMad_PreviousSection_subsubsection_tl   {subsection}
 \tl_const:Nn \c__UWMad_PreviousSection_paragraph_tl       {subsubsection}
 \tl_const:Nn \c__UWMad_PreviousSection_subparagraph_tl    {paragraph}
+\cs_new:Nn \UWMad_SectionToLevel:n {
+    \UWMad_IfSectionExists:nT {#1} {
+        \tl_use:c {c__UWMad_SectionsLevel_ #1 _tl}
+    }
+}
+\cs_new:Nn \UWMad_LevelToSection:n {
+    \UWMad_IfSectionExists:nT {#1} {
+        \tl_use:c {c__UWMad_LevelsSection_ #1 _tl}
+    }
+}
+\cs_new:Nn \UWMad_NextSection:n {
+    \UWMad_IfSectionExists:nT {#1} {
+        \tl_use:c {c__UWMad_NextSection_ #1 _tl}
+    }
+}
 \cs_new:Nn \UWMad_PreviousSection:n {
     \UWMad_IfSectionExists:nT {#1} {
         \tl_use:c {c__UWMad_PreviousSection_ #1 _tl}
     }
 }
-\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
-                                    {-3.25ex\@plus -1ex \@minus -.2ex}%
-                                    {1.5ex \@plus .2ex}%
-                                    {\normalfont\normalsize\bfseries}}
-\renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
-                                    {-3.25ex\@plus -1ex \@minus -.2ex}%
-                                    {1.5ex \@plus .2ex}%
-                                    {\normalfont\normalsize\bfseries}}
 \tex_everydisplay:D \exp_after:wN {
     \tex_the:D \tex_everydisplay:D
     \cs_set_eq:NN \frac \dfrac
@@ -1417,13 +1427,13 @@
         \tl_use:c {g__UWMad_ListOf#1_Section_Subgroup_tl}
     }
 }
+\cs_new:Nn \UWMad_ListOf_SetHook:nnn {
+    \UWMad_Hash_Set:nnn{g__ListOf#1_Hook}{#2}{#3}
+}
 \cs_new:Nn \UWMad_ListOf_PushEntry:nn {
     \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PrePush}
     \UWMad_Queue_Push:nn {g__ListOf#1_EntryQueue}{#2}
     \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PostPush}
-}
-\cs_new:Nn \UWMad_ListOf_SetHook:nnn {
-    \UWMad_Hash_Set:nnn{g__ListOf#1_Hook}{#2}{#3}
 }
 \cs_new:Nn \UWMad_ListOf_PrintEntries:n {
     \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PrePrint}
@@ -1443,7 +1453,7 @@
             \__UWMad_ListOf_CurrentSectioningCommmand:n
                 {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
         } {
-            \int_set_eq:Nc \l_tmpa_int {c@tocdepth}
+            \int_set_eq:NN \l_tmpa_int \c@tocdepth
             \setcounter{tocdepth}{-1}
             \__UWMad_ListOf_CurrentSectioningCommmand:n
                 {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
@@ -1522,12 +1532,15 @@
             \l__UWMad_Nomenclature_Title_Subgroup_tl {#1}
     },
     main-title .default:n = Nomenclature,
+    numbered       .bool_gset:N =
+        \g__UWMad_Nomenclature_IsNumbered_bool,
     include-in-toc .bool_gset:N =
         \g__UWMad_Nomenclature_IncludeInTOC_bool,
     with-units .bool_gset:N =
         \g__UWMad_Nomenclature_IncludeUnitsColumn_bool,
+      numbered     .default:n = false,
     include-in-toc .default:n = true,
-    with-units     .default:n = false
+     with-units    .default:n = false
 }
 \keys_set:nn { UWMad/Nomenclature } {
     title-skip          ,
@@ -1535,9 +1548,10 @@
     entry-margin-left   ,
     entry-margin-bottom ,
     entry-padding       ,
+    numbered            ,
     include-in-toc      ,
     with-units          ,
-    main-section,
+    main-section        ,
     main-title
 }
 \cs_new:Nn \UWMad_Nomenclature_UpdateWidest:Nn {
@@ -1657,23 +1671,23 @@
 \DeclareDocumentCommand \NomenclatureSetup { m } {
     \keys_set:nn { UWMad/Nomenclature } { #1 }
 }
-\DeclareDocumentEnvironment {Nomenclature} { s o g } {
+\DeclareDocumentEnvironment {Nomenclature} { o g } {
     \UWMad_ListOf_Define:n {Nomenclature}
-    \IfBooleanTF {#1} {
-        \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
-    }{
-        \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
+    \IfNoValueTF {#1} { } {
+        \UWMad_IfSectionExists:nT {#1} { }
+        \tl_set:Nn \l__UWMad_Nomenclature_Section_Main_tl {#1}
     }
     \IfNoValueTF {#2} { } {
-        \UWMad_IfSectionExists:nT {#2} { }
-        \tl_set:Nn \l__UWMad_Nomenclature_Section_Main_tl {#2}
-    }
-    \IfNoValueTF {#3} { } {
         \tl_set:Nf
-            \l__UWMad_Nomenclature_Title_Main_tl {#3}
+            \l__UWMad_Nomenclature_Title_Main_tl {#2}
     }
     \UWMad_ListOf_SetTitle_Main:nn {Nomenclature}
         {\l__UWMad_Nomenclature_Title_Main_tl}
+   \bool_if:NTF \g__UWMad_Nomenclature_IsNumbered_bool {
+        \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
+    }{
+        \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
+    }
     \tl_if_empty:NTF \l__UWMad_Nomenclature_Section_Group_tl {
         \tl_set:Nf \l__UWMad_Nomenclature_Section_Group_tl {
             \UWMad_NextSection:n {
@@ -1705,34 +1719,22 @@
     \UWMad_ListOf_SetHook:nnn {Nomenclature} {PostPrint} {
         \UWMad_Nomenclature_ZeroWidest_Symbol:
     }
-    \DeclareDocumentCommand \Group { s G{} } {
-        \IfBooleanTF {##1} {
-            \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
-        }{
-            \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
-        }
-
-        \IfNoValueTF {##2} { } {
+    \DeclareDocumentCommand \Group { G{} } {
+        \IfNoValueTF {##1} { } {
             \tl_set:Nn
-                \l__UWMad_Nomenclature_Title_Group_tl {##2}
+                \l__UWMad_Nomenclature_Title_Group_tl {##1}
         }
         \UWMad_ListOf_SetTitle_Group:nn {Nomenclature}
             {\l__UWMad_Nomenclature_Title_Group_tl}
         \UWMad_ListOf_StartGroup:nn{Nomenclature}{Group}
     }
-    \DeclareDocumentCommand \Subgroup { s G{} } {
-        \IfBooleanTF {##1} {
-            \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
-        }{
-            \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
-        }
-        \IfNoValueTF {##2} { } {
+    \DeclareDocumentCommand \Subgroup { G{} } {
+        \IfNoValueTF {##1} { } {
             \tl_set:Nn
-                \l__UWMad_Nomenclature_Title_Subgroup_tl {##2}
+                \l__UWMad_Nomenclature_Title_Subgroup_tl {##1}
         }
-        \UWMad_ListOf_SetTitle_Group:nn {Nomenclature}
+        \UWMad_ListOf_SetTitle_Subgroup:nn {Nomenclature}
             {\l__UWMad_Nomenclature_Title_Subgroup_tl}
-        \UWMad_ListOf_SetTitle_Subgroup:nn {Nomenclature}{##2}
         \UWMad_ListOf_StartGroup:nn{Nomenclature}{Subgroup}
     }
     \bool_if:NTF \g__UWMad_Nomenclature_IncludeUnitsColumn_bool {
@@ -1754,21 +1756,16 @@
     }
     \DeclareDocumentCommand  \ResetColumnWidth { } {
         \UWMad_Nomenclature_ZeroWidest_Symbol:
+        \UWMad_Nomenclature_ZeroWidest_Unit:
     }
     \UWMad_ListOf_PrintTitle:nn {Nomenclature}{Main}
 } {
     \UWMad_ListOf_PrintEntries:n {Nomenclature}
     \UWMad_ListOf_Delete:n{Nomenclature}
 }
-\cs_new:cpn      {Nomenclature*} {\Nomenclature*}
-\cs_new_eq:cN {endNomenclature*} \endNomenclature
-\DeclareDocumentEnvironment {Acronym} { s o G{Acronym} } {
+\DeclareDocumentEnvironment {Acronym} { o G{Acronym} } {
 
-    \IfBooleanTF {#1} {
-        \begin{Nomenclature*}[#2]{#3}
-    } {
-        \begin{Nomenclature}[#2]{#3}
-    }
+    \begin{Nomenclature}[#1]{#2}
     \UWMad_Hash_Define:n{Acronyms}
     \UWMad_Hash_Define:n{AcronymMeanings}
     \cs_undefine:N \Entry
@@ -1801,11 +1798,9 @@
         \UWMad_Nomenclature_UpdateWidest_Symbol:n{##2}
     }
 } {
-    \IfBooleanTF {#1} {
-        \end{Nomenclature*}
-    } {
-        \end{Nomenclature}
-    }
+
+    \end{Nomenclature}
+
 }
 
 \DeclareDocumentCommand \Acro { m } {
@@ -1824,8 +1819,6 @@
     } { }
 }
 \cs_new_eq:NN \AcronymSetup \NomenclatureSetup
-\cs_new:cpn      {Acronym*} {\Acronym*}
-\cs_new_eq:cN {endAcronym*} \endAcronym
 \UWMad_CSV_Define:n {MetaDataList}
 \cs_new:Nn \UWMad_MetaData_PushToList:nn {
    \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}

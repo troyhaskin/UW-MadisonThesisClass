@@ -2258,20 +2258,15 @@
 %   \UWModule{Sectioning}
 %
 %
-%    \begin{macrocode}
 %
 %^^A  =========================================================================== %
 %^^A                     Redefinition of Chapter Commands                         %
 %^^A  =========================================================================== %
-
-\tl_new:N  \g_UWMad_Sectioning_Chapter_PageStyle_tl
-\tl_set:Nn \g_UWMad_Sectioning_Chapter_PageStyle_tl {
-
-}
-%
+%   Prefix some code such that \cs{chapter} has the page number in the
+%   upper right-hand corner and ensures that the  page numbering is
+%   arabic before the first unnumbered chapter is used.
+%    \begin{macrocode}
 \cs_gset_eq:NN \UWMad_Sectioning_DefaultChapter: \@chapter
-%
-\cs_undefine:N \@chapter
 \cs_new:Nn \UWMad_Sectioning_Chapter: {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {
@@ -2280,17 +2275,28 @@
     \UWMad_Sectioning_DefaultChapter:
 }
 \cs_gset_eq:NN \@chapter \UWMad_Sectioning_Chapter:
-
-
-
+%    \end{macrocode}
 %^^A  =========================================================================== %
 %^^A                           New Appendix Command                               %
 %^^A  =========================================================================== %
-
-% Appendix counter
+%
+%   \UWSubModule{Appendix}
+%   Here the \cs{appendix} command is redefined to act like the
+%   \cs{chapter} command.
+%   Before, \cs{appendix} simply changed the |chaptername| to
+%   \enquote{Appendix}.
+%
+%   Define the appendix counter.
+%    \begin{macrocode}
 \int_new:N  \g__UWMad_Appendix_Counter_int
 \int_set:Nn \g__UWMad_Appendix_Counter_int {0}
+%    \end{macrocode}
 %
+%   This command is used when the first \cs{appendix} command
+%   is used.  It sets the |chaptername| to \enquote{Appendix}
+%   and sets the \cs{thechapter} to use the appendix counter
+%   above.
+%    \begin{macrocode}
 \cs_new:Nn \__UWMad_Appendix_Initialize:{
     \par
     \setcounter{section}{0}
@@ -2301,14 +2307,19 @@
         }
     }
 }
+%    \end{macrocode}
 %
+%   Now, \cs{appendix} is undefined (to avoide a warning from
+%   \pkg{xparse}) and redefined with standard \LaTeXe{}
+%   sectioning arguments.
+%    \begin{macrocode}
 \cs_undefine:N \appendix
 \DeclareDocumentCommand \appendix { s o m } {
 
     \int_compare:nNnTF {\g__UWMad_Appendix_Counter_int} = {0} {
         \__UWMad_Appendix_Initialize:
     } { }
-    \int_incr:N \g__UWMad_Appendix_Counter_int
+    \int_gincr:N \g__UWMad_Appendix_Counter_int
 
     \IfBooleanTF { #1 } {
         \chapter*{#3}
@@ -2320,140 +2331,203 @@
         }
     }
 }
-
-\iffalse
-\renewcommand{\appendix}{
-    \UWMad_Counter_Compare:nnnTF{Appendix}{=}{0} {
-        \AppendixInitializer
-    }{}
-    \UWMad_Counter_Step:n{Appendix}
-    \chapter
-}
-\fi
-
-
-
-
-
-%^^A =========================================================================== %
-%^^A               Front Matter Environment/Command Definitions                   %
-%^^A  =========================================================================== %
-\UWMad_Counter_DefineGlobal:nn{FrontMatter}{0}
-
-
-\cs_new:Nn \__UWMad_Sectioning_FrontMatterRegister:nn {
+%    \end{macrocode}
+%
+%
+%   \UWSubModule{Front Matter}
+%
+%   Front Matter commands (sometimes called preliminary pages)
+%   are defined here.  These are the sections of the document
+%   the precede the main body of the work.
+%
+%   Initialize a counter for the FrontMatter.
+%    \begin{macrocode}%
+\int_new:N \g__UWMad_FrontMatter_Counter_int
+%    \end{macrocode}
+%
+%   This command enters the Front Matter with a given name
+%   and section level into the Table of Contents.
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_FrontMatter_Register:nn {
     \addcontentsline{toc}{#1}{#2}
-    \UWMad_Counter_Step:n{FrontMatter}
+    \int_gincr:N \g__UWMad_FrontMatter_Counter_int
 }
-
+%    \end{macrocode}
+%
+%   These variables hold the default names of the Front Matter sections.
+%    \begin{macrocode}
+\tl_new:N   \g__UWMad_FrontMatter_Title_Dedications_tl
+\tl_new:N   \g__UWMad_FrontMatter_Title_Acknowledgments_tl
+\tl_new:N   \g__UWMad_FrontMatter_Title_Abstract_tl
+\tl_new:N   \g__UWMad_FrontMatter_Title_UMIAbstract_tl
+\tl_new:N   \g__UWMad_FrontMatter_Title_Preface_tl
+%
+\tl_gset:Nn \g__UWMad_FrontMatter_Title_Dedications_tl
+    {Dedications}
+\tl_gset:Nn \g__UWMad_FrontMatter_Title_Acknowledgments_tl
+    {Acknowledgments}
+\tl_gset:Nn \g__UWMad_FrontMatter_Title_Abstract_tl
+    {Abstract}
+\tl_gset:Nn \g__UWMad_FrontMatter_Title_UMIAbstract_tl
+    {Abstract}
+\tl_gset:Nn \g__UWMad_FrontMatter_Title_Preface_tl
+    {Preface}
+%    \end{macrocode}
+%
+%
+%   First the |abstract| environment from the \LaTeX{} base class is
+%   undefined, and the Front Matter commands as described in the User
+%   Guide are defined.
+%    \begin{macrocode}
 \cs_undefine:N \abstract
 \cs_undefine:N \endabstract
 
-\DeclareDocumentCommand \dedications     { O{Dedications}    } {
-    \chapter*{#1}
-    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+\DeclareDocumentCommand \dedications { g } {
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Dedications_tl
+            {#1}
+    }
+    \chapter*{\g__UWMad_FrontMatter_Name_Dedications_tl}
+    \__UWMad_FrontMatter_Register:nn {chapter} {
+        \g__UWMad_FrontMatter_Name_Dedications_tl
+    }
 }
-\DeclareDocumentCommand \acknowledgments { O{acknowledgments}} {
-    \chapter*{#1}
-    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+\DeclareDocumentCommand \acknowledgments { g } {
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Acknowledgments_tl
+            {#1}
+    }
+    \chapter*{\g__UWMad_FrontMatter_Name_Acknowledgments_tl}
+    \__UWMad_FrontMatter_Register:nn {chapter} {
+        \g__UWMad_FrontMatter_Name_Acknowledgments_tl
+    }
 }
-\DeclareDocumentCommand \abstract        { O{Abstract}       } {
-    \chapter*{#1}
-    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+\DeclareDocumentCommand \abstract { g } {
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Abstract_tl
+            {#1}
+    }
+    \chapter*{\g__UWMad_FrontMatter_Name_Abstract_tl}
+    \__UWMad_FrontMatter_Register:nn {chapter} {
+        \g__UWMad_FrontMatter_Name_Abstract_tl
+    }
 }
-\DeclareDocumentCommand \umiabstract     { O{Abstract}       } {
-    \chapter*{#1}
-    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+\DeclareDocumentCommand \umiabstract { g } {
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_FrontMatter_Name_UMIAbstract_tl
+            {#1}
+    }
+    \chapter*{\g__UWMad_FrontMatter_Name_UMIAbstract_tl}
+    \__UWMad_FrontMatter_Register:nn {chapter} {
+        \g__UWMad_FrontMatter_Name_UMIAbstract_tl
+    }
 }
-\DeclareDocumentCommand \preface         { O{Preface}        } {
-    \chapter*{#1}
-    \__UWMad_Sectioning_FrontMatterRegister:nn{chapter}{#1}
+\DeclareDocumentCommand \preface { g } {
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Preface_tl
+            {#1}
+    }
+    \chapter*{\g__UWMad_FrontMatter_Name_Preface_tl}
+    \__UWMad_FrontMatter_Register:nn {chapter} {
+        \g__UWMad_FrontMatter_Name_Preface_tl
+    }
 }
-
-
-
-
-
-%^^A  =========================================================================== %
-%^^A                  List of Contents, Tables, and Figures                       %
-%^^A  =========================================================================== %
-
-\cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
-\cs_gset_eq:NN \ListOfTablesDefault    \listoftables
-\cs_gset_eq:NN \ListOfFiguresDefault   \listoffigures
-
+%    \end{macrocode}
+%
+%
+%   \UWSubModule{TOC Tweaks}
+%
+%   This section tweaks the Table of Contents, the List of Tables,
+%   and the List of Figures commands to insert them into the
+%   bookmark tree of the PDF.  Also, the commands for changing the
+%   titles used for each of the commands' associated sections
+%   are given.
+%
+%
+%   First, store the original commands and then undefine them.
+%    \begin{macrocode}
+\cs_gset_eq:NN \UWMad_TOC_Default_TableOfContents: \tableofcontents
+\cs_gset_eq:NN \UWMad_TOC_Default_ListOfTables:    \listoftables
+\cs_gset_eq:NN \UWMad_TOC_Default_ListOfFigures:   \listoffigures
 \cs_undefine:N \tableofcontents
 \cs_undefine:N \listoftables
 \cs_undefine:N \listoffigures
-\cs_undefine:N \contentsname
-
-% Register the Table of Contents to the Table of Contents
-\tl_new:N   \g__UWMad_Sectioning_TOCName_tl
-\tl_gset:Nn \g__UWMad_Sectioning_TOCName_tl {Table~of~Contents}
-
-\tl_new:N   \g__UWMad_Sectioning_LOTName_tl
-\tl_gset:Nn \g__UWMad_Sectioning_LOTName_tl {List~of~Tables}
-
-\tl_new:N   \g__UWMad_Sectioning_LOFName_tl
-\tl_gset:Nn \g__UWMad_Sectioning_LOFName_tl {List~of~Figures}
-
+%    \end{macrocode}
+%
+%   Now create token list variables to store the titles of the sections
+%   and assign defaults.
+%    \begin{macrocode}
+\tl_new:N   \g__UWMad_TOC_Name_TOC_tl
+\tl_new:N   \g__UWMad_TOC_Name_LOT_tl
+\tl_new:N   \g__UWMad_TOC_Name_LOF_tl
+\tl_gset:Nn \g__UWMad_TOC_Name_TOC_tl {Table~of~Contents}
+\tl_gset:Nn \g__UWMad_TOC_Name_LOT_tl {List~of~Tables}
+\tl_gset:Nn \g__UWMad_TOC_Name_LOF_tl {List~of~Figures}
+%    \end{macrocode}
+%
+%   Define the new user-level commands.
+%   Since these commands are technically Front Matter, they are
+%   registered as such.
+%    \begin{macrocode}
 \DeclareDocumentCommand \tableofcontents { } {
+
+    \cs_gset_eq:NN \contentsname \g__UWMad_TOC_Name_TOC_tl
+
     \group_begin:
-        \tl_if_empty:nTF {\contentsname}{
-            \cs_set_eq:NN \contentsname \g__UWMad_Sectioning_TOCName_tl
-        }{}
         \setstretch{1.05}
         \phantomsection
-        \__UWMad_Sectioning_FrontMatterRegister:nn
+        \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\contentsname}
         \TableOfContentsDefault
         \clearpage
     \group_end:
 }
-%
-%
-% Register the List of Tables to the Table of Contents
 \DeclareDocumentCommand \listoftables { } {
+
+    \cs_set_eq:NN \listtablename \g__UWMad_TOC_Name_LOT_tl
+
     \group_begin:
-        \cs_set_eq:NN \listtablename \g__UWMad_Sectioning_LOTName_tl
         \setstretch{1.05}
-        \__UWMad_Sectioning_FrontMatterRegister:nn
+        \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listtablename}
         \ListOfTablesDefault
         \clearpage
     \group_end:
 }
-%
-%
-% Register the List of Figures to the Table of Contents
 \DeclareDocumentCommand \listoffigures { } {
+
+    \cs_set_eq:NN \listfigurename \g__UWMad_TOC_Name_LOF_tl
+
     \group_begin:
-        \cs_set_eq:NN \listfigurename \g__UWMad_Sectioning_LOFName_tl
         \setstretch{1.05}
-        \__UWMad_Sectioning_FrontMatterRegister:nn
+        \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listfigurename}
         \ListOfFiguresDefault
         \clearpage
     \group_end:
 }
-
+%    \end{macrocode}
+%
+%   Camel-cased aliases.
+%    \begin{macrocode}
 \cs_set_eq:NN \TableOfContents \tableofcontents
 \cs_set_eq:NN \ListOfTables    \listoftables
 \cs_set_eq:NN \ListOfFigures   \listoffigures
+%    \end{macrocode}
 %
+%   \UWSubModule{Section-Level Commands}
 %
+%   These commands are used internally when needing to check if a
+%   user-supplied |section| is a \LaTeXe{}-defined section and
+%   also easily acquired/use the relationships among section levels
+%   when needed.
 %
-%
-%
-%
-%^^A  =========================================================================== %
-%^^A                  Table of Contents 'Headers' (i.e., Parts)                   %
-%^^A  =========================================================================== %
-%
-\UWMad_Hash_Define:n {SectionToLevel}
+%   These variables map a |section| to a level number and also serve
+%   to define the existence of the level.
+%    \begin{macrocode}
 \tl_const:Nn \c__UWMad_SectionsLevel_part_tl            {-1}
 \tl_const:Nn \c__UWMad_SectionsLevel_chapter_tl         {0}
 \tl_const:Nn \c__UWMad_SectionsLevel_section_tl         {1}
@@ -2461,7 +2535,11 @@
 \tl_const:Nn \c__UWMad_SectionsLevel_subsubsection_tl   {3}
 \tl_const:Nn \c__UWMad_SectionsLevel_paragraph_tl       {4}
 \tl_const:Nn \c__UWMad_SectionsLevel_subparagraph_tl    {5}
+%    \end{macrocode}
 %
+%   Define a message to warn about an undefined section
+%   and associated command to check if a section exists.
+%    \begin{macrocode}
 \msg_new:nnn { UWMadThesis } { Sectioning / UndefinedSection } {
     Undefined~section~'#1'~used.
 }
@@ -2475,14 +2553,10 @@
             {#1}
     }
 }
+%    \end{macrocode}
 %
-\cs_new:Nn \UWMad_SectionToLevel:n {
-    \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_SectionsLevel_ #1 _tl}
-    }
-}
-%
-%
+%   Variables that map a level number to a section.
+%    \begin{macrocode}
 \tl_const:cn {c__UWMad_LevelsSection_-1_tl} {part}
 \tl_const:cn {c__UWMad_LevelsSection_ 0_tl} {chapter}
 \tl_const:cn {c__UWMad_LevelsSection_ 1_tl} {section}
@@ -2490,53 +2564,65 @@
 \tl_const:cn {c__UWMad_LevelsSection_ 3_tl} {subsubsection}
 \tl_const:cn {c__UWMad_LevelsSection_ 4_tl} {paragraph}
 \tl_const:cn {c__UWMad_LevelsSection_ 5_tl} {subparagraph}
-\cs_new:Nn \UWMad_LevelToSection:n {
-    \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_LevelsSection_ #1 _tl}
-    }
-}
+%    \end{macrocode}
 %
-%
+%   Variables that map a section to it's next lower one.
+%    \begin{macrocode}
 \tl_const:Nn \c__UWMad_NextSection_part_tl            {chapter}
 \tl_const:Nn \c__UWMad_NextSection_chapter_tl         {section}
 \tl_const:Nn \c__UWMad_NextSection_section_tl         {subsection}
 \tl_const:Nn \c__UWMad_NextSection_subsection_tl      {subsubsection}
 \tl_const:Nn \c__UWMad_NextSection_subsubsection_tl   {paragraph}
 \tl_const:Nn \c__UWMad_NextSection_paragraph_tl       {subparagraph}
-\cs_new:Nn \UWMad_NextSection:n {
-    \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_NextSection_ #1 _tl}
-    }
-}
+%    \end{macrocode}
 %
-%
+%   Variables that map a section to it's next higher one.
+%    \begin{macrocode}
 \tl_const:Nn \c__UWMad_PreviousSection_chapter_tl         {part}
 \tl_const:Nn \c__UWMad_PreviousSection_section_tl         {chapter}
 \tl_const:Nn \c__UWMad_PreviousSection_subsection_tl      {section}
 \tl_const:Nn \c__UWMad_PreviousSection_subsubsection_tl   {subsection}
 \tl_const:Nn \c__UWMad_PreviousSection_paragraph_tl       {subsubsection}
 \tl_const:Nn \c__UWMad_PreviousSection_subparagraph_tl    {paragraph}
+%    \end{macrocode}
+%
+%   Given a section, acquire its level number.
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_SectionToLevel:n {
+    \UWMad_IfSectionExists:nT {#1} {
+        \tl_use:c {c__UWMad_SectionsLevel_ #1 _tl}
+    }
+}
+%    \end{macrocode}
+%
+%   Given a level number, acquire its section.
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_LevelToSection:n {
+    \UWMad_IfSectionExists:nT {#1} {
+        \tl_use:c {c__UWMad_LevelsSection_ #1 _tl}
+    }
+}
+%    \end{macrocode}
+%
+%   Given a section, acquire its next lower one.
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_NextSection:n {
+    \UWMad_IfSectionExists:nT {#1} {
+        \tl_use:c {c__UWMad_NextSection_ #1 _tl}
+    }
+}
+%    \end{macrocode}
+%
+%   Given a section, acquire its next higher one.
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_PreviousSection:n {
     \UWMad_IfSectionExists:nT {#1} {
         \tl_use:c {c__UWMad_PreviousSection_ #1 _tl}
     }
 }
-%
-%
-%
-%
-%^^A  =========================================================================== %
-%^^A       Paragraphs and Subparagraphs are Layed out like subsubsections         %
-%^^A  =========================================================================== %
-\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
-                                    {-3.25ex\@plus -1ex \@minus -.2ex}%
-                                    {1.5ex \@plus .2ex}%
-                                    {\normalfont\normalsize\bfseries}}
-\renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
-                                    {-3.25ex\@plus -1ex \@minus -.2ex}%
-                                    {1.5ex \@plus .2ex}%
-                                    {\normalfont\normalsize\bfseries}}
 %    \end{macrocode}
+%
+%
 %   \iffalse
 %</Code>
 %   \fi
@@ -3123,6 +3209,24 @@
 %
 %
 %
+%   \begin{function}{\UWMad_ListOf_SetHook:nnn}
+%   \begin{syntax}
+%       \cs{UWMad_ListOf_SetHook:nnn}\Arg{ID}\Arg{Hook name}\Arg{Hook code}
+%   \end{syntax}
+%   Sets \Arg{Hook name} to \Arg{Hook code} for the |ListOf|
+%   with \Arg{ID}.
+%   The current hooks used are: |PrePush|, |PostPush|,
+%   |PrePrint|, and |PostPrint|.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_SetHook:nnn {
+    \UWMad_Hash_Set:nnn{g__ListOf#1_Hook}{#2}{#3}
+}
+%    \end{macrocode}
+%   \end{function}
+%
+%
+%
 %   \begin{function}{\UWMad_ListOf_PushEntry:nn}
 %   \begin{syntax}
 %       \cs{UWMad_ListOf_PushEntry:nn} \Arg{ID}\Arg{Entry}
@@ -3134,23 +3238,6 @@
     \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PrePush}
     \UWMad_Queue_Push:nn {g__ListOf#1_EntryQueue}{#2}
     \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PostPush}
-}
-%    \end{macrocode}
-%   \end{function}
-%
-%
-%
-%   \begin{function}{\UWMad_ListOf_SetHook:nnn}
-%   \begin{syntax}
-%       \cs{UWMad_ListOf_SetHook:nnn}\Arg{ID}\Arg{Hook name}\Arg{Hook code}
-%   \end{syntax}
-%   Sets \Arg{Hook name} to \Arg{Hook code} for the |ListOf|
-%   with \Arg{ID}.
-%   Currently, only the |PrePrint| and |PostPrint| hooks exist
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_SetHook:nnn {
-    \UWMad_Hash_Set:nnn{g__ListOf#1_Hook}{#2}{#3}
 }
 %    \end{macrocode}
 %   \end{function}
@@ -3200,7 +3287,7 @@
             \__UWMad_ListOf_CurrentSectioningCommmand:n
                 {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
         } {
-            \int_set_eq:Nc \l_tmpa_int {c@tocdepth}
+            \int_set_eq:NN \l_tmpa_int \c@tocdepth
             \setcounter{tocdepth}{-1}
             \__UWMad_ListOf_CurrentSectioningCommmand:n
                 {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
@@ -3345,6 +3432,8 @@
 %
 %   Miscellaneous options:
 %    \begin{macrocode}
+    numbered       .bool_gset:N =
+        \g__UWMad_Nomenclature_IsNumbered_bool,
     include-in-toc .bool_gset:N =
         \g__UWMad_Nomenclature_IncludeInTOC_bool,
     with-units .bool_gset:N =
@@ -3353,8 +3442,9 @@
 %
 %   Miscellaneous option defaults:
 %    \begin{macrocode}
+      numbered     .default:n = false,
     include-in-toc .default:n = true,
-    with-units     .default:n = false
+     with-units    .default:n = false
 }
 %    \end{macrocode}
 %
@@ -3366,9 +3456,10 @@
     entry-margin-left   ,
     entry-margin-bottom ,
     entry-padding       ,
+    numbered            ,
     include-in-toc      ,
     with-units          ,
-    main-section,
+    main-section        ,
     main-title
 }
 %    \end{macrocode}
@@ -3376,6 +3467,17 @@
 %
 %
 %   And the defaults for all keys are now set.
+%   \begin{function} {
+%       \UWMad_Nomenclature_UpdateWidest:Nn,
+%       \UWMad_Nomenclature_UpdateWidest_Symbol:n,
+%       \UWMad_Nomenclature_UpdateWidest_Units:n,
+%       }
+%       \begin{syntax}
+%           \cs{UWMad_Nomenclature_UpdateWidest:Nn}\meta{dim}\marg{object}
+%           \cs{UWMad_Nomenclature_UpdateWidest_Symbol:n}\marg{symbol}
+%           \cs{UWMad_Nomenclature_UpdateWidest_Units:n}\marg{units}
+%       \end{syntax}
+%       These commands update the widest symbol and widest unit lengths.
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Nomenclature_UpdateWidest:Nn {
     \hbox_set:Nn \l_tmpa_box {#2}
@@ -3401,8 +3503,9 @@
 \cs_new:Nn \UWMad_Nomenclature_ZeroWidest_Unit: {
     \dim_set:Nn \l__UWMad_Nomenclature_WidestUnit_dim {0pt}
 }
-%
-%
+%    \end{macrocode}
+%   \end{function}
+%    \begin{macrocode}
 %
 %
 % ======================================================================= %
@@ -3533,36 +3636,35 @@
 }
 %
 %
-\DeclareDocumentEnvironment {Nomenclature} { s o g } {
+\DeclareDocumentEnvironment {Nomenclature} { o g } {
 %
 %   Create the ListOf
     \UWMad_ListOf_Define:n {Nomenclature}
 %
 %
-%   Check for a star
-    \IfBooleanTF {#1} {
-        \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
-    }{
-        \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
+%   Check for an optional section declaration and
+%   set Main section token list.
+    \IfNoValueTF {#1} { } {
+        \UWMad_IfSectionExists:nT {#1} { }
+        \tl_set:Nn \l__UWMad_Nomenclature_Section_Main_tl {#1}
     }
 %
 %
 %   Check for an optional section declaration and
 %   set Main section token list.
     \IfNoValueTF {#2} { } {
-        \UWMad_IfSectionExists:nT {#2} { }
-        \tl_set:Nn \l__UWMad_Nomenclature_Section_Main_tl {#2}
-    }
-%
-%
-%   Check for an optional section declaration and
-%   set Main section token list.
-    \IfNoValueTF {#3} { } {
         \tl_set:Nf
-            \l__UWMad_Nomenclature_Title_Main_tl {#3}
+            \l__UWMad_Nomenclature_Title_Main_tl {#2}
     }
     \UWMad_ListOf_SetTitle_Main:nn {Nomenclature}
         {\l__UWMad_Nomenclature_Title_Main_tl}
+%
+%
+   \bool_if:NTF \g__UWMad_Nomenclature_IsNumbered_bool {
+        \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
+    }{
+        \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
+    }
 %
 %
 %
@@ -3614,16 +3716,10 @@
 %
 %
 %   User front-end for creating a Group
-    \DeclareDocumentCommand \Group { s G{} } {
-        \IfBooleanTF {##1} {
-            \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
-        }{
-            \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
-        }
-
-        \IfNoValueTF {##2} { } {
+    \DeclareDocumentCommand \Group { G{} } {
+        \IfNoValueTF {##1} { } {
             \tl_set:Nn
-                \l__UWMad_Nomenclature_Title_Group_tl {##2}
+                \l__UWMad_Nomenclature_Title_Group_tl {##1}
         }
         \UWMad_ListOf_SetTitle_Group:nn {Nomenclature}
             {\l__UWMad_Nomenclature_Title_Group_tl}
@@ -3631,19 +3727,13 @@
     }
 %
 %   User front-end for creating a Subgroup
-    \DeclareDocumentCommand \Subgroup { s G{} } {
-        \IfBooleanTF {##1} {
-            \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
-        }{
-            \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
-        }
-        \IfNoValueTF {##2} { } {
+    \DeclareDocumentCommand \Subgroup { G{} } {
+        \IfNoValueTF {##1} { } {
             \tl_set:Nn
-                \l__UWMad_Nomenclature_Title_Subgroup_tl {##2}
+                \l__UWMad_Nomenclature_Title_Subgroup_tl {##1}
         }
-        \UWMad_ListOf_SetTitle_Group:nn {Nomenclature}
+        \UWMad_ListOf_SetTitle_Subgroup:nn {Nomenclature}
             {\l__UWMad_Nomenclature_Title_Subgroup_tl}
-        \UWMad_ListOf_SetTitle_Subgroup:nn {Nomenclature}{##2}
         \UWMad_ListOf_StartGroup:nn{Nomenclature}{Subgroup}
     }
 %
@@ -3669,6 +3759,7 @@
 %   User front-end for reseting the column width
     \DeclareDocumentCommand  \ResetColumnWidth { } {
         \UWMad_Nomenclature_ZeroWidest_Symbol:
+        \UWMad_Nomenclature_ZeroWidest_Unit:
     }
 %
 %
@@ -3683,19 +3774,11 @@
 }
 %
 %
-\cs_new:cpn      {Nomenclature*} {\Nomenclature*}
-\cs_new_eq:cN {endNomenclature*} \endNomenclature
 %
 %
-%
-%
-\DeclareDocumentEnvironment {Acronym} { s o G{Acronym} } {
+\DeclareDocumentEnvironment {Acronym} { o G{Acronym} } {
 
-    \IfBooleanTF {#1} {
-        \begin{Nomenclature*}[#2]{#3}
-    } {
-        \begin{Nomenclature}[#2]{#3}
-    }
+    \begin{Nomenclature}[#1]{#2}
 %
 %
     \UWMad_Hash_Define:n{Acronyms}
@@ -3732,11 +3815,9 @@
         \UWMad_Nomenclature_UpdateWidest_Symbol:n{##2}
     }
 } {
-    \IfBooleanTF {#1} {
-        \end{Nomenclature*}
-    } {
-        \end{Nomenclature}
-    }
+
+    \end{Nomenclature}
+
 }
 
 \DeclareDocumentCommand \Acro { m } {
@@ -3757,9 +3838,6 @@
 %
 %
 \cs_new_eq:NN \AcronymSetup \NomenclatureSetup
-%
-\cs_new:cpn      {Acronym*} {\Acronym*}
-\cs_new_eq:cN {endAcronym*} \endAcronym
 %
 %
 %
