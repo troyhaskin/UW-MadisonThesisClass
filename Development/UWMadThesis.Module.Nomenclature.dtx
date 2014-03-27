@@ -163,7 +163,6 @@ Lastly, it comes equipped with a new command: \cs{Acro}.
     An exact copy of \cs{NomenclatureSetup}.
 \end{function}
 
-
 \UWSubSubFeature{Example}
 The following input
 \begin{verbatim}
@@ -208,14 +207,14 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
         entry-margin-left   & Horizontal margin left of an entry             & 1em          & dimension \\[10pt]
         entry-margin-bottom & Vertical margin below a printed entry          & 0.25em       & dimension \\[10pt]
         entry-padding       & Horizontal space between columns               & 0.75em       & dimension \\[10pt]
-        main-section        & Section level for Main group                   & chapter      & section \\[10pt]
-        group-section       & Section level for \cs{Group} command           & section      & section \\[10pt]
-        subgroup-section    & Section level for \cs{Subgroup} command        & subsection   &  section \\[10pt]
-        main-title          & Title for the nomenclature                     & Nomenclature & any text \\[10pt]
-        group-title         & Title for the \cs{Group} command               & ---          & any text \\[10pt]
-        subgroup-title      & Title for the \cs{Subgroup} command            & ---          &  any text \\[10pt]
-        include-in-toc      & Include the nomenclature in the TOC            & true         & boolean \\[10pt]
-        with-units          & Include a units column                         & false        & boolean \\
+        main-section        & Section level for Main group                   & chapter      &  section  \\[10pt]
+        group-section       & Section level for \cs{Group} command           & section      &  section  \\[10pt]
+        subgroup-section    & Section level for \cs{Subgroup} command        & subsection   &  section  \\[10pt]
+        main-title          & Title for the nomenclature                     & Nomenclature &   text    \\[10pt]
+        group-title         & Title for the \cs{Group} command               & ---          &   text    \\[10pt]
+        subgroup-title      & Title for the \cs{Subgroup} command            & ---          &   text    \\[10pt]
+        include-in-toc      & Include the nomenclature in the TOC            & true         & boolean   \\[10pt]
+        with-units          & Include a units column                         & false        & boolean   \\
         \bottomrule
     \end{tabular}
 \end{center}
@@ -991,18 +990,15 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %   Check for an optional section declaration and
 %   set Main section token list.
     \IfNoValueTF {#2} { } {
-        \UWMad_Hash_IfKeySet:nnTF {SectionToLevel}{#2} { } {
-            \UWMad@ClassError
-                {Nomenclature~environment~received~invalid~section~`#2'}
-        }
-        \tl_gset:Nn \l__UWMad_Nomenclature_Section_Main_tl {#2}
+        \UWMad_IfSectionExists:nT {#2} { }
+        \tl_set:Nn \l__UWMad_Nomenclature_Section_Main_tl {#2}
     }
 %
 %
 %   Check for an optional section declaration and
 %   set Main section token list.
     \IfNoValueTF {#3} { } {
-        \tl_set:Nn
+        \tl_set:Nf
             \l__UWMad_Nomenclature_Title_Main_tl {#3}
     }
     \UWMad_ListOf_SetTitle_Main:nn {Nomenclature}
@@ -1014,8 +1010,8 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %   section after Main in the LaTeX sectioning hierarchy.
 %   Otherwise, take the value at its word.
     \tl_if_empty:NTF \l__UWMad_Nomenclature_Section_Group_tl {
-        \tl_gset:Nn \l__UWMad_Nomenclature_Section_Group_tl {
-            \UWMad_Hash_Get:nn{NextSectioningCommand} {
+        \tl_set:Nf \l__UWMad_Nomenclature_Section_Group_tl {
+            \UWMad_NextSection:n {
                 \l__UWMad_Nomenclature_Section_Main_tl
             }
         }
@@ -1025,8 +1021,8 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %   section after Group in the LaTeX sectioning hierarchy.
 %   Otherwise, take the value at its word.
     \tl_if_empty:NTF \l__UWMad_Nomenclature_Section_Subgroup_tl {
-        \tl_gset:Nn \l__UWMad_Nomenclature_Section_Subgroup_tl {
-            \UWMad_Hash_Get:nn{NextSectioningCommand} {
+        \tl_set:Nf \l__UWMad_Nomenclature_Section_Subgroup_tl {
+            \UWMad_NextSection:n {
                 \l__UWMad_Nomenclature_Section_Group_tl
             }
         }

@@ -23,19 +23,22 @@
 %^^A                     Redefinition of Chapter Commands                         %
 %^^A  =========================================================================== %
 
-\let\DefaultChapter\@chapter
-
-\tl_new:N  \g_UWMad_Sectioning_ChapterPageStyle_tl
-\tl_set:Nn \g_UWMad_Sectioning_ChapterPageStyle_tl
-    {\thispagestyle{myheadings}}
-
-\def\@chapter{
-    \tl_use:N \g_UWMad_Sectioning_ChapterPageStyle_tl
-    \ifnum \value{chapter}=0
-        \pagenumbering{arabic}
-    \fi
-    \DefaultChapter
+\tl_new:N  \g_UWMad_Sectioning_Chapter_PageStyle_tl
+\tl_set:Nn \g_UWMad_Sectioning_Chapter_PageStyle_tl {
+    
 }
+%
+\cs_gset_eq:NN \UWMad_Sectioning_DefaultChapter: \@chapter
+%
+\cs_undefine:N \@chapter
+\cs_new:Nn \UWMad_Sectioning_Chapter: {
+    \thispagestyle{myheadings}
+    \int_compare:nNnTF {\value{chapter}} = {0} {
+        \pagenumbering{arabic}
+    } { }
+    \UWMad_Sectioning_DefaultChapter:
+}
+\cs_gset_eq:NN \@chapter \UWMad_Sectioning_Chapter:
 
 
 
@@ -44,19 +47,40 @@
 %^^A  =========================================================================== %
 
 % Appendix counter
-\UWMad_Counter_DefineGlobal:nn{Appendix}{0}
-
-\newcommand{\AppendixInitializer}{
+\int_new:N  \g__UWMad_Appendix_Counter_int
+\int_set:Nn \g__UWMad_Appendix_Counter_int {0}
+%
+\cs_new:Nn \__UWMad_Appendix_Initialize:{
     \par
     \setcounter{section}{0}
-    \def\@chapapp{\appendixname}
-    \def\thechapter{
-        \@Alph{
-            \UWMad_Counter_Value:n{Appendix}
+    \cs_gset_eq:NN \@chapapp \appendixname
+    \cs_gset:Npn \thechapter {
+        \int_to_Alph:n {
+            \g__UWMad_Appendix_Counter_int
+        }
+    }
+}
+%
+\cs_undefine:N \appendix
+\DeclareDocumentCommand \appendix { s o m } {
+
+    \int_compare:nNnTF {\g__UWMad_Appendix_Counter_int} = {0} {
+        \__UWMad_Appendix_Initialize:
+    } { }
+    \int_incr:N \g__UWMad_Appendix_Counter_int
+
+    \IfBooleanTF { #1 } {
+        \chapter*{#3}
+    } {
+        \IfNoValueTF { #2 } {
+            \chapter[#3]{#3}
+        } {
+            \chapter[#2]{#3}
         }
     }
 }
 
+\iffalse
 \renewcommand{\appendix}{
     \UWMad_Counter_Compare:nnnTF{Appendix}{=}{0} {
         \AppendixInitializer
@@ -64,6 +88,7 @@
     \UWMad_Counter_Step:n{Appendix}
     \chapter
 }
+\fi
 
 
 
@@ -188,59 +213,77 @@
 %^^A  =========================================================================== %
 %
 \UWMad_Hash_Define:n {SectionToLevel}
-\UWMad_Hash_Set:nnn  {SectionToLevel}{part}          {-1}
-\UWMad_Hash_Set:nnn  {SectionToLevel}{chapter}       {0}
-\UWMad_Hash_Set:nnn  {SectionToLevel}{section}       {1}
-\UWMad_Hash_Set:nnn  {SectionToLevel}{subsection}    {2}
-\UWMad_Hash_Set:nnn  {SectionToLevel}{subsubsection} {3}
-\UWMad_Hash_Set:nnn  {SectionToLevel}{paragraph}     {4}
-\UWMad_Hash_Set:nnn  {SectionToLevel}{subparagraph}  {5}
+\tl_const:Nn \c__UWMad_SectionsLevel_part_tl            {-1}
+\tl_const:Nn \c__UWMad_SectionsLevel_chapter_tl         {0}
+\tl_const:Nn \c__UWMad_SectionsLevel_section_tl         {1}
+\tl_const:Nn \c__UWMad_SectionsLevel_subsection_tl      {2}
+\tl_const:Nn \c__UWMad_SectionsLevel_subsubsection_tl   {3}
+\tl_const:Nn \c__UWMad_SectionsLevel_paragraph_tl       {4}
+\tl_const:Nn \c__UWMad_SectionsLevel_subparagraph_tl    {5}
 %
-\UWMad_Hash_Define:n {LevelToSection}
-\UWMad_Hash_Set:nnn  {LevelToSection}{-1}{part}
-\UWMad_Hash_Set:nnn  {LevelToSection}{0} {chapter}
-\UWMad_Hash_Set:nnn  {LevelToSection}{1} {section}
-\UWMad_Hash_Set:nnn  {LevelToSection}{2} {subsection}
-\UWMad_Hash_Set:nnn  {LevelToSection}{3} {subsubsection}
-\UWMad_Hash_Set:nnn  {LevelToSection}{4} {paragraph}
-\UWMad_Hash_Set:nnn  {LevelToSection}{5} {subparagraph}
+\msg_new:nnn { UWMadThesis } { Sectioning / UndefinedSection } {
+    Undefined~section~'#1'~used.
+}
+\cs_new:Nn \UWMad_IfSectionExists:nT {
+    \tl_if_exist:cTF {c__UWMad_SectionsLevel_ #1 _tl} {
+        #2
+    } {
+        \msg_error:nnn
+            { UWMadThesis }
+            { Sectioning / UndefinedSection }
+            {#1}
+    }
+}
 %
-\UWMad_Hash_Define:n {NextSectioningCommand}
-\UWMad_Hash_Set:nnn  
-    {NextSectioningCommand}{part}          {chapter}
-\UWMad_Hash_Set:nnn  
-    {NextSectioningCommand}{chapter}       {section}
-\UWMad_Hash_Set:nnn  
-    {NextSectioningCommand}{section}       {subsection}
-\UWMad_Hash_Set:nnn  
-    {NextSectioningCommand}{subsection}    {subsubsection}
-\UWMad_Hash_Set:nnn  
-    {NextSectioningCommand}{subsubsection} {paragraph}
-\UWMad_Hash_Set:nnn  
-    {NextSectioningCommand}{paragraph}     {subparagraph}
+\cs_new:Nn \UWMad_SectionToLevel:n {
+    \UWMad_IfSectionExists:nT {#1} {
+        \tl_use:c {c__UWMad_SectionsLevel_ #1 _tl}
+    }
+}
 %
-\UWMad_Hash_Define:n {PreviousSectioningCommand}
-\UWMad_Hash_Set:nnn  
-    {PreviousSectioningCommand}{part}          {chapter}
-\UWMad_Hash_Set:nnn  
-    {PreviousSectioningCommand}{chapter}       {section}
-\UWMad_Hash_Set:nnn  
-    {PreviousSectioningCommand}{section}       {subsection}
-\UWMad_Hash_Set:nnn  
-    {PreviousSectioningCommand}{subsection}    {subsubsection}
-\UWMad_Hash_Set:nnn  
-    {PreviousSectioningCommand}{subsubsection} {paragraph}
-\UWMad_Hash_Set:nnn  
-    {PreviousSectioningCommand}{paragraph}     {subparagraph}
-
-\newcommand{\LevelToSection}[1]{% #1 = Counter for desired level
-    \HashExpandableGet{LevelToSection}{#1}}
-
-\newcommand{\SectionToLevel}[1]{% #1 = section
-    \HashExpandableGet{SectionToLevel}{#1}}
-
-
-
+%
+\tl_const:cn {c__UWMad_LevelsSection_-1_tl} {part}
+\tl_const:cn {c__UWMad_LevelsSection_ 0_tl} {chapter}
+\tl_const:cn {c__UWMad_LevelsSection_ 1_tl} {section}
+\tl_const:cn {c__UWMad_LevelsSection_ 2_tl} {subsection}
+\tl_const:cn {c__UWMad_LevelsSection_ 3_tl} {subsubsection}
+\tl_const:cn {c__UWMad_LevelsSection_ 4_tl} {paragraph}
+\tl_const:cn {c__UWMad_LevelsSection_ 5_tl} {subparagraph}
+\cs_new:Nn \UWMad_LevelToSection:n {
+    \UWMad_IfSectionExists:nT {#1} {
+        \tl_use:c {c__UWMad_LevelsSection_ #1 _tl}
+    }
+}
+%
+%
+\tl_const:Nn \c__UWMad_NextSection_part_tl            {chapter}
+\tl_const:Nn \c__UWMad_NextSection_chapter_tl         {section}
+\tl_const:Nn \c__UWMad_NextSection_section_tl         {subsection}
+\tl_const:Nn \c__UWMad_NextSection_subsection_tl      {subsubsection}
+\tl_const:Nn \c__UWMad_NextSection_subsubsection_tl   {paragraph}
+\tl_const:Nn \c__UWMad_NextSection_paragraph_tl       {subparagraph}
+\cs_new:Nn \UWMad_NextSection:n {
+    \UWMad_IfSectionExists:nT {#1} {
+        \tl_use:c {c__UWMad_NextSection_ #1 _tl}
+    }
+}
+%
+%
+\tl_const:Nn \c__UWMad_PreviousSection_chapter_tl         {part}
+\tl_const:Nn \c__UWMad_PreviousSection_section_tl         {chapter}
+\tl_const:Nn \c__UWMad_PreviousSection_subsection_tl      {section}
+\tl_const:Nn \c__UWMad_PreviousSection_subsubsection_tl   {subsection}
+\tl_const:Nn \c__UWMad_PreviousSection_paragraph_tl       {subsubsection}
+\tl_const:Nn \c__UWMad_PreviousSection_subparagraph_tl    {paragraph}
+\cs_new:Nn \UWMad_PreviousSection:n {
+    \UWMad_IfSectionExists:nT {#1} {
+        \tl_use:c {c__UWMad_PreviousSection_ #1 _tl}
+    }
+}
+%
+%
+%
+%
 %^^A  =========================================================================== %
 %^^A       Paragraphs and Subparagraphs are Layed out like subsubsections         %
 %^^A  =========================================================================== %

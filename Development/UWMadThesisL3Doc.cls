@@ -377,4 +377,13 @@
                     \setlength{\parsep}{0em}
                     \setlength{\leftmargin}{1em}}}
         {   \end{list}}
-
+%
+%
+%
+%
+%
+\UWMad_Hook_Prepend:Nn \@verbatim {
+    \setlength{\topsep}{0pt}
+    \setlength{\partopsep}{0pt}
+    \setstretch{0.90}
+}
