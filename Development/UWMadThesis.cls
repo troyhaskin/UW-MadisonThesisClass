@@ -834,23 +834,21 @@
         skip=0.5em
     }
 \definecolor{UWMadGreen}{rgb}{0,0.7,0}
-\bool_if:NTF \g__UWMad_Hyperlinks_bool {
-    \hypersetup {
-        colorlinks         = true       ,
-        linkcolor          = blue       ,
-        citecolor          = UWMadGreen ,
-        urlcolor           = violet     ,
-        pdfdisplaydoctitle = true       ,
-        pdfview            = {FitH}     ,
-        pdfstartview       = {FitH}     ,
-        pdfpagelayout      = OneColumn  ,
-        plainpages         = false      ,
-        hypertexnames      = true       ,
-        bookmarksopenlevel = 1          ,
-        bookmarksopen      = true       ,
-        unicode            = true
-    }
-} {}
+\hypersetup {
+    colorlinks         = true       ,
+    linkcolor          = blue       ,
+    citecolor          = UWMadGreen ,
+    urlcolor           = violet     ,
+    pdfdisplaydoctitle = true       ,
+    pdfview            = {FitH}     ,
+    pdfstartview       = {FitH}     ,
+    pdfpagelayout      = OneColumn  ,
+    plainpages         = false      ,
+    hypertexnames      = true       ,
+    bookmarksopenlevel = 1          ,
+    bookmarksopen      = true       ,
+    unicode            = true
+}
 \pagestyle{myheadings}
 \pagenumbering{roman}
 \doublespacing

@@ -142,13 +142,14 @@ It is encouraged to use these commands in the preamble of the document.
 %^^A                    Metadata Writing/Importing Routines                   %
 %^^A ------------------------------------------------------------------------ %
 %
-%   \UWModule{PDF and Other Metadata}
+%   \UWModule{Thesis and PDF Information}
 %
-%   Since the metadata (i.e., properties) of a PDF must be set in the preamble
-%   but typically a user defines them in the document, these routines write the
-%   supported metadata that a user may define to an auxiliary file that is
-%   then imported upon recompilation.  It uses the CSV commands above to define
-%   and build the CSV list, and then uses the TeX |\write| to dump it to the file.
+%   Since the metadata (i.e., properties) of a PDF must be set in the 
+%   preamble but typically a user defines them in the document, these
+%   routines write the supported metadata that a user may define to an
+%   auxiliary file that is then imported upon recompilation.  It uses
+%   the |expl3| |clist| commands to define and build the CSV list, and
+%   then writesto the file.
 %
 %
 % Used to determine is the list was created
@@ -157,9 +158,11 @@ It is encouraged to use these commands in the preamble of the document.
 %
 % Command used to append the data to the CSV list.  It is called in the 
 % metadata commands below
-\UWMad_CSV_Define:n {MetaDataList}
+\clist_new:N \g__UWMad_MetaDataList_clist
 \cs_new:Nn \UWMad_MetaData_PushToList:nn {
-   \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}
+   \clist_gput_right:Nn \g__UWMad_MetaDataList_clist {
+        #1={#2}
+    }
 }
 
 \bool_new:N \g__UWMad_MetaData_GenerateAux_bool
@@ -170,21 +173,24 @@ It is encouraged to use these commands in the preamble of the document.
 }{}
 
 \AtBeginDocument{
-    \UWMad_CSV_IfNotEmpty:nTF{MetaDataList} {
-        \exp_args:Nx \hypersetup {\UWMad_CSV_Get:n{MetaDataList}}
+    \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
+        \exp_args:Nx \hypersetup {
+            \clist_use:N\g__UWMad_MetaDataList_clist
+        }
     } { }
     \bool_gset_true:N \g__UWMad_MetaData_IsDocument_bool
 }
 \AtEndDocument{
     \bool_if:NTF \g__UWMad_MetaData_GenerateAux_bool {
-        \UWMad_CSV_IfNotEmpty:nTF {MetaDataList} {
+        \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
             \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
             \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
                 \jobname.UWMad.PDFMetaData.aux
             }
             \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
                 \noexpand\ExplSyntaxOff
-                    \noexpand\hypersetup{\UWMad_CSV_Get:n{MetaDataList}}
+                    \noexpand\hypersetup
+                    {\clist_use:N\g__UWMad_MetaDataList_clist}
                 \noexpand\ExplSyntaxOn
             }
             \iow_close:N \g__UWMad_PDFMetaData_HyperSetup_io
