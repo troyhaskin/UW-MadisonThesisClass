@@ -1,36 +1,19 @@
 %<*UserGuide>
 \UWFeature{Programming}
 The Programming Module has no immediate user-facing features.
-The Implementation section for this module outlines the programming layer
-and is intended for average use.
+The \RefModule[Implementation section]{Programming} for this module outlines the programming layer
+and is not intended for average use.
 
 
 %</UserGuide>
 %
 %
 %
-%<*Documentation>
+%<*Implementation>
 %<<Verbatim
 %   \iffalse
 %<*Code>
 %   \fi
-%
-%^^A
-%^^A  Module Name: Programming
-%^^A  Author:
-%^^A    Name:           Troy C. Haskin
-%^^A    E-mail:         UWMadThesis@hask.in
-%^^A  Version:
-%^^A    Number:         1.0
-%^^A    Description:    Initial release
-%^^A    Date:           06/01/2013
-%^^A  Purpose:
-%^^A    Provide a programming layer for the UW-Madison Thesis package
-%^^A    Most of the module is designed to overcome the lack of such a
-%^^A    layer in LaTeX2e.  Some LaTeX3 is being used for certain advanced
-%^^A    features, and this module may become obsolete when/if it is upgraded
-%^^A    to a pure LaTeX3 implementation; though a thin abatraction layer may
-%^^A    still be desired.
 %
 %   \UWModule{Programming}
 %   This section outlines the Programming module for the \UWMadClassName{}.
@@ -104,53 +87,22 @@ and is intended for average use.
 %   when called, reset it to it's default definition.
 %
 %    \begin{macrocode}
-\cs_new:Nn \__UWMad_Definition_Swap:Nn {
-    \cs_new_eq:cN  {\string#1-Default:}  #1
-    \cs_new:cn     {\string#1-Swap:}    {#2}
-    \cs_undefine:N  #1
-    \cs_gset_eq:Nc  #1          {\string#1-Swap:}
-}
-\cs_new:Nn \__UWMad_Definition_Swap:cn {
-    \cs_new_eq:cc  {#1-Default:} {#1}
-    \cs_new:cn     {#1-Swap:}    {#2}
-    \cs_undefine:c {#1}
-    \cs_gset_eq:cc {#1}          {#1-Swap:}
-}
-\cs_new:Nn \UWMad_Definition_Swap:cn {
-    \cs_if_exist:cTF {#1} {
-        \__UWMad_Definition_Swap:cn{#1}{#2}
-
-        \cs_if_exist:cTF {end#1} {
-            \__UWMad_Definition_Swap:cn{end#1}{#2}
-        }{}
-    } {
-        \cs_new:cn {#1} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Definition_Reset:c {
-    \cs_if_exist:cTF {#1-Default:} {
-        \cs_gset_eq:cc  {#1}          {#1-Default:}
-        \cs_undefine:c  {#1-Default:}
-
-        \cs_if_exist:cTF {end#1-Default:} {
-            \cs_gset_eq:cc  {#1}          {end#1-Default:}
-            \cs_undefine:c  {end#1-Default:}
-        }{}
-    } {}
-}
 \cs_new:Nn \UWMad_Definition_Swap:Nn {
     \cs_if_exist:NTF #1 {
-        \__UWMad_Definition_Swap:Nn #1 {#2}
+        \cs_new_eq:cN  {\string#1-Default:}  #1
+        \cs_gset_eq:Nc  #1 {#2}
     } {
         \cs_new:Nn #1 {#2}
     }
 }
 \cs_new:Nn \UWMad_Definition_Reset:N {
     \cs_if_exist:cTF {\string#1-Default:} {
-        \cs_gset_eq:Nc  #1  {\string#1-Default:}
-        \cs_undefine:c      {\string#1-Default:}
-    } {}
+        \cs_gset_eq:Nc  #1              {\string#1-Default:}
+        \cs_undefine:c  {\string#1-Default:}
+    } { }
 }
+\cs_generate_variant:Nn \UWMad_Definition_Swap:Nn {cn}
+\cs_generate_variant:Nn \UWMad_Definition_Reset:N {c}
 %    \end{macrocode}
 %   \end{macro}
 %
@@ -222,594 +174,6 @@ and is intended for average use.
 %
 %
 %
-%^^A ==================================================================== %
-%^^A                        Core Programming Systems                      %
-%^^A ==================================================================== %
-%   \UWSubModule{Type System}
-%
-%   The commands in this section form the core of the programming module.
-%   All of the Core systems are written using the \LaTeXPL and have 
-%   extremely long names.  Most of the commands as thin abstractions from
-%   the already-written \LaTeXPL modules and are designed to provide
-%   a more stream-lined and robust environment in providing
-%   useful warnings and errors where needed.
-%
-%   One of the main features added by the core programming system is more
-%   transparent local-global handling.  The onus of remembering which
-%   vairables of local-global is all that's needed with the commands
-%   for altering them being all of the same.
-%
-%
-%
-%   \begin{macro}{\__UWMad_IfLocal:nnnTF}
-%   Certain subsystems of the Programming Module make a distinction
-%   between local and global variables where scope is determined by
-%   \TeX{} groups.  This command takes five arguments designed to 
-%   increase maintainability and readability in the subsystems that
-%   use it.
-%
-%   This command accepts a \marg{Prefix}, an \marg{ID}, a \marg{Type},
-%   \marg{LocalCode}, and \marg{GlobalCode}.  All subsystems that use
-%   this command have (in theory) already defined a command that concatenates
-%   the \marg{Prefix}, \marg{ID}, and |_Local| or |_Global|
-%   of a specific \marg{Type}.  If either of the commands is defined, the
-%   appropriate code is executed (in an fully expandable fashion, which is
-%   used to reduce code duplication where possible).  If neither of those
-%   commands exist, the variable is not registered with the system and an
-%   exception is thrown.
-%
-%   \begin{Usage}
-%       \item |\__UWMad_IfLocal:nnnTF| \marg{Prefix}\marg{ID}\marg{Type}
-%                               \marg{LocalCode}, and \marg{GLobalCode}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \__UWMad_IfLocal:nnnTF {
-    \cs_if_exist:cTF     {#1#2_Local}{
-        #4
-    }{
-        \cs_if_exist:cTF {#1#2_Global}{
-            #5
-        }{
-            \msg_error:nnnn
-                {UWMadThesis}
-                {Programming/UnregisteredVariable}
-                {#2}
-                {#3}
-        }
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%
-%
-%
-%^^A ==================================================================== %
-%^^A                            Boolean System                            %
-%^^A ==================================================================== %
-%
-%   \UWSubSubModule{Boolean System}
-%   This subsystem was made to give a \LaTeX{}-like branching system that
-%   can create both local and global switches.
-%
-%   The system is a thin abstraction of
-%   \LaTeXPL's |bool| module in the |l3prg| package to avoid developing
-%   a one-shot system while allowing more endeavouring authors access to
-%   to the simple feature without learning \LaTeX3{} programming.
-%
-%
-%
-%   \begin{macro}[internal]{
-%       \__UWMad_Boolean_IfLocal:nTF,
-%       \__UWMad_Boolean_IfUndefined:nnT}
-%   These commands are shortcuts to the more general commands
-%   outlined above.
-%
-%    \begin{macrocode}
-\cs_new:Nn \__UWMad_Boolean_IfLocal:nTF {
-    \__UWMad_IfLocal:nnnTF
-        {g__UWMad_Boolean_}{#1}{Boolean}{#2}{#3}
-}
-\cs_new:Nn \__UWMad_Boolean_IfUndefined:nnT{
-    \__UWMad_IfUndefined:nnnnT
-        {g__UWMad_Boolean_}{#1}{#2}{Boolean}{#3}
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%   \begin{macro}{
-%       \UWMad_Boolean_DefineLocal:n,
-%       \UWMad_Boolean_DefineGlobal:n}
-%   Create a new Boolean with local or global scope.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Boolean_DefineLocal:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Local} {
-        \bool_new:c {g__UWMad_Boolean_#1_Local}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_DefineGlobal:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Global} {
-        \bool_new:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%   \begin{macro}{
-%       \UWMad_Boolean_DefineLocalSetTrue:n,
-%       \UWMad_Boolean_DefineLocalSetFalse:n}
-%   Define a new  local Boolean with an explicit initial state.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Boolean_DefineLocalSetTrue:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Local} {
-        \bool_new:c       {g__UWMad_Boolean_#1_Local}
-        \bool_gset_true:c {g__UWMad_Boolean_#1_Local}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_DefineLocalSetFalse:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Local} {
-        \bool_new:c        {g__UWMad_Boolean_#1_Local}
-        \bool_gset_false:c {g__UWMad_Boolean_#1_Local}
-    }
-}
-%    \end{macrocode}
-%    \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_Boolean_Delete:n}
-%   Delete a defined boolean.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Boolean_Delete:n {
-    \__UWMad_Boolean_IfLocal:nTF {#1} {
-        \cs_undefine:c {g__UWMad_Boolean_#1_Local}
-    } {
-        \cs_undefine:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%   \begin{macro}{
-%       \UWMad_Boolean_DefineGlobalSetTrue:n,
-%       \UWMad_Boolean_DefineGlobalSetFalse:n}
-%   Define a new  global Boolean with an explicit initial state.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Boolean_DefineGlobalSetTrue:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Global} {
-        \bool_new:c       {g__UWMad_Boolean_#1_Global}
-        \bool_gset_true:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_DefineGlobalSetFalse:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Global} {
-        \bool_new:c        {g__UWMad_Boolean_#1_Global}
-        \bool_gset_false:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-%    \end{macrocode}
-%    \end{macro}
-%
-%
-%   \begin{macro}{
-%       \UWMad_Boolean_SetTrue:n,
-%       \UWMad_Boolean_SetFalse:n}
-%   Set any defined Boolean to true or false.
-%   Local-global assignment is handled by the Boolean's initial 
-%   definition.  If a local and global Boolean exist with the 
-%   same name, a local assignment is carried out.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Boolean_SetTrue:n {
-    \__UWMad_Boolean_IfLocal:nTF {#1} {
-        \bool_set_true:c  {g__UWMad_Boolean_#1_Local}
-    }{
-        \bool_gset_true:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_SetFalse:n {
-    \__UWMad_Boolean_IfLocal:nTF {#1} {
-        \bool_set_false:c  {g__UWMad_Boolean_#1_Local}
-    }{
-        \bool_gset_false:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-%    \end{macrocode}
-%    \end{macro}
-%
-%
-%   \begin{macro}{
-%       \UWMad_Boolean_IfTrue:n,
-%       \UWMad_Boolean_IfFalse:n}
-%   Conditionally execute code depending on the current state
-%   of the Boolean.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Boolean_IfTrue:nTF {
-    \__UWMad_Boolean_IfLocal:nTF {#1} {
-        \bool_if:cTF {g__UWMad_Boolean_#1_Local}
-    }{
-        \bool_if:cTF {g__UWMad_Boolean_#1_Global}
-    }
-    {#2}
-    {#3}
-}
-\cs_new:Nn \UWMad_Boolean_IfFalse:nTF {
-    \__UWMad_Boolean_IfLocal:nTF {#1} {
-        \bool_if:cTF {g__UWMad_Boolean_#1_Local}
-    }{
-        \bool_if:cTF {g__UWMad_Boolean_#1_Global}
-    }
-    {#3}
-    {#2}
-}
-%    \end{macrocode}
-%    \end{macro}
-%
-%
-%
-%
-%
-%^^A ==================================================================== %
-%^^A                            Length System                             %
-%^^A ==================================================================== %
-%
-%   \UWSubSubModule{Length System}
-%   This subsystem was made to give a \LaTeX{}-like length system that
-%   can create both local and global lengths.
-%
-%   The system is a thin abstraction of
-%   \LaTeXPL's |dim| module in the |l3skip| package to avoid developing
-%   a one-shot system while allowing more endeavouring authors access to
-%   to the simple feature without learning \LaTeX3{} programming.
-%
-%
-%
-%   \begin{macro}[internal]{
-%       \__UWMad_Length_IfLocal:nTF,
-%       \__UWMad_Length_IfUndefined:nnT}
-%   These commands are shortcuts to the more general 
-%   commands outlines above.
-%
-%    \begin{macrocode}
-\cs_new:Nn \__UWMad_Length_IfLocal:nTF {
-    \__UWMad_IfLocal:nnnTF
-        {g__UWMad_Length_}{#1}{Length}{#2}{#3}
-}
-\cs_new:Nn \__UWMad_Length_IfUndefined:nnT{
-    \__UWMad_IfUndefined:nnnnT{g__UWMad_Length_}{#1}{#2}{Length}{#3}
-}
-%    \end{macrocode}
-%    \end{macro}
-%
-%
-%   \begin{macro}{
-%       \UWMad_Length_DefineLocal:nn,
-%       \UWMad_Length_DefineGlobal:nn}
-%   Define a new Length with an explicit initial value having either
-%   local or global scope.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Length_DefineLocal:nn {
-    \__UWMad_Length_IfUndefined:nnT {#1} {_Local} {
-        \dim_new:c   {g__UWMad_Length_#1_Local}
-        \dim_gset:cn {g__UWMad_Length_#1_Local} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Length_DefineGlobal:nn {
-    \__UWMad_Length_IfUndefined:nnT {#1} {_Global} {
-        \dim_new:c   {g__UWMad_Length_#1_Global}
-        \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}
-    }
-}
-%    \end{macrocode}
-%    \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_Length_Add:nn}
-%   Add a dimension to a defined Length.
-%   Local-global assignment is handled by the Length's initial 
-%   definition.  If a local and global Length exist with the 
-%   same name, a local assignment is carried out.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Length_Add:nn {
-    \__UWMad_Length_IfLocal:nTF {#1} {
-        \dim_add:cn  {g__UWMad_Length_#1_Local}  {#2}
-    }{
-        \dim_gadd:cn {g__UWMad_Length_#1_Global} {#2}
-    }
-}
-%    \end{macrocode}
-%    \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_Length_Set:nn}
-%   Set the dimension of a defined Length.
-%   Local-global assignment is handled by the Length's initial 
-%   definition.  If a local and global Length exist with the 
-%   same name, a local assignment is carried out.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Length_Set:nn {
-    \__UWMad_Length_IfLocal:nTF {#1} {
-        \dim_set:cn  {g__UWMad_Length_#1_Local}  {#2}
-    }{
-        \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}
-    }
-}
-%    \end{macrocode}
-%    \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_Length_Of:n}
-%   Retreive the value of a defined Length.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Length_Of:n {
-    \__UWMad_Length_IfLocal:nTF {#1} {
-        \dim_use:c {g__UWMad_Length_#1_Local}
-    }{
-        \dim_use:c {g__UWMad_Length_#1_Global}
-    }
-}
-%    \end{macrocode}
-%    \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_Length_If:nnnTF}
-%   Conditionally execute true/false code based  on the
-%   value of a defined Length given an operator and second
-%   operand.
-%
-%   \begin{Usage}
-%       \item |\UWMad_Length_If:nnnTF|
-%               \marg{LengthID}\marg{Operator}\marg{Operand}
-%                   \marg{True}\marg{False}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Length_If:nnnTF {
-    \dim_compare:nTF{ \UWMad_Length_Of:n{#1} #2 #3 }{
-        #4
-    }{
-        #5
-    }
-}
-%    \end{macrocode}
-%    \end{macro}
-%
-%
-%
-%
-%
-%^^A ==================================================================== %
-%^^A                            Counter System                            %
-%^^A ==================================================================== %
-%
-%   \UWSubSubModule{Counter System}
-%   This subsystem was made to give a \LaTeX{}-like counter system that
-%   can create both local and global counters.
-%
-%
-%   \begin{macro}[internal]{
-%       \__UWMad_Counter_IfLocal:nTF,
-%       \__UWMad_Counter_IfUndefined:nTF}
-%   These commands are shortcuts to the more general 
-%   commands outlines above.
-%
-%    \begin{macrocode}
-\cs_new:Nn \__UWMad_Counter_IfLocal:nTF {
-    \__UWMad_IfLocal:nnnTF
-        {g__UWMad_Counter_}{#1}{Counter}{#2}{#3}
-}
-\cs_new:Nn \__UWMad_Counter_IfUndefined:nnT{
-    \__UWMad_IfUndefined:nnnnT{g__UWMad_Counter_}{#1}{#2}{Counter}{#3}
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{
-%       \UWMad_Counter_DefineLocal:nn,
-%       \UWMad_Counter_DefineGlobal:nn}
-%   This pair creates either a local or global counter named
-%   \marg{Counter Name} with \marg{Initial Value}. The counters
-%   are registered, defined to be local or global, initialized
-%   by |\newcount|, and set to \marg{Initial Value}.
-%
-%   \begin{Usage}
-%       \item |\UWMad_Counter_DefineLocal:nn|\marg{Counter Name}{Initial Value}
-%       \item |\UWMad_Counter_DefineGlobal:nn|\marg{Counter Name}{Initial Value}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Counter_DefineLocal:nn {
-    \__UWMad_Counter_IfUndefined:nnT {#1} {_Local} {
-        \int_new:c   {g__UWMad_Counter_#1_Local}
-        \int_gset:cn {g__UWMad_Counter_#1_Local} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Counter_DefineGlobal:nn {
-    \__UWMad_Counter_IfUndefined:nnT {#1} {Global} {
-        \int_new:c   {g__UWMad_Counter_#1_Global}
-        \int_gset:cn {g__UWMad_Counter_#1_Global} {#2}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{\UWMad_Counter_Add:nn}
-%   This command adds \marg{Increment} to the current value of counter
-%   \marg{CounterName}. Local vs. global advancement is set at definition
-%   and is handled transparently.
-%
-%   \begin{Usage}
-%       \item |\UWMad_Counter_Add:nn|\marg{CounterName}\marg{Increment}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Counter_Add:nn {
-    \__UWMad_Counter_IfLocal:nTF {#1} {
-        \int_add:cn  {g__UWMad_Counter_#1_Local}  {#2}
-    }{
-        \int_gadd:cn {g__UWMad_Counter_#1_Global} {#2}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{\UWMad_Counter_Step:n}
-%   Adds $1$ to the counter \marg{Counter Name}.
-%   |\UWMad_IsLocal:nnn| handles the local vs. global advancement.
-%
-%   \begin{Usage}
-%       \item |\UWMad_Counter_Step:n|\marg{Counter Name}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Counter_Step:n {
-    \UWMad_Counter_Add:nn{#1}{1}
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{\UWMad_Counter_Set:nn}
-%   This command sets the value of counter \marg{Counter Name} to 
-%   \marg{Value}.
-%   |\UWMad_IsLocal:nnn| handles the local vs. global assignment.
-%
-%   \begin{Usage}
-%       \item |\UWMad_Counter_Set:nn|\marg{Counter Name}\marg{Value}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Counter_Set:nn {
-    \__UWMad_Counter_IfLocal:nTF {#1} {
-        \int_set:cn  {g__UWMad_Counter_#1_Local}  {#2}
-    }{
-        \int_gset:cn {g__UWMad_Counter_#1_Global} {#2}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{
-%       \UWMad_Counter_SetAndAdd:nnn,
-%       \UWMad_Counter_SetAndStep:nn}
-%   Combinations of |\SetCounter|, |AddToCounter|, and |\StepCounter|.
-%
-%   \begin{Usage}
-%       \item |\UWMad_Counter_SetAndAdd:nnn|\marg{Counter Name}
-%                   \marg{Initial Value}\marg{Value}
-%       \item |\UWMad_Counter_SetAndStep:nn|\marg{Counter Name}
-%                   \marg{Initial Value}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Counter_SetAndAdd:nnn {
-    \UWMad_Counter_Set:nn{#1}{#2}
-    \UWMad_Counter_Add:nn{#1}{#3}
-}
-\cs_new:Nn \UWMad_Counter_SetAndStep:nn {
-    \UWMad_Counter_SetAndAdd:nnn {#1}{#2}{1}
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{\UWMad_Counter_Value:n}
-%   Combinations of |\SetCounter|, |AddToCounter|, and |\StepCounter|.
-%
-%   \begin{Usage}
-%       \item |\UWMad_Counter_Value:n|\marg{Counter Name}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Counter_Value:n {
-    \__UWMad_Counter_IfLocal:nTF {#1} {
-        \int_use:c {g__UWMad_Counter_#1_Local}
-    }{
-        \int_use:c {g__UWMad_Counter_#1_Global}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{\UWMad_Counter_Compare:nnnTF}
-%
-%   \begin{Usage}
-%       \item |\UWMad_Counter_Compare:nnnTF| {}{}{}{}{}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Counter_Compare:nnnTF {
-    \int_compare:nTF {\UWMad_Counter_Value:n{#1} #2 #3} {
-        #4
-    }{
-        #5
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{
-%       \UWMad_Counter_arabic:n,
-%       \UWMad_Counter_alpha:n,
-%       \UWMad_Counter_Alpha:n,
-%       \UWMad_Counter_roman:n,
-%       \UWMad_Counter_Roman:n,}
-%   This set of functions converts the counter \marg{CounterName}
-%   into a formatted number.
-%
-%   \begin{Usage}
-%       \item |\UWMad_Counter_arabic:n| \marg{CounterName}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Counter_arabic:n {
-    \int_to_arabic:n {\UWMad_Counter_Value:n{#1}}
-}
-\cs_new:Nn \UWMad_Counter_alpha:n {
-    \int_to_alph:n {\UWMad_Counter_Value:n{#1}}
-}
-\cs_new:Nn \UWMad_Counter_Alpha:n {
-    \int_to_Alph:n {\UWMad_Counter_Value:n{#1}}
-}
-\cs_new:Nn \UWMad_Counter_roman:n {
-    \int_to_roman:n {\UWMad_Counter_Value:n{#1}}
-}
-\cs_new:Nn \UWMad_Counter_Roman:n {
-    \int_to_Roman:n {\UWMad_Counter_Value:n{#1}}
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%
-%
-%
 %^^A ======================================================================= %
 %^^A                     Collection Creation Commands                        %
 %^^A ======================================================================= %
@@ -817,144 +181,14 @@ and is intended for average use.
 %   \UWSubModule{Collections}
 %   In the following subsections, commands that create and manipulate
 %   various collection data types will be discussed.  The collections
-%   currently implemented are comma-separate values (CSVs), stacks (LIFO),
+%   currently implemented are stacks (LIFO),
 %   queues (FIFO), deques (LIFO+FIFO), and hashes (key-value pairs).
 %
 %   All of the collection systems are thin abstractions of \LaTeXPL{}'s
-%   |l3clist|, |l3tl|, |l3seq|, and |l3prop| modules to avoid developing 
+%   |l3tl|, |l3seq|, and |l3prop| modules to avoid developing 
 %   one-shot systems while allowing more endeavoring authors access to the
 %   features without learning \LaTeX3{} programming if they load the
 %   abstractions.
-%
-%
-%
-%^^A ======================================================================= %
-%^^A                          CSV Creation Commands                          %
-%^^A ======================================================================= %
-%
-%   \UWSubSubModule{CSVs}
-%   This set of commands is a simple system for comma-separated value (CSV)
-%   list creation.  It consists of only a few functions: initialize list,
-%   append value, prepend value, get list, and erase list.
-%
-%   This feature was created solely to export |hyperref| meta-data to an
-%   external file for later reading.  The system is a thin abstraction of
-%   \LaTeXPL's |l3clist| package to avoid developing
-%   a one-shot system while allowing more endeavouring authors access to
-%   to the simple feature without learning \LaTeX3{} programming.
-%
-%
-%   \begin{macro}[internal]{
-%       \__UWMad_CSV_IfDefined:nT,
-%       \__UWMad_CSV_IfUndefined:nT}
-%   Shortcuts for the more general commands outlined above.
-%
-%    \begin{macrocode}
-\cs_new:Nn \__UWMad_CSV_IfDefined:nT {
-    \__UWMad_IfDefined:nnnnT{g__UWMad_CSV_}{#1}{}{CSV}{#2}
-}
-\cs_new:Nn \__UWMad_CSV_IfUndefined:nT{
-    \__UWMad_IfUndefined:nnnnT{g__UWMad_CSV_}{#1}{}{CSV}{#2}
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_CSV_Define:n}
-%   Define a new CSV.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_CSV_Define:n {
-    \__UWMad_CSV_IfUndefined:nT {#1} {
-        \clist_new:c {g__UWMad_CSV_#1}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_CSV_Clear:n}
-%   Define a clear a defined CSV but do not undefine.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_CSV_Clear:n {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \clist_gclear:c {g__UWMad_CSV_#1}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_CSV_Delete:n}
-%   Define a clear and undefine a defined CSV.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_CSV_Delete:n {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \clist_gclear:c {g__UWMad_CSV_#1}
-        \cs_undefine:c  {g__UWMad_CSV_#1}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_CSV_Append:nn}
-%   Push a value on to the right side of a defined CSV.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_CSV_Append:nn {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \clist_gput_right:cn {g__UWMad_CSV_#1} {#2}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_CSV_Prepend:nn}
-%   Push a value on to the left side of a defined CSV.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_CSV_Prepend:nn {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \clist_gput_left:cn {g__UWMad_CSV_#1} {#2}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_CSV_Get:n}
-%   Return a defined CSV to the input stream.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_CSV_Get:n {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \use:c {g__UWMad_CSV_#1}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%   \begin{macro}{\UWMad_CSV_IfNotEmpty:nTF}
-%   Execute true/false code depending on if the
-%   defined CSV is empty or not.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_CSV_IfNotEmpty:nTF {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \clist_if_empty:cTF {g__UWMad_CSV_#1} {
-            #3
-        }{
-            #2
-        }
-    }
-}
-%    \end{macrocode}
-%    \end{macro}
 %
 %
 %
@@ -1532,6 +766,7 @@ and is intended for average use.
 %   for usage.}
 %
 %    \begin{macrocode}
+\cs_generate_variant:Nn \tl_if_blank:nTF {fTF}
 \DeclareDocumentCommand \LoadUtilityAPI { } {
 %    \end{macrocode}
 %   \end{macro}
@@ -1578,8 +813,8 @@ and is intended for average use.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfStringEmpty { m +m +m }{
-    \tl_if_blank:nTF {##1}{
+\DeclareDocumentCommand \IfEmptyTF { m +m +m }{
+    \tl_if_blank:fTF {##1}{
         ##2
     }{
         ##3
@@ -1599,7 +834,7 @@ and is intended for average use.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfCommandEmpty { m +m +m }{
+\DeclareDocumentCommand \IfCommandEmptyTF { m +m +m }{
     \tl_if_blank:oTF{##1}{
         ##2
     }{
@@ -1774,96 +1009,135 @@ and is intended for average use.
 %   \end{macro}
 %
 %   \begin{macro}{
-%       \BooleanDefineLocal,
-%       \BooleanDefineGlobal,
-%       \BooleanDefineLocalAndSetTrue,
-%       \BooleanDefineLocalAndSetFalse,
-%       \BooleanDefineGlobalAndSetTrue,
-%       \BooleanDefineGlobalAndSetFalse,
-%       \BooleanSetTrue,
-%       \BooleanSetFalse,
-%       \BooleanSetIfTrue,
-%       \BooleanSetIfFalse}
+%       \CreateBoolean,
+%       \CreateBooleanTrue,
+%       \CreateBooleanFalse,
+%       \SetBooleanTrue,
+%       \SetBooleanFalse,
+%       \IfBooleanTrueTF,
+%       \IfBooleanFalseTF}
 %   \LaTeXe{} version of the Boolean Type system above.
 %    \begin{macrocode}
-\cs_gset_eq:NN 
-    \BooleanDefineLocal             \UWMad_Boolean_DefineLocal:n
-\cs_gset_eq:NN 
-    \BooleanDefineGlobal            \UWMad_Boolean_DefineGlobal:n
-\cs_gset_eq:NN 
-    \BooleanDefineLocalAndSetTrue   \UWMad_Boolean_DefineLocalAndSetTrue:n
-\cs_gset_eq:NN 
-    \BooleanDefineLocalAndSetFalse  \UWMad_Boolean_DefineLocalAndSetFalse:n
-\cs_gset_eq:NN 
-    \BooleanDefineGlobalAndSetTrue  \UWMad_Boolean_DefineGlobalAndSetTrue:n
-\cs_gset_eq:NN 
-    \BooleanDefineGlobalAndSetFalse \UWMad_Boolean_DefineGlobalAndSetFalse:n
-\cs_gset_eq:NN 
-    \BooleanSetTrue                 \UWMad_Boolean_SetTrue:n
-\cs_gset_eq:NN 
-    \BooleanSetFalse                \UWMad_Boolean_SetFalse:n
-\cs_gset_eq:NN 
-    \BooleanSetIfTrue               \UWMad_Boolean_SetIfTrue:nTF
-\cs_gset_eq:NN 
-    \BooleanSetIfFalse              \UWMad_Boolean_SetIfFalse:nTF  
+\DeclareDocumentCommand \CreateBoolean { m } {
+    \bool_new:c {g__UWMad_Programming_API_##1_bool}
+}
+\DeclareDocumentCommand \CreateBooleanTrue { m } {
+    \bool_new:c       {g__UWMad_Programming_API_##1_bool}
+    \bool_gset_true:c {g__UWMad_Programming_API_##1_bool}
+}
+\DeclareDocumentCommand \CreateBooleanFalse { m } {
+    \bool_new:c        {g__UWMad_Programming_API_##1_bool}
+}
+\DeclareDocumentCommand \SetBooleanTrue { m } {
+    \bool_gset_true:c {g__UWMad_Programming_API_##1_bool}
+}
+\DeclareDocumentCommand \SetBooleanFalse { m } {
+    \bool_gset_false:c {g__UWMad_Programming_API_##1_bool}
+}
+\DeclareDocumentCommand \IfBooleanTrueTF { m +m +m } { 
+    \bool_if:cTF {g__UWMad_Programming_API_##1_bool} {
+        ##2
+    } {
+        ##3
+    }
+}
+\DeclareDocumentCommand \IfBooleanFalseTF { m +m +m } { 
+    \bool_if:cTF {g__UWMad_Programming_API_##1_bool} {
+        ##3
+    } {
+        ##2
+    }
+}
 %    \end{macrocode}
 %    \end{macro}
 %
 %
 %
 %   \begin{macro}{
-%       \LengthDefineLocal,
-%       \LengthDefineGlobal,
-%       \LengthAdd,
-%       \LengthSet,
-%       \LengthOf,
-%       \LengthIf}
+%       \CreateLength,
+%       \AddToLength,
+%       \SetLength,
+%       \ValueOfLength,
+%       \IfLengthTF}
 %   \LaTeXe{} version of the Boolean Type system above.
 %    \begin{macrocode}
-\cs_gset_eq:NN \LengthDefineLocal   \UWMad_Length_DefineLocal:nn
-\cs_gset_eq:NN \LengthDefineGlobal  \UWMad_Length_DefineGlobal:nn
-\cs_gset_eq:NN \LengthAdd           \UWMad_Length_Add:nn
-\cs_gset_eq:NN \LengthSet           \UWMad_Length_Set:nn
-\cs_gset_eq:NN \LengthOf            \UWMad_Length_Of:n  
-\cs_gset_eq:NN \LengthIf            \UWMad_Length_If:nTF
+\DeclareDocumentCommand \CreateLength { m m } {
+    \dim_new:c   {g__UWMad_Programming_API_##1_dim}
+    \dim_gset:cn {g__UWMad_Programming_API_##1_dim} {##2}
+}
+\DeclareDocumentCommand \AddToLength { m m } {
+    \dim_gadd:cn {g__UWMad_Programming_API_##1_dim} {##2}
+}
+\DeclareDocumentCommand \SetLength { m m } {
+    \dim_gset:cn {g__UWMad_Programming_API_##1_dim} {##2}
+}
+\DeclareDocumentCommand \ValueOfLength { m } {
+    \dim_use:c {g__UWMad_Programming_API_##1_dim}
+}
+\DeclareDocumentCommand \IfLengthTF { m m m +m +m } {
+    \dim_compare:nNnTF {##1} ##2 {##3} {
+        ##4
+    } {
+        ##5
+    }
+}
 %    \end{macrocode}
 %    \end{macro}
 %
 %
 %
 %   \begin{macro}{
-%        \CounterDefineLocal,
-%        \CounterDefineGlobal,
-%        \CounterAdd,
-%        \CounterStep,
-%        \CounterSet,
-%        \CounterSetAndAdd,
-%        \CounterSetAndStep,
-%        \CounterValue,
-%        \CounterIf,
-%        \CounterCompare,
-%        \CounterArabic,
-%        \CounterAlpha,
-%        \CounterALPHA,
-%        \CounterRoman,
-%        \CounterROMAN}
+%       \CreateCounter,
+%       \AddToCounter,
+%       \StepCounter,
+%       \SetCounter,
+%       \ValueOfCounter,
+%       \IfCounterTF,
+%       \CounterToArabic,
+%       \CounterToALPHA,
+%       \CounterToAlpha,
+%       \CounterToROMAN,
+%       \CounterToRoman}
 %   \LaTeXe{} version of the Counter Type system above.
 %    \begin{macrocode}
-\cs_gset_eq:NN \CounterDefineLocal  \UWMad_Counter_DefineLocal:nn
-\cs_gset_eq:NN \CounterDefineGlobal \UWMad_Counter_DefineGlobal:nn
-\cs_gset_eq:NN \CounterAdd          \UWMad_Counter_Add:nn
-\cs_gset_eq:NN \CounterStep         \UWMad_Counter_Step:n
-\cs_gset_eq:NN \CounterSet          \UWMad_Counter_Set:nn
-\cs_gset_eq:NN \CounterSetAndAdd    \UWMad_Counter_SetAndAdd:nn
-\cs_gset_eq:NN \CounterSetAndStep   \UWMad_Counter_SetAndStep:nn
-\cs_gset_eq:NN \CounterValue        \UWMad_Counter_Value:n
-\cs_gset_eq:NN \CounterIf           \UWMad_Counter_If:nTF
-\cs_gset_eq:NN \CounterCompare      \UWMad_Counter_Compare:nnnTF
-\cs_gset_eq:NN \CounterArabic       \UWMad_Counter_arabic:n
-\cs_gset_eq:NN \CounterAlpha        \UWMad_Counter_alpha:n
-\cs_gset_eq:NN \CounterALPHA        \UWMad_Counter_Alpha:n
-\cs_gset_eq:NN \CounterRoman        \UWMad_Counter_roman:n
-\cs_gset_eq:NN \CounterROMAN        \UWMad_Counter_Roman:n
+\DeclareDocumentCommand \CreateCounter { m m } {
+    \int_new:c   {g__UWMad_Programming_API_##1_int}
+    \int_gset:cn {g__UWMad_Programming_API_##1_int} {##2}
+}
+\DeclareDocumentCommand \AddToCounter { m m } {
+    \int_gadd:cn {g__UWMad_Programming_API_##1_int} {##2}
+}
+\DeclareDocumentCommand \StepCounter { m m } {
+    \int_gincr:cn {g__UWMad_Programming_API_##1_int} {##2}
+}
+\DeclareDocumentCommand \SetCounter { m m } {
+    \int_gset:cn {g__UWMad_Programming_API_##1_int} {##2}
+}
+\DeclareDocumentCommand \ValueOfCounter { m m } {
+    \int_use:c {g__UWMad_Programming_API_##1_int}
+}
+\DeclareDocumentCommand \IfCounterTF { m m m +m +m } {
+    \int_compare:nNnTF {##1} {##2} {##3} {
+        ##4
+    } {
+        ##5
+    }
+}
+\DeclareDocumentCommand \CounterToArabic { m } {
+    \int_to_arabic:c {g__UWMad_Programming_API_##1_int}
+}
+\DeclareDocumentCommand \CounterToALPHA { m } {
+    \int_to_Alph:c {g__UWMad_Programming_API_##1_int}
+}
+\DeclareDocumentCommand \CounterToAlpha { m } {
+    \int_to_alph:c {g__UWMad_Programming_API_##1_int}
+}
+\DeclareDocumentCommand \CounterToROMAN { m } {
+    \int_to_Roman:c {g__UWMad_Programming_API_##1_int}
+}
+\DeclareDocumentCommand \CounterToRoman { m } {
+    \int_to_roman:c {g__UWMad_Programming_API_##1_int}
+}
 %    \end{macrocode}
 %    \end{macro}
 %
@@ -1876,13 +1150,9 @@ and is intended for average use.
 %
 %
 %
-%   \UWSubSubModule{Collections}
-%
-%
-%
 %
 %   \iffalse
 %</Code>
 %   \fi
 %Verbatim
-%</Documentation>
+%</Implementation>

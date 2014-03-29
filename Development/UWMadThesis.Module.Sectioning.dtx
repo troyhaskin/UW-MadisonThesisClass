@@ -88,7 +88,7 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %
 %
 %
-%<*Documentation>
+%<*Implementation>
 %<<Verbatim
 %\iffalse
 %<*Code>
@@ -106,15 +106,15 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %   upper right-hand corner and ensures that the  page numbering is 
 %   arabic before the first unnumbered chapter is used.
 %    \begin{macrocode}
-\cs_gset_eq:NN \UWMad_Sectioning_DefaultChapter: \@chapter
-\cs_new:Nn \UWMad_Sectioning_Chapter: {
+\UWMad_Hook_Prepend:Nn \@chapter {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {
         \pagenumbering{arabic}
     } { }
-    \UWMad_Sectioning_DefaultChapter:
 }
-\cs_gset_eq:NN \@chapter \UWMad_Sectioning_Chapter:
+\UWMad_Hook_Prepend:Nn \@schapter {
+    \thispagestyle{myheadings}
+}
 %    \end{macrocode}
 %^^A  =========================================================================== %
 %^^A                           New Appendix Command                               %
@@ -319,7 +319,7 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\contentsname}
-        \TableOfContentsDefault
+        \UWMad_TOC_Default_TableOfContents:
         \clearpage
     \group_end:
 }
@@ -332,7 +332,7 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listtablename}
-        \ListOfTablesDefault
+        \\UWMad_TOC_Default_ListOfTables:
         \clearpage
     \group_end:
 }
@@ -345,7 +345,7 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listfigurename}
-        \ListOfFiguresDefault
+        \UWMad_TOC_Default_ListOfFigures:
         \clearpage
     \group_end:
 }
@@ -480,4 +480,4 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %</Code>
 %   \fi
 %Verbatim
-%</Documentation>
+%</Implementation>

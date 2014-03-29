@@ -25,14 +25,14 @@ All of these defaults can be changed by the \cs{NomenclatureSetup} command descr
 
 \UWSubSubFeature{Command Descriptions}
 
-A sketch of the |Nomenclature| implementation would be: \vskip-0.50em
-    \hspace{1em}|\begin{Nomenclature}|\oarg{section}\marg{title}    \vskip-0.25em
-    \hspace{3em}|\Entry|\marg{symbol}\marg{description}             \vskip-1em
-    \hspace{3em}|\Group|\marg{group title}                          \vskip-1em
-    \hspace{6em}|\Entry|\marg{symbol}\marg{description}             \vskip-1em
-    \hspace{6em}|\Subgroup|\marg{subgroup title}                    \vskip-1em
-    \hspace{9em}|\Entry|\marg{symbol}\marg{description}             \vskip-0.25em
-    \hspace{1em}|\end{Nomenclature}|                                \vskip-0.50em
+A sketch of the |Nomenclature| implementation would be: \vskip1em
+    \hspace{1em}|\begin{Nomenclature}|\oarg{section}\marg{title}    \vskip0em
+    \hspace{3em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
+    \hspace{3em}|\Group|\marg{group title}                          \vskip0em
+    \hspace{6em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
+    \hspace{6em}|\Subgroup|\marg{subgroup title}                    \vskip0em
+    \hspace{9em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
+    \hspace{1em}|\end{Nomenclature}|                                \vskip1em
 
 The square brace-delimited \oarg{section} is \textsc{optional} and overrides the default Main group section.
 The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the default Main group title.
@@ -242,7 +242,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %
 %
 %
-%<*Documentation>
+%<*Implementation>
 %<<VERBATIM
 %   \iffalse
 %<*Code>
@@ -468,8 +468,8 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %       \UWMad_ListOf_GetTitle_Group:nn,
 %       \UWMad_ListOf_GetTitle_Subgroup:nn}
 %   \begin{syntax}
-%       \cs{UWMad_ListOf_GetTitle_Main:n}\Arg{ID}
-%       \cs{UWMad_ListOf_GetTitle_Group:n}\Arg{ID}
+%       \cs{UWMad_ListOf_GetTitle_Main:n}    \Arg{ID}
+%       \cs{UWMad_ListOf_GetTitle_Group:n}   \Arg{ID}
 %       \cs{UWMad_ListOf_GetTitle_Subgroup:n}\Arg{ID}
 %   \end{syntax}
 %   Retrieces the value of the title of the section for the
@@ -637,26 +637,46 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
         {\tl_use:c{g__UWMad_ListOf#1_Section_#2_tl}}
 
     \UWMad_ListOf_IfNumbered:nTF {#1} {
-        \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
-            \__UWMad_ListOf_CurrentSectioningCommmand:n
-                {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
-        } {
+
+        \tl_if_eq:nnTF {#2} {Main} {
+            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} { } {
+                \int_set_eq:NN \l_tmpa_int \c@tocdepth
+                \setcounter{tocdepth}{-1}
+            }
+        } { 
             \int_set_eq:NN \l_tmpa_int \c@tocdepth
             \setcounter{tocdepth}{-1}
-            \__UWMad_ListOf_CurrentSectioningCommmand:n
-                {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
+        }
+
+
+        \__UWMad_ListOf_CurrentSectioningCommmand:n
+            {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
+
+
+        \tl_if_eq:nnTF #2 {Main} {
+            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} { } {
+                \setcounter{tocdepth}{\l_tmpa_int}
+            }
+        } { 
             \setcounter{tocdepth}{\l_tmpa_int}
         }
+
     } {
-        \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
-            \phantomsection
-            \addcontentsline
-                {toc}
-                {\tl_use:c {g__UWMad_ListOf#1_Section_#2_tl}}
-                {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
-        } { }
+    
+        \cs_generate_variant:Nn \tl_if_eq:nnTF {onTF}
+        \tl_set:Nn \l_tmpa_tl {Main}
+    
+        \phantomsection
         \__UWMad_ListOf_CurrentSectioningCommmand:n*
         {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
+        \tl_if_eq:onTF {#2} {Main} {
+            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
+                \addcontentsline
+                    {toc}
+                    {\tl_use:c {g__UWMad_ListOf#1_Section_#2_tl}}
+                    {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
+            } { }
+        } { }
     }
 
 }
@@ -1205,4 +1225,4 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %</Code>
 %   \fi
 %VERBATIM
-%</Documentation>
+%</Implementation>

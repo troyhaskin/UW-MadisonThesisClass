@@ -105,10 +105,16 @@ These command set deal with quick and easy typesetting of derivatives.
     and now, after the environment, the \cs{derivSymbol} is once again `$\derivSymbol$'.
 \end{function}
 
-\begin{function}{\derivSymbolChangeDefault,\pderivSymbolChangeDefault,\tderivSymbolChangeDefault}
+\begin{function}{
+    \derivSymbolChangeDefault,
+    \pderivSymbolChangeDefault,
+    \tderivSymbolChangeDefault}
     \begin{syntax}
-        \cs{derivSymbolChangeDefault} \Arg{symbol} \\[0.50em]
+        \cs{derivSymbolChangeDefault}  \Arg{symbol}
+        \cs{pderivSymbolChangeDefault} \Arg{symbol}
+        \cs{tderivSymbolChangeDefault} \Arg{symbol}
     \end{syntax}
+
     These commands will \textsc{permanently} change the symbol used by the associated |deriv| commands.
     For example:
     \begin{verbatim}
@@ -346,7 +352,7 @@ Some are new while others are simply in a camel-cased versions of the standard o
 %
 %
 %
-%<*Documentation>
+%<*Implementation>
 %<<Verbatim
 %   \iffalse
 %<*Code>
@@ -613,4 +619,4 @@ Some are new while others are simply in a camel-cased versions of the standard o
 %</Code>
 %   \fi
 %Verbatim
-%</Documentation>
+%</Implementation>

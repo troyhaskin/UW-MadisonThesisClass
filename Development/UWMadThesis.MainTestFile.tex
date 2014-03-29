@@ -1,22 +1,23 @@
 \documentclass[12pt]{UWMadThesis}
 
-\usepackage{shortvrb}
-\MakeShortVerb{\|}
+\Title{UWMadThesis Tests PDF}
+\Author{Troy C. Haskin}
 
-\let\OldBackslash\backslash
-\renewcommand{\backslash}{\ensuremath{\OldBackslash}}
 
-\newcommand{\Cmd}[1]{\texorpdfstring{\textcolor{PineGreen}{\texttt{#1}}}{#1}}
 
 \begin{document}
-\makeatletter
+
+\ExplSyntaxOn
+\cs_new_eq:NN \TableOfContentsDefault \UWMad_TOC_Default_TableOfContents:
+\ExplSyntaxOff
+\TableOfContents
 
 \begin{Nomenclature}
 
     \Entry{Sym1}{This is a test.}
     \Entry{ReallyReallyLongSymbol}{This is a test.}
 
-    \Group*{Group 1}
+    \Group{Group 1}
     \Entry{Sym2}{This is a test.}
 
     \Group{Group 2}
@@ -33,15 +34,12 @@
 \end{Nomenclature}
 
 \chapter{Hello}
+
 \appendix{Appendix}
-
-
-\Title{UWMadThesis Tests PDF}
-\Author{Troy C. Haskin}
 %\input{Tests/Test_Nomenclature}
 %\input{Tests/Test_Programming}
 %\input{Tests/Test_LaTeX3Programming}
 %\input{Tests/Test_MetaData}
 %\input{Tests/Test_Sectioning}
-\makeatother
+
 \end{document}

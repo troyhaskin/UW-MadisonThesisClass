@@ -7,7 +7,7 @@
 %
 %
 %
-%<*Documentation>
+%<*Implementation>
 %<<Verbatim
 %   \iffalse
 %<*Code>
@@ -92,7 +92,7 @@
     Dissertation~Guidelines;~consider~omission
 }
 \cs_new:Nn \__UWMad_FrontMatter_StyleWarning:n {
-    \msg_warning{UWMadThesis}{Options/StyleViolation}
+    \msg_warning:nnn {UWMadThesis}{Options/StyleViolation}
         {#1}
    \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
 }
@@ -203,6 +203,7 @@
 %    \begin{macrocode}
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
+\RequirePackage{microtype}
 \RequirePackage{array}
 \RequirePackage{graphicx}
 \RequirePackage{setspace}
@@ -248,4 +249,4 @@
 %</Code>
 %   \fi
 %Verbatim
-%</Documentation>
+%</Implementation>

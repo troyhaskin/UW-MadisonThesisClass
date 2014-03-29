@@ -28,22 +28,23 @@
 \generate{
     \file{UWMadThesis.Documentation.dtx}{
         \from{UWMadThesis.Documentation.Start.dtx}              {Documentation}
-        \from{UWMadThesis.Module.FrontMatter.dtx}               {Documentation}
-        \from{UWMadThesis.Module.Programming.dtx}               {Documentation}
-        \from{UWMadThesis.Module.LayoutAndStyle.dtx}            {Documentation}
-        \from{UWMadThesis.Module.Sectioning.dtx}                {Documentation}
-        \from{UWMadThesis.Module.Math.dtx}                      {Documentation}
-        \from{UWMadThesis.Module.ListOf.dtx}                    {Documentation}
-        \from{UWMadThesis.Module.ThesisInfoAndPDFMetadata.dtx}  {Documentation}
-        \from{UWMadThesis.Module.SpecialPages.dtx}              {Documentation}
-        \from{UWMadThesis.Module.Finalize.dtx}                  {Documentation}
+        \from{UWMadThesis.Module.FrontMatter.dtx}               {Implementation}
+        \from{UWMadThesis.Module.Programming.dtx}               {Implementation}
+        \from{UWMadThesis.Module.LayoutAndStyle.dtx}            {Implementation}
+        \from{UWMadThesis.Module.Sectioning.dtx}                {Implementation}
+        \from{UWMadThesis.Module.Math.dtx}                      {Implementation}
+        \from{UWMadThesis.Module.ListOf.dtx}                    {Implementation}
+        \from{UWMadThesis.Module.ThesisInfoAndPDFMetadata.dtx}  {Implementation}
+        \from{UWMadThesis.Module.SpecialPages.dtx}              {Implementation}
+        \from{UWMadThesis.Documentation.Finalize.dtx}           {Documentation}
     }
 }
 
 
 % This call generates the User Guide file.
 \generate{
-    \file{UWMadThesis.Documentation.UserGuide.dtx}{
+    \file{UWMadThesis.UserGuide.dtx}{
+        \from{UWMadThesis.UserGuide.Start.dtx}                  {UserGuide}
         \from{UWMadThesis.Module.ThesisInfoAndPDFMetadata.dtx}  {UserGuide}
         \from{UWMadThesis.Module.SpecialPages.dtx}              {UserGuide}
         \from{UWMadThesis.Module.LayoutAndStyle.dtx}            {UserGuide}

@@ -27,7 +27,7 @@
     Dissertation~Guidelines;~consider~omission
 }
 \cs_new:Nn \__UWMad_FrontMatter_StyleWarning:n {
-    \msg_warning{UWMadThesis}{Options/StyleViolation}
+    \msg_warning:nnn {UWMadThesis}{Options/StyleViolation}
         {#1}
    \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
 }
@@ -88,6 +88,7 @@
 \LoadClass{\g_UWMad_ParentClass_tl}[1995/12/01]
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
+\RequirePackage{microtype}
 \RequirePackage{array}
 \RequirePackage{graphicx}
 \RequirePackage{setspace}
@@ -147,53 +148,22 @@
     \cs_undefine:N  #1
     \cs_new_eq:Nc   #1          {\string#1:}
 }
-\cs_new:Nn \__UWMad_Definition_Swap:Nn {
-    \cs_new_eq:cN  {\string#1-Default:}  #1
-    \cs_new:cn     {\string#1-Swap:}    {#2}
-    \cs_undefine:N  #1
-    \cs_gset_eq:Nc  #1          {\string#1-Swap:}
-}
-\cs_new:Nn \__UWMad_Definition_Swap:cn {
-    \cs_new_eq:cc  {#1-Default:} {#1}
-    \cs_new:cn     {#1-Swap:}    {#2}
-    \cs_undefine:c {#1}
-    \cs_gset_eq:cc {#1}          {#1-Swap:}
-}
-\cs_new:Nn \UWMad_Definition_Swap:cn {
-    \cs_if_exist:cTF {#1} {
-        \__UWMad_Definition_Swap:cn{#1}{#2}
-
-        \cs_if_exist:cTF {end#1} {
-            \__UWMad_Definition_Swap:cn{end#1}{#2}
-        }{}
-    } {
-        \cs_new:cn {#1} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Definition_Reset:c {
-    \cs_if_exist:cTF {#1-Default:} {
-        \cs_gset_eq:cc  {#1}          {#1-Default:}
-        \cs_undefine:c  {#1-Default:}
-
-        \cs_if_exist:cTF {end#1-Default:} {
-            \cs_gset_eq:cc  {#1}          {end#1-Default:}
-            \cs_undefine:c  {end#1-Default:}
-        }{}
-    } {}
-}
 \cs_new:Nn \UWMad_Definition_Swap:Nn {
     \cs_if_exist:NTF #1 {
-        \__UWMad_Definition_Swap:Nn #1 {#2}
+        \cs_new_eq:cN  {\string#1-Default:}  #1
+        \cs_gset_eq:Nc  #1 {#2}
     } {
         \cs_new:Nn #1 {#2}
     }
 }
 \cs_new:Nn \UWMad_Definition_Reset:N {
     \cs_if_exist:cTF {\string#1-Default:} {
-        \cs_gset_eq:Nc  #1  {\string#1-Default:}
-        \cs_undefine:c      {\string#1-Default:}
-    } {}
+        \cs_gset_eq:Nc  #1              {\string#1-Default:}
+        \cs_undefine:c  {\string#1-Default:}
+    } { }
 }
+\cs_generate_variant:Nn \UWMad_Definition_Swap:Nn {cn}
+\cs_generate_variant:Nn \UWMad_Definition_Reset:N {c}
 \cs_new:Nn \__UWMad_IfDefined:nnnnT{
     \cs_if_exist:cTF {#1#2#3} {
         #5
@@ -221,267 +191,6 @@
 }
 \cs_new:Nn \__UWMad_IfUndefined:nT{
     \_UWMad_IfUndefined:nnnnT{#1}{}{}{command}{#2}
-}
-\cs_new:Nn \__UWMad_IfLocal:nnnTF {
-    \cs_if_exist:cTF     {#1#2_Local}{
-        #4
-    }{
-        \cs_if_exist:cTF {#1#2_Global}{
-            #5
-        }{
-            \msg_error:nnnn
-                {UWMadThesis}
-                {Programming/UnregisteredVariable}
-                {#2}
-                {#3}
-        }
-    }
-}
-\cs_new:Nn \__UWMad_Boolean_IfLocal:nTF {
-    \__UWMad_IfLocal:nnnTF
-        {g__UWMad_Boolean_}{#1}{Boolean}{#2}{#3}
-}
-\cs_new:Nn \__UWMad_Boolean_IfUndefined:nnT{
-    \__UWMad_IfUndefined:nnnnT
-        {g__UWMad_Boolean_}{#1}{#2}{Boolean}{#3}
-}
-\cs_new:Nn \UWMad_Boolean_DefineLocal:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Local} {
-        \bool_new:c {g__UWMad_Boolean_#1_Local}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_DefineGlobal:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Global} {
-        \bool_new:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_DefineLocalSetTrue:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Local} {
-        \bool_new:c       {g__UWMad_Boolean_#1_Local}
-        \bool_gset_true:c {g__UWMad_Boolean_#1_Local}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_DefineLocalSetFalse:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Local} {
-        \bool_new:c        {g__UWMad_Boolean_#1_Local}
-        \bool_gset_false:c {g__UWMad_Boolean_#1_Local}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_Delete:n {
-    \__UWMad_Boolean_IfLocal:nTF {#1} {
-        \cs_undefine:c {g__UWMad_Boolean_#1_Local}
-    } {
-        \cs_undefine:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_DefineGlobalSetTrue:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Global} {
-        \bool_new:c       {g__UWMad_Boolean_#1_Global}
-        \bool_gset_true:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_DefineGlobalSetFalse:n {
-    \__UWMad_Boolean_IfUndefined:nnT {#1} {_Global} {
-        \bool_new:c        {g__UWMad_Boolean_#1_Global}
-        \bool_gset_false:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_SetTrue:n {
-    \__UWMad_Boolean_IfLocal:nTF {#1} {
-        \bool_set_true:c  {g__UWMad_Boolean_#1_Local}
-    }{
-        \bool_gset_true:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_SetFalse:n {
-    \__UWMad_Boolean_IfLocal:nTF {#1} {
-        \bool_set_false:c  {g__UWMad_Boolean_#1_Local}
-    }{
-        \bool_gset_false:c {g__UWMad_Boolean_#1_Global}
-    }
-}
-\cs_new:Nn \UWMad_Boolean_IfTrue:nTF {
-    \__UWMad_Boolean_IfLocal:nTF {#1} {
-        \bool_if:cTF {g__UWMad_Boolean_#1_Local}
-    }{
-        \bool_if:cTF {g__UWMad_Boolean_#1_Global}
-    }
-    {#2}
-    {#3}
-}
-\cs_new:Nn \UWMad_Boolean_IfFalse:nTF {
-    \__UWMad_Boolean_IfLocal:nTF {#1} {
-        \bool_if:cTF {g__UWMad_Boolean_#1_Local}
-    }{
-        \bool_if:cTF {g__UWMad_Boolean_#1_Global}
-    }
-    {#3}
-    {#2}
-}
-\cs_new:Nn \__UWMad_Length_IfLocal:nTF {
-    \__UWMad_IfLocal:nnnTF
-        {g__UWMad_Length_}{#1}{Length}{#2}{#3}
-}
-\cs_new:Nn \__UWMad_Length_IfUndefined:nnT{
-    \__UWMad_IfUndefined:nnnnT{g__UWMad_Length_}{#1}{#2}{Length}{#3}
-}
-\cs_new:Nn \UWMad_Length_DefineLocal:nn {
-    \__UWMad_Length_IfUndefined:nnT {#1} {_Local} {
-        \dim_new:c   {g__UWMad_Length_#1_Local}
-        \dim_gset:cn {g__UWMad_Length_#1_Local} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Length_DefineGlobal:nn {
-    \__UWMad_Length_IfUndefined:nnT {#1} {_Global} {
-        \dim_new:c   {g__UWMad_Length_#1_Global}
-        \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Length_Add:nn {
-    \__UWMad_Length_IfLocal:nTF {#1} {
-        \dim_add:cn  {g__UWMad_Length_#1_Local}  {#2}
-    }{
-        \dim_gadd:cn {g__UWMad_Length_#1_Global} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Length_Set:nn {
-    \__UWMad_Length_IfLocal:nTF {#1} {
-        \dim_set:cn  {g__UWMad_Length_#1_Local}  {#2}
-    }{
-        \dim_gset:cn {g__UWMad_Length_#1_Global} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Length_Of:n {
-    \__UWMad_Length_IfLocal:nTF {#1} {
-        \dim_use:c {g__UWMad_Length_#1_Local}
-    }{
-        \dim_use:c {g__UWMad_Length_#1_Global}
-    }
-}
-\cs_new:Nn \UWMad_Length_If:nnnTF {
-    \dim_compare:nTF{ \UWMad_Length_Of:n{#1} #2 #3 }{
-        #4
-    }{
-        #5
-    }
-}
-\cs_new:Nn \__UWMad_Counter_IfLocal:nTF {
-    \__UWMad_IfLocal:nnnTF
-        {g__UWMad_Counter_}{#1}{Counter}{#2}{#3}
-}
-\cs_new:Nn \__UWMad_Counter_IfUndefined:nnT{
-    \__UWMad_IfUndefined:nnnnT{g__UWMad_Counter_}{#1}{#2}{Counter}{#3}
-}
-\cs_new:Nn \UWMad_Counter_DefineLocal:nn {
-    \__UWMad_Counter_IfUndefined:nnT {#1} {_Local} {
-        \int_new:c   {g__UWMad_Counter_#1_Local}
-        \int_gset:cn {g__UWMad_Counter_#1_Local} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Counter_DefineGlobal:nn {
-    \__UWMad_Counter_IfUndefined:nnT {#1} {Global} {
-        \int_new:c   {g__UWMad_Counter_#1_Global}
-        \int_gset:cn {g__UWMad_Counter_#1_Global} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Counter_Add:nn {
-    \__UWMad_Counter_IfLocal:nTF {#1} {
-        \int_add:cn  {g__UWMad_Counter_#1_Local}  {#2}
-    }{
-        \int_gadd:cn {g__UWMad_Counter_#1_Global} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Counter_Step:n {
-    \UWMad_Counter_Add:nn{#1}{1}
-}
-\cs_new:Nn \UWMad_Counter_Set:nn {
-    \__UWMad_Counter_IfLocal:nTF {#1} {
-        \int_set:cn  {g__UWMad_Counter_#1_Local}  {#2}
-    }{
-        \int_gset:cn {g__UWMad_Counter_#1_Global} {#2}
-    }
-}
-\cs_new:Nn \UWMad_Counter_SetAndAdd:nnn {
-    \UWMad_Counter_Set:nn{#1}{#2}
-    \UWMad_Counter_Add:nn{#1}{#3}
-}
-\cs_new:Nn \UWMad_Counter_SetAndStep:nn {
-    \UWMad_Counter_SetAndAdd:nnn {#1}{#2}{1}
-}
-\cs_new:Nn \UWMad_Counter_Value:n {
-    \__UWMad_Counter_IfLocal:nTF {#1} {
-        \int_use:c {g__UWMad_Counter_#1_Local}
-    }{
-        \int_use:c {g__UWMad_Counter_#1_Global}
-    }
-}
-\cs_new:Nn \UWMad_Counter_Compare:nnnTF {
-    \int_compare:nTF {\UWMad_Counter_Value:n{#1} #2 #3} {
-        #4
-    }{
-        #5
-    }
-}
-\cs_new:Nn \UWMad_Counter_arabic:n {
-    \int_to_arabic:n {\UWMad_Counter_Value:n{#1}}
-}
-\cs_new:Nn \UWMad_Counter_alpha:n {
-    \int_to_alph:n {\UWMad_Counter_Value:n{#1}}
-}
-\cs_new:Nn \UWMad_Counter_Alpha:n {
-    \int_to_Alph:n {\UWMad_Counter_Value:n{#1}}
-}
-\cs_new:Nn \UWMad_Counter_roman:n {
-    \int_to_roman:n {\UWMad_Counter_Value:n{#1}}
-}
-\cs_new:Nn \UWMad_Counter_Roman:n {
-    \int_to_Roman:n {\UWMad_Counter_Value:n{#1}}
-}
-\cs_new:Nn \__UWMad_CSV_IfDefined:nT {
-    \__UWMad_IfDefined:nnnnT{g__UWMad_CSV_}{#1}{}{CSV}{#2}
-}
-\cs_new:Nn \__UWMad_CSV_IfUndefined:nT{
-    \__UWMad_IfUndefined:nnnnT{g__UWMad_CSV_}{#1}{}{CSV}{#2}
-}
-\cs_new:Nn \UWMad_CSV_Define:n {
-    \__UWMad_CSV_IfUndefined:nT {#1} {
-        \clist_new:c {g__UWMad_CSV_#1}
-    }
-}
-\cs_new:Nn \UWMad_CSV_Clear:n {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \clist_gclear:c {g__UWMad_CSV_#1}
-    }
-}
-\cs_new:Nn \UWMad_CSV_Delete:n {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \clist_gclear:c {g__UWMad_CSV_#1}
-        \cs_undefine:c  {g__UWMad_CSV_#1}
-    }
-}
-\cs_new:Nn \UWMad_CSV_Append:nn {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \clist_gput_right:cn {g__UWMad_CSV_#1} {#2}
-    }
-}
-\cs_new:Nn \UWMad_CSV_Prepend:nn {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \clist_gput_left:cn {g__UWMad_CSV_#1} {#2}
-    }
-}
-\cs_new:Nn \UWMad_CSV_Get:n {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \use:c {g__UWMad_CSV_#1}
-    }
-}
-\cs_new:Nn \UWMad_CSV_IfNotEmpty:nTF {
-    \__UWMad_CSV_IfDefined:nT {#1} {
-        \clist_if_empty:cTF {g__UWMad_CSV_#1} {
-            #3
-        }{
-            #2
-        }
-    }
 }
 \cs_new:Nn \__UWMad_Stack_IfDefined:nT {
     \__UWMad_IfDefined:nnnnT{g__UWMad_Stack_}{#1}{}{Stack}{#2}
@@ -692,6 +401,7 @@
         \cs_undefine:c {g__UWMad_Hash_#1}
     }
 }
+\cs_generate_variant:Nn \tl_if_blank:nTF {fTF}
 \DeclareDocumentCommand \LoadUtilityAPI { } {
 \DeclareDocumentCommand \IfCommandExists { m +m +m }{
     \cs_if_exist:cTF {##1}{
@@ -707,14 +417,14 @@
         ##3
     }
 }
-\DeclareDocumentCommand \IfStringEmpty { m +m +m }{
-    \tl_if_blank:nTF {##1}{
+\DeclareDocumentCommand \IfEmptyTF { m +m +m }{
+    \tl_if_blank:fTF {##1}{
         ##2
     }{
         ##3
     }
 }
-\DeclareDocumentCommand \IfCommandEmpty { m +m +m }{
+\DeclareDocumentCommand \IfCommandEmptyTF { m +m +m }{
     \tl_if_blank:oTF{##1}{
         ##2
     }{
@@ -763,76 +473,123 @@
 }
 }
 \DeclareDocumentCommand \LoadTypesAPI { } {
-\cs_gset_eq:NN
-    \BooleanDefineLocal             \UWMad_Boolean_DefineLocal:n
-\cs_gset_eq:NN
-    \BooleanDefineGlobal            \UWMad_Boolean_DefineGlobal:n
-\cs_gset_eq:NN
-    \BooleanDefineLocalAndSetTrue   \UWMad_Boolean_DefineLocalAndSetTrue:n
-\cs_gset_eq:NN
-    \BooleanDefineLocalAndSetFalse  \UWMad_Boolean_DefineLocalAndSetFalse:n
-\cs_gset_eq:NN
-    \BooleanDefineGlobalAndSetTrue  \UWMad_Boolean_DefineGlobalAndSetTrue:n
-\cs_gset_eq:NN
-    \BooleanDefineGlobalAndSetFalse \UWMad_Boolean_DefineGlobalAndSetFalse:n
-\cs_gset_eq:NN
-    \BooleanSetTrue                 \UWMad_Boolean_SetTrue:n
-\cs_gset_eq:NN
-    \BooleanSetFalse                \UWMad_Boolean_SetFalse:n
-\cs_gset_eq:NN
-    \BooleanSetIfTrue               \UWMad_Boolean_SetIfTrue:nTF
-\cs_gset_eq:NN
-    \BooleanSetIfFalse              \UWMad_Boolean_SetIfFalse:nTF
-\cs_gset_eq:NN \LengthDefineLocal   \UWMad_Length_DefineLocal:nn
-\cs_gset_eq:NN \LengthDefineGlobal  \UWMad_Length_DefineGlobal:nn
-\cs_gset_eq:NN \LengthAdd           \UWMad_Length_Add:nn
-\cs_gset_eq:NN \LengthSet           \UWMad_Length_Set:nn
-\cs_gset_eq:NN \LengthOf            \UWMad_Length_Of:n
-\cs_gset_eq:NN \LengthIf            \UWMad_Length_If:nTF
-\cs_gset_eq:NN \CounterDefineLocal  \UWMad_Counter_DefineLocal:nn
-\cs_gset_eq:NN \CounterDefineGlobal \UWMad_Counter_DefineGlobal:nn
-\cs_gset_eq:NN \CounterAdd          \UWMad_Counter_Add:nn
-\cs_gset_eq:NN \CounterStep         \UWMad_Counter_Step:n
-\cs_gset_eq:NN \CounterSet          \UWMad_Counter_Set:nn
-\cs_gset_eq:NN \CounterSetAndAdd    \UWMad_Counter_SetAndAdd:nn
-\cs_gset_eq:NN \CounterSetAndStep   \UWMad_Counter_SetAndStep:nn
-\cs_gset_eq:NN \CounterValue        \UWMad_Counter_Value:n
-\cs_gset_eq:NN \CounterIf           \UWMad_Counter_If:nTF
-\cs_gset_eq:NN \CounterCompare      \UWMad_Counter_Compare:nnnTF
-\cs_gset_eq:NN \CounterArabic       \UWMad_Counter_arabic:n
-\cs_gset_eq:NN \CounterAlpha        \UWMad_Counter_alpha:n
-\cs_gset_eq:NN \CounterALPHA        \UWMad_Counter_Alpha:n
-\cs_gset_eq:NN \CounterRoman        \UWMad_Counter_roman:n
-\cs_gset_eq:NN \CounterROMAN        \UWMad_Counter_Roman:n
+\DeclareDocumentCommand \CreateBoolean { m } {
+    \bool_new:c {g__UWMad_Programming_API_##1_bool}
 }
-    \geometry{
-        margin      = 1.0in,
-        includehead = true,
-        paper       = letterpaper
+\DeclareDocumentCommand \CreateBooleanTrue { m } {
+    \bool_new:c       {g__UWMad_Programming_API_##1_bool}
+    \bool_gset_true:c {g__UWMad_Programming_API_##1_bool}
+}
+\DeclareDocumentCommand \CreateBooleanFalse { m } {
+    \bool_new:c        {g__UWMad_Programming_API_##1_bool}
+}
+\DeclareDocumentCommand \SetBooleanTrue { m } {
+    \bool_gset_true:c {g__UWMad_Programming_API_##1_bool}
+}
+\DeclareDocumentCommand \SetBooleanFalse { m } {
+    \bool_gset_false:c {g__UWMad_Programming_API_##1_bool}
+}
+\DeclareDocumentCommand \IfBooleanTrueTF { m +m +m } {
+    \bool_if:cTF {g__UWMad_Programming_API_##1_bool} {
+        ##2
+    } {
+        ##3
     }
-    \creflabelformat{equation}{#2#1#3}
-    \captionsetup[table]{
-        format=hang,
-        labelsep=colon,
-        justification=justified,
-        labelfont={sl},
-        textfont=sl,
-        font={sc,small,stretch=1.1},
-        width=0.9\textwidth,
-        position=above,
-        skip=0.25em
+}
+\DeclareDocumentCommand \IfBooleanFalseTF { m +m +m } {
+    \bool_if:cTF {g__UWMad_Programming_API_##1_bool} {
+        ##3
+    } {
+        ##2
     }
-    \captionsetup[figure]{
-        format=hang,
-        labelsep=colon,
-        justification=justified,
-        labelfont={sl},
-        textfont=sl,
-        font={small,stretch=1.1},
-        width=0.9\textwidth,
-        position=above,
-        skip=0.5em
+}
+\DeclareDocumentCommand \CreateLength { m m } {
+    \dim_new:c   {g__UWMad_Programming_API_##1_dim}
+    \dim_gset:cn {g__UWMad_Programming_API_##1_dim} {##2}
+}
+\DeclareDocumentCommand \AddToLength { m m } {
+    \dim_gadd:cn {g__UWMad_Programming_API_##1_dim} {##2}
+}
+\DeclareDocumentCommand \SetLength { m m } {
+    \dim_gset:cn {g__UWMad_Programming_API_##1_dim} {##2}
+}
+\DeclareDocumentCommand \ValueOfLength { m } {
+    \dim_use:c {g__UWMad_Programming_API_##1_dim}
+}
+\DeclareDocumentCommand \IfLengthTF { m m m +m +m } {
+    \dim_compare:nNnTF {##1} ##2 {##3} {
+        ##4
+    } {
+        ##5
     }
+}
+\DeclareDocumentCommand \CreateCounter { m m } {
+    \int_new:c   {g__UWMad_Programming_API_##1_int}
+    \int_gset:cn {g__UWMad_Programming_API_##1_int} {##2}
+}
+\DeclareDocumentCommand \AddToCounter { m m } {
+    \int_gadd:cn {g__UWMad_Programming_API_##1_int} {##2}
+}
+\DeclareDocumentCommand \StepCounter { m m } {
+    \int_gincr:cn {g__UWMad_Programming_API_##1_int} {##2}
+}
+\DeclareDocumentCommand \SetCounter { m m } {
+    \int_gset:cn {g__UWMad_Programming_API_##1_int} {##2}
+}
+\DeclareDocumentCommand \ValueOfCounter { m m } {
+    \int_use:c {g__UWMad_Programming_API_##1_int}
+}
+\DeclareDocumentCommand \IfCounterTF { m m m +m +m } {
+    \int_compare:nNnTF {##1} {##2} {##3} {
+        ##4
+    } {
+        ##5
+    }
+}
+\DeclareDocumentCommand \CounterToArabic { m } {
+    \int_to_arabic:c {g__UWMad_Programming_API_##1_int}
+}
+\DeclareDocumentCommand \CounterToALPHA { m } {
+    \int_to_Alph:c {g__UWMad_Programming_API_##1_int}
+}
+\DeclareDocumentCommand \CounterToAlpha { m } {
+    \int_to_alph:c {g__UWMad_Programming_API_##1_int}
+}
+\DeclareDocumentCommand \CounterToROMAN { m } {
+    \int_to_Roman:c {g__UWMad_Programming_API_##1_int}
+}
+\DeclareDocumentCommand \CounterToRoman { m } {
+    \int_to_roman:c {g__UWMad_Programming_API_##1_int}
+}
+}
+\geometry{
+    includehead = true,
+    margin      = 1.0in,
+    paper       = letterpaper,
+}
+\creflabelformat{equation}{#2#1#3}
+\captionsetup [table] {
+    format        = hang                ,
+    labelsep      = colon               ,
+    justification = justified           ,
+    labelfont     = sc                  ,
+    textfont      = sl                  ,
+    font          = {normal,stretch=1.1},
+    width         = 0.9\textwidth       ,
+    position      = above               ,
+    skip          = 0.50em
+}
+\captionsetup [figure] {
+    format        = hang                ,
+    labelsep      = colon               ,
+    justification = justified           ,
+    labelfont     = sc                  ,
+    textfont      = sl                  ,
+    font          = {normal,stretch=1.1},
+    width         = 0.9\textwidth       ,
+    position      = above               ,
+    skip          = 0.5em
+}
 \definecolor{UWMadGreen}{rgb}{0,0.7,0}
 \hypersetup {
     colorlinks         = true       ,
@@ -855,15 +612,15 @@
 \setlength{\parindent}{ 0pt}
 \setlength{\parskip}  {10pt}
 \setlength{\headsep}  {15pt}
-\cs_gset_eq:NN \UWMad_Sectioning_DefaultChapter: \@chapter
-\cs_new:Nn \UWMad_Sectioning_Chapter: {
+\UWMad_Hook_Prepend:Nn \@chapter {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {
         \pagenumbering{arabic}
     } { }
-    \UWMad_Sectioning_DefaultChapter:
 }
-\cs_gset_eq:NN \@chapter \UWMad_Sectioning_Chapter:
+\UWMad_Hook_Prepend:Nn \@schapter {
+    \thispagestyle{myheadings}
+}
 \int_new:N  \g__UWMad_Appendix_Counter_int
 \int_set:Nn \g__UWMad_Appendix_Counter_int {0}
 \cs_new:Nn \__UWMad_Appendix_Initialize:{
@@ -989,7 +746,7 @@
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\contentsname}
-        \TableOfContentsDefault
+        \UWMad_TOC_Default_TableOfContents:
         \clearpage
     \group_end:
 }
@@ -1002,7 +759,7 @@
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listtablename}
-        \ListOfTablesDefault
+        \\UWMad_TOC_Default_ListOfTables:
         \clearpage
     \group_end:
 }
@@ -1015,7 +772,7 @@
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listfigurename}
-        \ListOfFiguresDefault
+        \UWMad_TOC_Default_ListOfFigures:
         \clearpage
     \group_end:
 }
@@ -1456,26 +1213,44 @@
         {\tl_use:c{g__UWMad_ListOf#1_Section_#2_tl}}
 
     \UWMad_ListOf_IfNumbered:nTF {#1} {
-        \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
-            \__UWMad_ListOf_CurrentSectioningCommmand:n
-                {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
+
+        \tl_if_eq:nnTF {#2} {Main} {
+            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} { } {
+                \int_set_eq:NN \l_tmpa_int \c@tocdepth
+                \setcounter{tocdepth}{-1}
+            }
         } {
             \int_set_eq:NN \l_tmpa_int \c@tocdepth
             \setcounter{tocdepth}{-1}
-            \__UWMad_ListOf_CurrentSectioningCommmand:n
-                {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
+        }
+
+        \__UWMad_ListOf_CurrentSectioningCommmand:n
+            {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
+
+        \tl_if_eq:nnTF #2 {Main} {
+            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} { } {
+                \setcounter{tocdepth}{\l_tmpa_int}
+            }
+        } {
             \setcounter{tocdepth}{\l_tmpa_int}
         }
+
     } {
-        \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
-            \phantomsection
-            \addcontentsline
-                {toc}
-                {\tl_use:c {g__UWMad_ListOf#1_Section_#2_tl}}
-                {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
-        } { }
+
+        \cs_generate_variant:Nn \tl_if_eq:nnTF {onTF}
+        \tl_set:Nn \l_tmpa_tl {Main}
+
+        \phantomsection
         \__UWMad_ListOf_CurrentSectioningCommmand:n*
         {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
+        \tl_if_eq:onTF {#2} {Main} {
+            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
+                \addcontentsline
+                    {toc}
+                    {\tl_use:c {g__UWMad_ListOf#1_Section_#2_tl}}
+                    {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
+            } { }
+        } { }
     }
 
 }
@@ -1826,9 +1601,11 @@
     } { }
 }
 \cs_new_eq:NN \AcronymSetup \NomenclatureSetup
-\UWMad_CSV_Define:n {MetaDataList}
+\clist_new:N \g__UWMad_MetaDataList_clist
 \cs_new:Nn \UWMad_MetaData_PushToList:nn {
-   \UWMad_CSV_Append:nn {MetaDataList}{#1={#2}}
+   \clist_gput_right:Nn \g__UWMad_MetaDataList_clist {
+        #1={#2}
+    }
 }
 
 \bool_new:N \g__UWMad_MetaData_GenerateAux_bool
@@ -1839,21 +1616,24 @@
 }{}
 
 \AtBeginDocument{
-    \UWMad_CSV_IfNotEmpty:nTF{MetaDataList} {
-        \exp_args:Nx \hypersetup {\UWMad_CSV_Get:n{MetaDataList}}
+    \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
+        \exp_args:Nx \hypersetup {
+            \clist_use:Nn\g__UWMad_MetaDataList_clist{,}
+        }
     } { }
     \bool_gset_true:N \g__UWMad_MetaData_IsDocument_bool
 }
 \AtEndDocument{
     \bool_if:NTF \g__UWMad_MetaData_GenerateAux_bool {
-        \UWMad_CSV_IfNotEmpty:nTF {MetaDataList} {
+        \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
             \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
             \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
                 \jobname.UWMad.PDFMetaData.aux
             }
             \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
                 \noexpand\ExplSyntaxOff
-                    \noexpand\hypersetup{\UWMad_CSV_Get:n{MetaDataList}}
+                    \noexpand\hypersetup
+                    {\clist_use:Nn\g__UWMad_MetaDataList_clist{,}}
                 \noexpand\ExplSyntaxOn
             }
             \iow_close:N \g__UWMad_PDFMetaData_HyperSetup_io

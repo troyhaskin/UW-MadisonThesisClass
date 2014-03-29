@@ -10,14 +10,17 @@
 \ProvidesExplClass
     {UWMadThesisL3Doc}{2014/03/13}{1.0}{Documentation class for UWMadThesis}
 \ProcessOptions\relax
-\LoadClass[l3doc]{UWMadThesis}[2013/01/01]
+\LoadClass[l3doc,full]{UWMadThesis}[2013/01/01]
 %
 %
 %
 \geometry{
-    includemp      = true,
-    margin         = 0.25in,
-    marginparwidth = 1.65in,
+%    includemp      = true,
+    left           = 1.93in,
+    right          = 0.25in,
+    top            = 1in,
+    bottom         = 1in,
+    marginparwidth = 1.92in,
     includehead    = true,
     paper          = letterpaper
 }
@@ -80,19 +83,20 @@
         \int_set:Nn \g__UWMad_Sectioning_SubSubModule_int {0}
 
         \group_begin:
-            \null\vskip 0.1em
             \phantomsection
+            \tex_hbox:D{}
+            \skip_vertical:n{2.5em}
             \textbf{
-                \LARGE{
+                \Large{
                     Module~\g__UWMad_TheModule_tl
                 }
             }
-            \vskip 0.5em
-            \textbf{\Huge{#2}}
+            \skip_vertical:n{1em}
+            \textbf{\LARGE{#2}}
         \group_end:
         \addcontentsline{toc}{section}{#1}
         \label{Module:#1}
-        \vskip 1em
+        \skip_vertical:n{1em}
         \par
     }
 
@@ -104,18 +108,20 @@
         \int_incr:N \g__UWMad_Sectioning_SubModule_int
 
         \group_begin:
-            \null\vskip 0.1em
             \phantomsection
+            \tex_hbox:D{}
+            \skip_vertical:n{1em}
             \textbf{
                 \Large{
                     \g__UWMad_TheSubModule_tl
-                    \hspace*{0.5em}#2
+                    \skip_horizontal:n{0.5em}
+                    #2
                 }
             }
         \group_end:
         \addcontentsline{toc}{subsection}{#1}
         \label{SubModule:#1}
-        \vskip 0.2em
+        \skip_vertical:n{0.25em}
         \par
     }
 
@@ -126,18 +132,20 @@
         \int_incr:N \g__UWMad_Sectioning_SubSubModule_int
 
         \group_begin:
-            \null\vskip 0.1em
             \phantomsection
+            \tex_hbox:D{}
+            \skip_vertical:n{1em}
             \textbf{
                 \large{
                     \g__UWMad_TheSubSubModule_tl
-                    \hspace*{0.5em}#2
+                    \skip_horizontal:n{0.5em}
+                    #2
                 }
             }
         \group_end:
         \addcontentsline{toc}{subsubsection}{#1}
         \label{SubSubModule:#1}
-        \vskip 0.2em
+        \skip_vertical:n{0.25em}
         \par
     }
 
@@ -205,19 +213,20 @@
         \int_set:Nn \g__UWMad_Sectioning_SubSubFeature_int {0}
 
         \group_begin:
-            \null\vskip 0.1em
             \phantomsection
+            \tex_hbox:D{}
+            \skip_vertical:n{2.5em}
             \textbf{
-                \LARGE{
+                \Large{
                     Feature~Set~\g__UWMad_TheFeature_tl
                 }
             }
-            \vskip 0.5em
-            \textbf{\Huge{#2}}
+            \skip_vertical:n{1em}
+            \textbf{\LARGE{#2}}
         \group_end:
         \addcontentsline{toc}{section}{#1}
         \label{Feature:#1}
-        \vskip 1em
+        \skip_vertical:n{1em}
         \par
     }
 
@@ -227,18 +236,20 @@
         \int_set:Nn \g__UWMad_Sectioning_SubSubFeature_int {0}
 
         \group_begin:
-            \null\vskip 0.1em
             \phantomsection
+            \tex_hbox:D{}
+            \skip_vertical:n{1em}
             \textbf{
                 \Large{
                     \g__UWMad_TheSubFeature_tl
-                    \hspace*{0.5em}#2
+                    \skip_horizontal:n{0.5em}
+                    #2
                 }
             }
         \group_end:
         \addcontentsline{toc}{subsection}{#1}
         \label{SubFeature:#1}
-        \vskip 0.2em
+        \skip_vertical:n{0.25em}
         \par
     }
 
@@ -247,18 +258,20 @@
         \int_incr:N \g__UWMad_Sectioning_SubSubFeature_int
 
         \group_begin:
-            \null\vskip 0.1em
             \phantomsection
+            \tex_hbox:D{}
+            \skip_vertical:n{1em}
             \textbf{
                 \large{
                     \g__UWMad_TheSubSubFeature_tl
-                    \hspace*{0.5em}#2
+                    \skip_horizontal:n{0.5em}
+                    #2
                 }
             }
         \group_end:
         \addcontentsline{toc}{subsubsection}{#1}
         \label{SubSubFeature:#1}
-        \vskip 0.2em
+        \skip_vertical:n{0.25em}
         \par
     }
 
@@ -322,26 +335,22 @@
     \DeclareDocumentCommand   \UWPart { o m } {
         \int_incr:N \g__UWMad_Sectioning_Part_int
         \cleardoublepage
-        \newgeometry{marginparwidth = 0pt}
         \group_begin:
-            \vspace*{2in}
             \phantomsection
-            \begin{center}
-                \textbf{
-                    \huge{Part~\g__UWMad_ThePart_tl}
-                    \vskip 0.30em
-                    \Huge{#2}
-                }
-                \IfNoValueTF{#1} {
-                    \addcontentsline{toc}{part}{#2}
-                } {
-                    \addcontentsline{toc}{part}{#1}
-                }
-            \end{center}
-            \thispagestyle{empty}
+            \tex_hbox:D{}
+            \skip_vertical:n{1em}
+            \textbf{
+                \huge{Part~\g__UWMad_ThePart_tl}
+                \skip_vertical:n{1em}
+                \Huge{#2}
+            }
+            \IfNoValueTF{#1} {
+                \addcontentsline{toc}{chapter}{#2}
+            } {
+                \addcontentsline{toc}{chapter}{#1}
+            }
         \group_end:
-        \restoregeometry
-        \clearpage
+        \skip_vertical:n{2em}
     }
 
 % Define some lengths for the documentation.
@@ -386,4 +395,7 @@
     \setlength{\topsep}{0pt}
     \setlength{\partopsep}{0pt}
     \setstretch{0.90}
+}
+\UWMad_Hook_Prepend:Nn \macrocode {
+    \skip_vertical:n {1em}
 }

@@ -14,10 +14,25 @@
     }
     \ExplSyntaxOff
 
-   \Title{UWMadThesis Manual}
-   \Author{Troy Christopher Haskin}
+    \Title{UWMadThesis Manual}
+    \Author{Troy Christopher Haskin}
+
+    \EnableCrossrefs
+    \RecordChanges
+    \CodelineIndex
 
     \begin{document}
+        \ExplSyntaxOn
+            \group_begin:
+             %   \setstretch{1.05}
+             %   \phantomsection
+             %   \__UWMad_FrontMatter_Register:nn
+             %       {part}
+             %       {\contentsname}
+                \cs_show:N\UWMad_TOC_Default_TableOfContents:
+             %   \clearpage
+            \group_end:
+        \ExplSyntaxOff
         \DocInput{\jobname.dtx}
     \end{document}
 %
@@ -43,12 +58,24 @@
 %    Grave accent  \`    Left brace   \{     Vertical bar  \|
 %    Right brace   \}    Tilde \~}
 %
+%   \maketitle
 %
-%   \UWPart{User Guide}
-%   \input{UWMadThesis.Documentation.UserGuide.dtx}
+%   \input{UWMadThesis.Documentation.IndexExclusions.dtx}
+%
+%
+%   \changes{1.0}{Hello}{Hello}
+%
+%
+%   \input{UWMadThesis.UserGuide.dtx}
 %   \GetFileInfo{UWMadThesis.cls}
-%   \StopEventually{}
 %
+%
+%   \StopEventually{
+%       \clearpage
+%       \PrintChanges
+%       \clearpage
+%       \PrintIndex
+%   }
 %
 %
 %

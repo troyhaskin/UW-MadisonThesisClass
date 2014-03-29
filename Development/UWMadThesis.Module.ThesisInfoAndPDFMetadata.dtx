@@ -133,7 +133,7 @@ It is encouraged to use these commands in the preamble of the document.
 %
 %
 %
-%<*Documentation>
+%<*Implementation>
 %<<Verbatim
 %   \iffalse
 %<*Code>
@@ -175,7 +175,7 @@ It is encouraged to use these commands in the preamble of the document.
 \AtBeginDocument{
     \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
         \exp_args:Nx \hypersetup {
-            \clist_use:N\g__UWMad_MetaDataList_clist
+            \clist_use:Nn\g__UWMad_MetaDataList_clist{,}
         }
     } { }
     \bool_gset_true:N \g__UWMad_MetaData_IsDocument_bool
@@ -190,7 +190,7 @@ It is encouraged to use these commands in the preamble of the document.
             \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
                 \noexpand\ExplSyntaxOff
                     \noexpand\hypersetup
-                    {\clist_use:N\g__UWMad_MetaDataList_clist}
+                    {\clist_use:Nn\g__UWMad_MetaDataList_clist{,}}
                 \noexpand\ExplSyntaxOn
             }
             \iow_close:N \g__UWMad_PDFMetaData_HyperSetup_io
@@ -406,4 +406,4 @@ It is encouraged to use these commands in the preamble of the document.
 %</Code>
 %   \fi
 %Verbatim
-%</Documentation>
+%</Implementation>

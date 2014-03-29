@@ -1,5 +1,29 @@
 %<*UserGuide>
-%
+
+\UWFeature{Layout And Style}
+
+The \UWMadClass{} class has several default styling differences from the standard \LaTeXe{} class it is based on.
+Some of these changes exist to abide by the \UWMadShort{} dissertation guidelines and others are based on the author's preferences.
+They are, however, readily changeable using the facilities of the packages used to make the changes.
+The defaults and methods for changing the style are list in this section.
+
+
+\UWSubFeature{Captions}
+The \UWMadClass{} 
+
+\vskip1em
+{
+    \captionof {figure} {Here is an example of a figure caption.
+        The default style for the \UWMadClass{} class is a slanted font (abbrev. \enquote{sl}) and small capitals (abbrev. \enquote{sc}) for the float label.
+        Notice that long captions, like this, are indented such that the caption text is visibly separated from the float label.
+    }
+
+    \captionof {table} {Here is a shorter example of a table caption.
+        The default styling is identical to the figure caption.
+    }
+}
+
+
 %</UserGuide>
 %
 %
@@ -7,7 +31,7 @@
 %
 %
 %
-%<*Documentation>
+%<*Implementation>
 %<<Verbatim
 %   \iffalse
 %<*Code>
@@ -21,32 +45,32 @@
 %
 %    \begin{macrocode}
 \geometry{
-    margin      = 1.0in,
     includehead = true,
-    paper       = letterpaper
+    margin      = 1.0in,
+    paper       = letterpaper,
 }
 %
 \creflabelformat{equation}{#2#1#3}
 %
 \captionsetup [table] {
-    format        = hang                    ,
-    labelsep      = colon                   ,
-    justification = justified               ,
-    labelfont     = sl                      ,
-    textfont      = sl                      ,
-    font          = {sc,small,stretch=1.1}  ,
-    width         = 0.9\textwidth           ,
-    position      = above                   ,
-    skip          = 0.25em
+    format        = hang                ,
+    labelsep      = colon               ,
+    justification = justified           ,
+    labelfont     = sc                  ,
+    textfont      = sl                  ,
+    font          = {normal,stretch=1.1},
+    width         = 0.9\textwidth       ,
+    position      = above               ,
+    skip          = 0.50em
 }
 %
 \captionsetup [figure] {
     format        = hang                ,
     labelsep      = colon               ,
     justification = justified           ,
-    labelfont     = sl                  ,
+    labelfont     = sc                  ,
     textfont      = sl                  ,
-    font          = {small,stretch=1.1} ,
+    font          = {normal,stretch=1.1},
     width         = 0.9\textwidth       ,
     position      = above               ,
     skip          = 0.5em
@@ -84,4 +108,4 @@
 %</Code>
 %   \fi
 %Verbatim
-%</Documentation>
+%</Implementation>

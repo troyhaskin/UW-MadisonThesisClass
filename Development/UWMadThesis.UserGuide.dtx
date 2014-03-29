@@ -1,21 +1,1050 @@
-%%
-%% This is file `UWMadThesis.UserGuide.dtx',
-%% generated with the docstrip utility.
-%%
-%% The original source files were:
-%%
-%% UWMadThesis.Base.dtx  (with options: `FrontMatter:UserGuide')
-%% UWMadThesis.Module.Programming.dtx  (with options: `Programming:UserGuide')
-%% UWMadThesis.Module.Sectioning.dtx  (with options: `Sectioning:UserGuide')
-%% 
-\ifUWMad@UserGuide
+\pagenumbering{arabic}
+\UWPart{User Guide}
 
-\section{Programming}\label{UG:Programming}
+
+
+\UWFeature{Thesis and PDF Information}
+
+In order for the \RefSubFeature{Title Page} to function properly, a certain amount of information about the thesis must be given.
+The \UWMadClass{} has a set of commands to provide both the thesis information and PDF metadata to \LaTeX{}.
+
+It is highly encouraged to use all of these commands in the preamble such that any PDF metadata can be directly set before the document begins.
+If the commands are used within the |document| environment, it will require another \LaTeX{} compilation to include the metadata since \UWMadClass{} will automatically write the information to an external file.
+
+\UWSubFeature{Required}
+    These commands are required for the document to be typeset properly.
+    It is encouraged to use these commands in the preamble of the document.
+
+    \begin{function} {
+        \Title,
+        \Author,
+        \Program,
+        \Degree
+    }
+        \begin{syntax}
+            \cs{Title}   \marg{title}
+            \cs{Author}  \marg{author name}
+            \cs{Program} \marg{program}
+            \cs{Degree}  \marg{degree}
+        \end{syntax}
+        Each of these commands must be used once; if not, their respective variables be empty while being typeset.
+        They can, of course, be used more than once, but the additional usages would only redefine the value of the associated variable.
+    \end{function}
+
+    \begin{function} {
+        \DefenseDate,
+        \DefenceDate
+    }
+        \begin{syntax}
+            \cs{DefenseDate} \marg{defense date}
+            \cs{DefenceDate} \marg{defense date}
+        \end{syntax}
+        Only one of these commands is needed since they all point to the same variable \marg{defense date}.
+        The aliases were created for personal preference only.
+
+        Since \marg{defense date} has no parsing performed on it, it may be entered any which way and will be typeset as-entered.
+    \end{function}
+
+    \begin{function} {
+        \Institution,
+        \University
+    }
+        \begin{syntax}
+            \cs{Institution} \marg{institution name}
+            \cs{University}  \marg{institution name}
+        \end{syntax}
+        Only one of these commands is needed since they both point to the same variable \marg{institution name}.
+        The aliases were created for personal preference only.
+    \end{function}
+
+    \begin{function} {\CommitteeMember}
+        \begin{syntax}
+            \cs{CommitteeMember} \marg{member name} \marg{member position}
+        \end{syntax}
+        \cs{CommitteeMember} can be used as many times as required.
+        However, if the list of members becomes too large, formatting of the \RefSubFeature[title page]{Title Page} will suffer.
+        This may be fixed in the future but would require a much more sophisticated template for the title page (possibly using |expl3| |coffins|).
+    \end{function}
+
+\UWSubFeature{Optional}
+These commands are not required for the document to be typeset properly.
+However, they do provide metadata for the PDF (e.g., keywords and document subject) that is convenient for searching and categorization.
+It is encouraged to use these commands in the preamble of the document.
+
+\begin{function} {
+    \Advisor,
+    \Adviser
+    }
+    \begin{syntax}
+        \cs{Advisor} \marg{advisor name} \marg{advisor position}
+        \cs{Adviser} \marg{advisor name} \marg{advisor position}
+    \end{syntax}
+    Using either of these commands automatically adds the advisor/adviser to the top of the committee list created by \cs{CommitteeMember}.
+    Also, on the title page's committee list, the advisor/adviser is marked as such by ``(Advisor)'' or ``(Adviser)''.
+    This is a rare exception where the choice of alias has a side-effect.
+\end{function}
+
+\begin{function} {
+    \Subject,
+    \Keywords
+    }
+    \begin{syntax}
+        \cs{Subject}  \marg{document subject}
+        \cs{Keywords} \marg{list of keywords}
+    \end{syntax}
+    These commands set the subject and keyword portions of the PDF metadata.
+    The \marg{document subject} is typically a one-ish line description of the document.
+    The \marg{list of keywords} can be a long, punctuation-delimited list (e.g., comma or semicolon) of keywords.
+\end{function}
+
+\begin{function} {
+    \Producer,
+    \Creator
+    }
+    \begin{syntax}
+        \cs{Producer} \marg{pdf producer}
+        \cs{Creator}  \marg{pdf creator}
+    \end{syntax}
+    These commands set the PDF Producer and PDF Creator fields of the metadata.
+    These fields are a little confusing in their intended usage.
+    The best explanation found is
+    \begin{description}
+        \item[Creator]  {The application used to create the original document which became the PDF.}
+        \item[Producer] {The application used to convert the original document into the PDF.}
+    \end{description}
+    These are very thin distinctions and complicated by the typical workflow of a \LaTeX{} document: installing a \TeX{} distribution, editing a text file in \TeX{}/\LaTeX{} editor, and running the document through a \TeX{} engine with the \LaTeX{} format.
+    In order to give credit at all levels (while maintaining proper separation of the processes involved), it is recommended to state the editor and \TeX{} format used as the creator and state the engine and distribution used as the creator.
+    For example, this document would declare the following:
+    \begin{verbatim}
+        \Creator{TeXnicCenter 2.02, LaTeX2e+}
+        \Producer{pdfTeX 1.40.14, MiKTeX 2.9}
+    \end{verbatim}
+    But as stated before, this is all optional.
+\end{function}
+
+
+\UWFeature{Special Pages}
+
+\UWSubFeature{Title Page}
+This is a replace for the default \cs{maketitlepage}.
+Per the example provided by the \UWMadLong{} Graduate School's sample, the sample page flows (in order): thesis title, author by-line, partial fulfillment clause, degree, program, university identification, oral defense date, and oral committee list.
+The styles can be re-worked by redefining the commands as presented in the \RefSubModule{MakeTitlePage} implementation.
+The formatting of the commands is standard \LaTeXe{} to facilitate customization.
+
+\textsc{Note:} The \cs{MakeTitlePage} command needs the required thesis information from the commands described in the \RefSubFeature[Required subsection]{Required}.
+
+\UWSubFeature{License Page}
+
+There are two main licenses \UWMadClass{} supports: Copyright and Creative Commons.
+If an author wishes to use these supported licenses to create a license page, all of the commands listed must be placed within a |LicensePage| environment, or the commands will not work (by design).
+
+To declare a simple Copyright input
+\begin{verbatim}
+    \begin{LicensePage}
+        \Copyright
+    \end{LicensePage}
+\end{verbatim}
+To declare a simple Creative Commons input
+\begin{verbatim}
+    \begin{LicensePage}
+        \CreativeCommons
+    \end{LicensePage}
+\end{verbatim}
+There are more features for the Creative Commons license and are discussed below.
+
+The above examples will automatically create a page using default values for license owner (the \RefSubFeature[thesis author]{Required}), year (the current year), and license specifics (outlined below).
+If either is incorrect for the current usage, use the following commands:
+\begin{function} {
+        \LicenseOwner,
+        \LicenseYear
+}
+    \begin{syntax}
+        \vspace*{3pt}
+        \setstretch{1.30}
+        \cs{LicenseOwner} \marg{owner name}
+        \cs{LicenseYear}  \marg{year}
+    \end{syntax}
+    These commands override the default values with the supplied, mandatory argument.
+\end{function}
+
+\UWSubSubFeature{Copyright}
+The Copyright Act of 1976 (\href{http://www.copyright.gov/title17}{Title 17 of the United States Code}, section 106) lists the following six exclusive rights the owner of copyright and any other sanctioned parties have:
+\begin{enumerate}
+    \item{to reproduce the copyrighted work in copies or phonorecords}
+    \item{to prepare derivative works based upon the copyrighted work}
+    \item{  to distribute copies or phonorecords of the copyrighted work to the public by sale or other transfer of ownership, or by rental, lease, or lending}
+    \item{in the case of literary, musical, dramatic, and choreographic works, pantomimes, and motion pictures and other audiovisual works, to perform the copyrighted work publicly}
+    \item{in the case of literary, musical, dramatic, and choreographic works, pantomimes, and pictorial, graphic, or sculptural works, including the individual images of a motion picture or other audiovisual work, to display the copyrighted work publicly}
+    \item{in the case of sound recordings, to perform the copyrighted work publicly by means of a digital audio transmission}
+\end{enumerate}
+There are a number of exceptions and limitations to these rights as outlined by subsequent sections (Title 17 of the United States Code, sections 107 -- 122), but these will not be discussed.
+Under section 302 of the Copyright Act, the exclusive rights granted to a singular author of a work persist for 70 years following her death.
+
+Section 401 of the Copyright Act requires a Form of Notice of copyright.
+It consists of the elements: the copyright symbol \copyright{} (or the word ``Copyright''), the year of first publication (with more requirements for derivative works), and the name of the owner of the copyright (or some other designation).
+All works containing this notice of copyright fall under the protection of the Copyright Law of the United States.
+
+Section 408 of the Copyright Act states: for any work produced after 1978, ``the owner of copyright or of any exclusive right in the work may obtain registration of the copyright claim by delivering to the Copyright Office the deposit specified by this section, together with the application and fee''.
+In others words, a copy of the work can be submitted to the Copyright Office and subsequently placed in the Library of Congress for official recognition of copyright.
+However, registration is not compulsory since ``[s]uch registration is not a condition of copyright protection''.
+
+\begin{function}{\Copyright}
+    \begin{syntax}
+        \cs{Copyright}
+    \end{syntax}
+    Using this command within a |LicensePage| environment will print a Copyright Notice at the bottom of a page and place a link in the table of contents.
+\end{function}
+
+An example of usage (along with a redefined owner and year) would be
+\begin{verbatim}
+    \begin{LicensePage}
+        \LicenseOwner{Theodore Huxton}
+        \LicenseYear{3001}
+        \Copyright
+    \end{LicensePage}
+\end{verbatim}
+This input would generate the following text at the bottom of a new page (with a link in the table of contents:
+
+\ExplSyntaxOn
+    \cs_gset_eq:NN \UWMadCopyrightPageText \__UWMad_Copyright_LicenseText:
+\ExplSyntaxOff
+\begin{center}
+    \begin{LicensePage}
+        \LicenseOwner{Theodore Huxton}
+        \LicenseYear{3001}
+        \UWMadCopyrightPageText
+    \end{LicensePage}
+\end{center}
+\ExplSyntaxOn
+    \cs_undefine:N \UWMadCopyrightPageText
+\ExplSyntaxOff
+
+\UWSubSubFeature{Creative Commons}
+Creative Commons (CC) is a collective set of licenses that is most aptly described as ``some rights reserved''.
+That is, while Copyright requires explicit permission of the author for a lot of uses, Creative Commons immediately waives those rights.
+Why is this a good thing?
+To quote from \href{http://creativecommons.org/about}{CreativeCommons.org}:
+\begin{quote}
+Creative Commons is a nonprofit organization that enables the sharing and use of creativity and knowledge through free legal tools. ...
+
+If you want to give people the right to share, use, and even build upon a work you've created, you should consider publishing it under a Creative Commons license. CC gives you flexibility (for example, you can choose to allow only non-commercial uses) and protects the people who use your work, so they don't have to worry about copyright infringement, as long as they abide by the conditions you have specified.
+\end{quote}
+
+Therefore, the goal of CC is to begin from the ''most free'' license of public domain (termed CC0) and then add on conditions for legal use of the material.
+CC license are copyright licenses in that (aside from CC0) that author retains certain ownership rights, but a subset of the rights are relaxed or waived to encourage free sharing and extension of the work.
+To this end, Creative Commons defines the following four conditions:
+\begin{description}
+    \item[Attribution]{
+        Appropriate credit must be given to the original author, a link to the license provided, and indication of any changes that were made.
+        This may be done in any reasonable manner, but not in any way that suggests the licensor endorses the new author or her use.
+    }
+    \item[ShareAlike] {
+        If the work is remixed, transformed, or built upon the licensed material, the author of the new work \textsc{must distribute} the contributions under the same license as the original.
+    }
+    \item[NoDerivs] {
+        If the work is remixed, transformed, or built upon the licensed material, the author of the new work \textsc{may not} distribute the modified material.
+    }
+    \item[NonCommercial] {
+        The licensed work \textsc{may not} be used the material for commercial purposes.
+    }
+\end{description}
+These conditions are then combined into six, non-contradictory licenses.
+The licenses are ``layered'' into Legal Code (the official text determining the delineating usage), the License deed (non-legal text aimed to be non-lawyer readable), and machine readable code (the license put into an HTML-like style for search engines).
+The CC licenses and associated links) for the latest version are
+\begin{description}
+    \item[CC BY]{
+        \hfill\\
+        Attribution only (
+        \href{http://creativecommons.org/licenses/by/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-SA]{
+        \hfill\\
+        Attribution and ShareAlike (
+        \href{http://creativecommons.org/licenses/by-sa/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-sa/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-ND]{
+        \hfill\\
+        Attribution and NoDerivs (
+        \href{http://creativecommons.org/licenses/by-nd/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-nd/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-NC]{
+        \hfill\\
+        Attribution and NonCommerical (
+        \href{http://creativecommons.org/licenses/by-nc/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-nc/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-NC-SA]{
+        \hfill\\
+        Attribution, NonCommercial, and ShareAlike (
+        \href{http://creativecommons.org/licenses/by-nc-sa/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by/4.0/legalcode}{Legal Code}
+        ).
+    }
+    \item[CC BY-NC-ND]{
+        \hfill\\
+        Attribution, NonCommercial, and NoDerivs (
+        \href{http://creativecommons.org/licenses/by-nc-nd/4.0}{License Deed} $\vert$
+        \href{http://creativecommons.org/licenses/by-nc-nd/4.0/legalcode}{Legal Code}
+        ).
+    }
+\end{description}
+
+Prior to version 4.0 (the current one), there were a number of ``ports'' of the licenses to particular locales to deal with the specifics of individual countries.
+However, with the release of version 4.0 of the CC licenses, usage of the international version is highly encouraged as ports will be made ``\href{http://wiki.creativecommons.org/License_Versions#International_License_Development_Process}{only where a compelling need is demonstrated}''.
+As such, version 4.0 International is the default license base for the \UWMadClass{} class.
+Of course, this choice can be changed.
+
+\begin{function}{\CreativeCommons}
+    \begin{syntax}
+        \cs{CreativeCommons}
+    \end{syntax}
+    Using this command within a |LicensePage| environment will declare you have chosen a Creative Commons license.
+    By default, the license will be ``Creative Commons Attribution 4.0 International''.
+\end{function}
+
+\begin{function}{
+    \Attribution,
+    \ShareAlike,
+    \NonCommercial,
+    \NoDerivs}
+    \begin{syntax}
+        \cs{Attribution}
+        \cs{ShareAlike}
+        \cs{NonCommercial}
+        \cs{NoDerivs}
+    \end{syntax}
+    Using any of these commands (in any order) within a |LicensePage| environment will declare you have chosen to add the associated condition to the license of the work.
+    However, since all six licensees require Attribution, it is always on by default but should be included for clarity.
+\end{function}
+An example of usage would be
+\begin{verbatim}
+    \begin{LicensePage}
+        \CreativeCommons
+        \Attribution
+        \NonCommercial
+        \ShareAlike
+    \end{LicensePage}
+\end{verbatim}
+This input would generate the following text at the bottom of a new page (with a link in the table of contents):
+\begin{center}
+    \begin{LicensePage}
+        \NonCommercial
+        \ShareAlike
+        \ExplSyntaxOn
+            \__UWMad_CCLicense_CreateType:
+            \__UWMad_CCLicense_LicenseText:
+        \ExplSyntaxOff
+    \end{LicensePage}
+\end{center}
+Notice that since neither the \cs{LicenseOwner} nor \cs{LicenseYear} commands were used, the author of this document and then-current year were used as defaults.
+
+\begin{function}{
+    \CCVersion,
+    \CCPorting,
+    \CCURL,
+    \CCURLText}
+    \begin{syntax}
+        \cs{CCVersion}\marg{CC version}
+        \cs{CCPorting}\marg{CC porting}
+        \cs{CCURL}    \marg{CC link}
+        \cs{CCURLText}\marg{CC link text}
+    \end{syntax}
+    These commands exist to override the default 4.0 International Creative Commons license.
+    The link provided \textsc{should not} contain |http://| nor end with a |/|.
+    Use these commands only if there is a compelling reason not to use the latest version of the license.
+\end{function}
+An example of usage would be
+\begin{verbatim}
+    \begin{LicensePage}
+        \CreativeCommons
+        \CCVersion{3.0}
+        \CCPorting{United States}
+        \CCURL{creativecommons.org/licenses/by/3.0/us}
+        \CCURLText{Creative Commons Attribution 3.0 United States}
+    \end{LicensePage}
+\end{verbatim}
+This input would generate the following text at the bottom of a new page (with a link in the table of contents):
+\begin{center}
+    \begin{LicensePage}
+        \CCVersion{3.0}
+        \CCPorting{United States}
+        \CCURL{creativecommons.org/licenses/by/3.0/us}
+        \CCURLText{Creative Commons Attribution 3.0 United States}
+        \ExplSyntaxOn
+            \__UWMad_CCLicense_LicenseText:
+        \ExplSyntaxOff
+    \end{LicensePage}
+\end{center}
+
+
+\UWFeature{Layout And Style}
+
+The \UWMadClass{} class has several default styling differences from the standard \LaTeXe{} class it is based on.
+Some of these changes exist to abide by the \UWMadShort{} dissertation guidelines and others are based on the author's preferences.
+They are, however, readily changeable using the facilities of the packages used to make the changes.
+The defaults and methods for changing the style are list in this section.
+
+\UWSubFeature{Captions}
+The \UWMadClass{}
+
+\vskip1em
+{
+    \captionof {figure} {Here is an example of a figure caption.
+        The default style for the \UWMadClass{} class is a slanted font (abbrev. \enquote{sl}) and small capitals (abbrev. \enquote{sc}) for the float label.
+        Notice that long captions, like this, are indented such that the caption text is visibly separated from the float label.
+    }
+
+    \captionof {table} {Here is a shorter example of a table caption.
+        The default styling is identical to the figure caption.
+    }
+}
+
+
+\UWFeature{Sectioning}
+
+Sectioning concerns the overall structure of your document into chunks called sections.
+The default sections in \LaTeXe{} are |part|, |chapter|, |section|, |subsection|, |subsubsection|, |paragraph|, and |subparagraph|.
+The \UWMadClass{} Class defines some new section commands and makes some other adjustments to the default commands.
+
+\UWSubFeature{Front Matter}
+Front Matter (or preliminary pages) is the whole of content that precedes the main document (i.e., the first unstarred chapter).
+\UWMadShort{} requires that these pages are numbered in lower roman numerals and have that page number in the upper right-hand corner.
+This requirement is automatically  handled by the class.
+The Front Matter commands are all semantically named and set as starred (unnumbered) chapters.
+
+\begin{function} {
+    \dedications,
+    \acknowledgements,
+    \abstract,
+    \umiabstract,
+    \preface
+    }
+    \begin{syntax}
+        \cs{dedications}      \marg{title}
+        \cs{acknowledgements} \marg{title}
+        \cs{abstract}         \marg{title}
+        \cs{umiabstract}      \marg{title}
+        \cs{preface}          \marg{title}
+    \end{syntax}
+    The title \textsc{is optional}.
+    If the title is omitted, the default is a capitalized version of the command's name.
+    For example, |\dedications| will have the title \enquote{Dedications}.
+\end{function}
+
+\UWSubFeature{Appendix}
+The standard method of including appendices in \LaTeX{} is calling for some initialization to be done by using the \cs{appendix} command and then using the \cs{chapter} commands.
+The \UWMadClass{} class takes a different approach to encourage good semantic mark-up in \LaTeX{} documents and, therefore, redefines \cs{appendix}.
+
+\begin{function} {
+    \appendix
+    }
+    \begin{syntax}
+        \cs{appendix} \oarg{short title}\marg{title}
+        \cs{appendix}*\oarg{short title}\marg{title}
+    \end{syntax}
+    The appendix commands now acts like a \cs{chapter} commands and is typeset in the Table of Contents as one.
+
+    \textsc{Note}:
+    The usage \cs{appendix} should be after all the chapter material is set since some of the \cs{chapter} internals are changed.
+    Once the \cs{appendix} command is used, there is no mechanism to switch the internals back.
+\end{function}
+
+\UWSubFeature{Table of Contents Tweaks}
+Invoking the Table of Contents, List of Tables, and List of Figures commands now puts the start of those sections into the Table of Contents as chapters.
+
+\begin{function} {
+    \TableOfContentsName,
+    \ListOfTablesName,
+    \ListOfFiguresName
+    }
+    \begin{syntax}
+        \cs{TableOfContentsName}\marg{toc title}
+        \cs{ListOfTablesName}   \marg{lot title}
+        \cs{ListOfFiguresName}  \marg{lof title}
+    \end{syntax}
+    These commands redefine the title used in the associated sections.
+    The defaults for the TOC, LOT, and LOF are, respectively, \enquote{Table of Contents}, \enquote{List of Tables}, and \enquote{List of Figures}.
+\end{function}
+
+\begin{function} {
+    \TableOfContents,
+    \ListOfTables,
+    \ListOfFigures
+    }
+    \begin{syntax}
+        \cs{TableOfContents}
+        \cs{ListOfTables}
+        \cs{ListOfFigures}
+    \end{syntax}
+    Camel-cased versions of the standard \LaTeX{} commands.
+    These exist due to the preferences of the \UWMadClass{} author.
+\end{function}
+
+
+\UWFeature{List Environments}
+
+The \UWMadClass{} has a special set of functions from creating list environments (called |ListOf| in the implementation).
+The functions use queues and associative arrays to store and use data before it is typeset.
+These data structures allow for operations to be carried out without writing external files or repeating compilation; of course, there is added memory usage which could lead to problems on older systems.
+
+The primary motivation for such a system was the creation of a nomenclature environment and, subsequently, an acronym environment/system.
+These two similar features are discussed here.
+
+\UWSubFeature{Nomenclature}
+The |Nomenclature| environment is, by default, a list of |(symbol, description)| entries.
+There is a user option for changing the system to a list of |(symbol, units, description)| entries if a separate unit column is desired.
+For every set of entries, the nomenclature system measures the width of the |symbol| and (if present) |units| to determine the maximum width of the |description| such that no text overflows into the margins of the page.
+
+When first adding entries to a nomenclature, the symbols are part of the so-called Main group.
+The Main group has a title and a section level associated with it.
+By default, the Main group title is ``Nomenclature'' and the section is ``chapter''.
+The entries can be put into two lower sectioned groups using the \cs{Group} and \cs{Subgroup} commands described below.
+The grouping commands allows a set of symbols to be classified as ``Greek Symbols'' while another is ``Subscripts''.
+The default titles for these lower groups are empty by default and the default section is ``section'' and ``subsection''.
+
+All of these defaults can be changed by the \cs{NomenclatureSetup} command described below.
+
+\UWSubSubFeature{Command Descriptions}
+
+A sketch of the |Nomenclature| implementation would be: \vskip1em
+    \hspace{1em}|\begin{Nomenclature}|\oarg{section}\marg{title}    \vskip0em
+    \hspace{3em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
+    \hspace{3em}|\Group|\marg{group title}                          \vskip0em
+    \hspace{6em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
+    \hspace{6em}|\Subgroup|\marg{subgroup title}                    \vskip0em
+    \hspace{9em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
+    \hspace{1em}|\end{Nomenclature}|                                \vskip1em
+
+The square brace-delimited \oarg{section} is \textsc{optional} and overrides the default Main group section.
+The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the default Main group title.
+
+\begin{function}{\Entry}
+    \begin{syntax}
+        \cs{Entry}\marg{symbol}\marg{description}
+        \cs{Entry}\marg{symbol}\marg{units}\marg{description}
+    \end{syntax}
+    Within the environment, entries are added to the nomenclature using the \cs{Entry} command above.
+    All arguments are required.
+    The second version above is if a units column is requested (see \RefSubSubFeature{Customization}).
+\end{function}
+
+\begin{function}{\Group,\Subgroup}
+    \begin{syntax}
+        \cs{Group}\marg{group title}
+        \cs{Subgroup}\marg{subgroup title}
+    \end{syntax}
+    Creates a group or subgroup with the indicated title and using the default section.
+    The default section can be changed by the user (see \RefSubSubFeature{Customization}).
+\end{function}
+
+\UWSubSubFeature{Examples}
+As an example, the following input
+\begin{verbatim}
+    \begin{Nomenclature}[subsubsection]{Symbol Table}
+        \Entry{$\rho$}{Density}
+        \Entry{LongNotRealSymbol}{
+            In publishing and graphic design, lorem ipsum is a placeholder
+            text commonly used to demonstrate the graphic elements of a
+            document or visual presentation. By replacing the distraction
+            of meaningful content with filler text of scrambled Latin it
+            allows viewers to focus on graphical elements such as font,
+            typography, and layout.}
+        \Entry{$\mu$}{Viscosity}
+    \end{Nomenclature}
+\end{verbatim}
+would be typeset as:
+
+\setcounter{section}{1}
+\NomenclatureSetup{include-in-toc = false}
+
+\rule{\textwidth}{0.1em}
+    \begin{Nomenclature}[subsection]{Symbol Table}
+        \Entry{$\rho$}{Density}
+        \Entry{LongNotRealSymbol}{
+            In publishing and graphic design, lorem ipsum is a placeholder
+            text commonly used to demonstrate the graphic elements of a
+            document or visual presentation. By replacing the distraction
+            of meaningful content with filler text of scrambled Latin it
+            allows viewers to focus on graphical elements such as font,
+            typography, and layout.}
+        \Entry{$\mu$}{Viscosity}
+    \end{Nomenclature}
+\rule{\textwidth}{0.1em}
+As can be seen, the symbol column is as wide as the widest symbol (plus some padding) and lengthy text can be put into the description without penalty.
+Of course, this example is purposefully extreme.
+We can tweak the example a bit more by putting the second two items under a group:
+
+\rule{\textwidth}{0.1em}
+    \begin{Nomenclature}[subsection]{Symbol Table}
+        \Entry{$\rho$}{Density}
+
+        \Group{Group 1 Title}
+        \Entry{LongNotRealSymbol}{
+            In publishing and graphic design, lorem ipsum is a placeholder
+            text commonly used to demonstrate the graphic elements of a
+            document or visual presentation. By replacing the distraction
+            of meaningful content with filler text of scrambled Latin it
+            allows viewers to focus on graphical elements such as font,
+            typography, and layout.}
+        \Entry{$\mu$}{Viscosity}
+    \end{Nomenclature}
+\rule{\textwidth}{0.1em}
+By default, the section level used by \cs{Group} is one below that of the main nomenclature section; therefore, since the nomenclature's section level is defined as |subsection|, the \cs{Group} is a |subsubsection|.
+Not shown: using \cs{Subgroup} would typeset the title as a |paragraph| in this example.
+
+\UWSubSubFeature{Customization}
+
+As mentioned, there are several options available to the user for customizing the nomenclature.
+These options are set by giving a comma-separate list of key-value pairs to the function \cs{NomenclatureSetup}
+
+\begin{function}{\NomenclatureSetup}
+    \begin{syntax}
+        \cs{NomenclatureSetup}\marg{key-value CSV}
+    \end{syntax}
+    The format is more appropriately shown as
+    \begin{verbatim}
+        \NomenclatureSetup {
+            key-one = option,
+            key-two = {option two},
+            ...
+            key-n =  {option n},
+        }
+    \end{verbatim}
+    A table of the keys, meaning, defaults, and allow value is given in \cref{Table:NomenclatureKeyValue}.
+\end{function}
+
+\clearpage
+\UWSubFeature{Acronym}
+
+\UWSubSubFeature{Description}
+The |Acronym| environment is a specialized extension of the |Nomenclature| environment.
+It has the same basic syntax, but a |units| column is not supported.
+Also, instead of \cs{Entry} taking |(symbol, description)| pairs, it takes |(acronym,meaning)| pairs.
+Lastly, it comes equipped with a new command: \cs{Acro}.
+
+\begin{function}{\Acro}
+    \begin{syntax}
+        \cs{Acro}\marg{acronym}
+    \end{syntax}
+    \cs{Acro} is meant to be used throughout the document to reference back to the |Acronym| environment where it was defined.
+    If an |Acronym| environment contains the line |\Entry{TBD}{To be determined}|, the first usage of |\Arco{TBD}| will be typeset as `To be determined (TBD)' while subsequent uses will simply be `TBD'.
+    Also, if links are not turned off (they are on by default), the acronym will be a link back to the original environment entry.
+\end{function}
+
+\begin{function}{\AcronymSetup}
+    \begin{syntax}
+        \cs{AcronymSetup}\marg{key-value CSV}
+    \end{syntax}
+    An exact copy of \cs{NomenclatureSetup}.
+\end{function}
+
+\UWSubSubFeature{Example}
+The following input
+\begin{verbatim}
+    \AcronymSetup {
+        main-section  = section,
+        main-title = {Acronym Table},
+        entry-padding = 1in
+    }
+    \begin{Acronym}
+        \Entry{RCCS}{Reactor Cavity Cooling System}
+        \Entry{NRC}{Nuclear Regulatory Commission}
+    \end{Acronym}
+\end{verbatim}
+is typeset as
+
+\clearpage
+
+\rule{\textwidth}{0.1em}
+    \AcronymSetup {
+        main-section  = section,
+        main-title = {Acronym Table},
+        entry-padding = 1in
+    }
+    \begin{Acronym}
+        \Entry{RCCS}{Reactor Cavity Cooling System}
+        \Entry{NRC}{Nuclear Regulatory Commission}
+    \end{Acronym}
+\rule{\textwidth}{0.1em}
+
+The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
+
+\begin{table}[H]
+\begin{center}
+    \caption{List of key-value pairs for Nomenclature customization.}
+    \label{Table:NomenclatureKeyValue}
+    \begin{tabular}{c c c c}
+        \toprule
+        Key & Meaning & Default & Allow value \\
+        \midrule
+        title-skip          & Vertical space following the printed title     & 0pt          & dimension \\[10pt]
+        print-skip          & Vertical space following a printing of entries & 1em          & dimension \\[10pt]
+        entry-margin-left   & Horizontal margin left of an entry             & 1em          & dimension \\[10pt]
+        entry-margin-bottom & Vertical margin below a printed entry          & 0.25em       & dimension \\[10pt]
+        entry-padding       & Horizontal space between columns               & 0.75em       & dimension \\[10pt]
+        main-section        & Section level for Main group                   & chapter      &  section  \\[10pt]
+        group-section       & Section level for \cs{Group} command           & section      &  section  \\[10pt]
+        subgroup-section    & Section level for \cs{Subgroup} command        & subsection   &  section  \\[10pt]
+        main-title          & Title for the nomenclature                     & Nomenclature &   text    \\[10pt]
+        group-title         & Title for the \cs{Group} command               & ---          &   text    \\[10pt]
+        subgroup-title      & Title for the \cs{Subgroup} command            & ---          &   text    \\[10pt]
+        include-in-toc      & Include the nomenclature in the TOC            & true         & boolean   \\[10pt]
+        with-units          & Include a units column                         & false        & boolean   \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+\end{table}
+
+\begin{table}[H]
+\begin{center}
+    \caption{Additional key-value pairs for Acronym environment.}
+    \label{Table:AcronymKeyValue}
+    \begin{tabular}{c c c c}
+        \toprule
+        Key & Meaning & Default & Allow value \\
+        \midrule
+        use-links           & Create hyperlink to Acronym entry  & true & boolean \\[10pt]
+        link-color          & Color of hyperlink text            & blue & color   \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+\end{table}
+
+\UWFeature{Math}\label{UG:Math}
+As the feature name may suggest, all of the commands in this section deal with mathematical typesetting.
+
+\UWSubFeature{Derivative Commands}
+These command set deal with quick and easy typesetting of derivatives.
+
+\begin{function}{\deriv , \pderiv , \tderiv}
+    \begin{syntax}
+        \cs{deriv}  \Arg{function} \Arg{variable} \Arg{order}    \\
+        \cs{pderiv} \Arg{function} \Arg{variable} \Arg{order}    \\
+        \cs{tderiv} \Arg{function} \Arg{variable} \Arg{order}
+    \end{syntax}
+    This function set is meant to typeset three different kinds of derivatives: ordinary, partial, and total (i.e., material or Lagragian).
+    The only difference between them is the differential symbol: \cs{deriv} uses `$\mathrm{d}$', \cs{pderiv} uses `$\partial$', and \cs{tderiv} used `$\mathrm{D}$'.
+
+    These commands typeset the derivative of a given \Arg{function} with respect to \Arg{variable} of $n$-th \Arg{order} using Leibniz's notation.
+    The \Arg{order} is optional and defaults to empty (first derivative).
+    For example, the input
+    \begin{verbatim}
+        \begin{align}
+            \deriv{y}{x}{2} + \deriv{y}{x} + y(x)         &= 0    \\[0.50em]
+            \pderiv{T}{t} - \alpha \pderiv{T}{z}{2}       &= 0    \\[0.50em]
+            \tderiv{\rho{u}}{t} + \pderiv{P}{z}  - \rho g &= 0
+        \end{align}
+    \end{verbatim}
+    and is typeset as
+        \begin{align}
+            \deriv{y}{x}{2} + \deriv{y}{x} + y(x)         &= 0    \\[0.50em]
+            \pderiv{T}{t} - \alpha \pderiv{T}{z}{2}       &= 0    \\[0.50em]
+            \tderiv{(\rho{u})}{t} + \pderiv{P}{z}  - \rho g &= 0
+        \end{align}
+\end{function}
+
+\begin{function}{\derivbig,\pderivbig,\tderivbig}
+    \begin{syntax}
+        \cs{derivbig}   \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order} \\
+        \cs{pderivbig}  \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order} \\
+        \cs{tderivbig}  \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order}
+    \end{syntax}
+    This function set is identical to the non-|big| versions above, except that \Arg{function} is placed to the right of the derivative operator and wrapped by |\left| and |\right|.
+    The default delimiters for the stretch commands are `[' and ']', and either can be individually overridden via the two optional arguments.
+    For example, the input
+    \begin{verbatim}
+        \begin{align}
+            -\derivbig{ p(x) \deriv{y}{x} }{x} +
+                    q(x) (1 - \lambda) y(x)  &= 0 \\[0.50em]
+            \tderivbig{ \rho{i} + \frac{1}{2} \rho u^2 }[(]{t} -
+                    \pderivbig[\lvert]{ \kappa \pderiv{T}{z} }{z} &= 0
+        \end{align}
+    \end{verbatim}
+    and is typeset as
+        \begin{align}
+            -\derivbig{ p(x) \deriv{y}{x} }{x} +
+                    q(x) (1 - \lambda) y(x)  &= 0 \\[0.50em]
+            \tderivbig{ \rho{i} + \frac{1}{2} \rho u^2 }[(]{t} -
+                    \pderivbig[\lvert]{ \kappa \pderiv{T}{z} }{z} &= 0
+        \end{align}
+\end{function}
+
+\begin{function}{\DerivativeGeneral,\DerivativeGeneralBig}
+    \begin{syntax}
+        \cs{DerivativeGeneral}     \Arg{function} \Arg{variable} \Arg{order} \Arg{symbol}
+        \cs{DerivativeGeneralBig}  \Arg{function} \Arg{variable} \Arg{order} \Arg{symbol} \Arg{left delim} \Arg{right delim}
+    \end{syntax}
+    These commands are lower-level commands used by the |deriv| family above.
+    All of the arguments are mandatory.
+    If a change to the general style of the derivatives or another version of the |deriv| family is desire, these commands are available for usage.
+\end{function}
+
+\begin{function}{\derivSymbol,\pderivSymbol,\tderivSymbol}
+    \begin{syntax}
+        \cs{derivSymbol}
+    \end{syntax}
+    These commands take no arguments and expand to the current symbol used for the associated |deriv| command.
+    The defaults require math mode to be typeset.
+    Therefore, |$\pderivSymbol$| will be appear as $\pderivSymbol$.
+\end{function}
+
+\begin{function}{\derivSymbolChange,\pderivSymbolChange,\tderivSymbolChange}
+    \begin{syntax}
+        \cs{derivSymbolChange} \Arg{symbol} \\[0.50em]
+    \end{syntax}
+    These commands will \textsc{temporarily} change the symbol used by the associated |deriv| commands.
+    The symbol will revert back to the original, default value after leaving the \TeX{} group where the switch was made (more often than not for \LaTeX{} users, this means ``upon exiting an environment'').
+    For example:
+    \begin{verbatim}
+        \begin{equation}
+            \deriv{U}{t} =
+            \derivSymbolChange{\delta}
+            \deriv{Q}{t} - \deriv{W}{t}
+        \end{equation}
+    \end{verbatim}
+    typesets as
+    \begin{equation}
+            \deriv{U}{t} =
+            \derivSymbolChange{\delta}
+            \deriv{Q}{t} - \deriv{W}{t}
+    \end{equation}
+    and now, after the environment, the \cs{derivSymbol} is once again `$\derivSymbol$'.
+\end{function}
+
+\begin{function}{
+    \derivSymbolChangeDefault,
+    \pderivSymbolChangeDefault,
+    \tderivSymbolChangeDefault}
+    \begin{syntax}
+        \cs{derivSymbolChangeDefault}  \Arg{symbol}
+        \cs{pderivSymbolChangeDefault} \Arg{symbol}
+        \cs{tderivSymbolChangeDefault} \Arg{symbol}
+    \end{syntax}
+
+    These commands will \textsc{permanently} change the symbol used by the associated |deriv| commands.
+    For example:
+    \begin{verbatim}
+        \begin{equation}
+            \deriv{U}{t} =
+            \derivSymbolChangeDefault{\delta}
+            \deriv{Q}{t} - \deriv{W}{t}
+        \end{equation}
+    \end{verbatim}
+    typesets as
+    \begin{equation}
+            \deriv{U}{t} =
+            \derivSymbolChangeDefault{\delta}
+            \deriv{Q}{t} - \deriv{W}{t}
+    \end{equation}
+    and now, after the environment, the \cs{derivSymbol} is `$\derivSymbol$'.
+\end{function}
+
+\begin{function}{\DelimiterChangeDefault}
+    \begin{syntax}
+        \cs{DelimiterChangeDefault} \Arg{left delim} \Arg{right delim}
+    \end{syntax}
+    This command changes the default delimiters used by the |big| commands above.
+    Any valid delimiters can be used.
+    For example:
+    \begin{verbatim}
+        \DelimiterChangeDefault{(}{)}
+        \begin{equation}
+            -\derivbig{ p(x) \deriv{y}{x} }{x} +
+                    q(x) (1 - \lambda) y(x) = 0 \\[0.50em]
+        \end{equation}
+    \end{verbatim}
+    and is typeset as
+    \DelimiterChangeDefault{(}{)}
+    \begin{equation}
+        -\derivbig{ p(x) \deriv{y}{x} }{x} +
+                q(x) (1 - \lambda) y(x) = 0 \\[0.50em]
+    \end{equation}
+    and notice that the \cs{derivSymbol} is still $\derivSymbol$.
+\end{function}
+
+\UWSubFeature{Operators}
+These operators are added to the standard set using the \AmS{} operator system.
+Some are new while others are simply in a camel-cased versions of the standard ones.
+
+\begin{function}{\Sup,\Inf}
+    Supremum and Infinum operators using the math operator system.
+    For example, the input
+    \begin{verbatim}
+        \begin{align}
+            \Inf_{x \in \mathbb{R}} \{0 < x  < 1\} &= 0 \\[0.50em]
+            \Sup_{x \in \mathbb{R}} \{0 < x  < 1\} &= 1
+        \end{align}
+    \end{verbatim}
+    is typeset as
+    \begin{align}
+        \Inf_{x \in \mathbb{R}}
+            \{0 \LessThan x \LessThan 1\} &= 0 \\[0.50em]
+        \Sup_{x \in \mathbb{R}}
+            \{0 \LessThan x \LessThan 1\} &= 1
+    \end{align}
+\end{function}
+
+\begin{function}{\Lim}
+    The limit operator:
+    \begin{verbatim}
+        \begin{equation}
+            \Lim_{n \rightarrow \infty} \left(1 + \frac{1}{n}\right)^n = \mathrm{e}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+        \begin{equation}
+            \Lim_{n \rightarrow \infty} \left(1 + \frac{1}{n}\right)^n = \mathrm{e}
+        \end{equation}
+\end{function}
+
+\begin{function}{\Min,\Max}
+    The maximum and minimum value operators
+    \begin{verbatim}
+        \begin{equation}
+            \begin{align}
+                \Min_{x \in \mathbb{R}} \Sin(x) &= -1 \\[0.50em]
+                \Max_{x \in \mathbb{R}} \Sin(x) &= +1
+            \end{align}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+    \begin{align}
+        \Min_{x \in \mathbb{R}} \Sin(x) &= -1 \\[0.50em]
+        \Max_{x \in \mathbb{R}} \Sin(x) &= +1
+    \end{align}
+\end{function}
+
+\begin{function}{\ArgMin,\ArgMax}
+    The maximum and minimum argument operators
+    \begin{verbatim}
+        \begin{equation}
+            \begin{align}
+                \ArgMin_{x \in \mathbb{R}} \Sin(x) &= \frac{3\pi}{2} + 2 \pi n \\[0.50em]
+                \ArgMax_{x \in \mathbb{R}} \Sin(x) &= \frac{\pi}{2} + 2 \pi n
+            \end{align}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+    \begin{align}
+                \ArgMin_{x \in \mathbb{R}} \Sin(x) &= \frac{3\pi}{2} + 2 \pi n \\[0.50em]
+                \ArgMax_{x \in \mathbb{R}} \Sin(x) &= \frac{\pi}{2} + 2 \pi n
+    \end{align}
+\end{function}
+
+\begin{function}{\Abs,\Ln,\Log,\Exp}
+    Common set of operators in uppercase form.
+\end{function}
+
+\begin{function}{\Cos,\Sin,\Tan,\Sec,\Csc,\Cot}
+    Standard trigonometric functions and their reciprocals.
+\end{function}
+\begin{function}{\Cosh,\Sinh,\Tanh,\Sech,\Csch,\Coth}
+    Hyperbolic trigonometric functions and their reciprocals.
+\end{function}
+\begin{function}{\ArcCos,\ArcSin,\ArcTan,\ArcSec,\ArcCsc,\ArcCot}
+    Standard inverse trigonometric functions and their reciprocals.
+\end{function}
+\begin{function}{\ArcCosh,\ArcSinh,\ArcTanh,\ArcSech,\ArcCsch,\ArcCoth}
+    Hyperbolic inverse trigonometric functions and their reciprocals.
+\end{function}
+
+\UWSubFeature{Miscellaneous Commands}
+
+\begin{function}{\Sqrt}
+    \begin{syntax}
+        \cs{Sqrt} \oarg{n} \Arg{argument}
+    \end{syntax}
+    This command typesets the \oarg{n}-th root of a given \Arg{argument} with a closing tail.
+    This command differs from the default \cs{sqrt} in appearance only:
+    \begin{equation}
+        \sqrt[3]{\frac{f(x)}{g(x)}} = \Sqrt[3]{\frac{f(x)}{g(x)}}
+    \end{equation}
+\end{function}
+
+\begin{function}{\IfMathModeTF}
+    \begin{syntax}
+        \cs{IfMathModeTF} \Arg{math mode code} \Arg{text mode code}
+    \end{syntax}
+    This is an abstraction of |expl3|'s |\mode_if_math:TF| function.
+    It was added to give more control on the following \cs{subs} and \cs{sups} commands since |expl3|'s syntax is disabled to make |_| a subscript shift and not a letter.
+\end{function}
+
+\begin{function}{\subs,\sups,\subsups}
+    \begin{syntax}
+        \cs{subs}    \oarg{space} \Arg{text subscript} \\[0.50em]
+        \cs{sups}    \oarg{space} \Arg{text superscript} \\[0.50em]
+        \cs{subsups} \oarg{subscript space} \Arg{text subscript} \oarg{superscript space} \Arg{text superscript}
+    \end{syntax}
+    These command typeset a subscript or superscript \textsc{in text mode}.
+    They are useful if the subscript or superscript are not variable, and therefore should be in non-math text, or for making subscripts or superscripts in text mode.
+    The optional argument \oarg{space} is meant for adjusting the spacing of the scripts and exists in \textsc{in math mode}, so technically, any valid math statement can be used.
+    However, it is encouraged to only use this argument for spacing.
+    For example, the input |`T\subs{P}, $T\subs{P}$, $T_P$'| is typeset as `T\subs{P}, $T\subs{P}$, $T_P$', and the input |`T\subs[\!]{P}, T\subs[\:]{P}'| is typeset as `T\subs[\!]{P}, T\subs[\:]{P}'.
+    T\sups{P}
+\end{function}
+
+\begin{function}{\OneOver,\oneo}
+    \begin{syntax}
+        \cs{OneOver}  \Arg{denominator}
+    \end{syntax}
+    A simple command the typesets a fraction whose numerator is always one.
+    For example, the input
+    \begin{verbatim}
+        \begin{equation}
+            \OneOver{\Sqrt{x^2 + 1}}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+        \begin{equation}
+            \OneOver{\Sqrt{x^2 + 1}}
+        \end{equation}
+\end{function}
+
+\begin{function}{\dd}
+    \begin{syntax}
+        \cs{dd}  \Arg{variable}
+    \end{syntax}
+    A simple command the typesets a non-math `d' in math mode and is meant to be used for differentials.
+    For example, the input
+    \begin{verbatim}
+        \derivSymbolChangeDefault{\mathrm{d}}
+        \begin{equation}
+            f(b) - f(a) = \int_a^b \deriv{f}{t} \dd{t}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+        \derivSymbolChangeDefault{\mathrm{d}}
+        \begin{equation}
+            f(b) - f(a) = \int_a^b \deriv{f}{t} \dd{t}
+        \end{equation}
+\end{function}
+
+\begin{function}{\dprime,\tprime}
+    \begin{syntax}
+        \cs{dprime}
+    \end{syntax}
+    These commands take no arguments and simply mean `double prime' and `triple prime'.
+    For example, the input
+    \begin{verbatim}
+        \begin{equation}
+            q^\prime = q^\dprime 2\pi{R} = q^\tprime \pi{R^2}
+        \end{equation}
+    \end{verbatim}
+    is typeset as
+        \begin{equation}
+            q^\prime = q^\dprime 2\pi{R} = q^\tprime \pi{R^2}
+        \end{equation}
+\end{function}
+
+\UWFeature{Programming}
 The Programming Module has no immediate user-facing features.
-The Implementation section for this module outlines the programming layer
-and is aimed mainly at authors that wish to utilize its abilities.
+The \RefModule[Implementation section]{Programming} for this module outlines the programming layer
+and is not intended for average use.
 
-\fi
-%% 
-%%
-%% End of file `UWMadThesis.UserGuide.dtx'.
