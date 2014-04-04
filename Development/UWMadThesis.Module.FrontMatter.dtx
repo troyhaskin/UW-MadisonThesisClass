@@ -55,7 +55,8 @@
 %   Now, we define some identification variables (token lists).
 %    \begin{macrocode}
 \tl_const:Nn \c_UWMad_ClassName_tl        {UWMadThesis}
-\tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin-Madison}
+\tl_const:Nn \c_UWMad_Class_tl            {\texttt{UWMadThesis}~class}
+\tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin--Madison}
 \tl_const:Nn \c_UWMad_UniversityShort_tl  {UW-Madison}
 \tl_const:Nn \c_UWMad_ClassVersion_tl     {1.0}
 \tl_const:Nn \c_UWMad_ClassVersionDate_tl {2012/01/09}
@@ -65,7 +66,7 @@
 %   where \LaTeXPL{}'s syntax will be turned off, we define some aliases.
 %    \begin{macrocode}
 \cs_new_eq:NN \UWMadClassName    \c_UWMad_ClassName_tl
-\cs_new_eq:NN \UWMadClass        \c_UWMad_ClassName_tl
+\cs_new_eq:NN \UWMadClass        \c_UWMad_Class_tl
 \cs_new_eq:NN \UWMadLong         \c_UWMad_UniversityLong_tl
 \cs_new_eq:NN \UWMadShort        \c_UWMad_UniversityShort_tl
 \cs_new_eq:NN \UWMadClassVersion \c_UWMad_ClassVersion_tl
@@ -83,20 +84,6 @@
 %
 %
 %   \UWSubModule{Options}
-%
-%   First, a command is created to throw a warning if an option that
-%   violates \UWMadLong{}'s dissertation guidelines.
-%    \begin{macrocode}
-\msg_new:nnn{UWMadThesis}{Options/StyleViolation}{
-    Option~'#1'~violates~\c_UWMadUniversityShort_tl{}~
-    Dissertation~Guidelines;~consider~omission
-}
-\cs_new:Nn \__UWMad_FrontMatter_StyleWarning:n {
-    \msg_warning:nnn {UWMadThesis}{Options/StyleViolation}
-        {#1}
-   \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
-}
-%    \end{macrocode}
 %
 %   This command is used to suppress warning issued from
 %   \UWMadClass{}. The first argument is a coonditional that
@@ -122,6 +109,26 @@
 }
 %    \end{macrocode}
 %
+%
+%
+%   First, a command is created to throw a warning if an option that
+%   violates \UWMadLong{}'s dissertation guidelines.
+%    \begin{macrocode}
+\msg_new:nnn{UWMadThesis}{Options/StyleViolation}{
+    Option~'#1'~violates~\c_UWMadUniversityShort_tl{}~
+    Dissertation~Guidelines;~consider~omission
+}
+\cs_new:Nn \__UWMad_FrontMatter_StyleWarning:n {
+    \__UWMad_ThrowWarnings:TF {
+    \msg_warning:nnn {UWMadThesis}{Options/StyleViolation}
+        {#1}
+    } { }
+   \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
+}
+%    \end{macrocode}
+%
+%
+%
 %   Now, declare booleans for the option processing.  All new booleans
 %   are false by default.
 %    \begin{macrocode}
@@ -129,17 +136,12 @@
 \bool_gset_true:N \g__UWMad_MathTweaks_bool
 \bool_new:N       \g__UWMad_ThrowWarnings_bool
 \bool_gset_true:N \g__UWMad_ThrowWarnings_bool
-\bool_new:N       \g__UWMad_Hyperlinks_bool
-\bool_gset_true:N \g__UWMad_Hyperlinks_bool
 %    \end{macrocode}
 %
 %   Declare the options.
 %    \begin{macrocode}
 \DeclareOption{NoMath} {
     \bool_gset_false:N \g__UWMad_MathTweaks_bool
-}
-\DeclareOption{NoLinks} {
-    \bool_gset_false:N \g__UWMad_Hyperlinks_bool
 }
 \DeclareOption{Quiet} {
     \bool_gset_false:N \g__UWMad_ThrowWarnings_bool
@@ -226,23 +228,16 @@
 %    \begin{macrocode}
 \RequirePackage[noabbrev,nameinlink]{cleveref}
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
-\RequirePackage{subfig}
 \RequirePackage{caption}
+\RequirePackage{subcaption}
 %    \end{macrocode}
 %
 %
 %   If links were not negated by the options, \pkg{bookmark} and 
 %   \pkg{hyperref} are loaded.
 %    \begin{macrocode}
-\bool_if:NTF \g__UWMad_Hyperlinks_bool {
-    \RequirePackage{hyperref}
-    \RequirePackage{bookmark}
-} {
-    \DeclareDocumentCommand \href { o m m } {
-        #3
-    }
-    \cs_gset_eq:NN \phantomsection \relax
-}
+\RequirePackage{hyperref}
+\RequirePackage{bookmark}
 %    \end{macrocode}
 %
 %   \iffalse

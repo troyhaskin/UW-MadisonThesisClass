@@ -224,52 +224,68 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 
 \DeclareDocumentCommand \dedications { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Dedications_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Dedications_tl
+                {#1}
+        }
     }
-    \chapter*{\g__UWMad_FrontMatter_Name_Dedications_tl}
+    \chapter*{\g__UWMad_FrontMatter_Title_Dedications_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Name_Dedications_tl
+        \g__UWMad_FrontMatter_Title_Dedications_tl
     }
 }
-\DeclareDocumentCommand \acknowledgments { g } {
+
+\DeclareDocumentCommand \acknowledgements { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Acknowledgments_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Acknowledgments_tl
+                {#1}
+        }
     }
-    \chapter*{\g__UWMad_FrontMatter_Name_Acknowledgments_tl}
+    \chapter*{\g__UWMad_FrontMatter_Title_Acknowledgments_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Name_Acknowledgments_tl
+        \g__UWMad_FrontMatter_Title_Acknowledgments_tl
     }
 }
 \DeclareDocumentCommand \abstract { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Abstract_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Abstract_tl
+                {#1}
+        }
     }
-    \chapter*{\g__UWMad_FrontMatter_Name_Abstract_tl}
+    \chapter*{\g__UWMad_FrontMatter_Title_Abstract_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Name_Abstract_tl
+        \g__UWMad_FrontMatter_Title_Abstract_tl
     }
 }
 \DeclareDocumentCommand \umiabstract { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Name_UMIAbstract_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_UMIAbstract_tl
+                {#1}
+        }
     }
-    \chapter*{\g__UWMad_FrontMatter_Name_UMIAbstract_tl}
+    \chapter*{\g__UWMad_FrontMatter_Title_UMIAbstract_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Name_UMIAbstract_tl
+        \g__UWMad_FrontMatter_Title_UMIAbstract_tl
     }
 }
 \DeclareDocumentCommand \preface { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Preface_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Preface_tl
+                {#1}
+        }
     }
-    \chapter*{\g__UWMad_FrontMatter_Name_Preface_tl}
+    \chapter*{\g__UWMad_FrontMatter_Title_Preface_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Name_Preface_tl
+        \g__UWMad_FrontMatter_Title_Preface_tl
     }
 }
 %    \end{macrocode}

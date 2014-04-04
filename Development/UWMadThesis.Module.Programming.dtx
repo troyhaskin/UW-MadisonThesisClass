@@ -1,8 +1,63 @@
 %<*UserGuide>
 \UWFeature{Programming}
-The Programming Module has no immediate user-facing features.
-The \RefModule[Implementation section]{Programming} for this module outlines the programming layer
-and is not intended for average use.
+The \RefModule[Implementation section]{Programming} for this module outlines the programming layer used for the class.
+There is a user-facing API but is not documented here as it is experimental.
+
+
+\iffalse
+\UWSubFeature{Utility Commands}
+
+\begin{function}{\LoadUtilityAPI}
+    \begin{syntax}
+        \cs{LoadUtilityAPI}
+    \end{syntax}
+    In order to use the following commands, this command must be used first to load them.
+\end{function}
+
+\begin{function}{
+    \IfCommandExistsTF,
+    \IfCommandDoesNotExistTF}
+    \begin{syntax}
+        \cs{IfCommandExistsTF}      \marg{command name}\marg{true code}\marg{false code}
+        \cs{IfCommandDoesNotExistTF}\marg{command name}\marg{true code}\marg{false code}
+    \end{syntax}
+    These commands test if a command with \marg{command name} exists or doesn't and branches to the appropriate code.
+\end{function}
+
+\begin{function}{\IfEmptyTF}
+    \begin{syntax}
+        \cs{IfEmptyTF} \marg{object}\marg{true code}\marg{false code}
+    \end{syntax}
+    This commands takes an argument, performs a full expansion of it, and branches to the appropriate code if the expansion is blank or not (just spaces or not).
+\end{function}
+
+\begin{function}{\IfCommandEmptyTF}
+    \begin{syntax}
+        \cs{IfCommandEmptyTF}\marg{command}\marg{true code}\marg{false code}
+    \end{syntax}
+    This function takes a command, expands it once, and branches to the appropriate code if the expansion is blank or not (just spaces or not).
+\end{function}
+
+\begin{function}{}
+    \begin{syntax}
+    \end{syntax}
+\end{function}
+
+\begin{function}{}
+    \begin{syntax}
+    \end{syntax}
+\end{function}
+
+\begin{function}{}
+    \begin{syntax}
+    \end{syntax}
+\end{function}
+
+\begin{function}{}
+    \begin{syntax}
+    \end{syntax}
+\end{function}
+\fi
 
 
 %</UserGuide>
@@ -761,16 +816,6 @@ and is not intended for average use.
 %
 %   \UWSubSubModule{Utility Commands}
 %
-%   \begin{macro}{\LoadUtilityAPI}
-%   \textbf{This command needs to be invoked to load these Utilities 
-%   for usage.}
-%
-%    \begin{macrocode}
-\cs_generate_variant:Nn \tl_if_blank:nTF {fTF}
-\DeclareDocumentCommand \LoadUtilityAPI { } {
-%    \end{macrocode}
-%   \end{macro}
-%
 %
 %   \begin{macro}{\IfCommandExists,\IfCommandDoesNotExist}
 %   This command pair is used instead of \LaTeX{}'s |\@ifundefined|.
@@ -784,18 +829,18 @@ and is not intended for average use.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfCommandExists { m +m +m }{
-    \cs_if_exist:cTF {##1}{
-        ##2
+\DeclareDocumentCommand \IfCommandExistsTF { m +m +m }{
+    \cs_if_exist:cTF {#1}{
+        #2
     }{
-        ##3
+        #3
     }
 }
-\DeclareDocumentCommand \IfCommandDoesNotExist { m +m +m }{
-    \cs_if_free:cTF {##1}{
-        ##2
+\DeclareDocumentCommand \IfCommandDoesNotExistTF { m +m +m }{
+    \cs_if_free:cTF {#1}{
+        #2
     }{
-        ##3
+        #3
     }
 }
 %    \end{macrocode}
@@ -813,11 +858,12 @@ and is not intended for average use.
 %   \end{Usage}
 %
 %    \begin{macrocode}
+\cs_generate_variant:Nn \tl_if_blank:nTF {fTF}
 \DeclareDocumentCommand \IfEmptyTF { m +m +m }{
-    \tl_if_blank:fTF {##1}{
-        ##2
+    \tl_if_blank:fTF {#1}{
+        #2
     }{
-        ##3
+        #3
     }
 }
 %    \end{macrocode}
@@ -835,20 +881,14 @@ and is not intended for average use.
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \IfCommandEmptyTF { m +m +m }{
-    \tl_if_blank:oTF{##1}{
-        ##2
+    \tl_if_blank:oTF{#1}{
+        #2
     }{
-        ##3
+        #3
     }
 }
 %    \end{macrocode}
 %   \end{macro}
-%
-%
-%   Close |\LoadUtilityAPI|.
-%    \begin{macrocode}
-}
-%    \end{macrocode}
 %
 %
 %
@@ -861,15 +901,6 @@ and is not intended for average use.
 %
 %   \UWSubSubModule{Command Creators}
 %
-%
-%   \begin{macro}{\LoadCommandAPI}
-%   \textbf{This command needs to be invoked to load these Command Creators
-%   for usage.}
-%
-%    \begin{macrocode}
-\DeclareDocumentCommand \LoadCommandAPI { } {
-%    \end{macrocode}
-%   \end{macro}
 %
 %   \begin{macro}{\MakeCommand,\ReMakeCommand}
 %   This command pair uses the |etoolbox|'s |\csdef| to define a commands
@@ -888,19 +919,19 @@ and is not intended for average use.
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \MakeCommand { O{} m +m } {
-    \cs_if_free:cTF {##2} {
-        \cs_set:cpn {##2} ##1 {##3}
+    \cs_if_free:cTF {#2} {
+        \cs_set:cpn {#2} #1 {#3}
     }{
         \msg_warning:nnnn
-            {UWMadThesis}{Programming/Defined}{##2}{command}
+            {UWMadThesis}{Programming/Defined}{#2}{command}
     }
 }
 \DeclareDocumentCommand \ReMakeCommand { O{} m +m }{
-    \cs_if_exist:cTF {##2} {
-        \cs_set:cpn {##2} ##1 {##3}
+    \cs_if_exist:cTF {#2} {
+        \cs_set:cpn {#2} #1 {#3}
     }{
         \msg_error:nnnn
-            {UWMadThesis}{Programming/Undefined}{##2}{command}
+            {UWMadThesis}{Programming/Undefined}{#2}{command}
     }
 }
 %    \end{macrocode}
@@ -918,31 +949,10 @@ and is not intended for average use.
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \MakeGlobalCommand { O{} +m m } {
-    \cs_gset:cpn {##2} ##1 {##3}
+    \cs_gset:cpn {#2} #1 {#3}
 }
 %    \end{macrocode}
 %   \end{macro}
-%
-%
-%
-%   \begin{macro}{\MakeExpandedCommand}
-%   This command creates a command in the spirit of |\MakeCommand|
-%   but with several differences.  First, the command simply creates
-%   the requested command without regard to its existence.  Secondly,
-%   the \marg{Code} supplied is fully expanded without protection.
-%   Lastly, the definitions are global.
-%
-%   \begin{Usage}
-%       \item |\MakeExpandedCommand|\marg{Command Name}\marg{Code}
-%   \end{Usage}
-%
-%    \begin{macrocode}
-\DeclareDocumentCommand \MakeExpandedCommand { O{} m +m } {
-    \cs_get:cpx {##2} ##1 {##3}
-}
-%    \end{macrocode}
-%   \end{macro}
-%
 %
 %
 %   \begin{macro}{\MakeCommandUndefined}
@@ -954,7 +964,7 @@ and is not intended for average use.
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \MakeCommandUndefined { m } {
-    \cs_undefine:c {##1}
+    \cs_undefine:c {#1}
 }
 %    \end{macrocode}
 %   \end{macro}
@@ -973,40 +983,26 @@ and is not intended for average use.
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \CopyCommand { m m } {
-    \cs_if_free:cTF {##1} {
-        \cs_if_free:cTF {##2} {
-            \cs_gset_eq:cc {##2}{##1}
+    \cs_if_free:cTF {#1} {
+        \cs_if_free:cTF {#2} {
+            \cs_gset_eq:cc {#2}{#1}
         }{
             \msg_warning:nnnn
-                {UWMadThesis}{Programming/Defined}{##2}{command}
+                {UWMadThesis}{Programming/Defined}{#2}{command}
         }
     }{
         \msg_warning:nnnn
-            {UWMadThesis}{Programming/Defined}{##1}{command}
+            {UWMadThesis}{Programming/Defined}{#1}{command}
     }
 }
 %    \end{macrocode}
 %   \end{macro}
 %
 %
-%   Close |\LoadCommandAPI|.
-%    \begin{macrocode}
-}
-%    \end{macrocode}
-%
 %
 %
 %
 %   \UWSubSubModule{Types}
-%
-%   \begin{macro}{\LoadTypesAPI}
-%   \textbf{This command needs to be invoked to load these Type Commands
-%   for usage.}
-%
-%    \begin{macrocode}
-\DeclareDocumentCommand \LoadTypesAPI { } {
-%    \end{macrocode}
-%   \end{macro}
 %
 %   \begin{macro}{
 %       \CreateBoolean,
@@ -1019,33 +1015,33 @@ and is not intended for average use.
 %   \LaTeXe{} version of the Boolean Type system above.
 %    \begin{macrocode}
 \DeclareDocumentCommand \CreateBoolean { m } {
-    \bool_new:c {g__UWMad_Programming_API_##1_bool}
+    \bool_new:c {g__UWMad_Programming_API_#1_bool}
 }
 \DeclareDocumentCommand \CreateBooleanTrue { m } {
-    \bool_new:c       {g__UWMad_Programming_API_##1_bool}
-    \bool_gset_true:c {g__UWMad_Programming_API_##1_bool}
+    \bool_new:c       {g__UWMad_Programming_API_#1_bool}
+    \bool_gset_true:c {g__UWMad_Programming_API_#1_bool}
 }
 \DeclareDocumentCommand \CreateBooleanFalse { m } {
-    \bool_new:c        {g__UWMad_Programming_API_##1_bool}
+    \bool_new:c        {g__UWMad_Programming_API_#1_bool}
 }
 \DeclareDocumentCommand \SetBooleanTrue { m } {
-    \bool_gset_true:c {g__UWMad_Programming_API_##1_bool}
+    \bool_gset_true:c {g__UWMad_Programming_API_#1_bool}
 }
 \DeclareDocumentCommand \SetBooleanFalse { m } {
-    \bool_gset_false:c {g__UWMad_Programming_API_##1_bool}
+    \bool_gset_false:c {g__UWMad_Programming_API_#1_bool}
 }
 \DeclareDocumentCommand \IfBooleanTrueTF { m +m +m } { 
-    \bool_if:cTF {g__UWMad_Programming_API_##1_bool} {
-        ##2
+    \bool_if:cTF {g__UWMad_Programming_API_#1_bool} {
+        #2
     } {
-        ##3
+        #3
     }
 }
 \DeclareDocumentCommand \IfBooleanFalseTF { m +m +m } { 
-    \bool_if:cTF {g__UWMad_Programming_API_##1_bool} {
-        ##3
+    \bool_if:cTF {g__UWMad_Programming_API_#1_bool} {
+        #3
     } {
-        ##2
+        #2
     }
 }
 %    \end{macrocode}
@@ -1062,23 +1058,23 @@ and is not intended for average use.
 %   \LaTeXe{} version of the Boolean Type system above.
 %    \begin{macrocode}
 \DeclareDocumentCommand \CreateLength { m m } {
-    \dim_new:c   {g__UWMad_Programming_API_##1_dim}
-    \dim_gset:cn {g__UWMad_Programming_API_##1_dim} {##2}
+    \dim_new:c   {g__UWMad_Programming_API_#1_dim}
+    \dim_gset:cn {g__UWMad_Programming_API_#1_dim} {#2}
 }
 \DeclareDocumentCommand \AddToLength { m m } {
-    \dim_gadd:cn {g__UWMad_Programming_API_##1_dim} {##2}
+    \dim_gadd:cn {g__UWMad_Programming_API_#1_dim} {#2}
 }
 \DeclareDocumentCommand \SetLength { m m } {
-    \dim_gset:cn {g__UWMad_Programming_API_##1_dim} {##2}
+    \dim_gset:cn {g__UWMad_Programming_API_#1_dim} {#2}
 }
 \DeclareDocumentCommand \ValueOfLength { m } {
-    \dim_use:c {g__UWMad_Programming_API_##1_dim}
+    \dim_use:c {g__UWMad_Programming_API_#1_dim}
 }
 \DeclareDocumentCommand \IfLengthTF { m m m +m +m } {
-    \dim_compare:nNnTF {##1} ##2 {##3} {
-        ##4
+    \dim_compare:nNnTF {#1} #2 {#3} {
+        #4
     } {
-        ##5
+        #5
     }
 }
 %    \end{macrocode}
@@ -1101,52 +1097,47 @@ and is not intended for average use.
 %   \LaTeXe{} version of the Counter Type system above.
 %    \begin{macrocode}
 \DeclareDocumentCommand \CreateCounter { m m } {
-    \int_new:c   {g__UWMad_Programming_API_##1_int}
-    \int_gset:cn {g__UWMad_Programming_API_##1_int} {##2}
+    \int_new:c   {g__UWMad_Programming_API_#1_int}
+    \int_gset:cn {g__UWMad_Programming_API_#1_int} {#2}
 }
 \DeclareDocumentCommand \AddToCounter { m m } {
-    \int_gadd:cn {g__UWMad_Programming_API_##1_int} {##2}
+    \int_gadd:cn {g__UWMad_Programming_API_#1_int} {#2}
 }
 \DeclareDocumentCommand \StepCounter { m m } {
-    \int_gincr:cn {g__UWMad_Programming_API_##1_int} {##2}
+    \int_gincr:cn {g__UWMad_Programming_API_#1_int} {#2}
 }
 \DeclareDocumentCommand \SetCounter { m m } {
-    \int_gset:cn {g__UWMad_Programming_API_##1_int} {##2}
+    \int_gset:cn {g__UWMad_Programming_API_#1_int} {#2}
 }
 \DeclareDocumentCommand \ValueOfCounter { m m } {
-    \int_use:c {g__UWMad_Programming_API_##1_int}
+    \int_use:c {g__UWMad_Programming_API_#1_int}
 }
 \DeclareDocumentCommand \IfCounterTF { m m m +m +m } {
-    \int_compare:nNnTF {##1} {##2} {##3} {
-        ##4
+    \int_compare:nNnTF {#1} {#2} {#3} {
+        #4
     } {
-        ##5
+        #5
     }
 }
 \DeclareDocumentCommand \CounterToArabic { m } {
-    \int_to_arabic:c {g__UWMad_Programming_API_##1_int}
+    \int_to_arabic:c {g__UWMad_Programming_API_#1_int}
 }
 \DeclareDocumentCommand \CounterToALPHA { m } {
-    \int_to_Alph:c {g__UWMad_Programming_API_##1_int}
+    \int_to_Alph:c {g__UWMad_Programming_API_#1_int}
 }
 \DeclareDocumentCommand \CounterToAlpha { m } {
-    \int_to_alph:c {g__UWMad_Programming_API_##1_int}
+    \int_to_alph:c {g__UWMad_Programming_API_#1_int}
 }
 \DeclareDocumentCommand \CounterToROMAN { m } {
-    \int_to_Roman:c {g__UWMad_Programming_API_##1_int}
+    \int_to_Roman:c {g__UWMad_Programming_API_#1_int}
 }
 \DeclareDocumentCommand \CounterToRoman { m } {
-    \int_to_roman:c {g__UWMad_Programming_API_##1_int}
+    \int_to_roman:c {g__UWMad_Programming_API_#1_int}
 }
 %    \end{macrocode}
 %    \end{macro}
 %
 %
-%
-%   Close |\LoadTypesAPI|.
-%    \begin{macrocode}
-}
-%    \end{macrocode}
 %
 %
 %

@@ -9,12 +9,13 @@ The defaults and methods for changing the style are list in this section.
 
 
 \UWSubFeature{Captions}
-The \UWMadClass{} 
+The \UWMadClass{} uses the \pkg{caption} and \pkg{subcaption} packages to style float captions and subcaptions.
+It is possible to adjust the defaults showcase below by using the packages' utilities outlines in their respective manuals.
 
 \vskip1em
 {
     \captionof {figure} {Here is an example of a figure caption.
-        The default style for the \UWMadClass{} class is a slanted font (abbrev. \enquote{sl}) and small capitals (abbrev. \enquote{sc}) for the float label.
+        The default style for the \UWMadClass{} is a slanted font (abbrev. \enquote{sl}) and small capitals (abbrev. \enquote{sc}) for the float label.
         Notice that long captions, like this, are indented such that the caption text is visibly separated from the float label.
     }
 
@@ -23,6 +24,14 @@ The \UWMadClass{}
     }
 }
 
+
+\UWSubFeature{Links}
+The \UWMadClass{} loads the \pkg{hyperref} and \pkg{bookmark} packages to create hyperlinks and a clickable documents.
+The default color for document links is \textcolor{blue}{blue}, for urls is \textcolor{violet}{violet}, and for citations is \textcolor{UWMadGreen}{UWMadGreen} (a darker version of \textcolor{green}{green}).
+These defaults can be change using the facilities of the \pkg{hyperref} package as described in its manual.
+New colors can be created using the facilities of the \pkg{xcolor} package as described in its manual.
+
+References may be handled by the \pkg{hyperref} package using \cs{autocite} or by the \pkg{cleveref} package using \cs{cref}/\cs{Cref} (the latter producing a capital letter for the reference type).
 
 %</UserGuide>
 %
@@ -94,9 +103,25 @@ The \UWMadClass{}
 }
 %
 %
+\doublespacing
+\UWMad_Hook_Prepend:Nn \singlespacing {
+    \__UWMad_FrontMatter_StyleWarning:n {
+        University~guidelines~require~double-spacing.~
+        If~this~is~for~temporary~use,~please~use~the~spacing~environment.
+    }
+}
+\UWMad_Hook_Prepend:Nn \onehalfspacing {
+    \__UWMad_FrontMatter_StyleWarning:n {
+        University~guidelines~require~double-spacing.~
+        If~this~is~for~temporary~use,~please~use~the~spacing~environment.
+    }
+}
+%
+%
+%
+%   Standard \LaTeX{} styles and lengths
 \pagestyle{myheadings}
 \pagenumbering{roman}
-\doublespacing
 \setlength{\parindent}{ 0pt}
 \setlength{\parskip}  {10pt}
 \setlength{\headsep}  {15pt}

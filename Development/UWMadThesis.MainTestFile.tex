@@ -1,45 +1,69 @@
 \documentclass[12pt]{UWMadThesis}
 
-\Title{UWMadThesis Tests PDF}
-\Author{Troy C. Haskin}
+\usepackage{lipsum}
 
+% ========================== %
+%     Thesis Information     %
+% ========================== %
+\Title{UWMadThesis Example PDF}
+\Author{Troy C. Haskin}
+\Program{Nuclear Engineering Engineering Physics}
+\Degree{Ph.D.}
+\DefenseDate{July 14, 2014}
+\University{University of Wisconsin--Madison}
+\Dissertation
+
+
+% ========================== %
+%       Thesis Committee     %
+% ========================== %
+\Advisor{Michael L. Corradini}       {Professor}{Engineering Physics}
+\CommitteeMember{Robert J. Witt}     {Professor}{Engineering Physics}
+\CommitteeMember{Gregory A. Moses}   {Professor}{Engineering Physics}
+\CommitteeMember{Jake Blanchard}     {Professor}{Engineering Physics}
+\CommitteeMember{Christopher Rutland}{Professor}{Mechanical Engineering}
 
 
 \begin{document}
 
-\ExplSyntaxOn
-\cs_new_eq:NN \TableOfContentsDefault \UWMad_TOC_Default_TableOfContents:
-\ExplSyntaxOff
+\MakeTitlePage{}
+
+\begin{LicensePage}
+    \CreativeCommons
+    \Attribution
+    \NonCommercial
+    \ShareAlike
+\end{LicensePage}
+
 \TableOfContents
 
+\acknowledgements{}
+\lipsum[1]
+
+\abstract
+\lipsum[2-3]
+
+
 \begin{Nomenclature}
-
-    \Entry{Sym1}{This is a test.}
-    \Entry{ReallyReallyLongSymbol}{This is a test.}
-
-    \Group{Group 1}
-    \Entry{Sym2}{This is a test.}
-
-    \Group{Group 2}
-    \Entry{Sym3}{This is a test.}
-
-        \Subgroup{ }
-            \Entry{$Sym4Lo$ngErTh$\int_0^{\infty}dx$er}{This is a test.}
-
-        \Subgroup{SubGroup 2}
-            \Entry{Sym5}{This is a test.}
-            \Entry{Sym1}{This is a test.}
-            \Entry{ReallyReallyLongSymbol}{This is a test.}
-
+    \Entry{$\rho$}{Density}
 \end{Nomenclature}
 
-\chapter{Hello}
 
-\appendix{Appendix}
-%\input{Tests/Test_Nomenclature}
-%\input{Tests/Test_Programming}
-%\input{Tests/Test_LaTeX3Programming}
-%\input{Tests/Test_MetaData}
-%\input{Tests/Test_Sectioning}
+\chapter{First Chapter}
+\lipsum[2-3]
+
+
+\chapter{Second Chapter}
+\lipsum[4-6]
+
+
+\appendix{First Appendix}
+\lipsum[7-9]
+
+
+\appendix{Second Appendix}
+\lipsum[10-15]
+
+
 
 \end{document}

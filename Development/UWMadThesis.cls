@@ -10,27 +10,19 @@
 \ProvidesExplClass
     {UWMadThesis}{2013/08/21}{1.0}{LaTeX2e+~Thesis~Class~for~UW-Madison}
 \tl_const:Nn \c_UWMad_ClassName_tl        {UWMadThesis}
-\tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin-Madison}
+\tl_const:Nn \c_UWMad_Class_tl            {\texttt{UWMadThesis}~class}
+\tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin--Madison}
 \tl_const:Nn \c_UWMad_UniversityShort_tl  {UW-Madison}
 \tl_const:Nn \c_UWMad_ClassVersion_tl     {1.0}
 \tl_const:Nn \c_UWMad_ClassVersionDate_tl {2012/01/09}
 \cs_new_eq:NN \UWMadClassName    \c_UWMad_ClassName_tl
-\cs_new_eq:NN \UWMadClass        \c_UWMad_ClassName_tl
+\cs_new_eq:NN \UWMadClass        \c_UWMad_Class_tl
 \cs_new_eq:NN \UWMadLong         \c_UWMad_UniversityLong_tl
 \cs_new_eq:NN \UWMadShort        \c_UWMad_UniversityShort_tl
 \cs_new_eq:NN \UWMadClassVersion \c_UWMad_ClassVersion_tl
 \cs_new_eq:NN \UWMadClassDate    \c_UWMad_ClassVersionDate_tl
 \tl_new:N   \g_UWMad_ParentClass_tl
 \tl_gset:Nn \g_UWMad_ParentClass_tl {report}
-\msg_new:nnn{UWMadThesis}{Options/StyleViolation}{
-    Option~'#1'~violates~\c_UWMadUniversityShort_tl{}~
-    Dissertation~Guidelines;~consider~omission
-}
-\cs_new:Nn \__UWMad_FrontMatter_StyleWarning:n {
-    \msg_warning:nnn {UWMadThesis}{Options/StyleViolation}
-        {#1}
-   \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
-}
 \cs_new:Nn \__UWMad_ThrowWarnings:NTF {
     \bool_if:NTF \g__UWMad_ThrowWarnings_bool {
         \bool_if:NTF #1 {
@@ -47,17 +39,23 @@
         #2
     }
 }
+\msg_new:nnn{UWMadThesis}{Options/StyleViolation}{
+    Option~'#1'~violates~\c_UWMadUniversityShort_tl{}~
+    Dissertation~Guidelines;~consider~omission
+}
+\cs_new:Nn \__UWMad_FrontMatter_StyleWarning:n {
+    \__UWMad_ThrowWarnings:TF {
+    \msg_warning:nnn {UWMadThesis}{Options/StyleViolation}
+        {#1}
+    } { }
+   \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
+}
 \bool_new:N       \g__UWMad_MathTweaks_bool
 \bool_gset_true:N \g__UWMad_MathTweaks_bool
 \bool_new:N       \g__UWMad_ThrowWarnings_bool
 \bool_gset_true:N \g__UWMad_ThrowWarnings_bool
-\bool_new:N       \g__UWMad_Hyperlinks_bool
-\bool_gset_true:N \g__UWMad_Hyperlinks_bool
 \DeclareOption{NoMath} {
     \bool_gset_false:N \g__UWMad_MathTweaks_bool
-}
-\DeclareOption{NoLinks} {
-    \bool_gset_false:N \g__UWMad_Hyperlinks_bool
 }
 \DeclareOption{Quiet} {
     \bool_gset_false:N \g__UWMad_ThrowWarnings_bool
@@ -101,17 +99,10 @@
 } { }
 \RequirePackage[noabbrev,nameinlink]{cleveref}
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
-\RequirePackage{subfig}
 \RequirePackage{caption}
-\bool_if:NTF \g__UWMad_Hyperlinks_bool {
-    \RequirePackage{hyperref}
-    \RequirePackage{bookmark}
-} {
-    \DeclareDocumentCommand \href { o m m } {
-        #3
-    }
-    \cs_gset_eq:NN \phantomsection \relax
-}
+\RequirePackage{subcaption}
+\RequirePackage{hyperref}
+\RequirePackage{bookmark}
 \msg_new:nnn {UWMadThesis} {Programming/UnregisteredVariable} {
     `#1'~is~not~a~registered~#2.~~The~#2~must~be~defined~
     before~usage~by~the~function~\string\UWMad_#2_DefineLocal:n~or~
@@ -401,166 +392,157 @@
         \cs_undefine:c {g__UWMad_Hash_#1}
     }
 }
+\DeclareDocumentCommand \IfCommandExistsTF { m +m +m }{
+    \cs_if_exist:cTF {#1}{
+        #2
+    }{
+        #3
+    }
+}
+\DeclareDocumentCommand \IfCommandDoesNotExistTF { m +m +m }{
+    \cs_if_free:cTF {#1}{
+        #2
+    }{
+        #3
+    }
+}
 \cs_generate_variant:Nn \tl_if_blank:nTF {fTF}
-\DeclareDocumentCommand \LoadUtilityAPI { } {
-\DeclareDocumentCommand \IfCommandExists { m +m +m }{
-    \cs_if_exist:cTF {##1}{
-        ##2
-    }{
-        ##3
-    }
-}
-\DeclareDocumentCommand \IfCommandDoesNotExist { m +m +m }{
-    \cs_if_free:cTF {##1}{
-        ##2
-    }{
-        ##3
-    }
-}
 \DeclareDocumentCommand \IfEmptyTF { m +m +m }{
-    \tl_if_blank:fTF {##1}{
-        ##2
+    \tl_if_blank:fTF {#1}{
+        #2
     }{
-        ##3
+        #3
     }
 }
 \DeclareDocumentCommand \IfCommandEmptyTF { m +m +m }{
-    \tl_if_blank:oTF{##1}{
-        ##2
+    \tl_if_blank:oTF{#1}{
+        #2
     }{
-        ##3
+        #3
     }
 }
-}
-\DeclareDocumentCommand \LoadCommandAPI { } {
 \DeclareDocumentCommand \MakeCommand { O{} m +m } {
-    \cs_if_free:cTF {##2} {
-        \cs_set:cpn {##2} ##1 {##3}
+    \cs_if_free:cTF {#2} {
+        \cs_set:cpn {#2} #1 {#3}
     }{
         \msg_warning:nnnn
-            {UWMadThesis}{Programming/Defined}{##2}{command}
+            {UWMadThesis}{Programming/Defined}{#2}{command}
     }
 }
 \DeclareDocumentCommand \ReMakeCommand { O{} m +m }{
-    \cs_if_exist:cTF {##2} {
-        \cs_set:cpn {##2} ##1 {##3}
+    \cs_if_exist:cTF {#2} {
+        \cs_set:cpn {#2} #1 {#3}
     }{
         \msg_error:nnnn
-            {UWMadThesis}{Programming/Undefined}{##2}{command}
+            {UWMadThesis}{Programming/Undefined}{#2}{command}
     }
 }
 \DeclareDocumentCommand \MakeGlobalCommand { O{} +m m } {
-    \cs_gset:cpn {##2} ##1 {##3}
-}
-\DeclareDocumentCommand \MakeExpandedCommand { O{} m +m } {
-    \cs_get:cpx {##2} ##1 {##3}
+    \cs_gset:cpn {#2} #1 {#3}
 }
 \DeclareDocumentCommand \MakeCommandUndefined { m } {
-    \cs_undefine:c {##1}
+    \cs_undefine:c {#1}
 }
 \DeclareDocumentCommand \CopyCommand { m m } {
-    \cs_if_free:cTF {##1} {
-        \cs_if_free:cTF {##2} {
-            \cs_gset_eq:cc {##2}{##1}
+    \cs_if_free:cTF {#1} {
+        \cs_if_free:cTF {#2} {
+            \cs_gset_eq:cc {#2}{#1}
         }{
             \msg_warning:nnnn
-                {UWMadThesis}{Programming/Defined}{##2}{command}
+                {UWMadThesis}{Programming/Defined}{#2}{command}
         }
     }{
         \msg_warning:nnnn
-            {UWMadThesis}{Programming/Defined}{##1}{command}
+            {UWMadThesis}{Programming/Defined}{#1}{command}
     }
 }
-}
-\DeclareDocumentCommand \LoadTypesAPI { } {
 \DeclareDocumentCommand \CreateBoolean { m } {
-    \bool_new:c {g__UWMad_Programming_API_##1_bool}
+    \bool_new:c {g__UWMad_Programming_API_#1_bool}
 }
 \DeclareDocumentCommand \CreateBooleanTrue { m } {
-    \bool_new:c       {g__UWMad_Programming_API_##1_bool}
-    \bool_gset_true:c {g__UWMad_Programming_API_##1_bool}
+    \bool_new:c       {g__UWMad_Programming_API_#1_bool}
+    \bool_gset_true:c {g__UWMad_Programming_API_#1_bool}
 }
 \DeclareDocumentCommand \CreateBooleanFalse { m } {
-    \bool_new:c        {g__UWMad_Programming_API_##1_bool}
+    \bool_new:c        {g__UWMad_Programming_API_#1_bool}
 }
 \DeclareDocumentCommand \SetBooleanTrue { m } {
-    \bool_gset_true:c {g__UWMad_Programming_API_##1_bool}
+    \bool_gset_true:c {g__UWMad_Programming_API_#1_bool}
 }
 \DeclareDocumentCommand \SetBooleanFalse { m } {
-    \bool_gset_false:c {g__UWMad_Programming_API_##1_bool}
+    \bool_gset_false:c {g__UWMad_Programming_API_#1_bool}
 }
 \DeclareDocumentCommand \IfBooleanTrueTF { m +m +m } {
-    \bool_if:cTF {g__UWMad_Programming_API_##1_bool} {
-        ##2
+    \bool_if:cTF {g__UWMad_Programming_API_#1_bool} {
+        #2
     } {
-        ##3
+        #3
     }
 }
 \DeclareDocumentCommand \IfBooleanFalseTF { m +m +m } {
-    \bool_if:cTF {g__UWMad_Programming_API_##1_bool} {
-        ##3
+    \bool_if:cTF {g__UWMad_Programming_API_#1_bool} {
+        #3
     } {
-        ##2
+        #2
     }
 }
 \DeclareDocumentCommand \CreateLength { m m } {
-    \dim_new:c   {g__UWMad_Programming_API_##1_dim}
-    \dim_gset:cn {g__UWMad_Programming_API_##1_dim} {##2}
+    \dim_new:c   {g__UWMad_Programming_API_#1_dim}
+    \dim_gset:cn {g__UWMad_Programming_API_#1_dim} {#2}
 }
 \DeclareDocumentCommand \AddToLength { m m } {
-    \dim_gadd:cn {g__UWMad_Programming_API_##1_dim} {##2}
+    \dim_gadd:cn {g__UWMad_Programming_API_#1_dim} {#2}
 }
 \DeclareDocumentCommand \SetLength { m m } {
-    \dim_gset:cn {g__UWMad_Programming_API_##1_dim} {##2}
+    \dim_gset:cn {g__UWMad_Programming_API_#1_dim} {#2}
 }
 \DeclareDocumentCommand \ValueOfLength { m } {
-    \dim_use:c {g__UWMad_Programming_API_##1_dim}
+    \dim_use:c {g__UWMad_Programming_API_#1_dim}
 }
 \DeclareDocumentCommand \IfLengthTF { m m m +m +m } {
-    \dim_compare:nNnTF {##1} ##2 {##3} {
-        ##4
+    \dim_compare:nNnTF {#1} #2 {#3} {
+        #4
     } {
-        ##5
+        #5
     }
 }
 \DeclareDocumentCommand \CreateCounter { m m } {
-    \int_new:c   {g__UWMad_Programming_API_##1_int}
-    \int_gset:cn {g__UWMad_Programming_API_##1_int} {##2}
+    \int_new:c   {g__UWMad_Programming_API_#1_int}
+    \int_gset:cn {g__UWMad_Programming_API_#1_int} {#2}
 }
 \DeclareDocumentCommand \AddToCounter { m m } {
-    \int_gadd:cn {g__UWMad_Programming_API_##1_int} {##2}
+    \int_gadd:cn {g__UWMad_Programming_API_#1_int} {#2}
 }
 \DeclareDocumentCommand \StepCounter { m m } {
-    \int_gincr:cn {g__UWMad_Programming_API_##1_int} {##2}
+    \int_gincr:cn {g__UWMad_Programming_API_#1_int} {#2}
 }
 \DeclareDocumentCommand \SetCounter { m m } {
-    \int_gset:cn {g__UWMad_Programming_API_##1_int} {##2}
+    \int_gset:cn {g__UWMad_Programming_API_#1_int} {#2}
 }
 \DeclareDocumentCommand \ValueOfCounter { m m } {
-    \int_use:c {g__UWMad_Programming_API_##1_int}
+    \int_use:c {g__UWMad_Programming_API_#1_int}
 }
 \DeclareDocumentCommand \IfCounterTF { m m m +m +m } {
-    \int_compare:nNnTF {##1} {##2} {##3} {
-        ##4
+    \int_compare:nNnTF {#1} {#2} {#3} {
+        #4
     } {
-        ##5
+        #5
     }
 }
 \DeclareDocumentCommand \CounterToArabic { m } {
-    \int_to_arabic:c {g__UWMad_Programming_API_##1_int}
+    \int_to_arabic:c {g__UWMad_Programming_API_#1_int}
 }
 \DeclareDocumentCommand \CounterToALPHA { m } {
-    \int_to_Alph:c {g__UWMad_Programming_API_##1_int}
+    \int_to_Alph:c {g__UWMad_Programming_API_#1_int}
 }
 \DeclareDocumentCommand \CounterToAlpha { m } {
-    \int_to_alph:c {g__UWMad_Programming_API_##1_int}
+    \int_to_alph:c {g__UWMad_Programming_API_#1_int}
 }
 \DeclareDocumentCommand \CounterToROMAN { m } {
-    \int_to_Roman:c {g__UWMad_Programming_API_##1_int}
+    \int_to_Roman:c {g__UWMad_Programming_API_#1_int}
 }
 \DeclareDocumentCommand \CounterToRoman { m } {
-    \int_to_roman:c {g__UWMad_Programming_API_##1_int}
-}
+    \int_to_roman:c {g__UWMad_Programming_API_#1_int}
 }
 \geometry{
     includehead = true,
@@ -606,9 +588,21 @@
     bookmarksopen      = true       ,
     unicode            = true
 }
+\doublespacing
+\UWMad_Hook_Prepend:Nn \singlespacing {
+    \__UWMad_FrontMatter_StyleWarning:n {
+        University~guidelines~require~double-spacing.~
+        If~this~is~for~temporary~use,~please~use~the~spacing~environment.
+    }
+}
+\UWMad_Hook_Prepend:Nn \onehalfspacing {
+    \__UWMad_FrontMatter_StyleWarning:n {
+        University~guidelines~require~double-spacing.~
+        If~this~is~for~temporary~use,~please~use~the~spacing~environment.
+    }
+}
 \pagestyle{myheadings}
 \pagenumbering{roman}
-\doublespacing
 \setlength{\parindent}{ 0pt}
 \setlength{\parskip}  {10pt}
 \setlength{\headsep}  {15pt}
@@ -676,52 +670,56 @@
 
 \DeclareDocumentCommand \dedications { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Dedications_tl
+        \tl_gset:Nn \g__UWMad_FrontMatter_Title_Dedications_tl
             {#1}
     }
-    \chapter*{\g__UWMad_FrontMatter_Name_Dedications_tl}
+    \chapter*{\g__UWMad_FrontMatter_Title_Dedications_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Name_Dedications_tl
+        \g__UWMad_FrontMatter_Title_Dedications_tl
     }
 }
-\DeclareDocumentCommand \acknowledgments { g } {
+
+\DeclareDocumentCommand \acknowledgements { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Acknowledgments_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Acknowledgments_tl
+                {#1}
+        }
     }
-    \chapter*{\g__UWMad_FrontMatter_Name_Acknowledgments_tl}
+    \chapter*{\g__UWMad_FrontMatter_Title_Acknowledgments_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Name_Acknowledgments_tl
+        \g__UWMad_FrontMatter_Title_Acknowledgments_tl
     }
 }
 \DeclareDocumentCommand \abstract { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Abstract_tl
+        \tl_gset:Nn \g__UWMad_FrontMatter_Title_Abstract_tl
             {#1}
     }
-    \chapter*{\g__UWMad_FrontMatter_Name_Abstract_tl}
+    \chapter*{\g__UWMad_FrontMatter_Title_Abstract_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Name_Abstract_tl
+        \g__UWMad_FrontMatter_Title_Abstract_tl
     }
 }
 \DeclareDocumentCommand \umiabstract { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Name_UMIAbstract_tl
+        \tl_gset:Nn \g__UWMad_FrontMatter_Title_UMIAbstract_tl
             {#1}
     }
-    \chapter*{\g__UWMad_FrontMatter_Name_UMIAbstract_tl}
+    \chapter*{\g__UWMad_FrontMatter_Title_UMIAbstract_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Name_UMIAbstract_tl
+        \g__UWMad_FrontMatter_Title_UMIAbstract_tl
     }
 }
 \DeclareDocumentCommand \preface { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Name_Preface_tl
+        \tl_gset:Nn \g__UWMad_FrontMatter_Title_Preface_tl
             {#1}
     }
-    \chapter*{\g__UWMad_FrontMatter_Name_Preface_tl}
+    \chapter*{\g__UWMad_FrontMatter_Title_Preface_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Name_Preface_tl
+        \g__UWMad_FrontMatter_Title_Preface_tl
     }
 }
 \cs_gset_eq:NN \UWMad_TOC_Default_TableOfContents: \tableofcontents
@@ -1607,14 +1605,11 @@
         #1={#2}
     }
 }
-
 \bool_new:N \g__UWMad_MetaData_GenerateAux_bool
 \bool_new:N \g__UWMad_MetaData_IsDocument_bool
-
-\file_if_exist:nTF{\jobname.UWMad.PDFMetaData.aux} {
-    \file_input:n {\jobname.UWMad.PDFMetaData.aux}
+\file_if_exist:nTF{\c_job_name_tl.UWMad.PDFMetaData.aux} {
+    \file_input:n {\c_job_name_tl.UWMad.PDFMetaData.aux}
 }{}
-
 \AtBeginDocument{
     \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
         \exp_args:Nx \hypersetup {
@@ -1628,7 +1623,7 @@
         \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
             \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
             \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
-                \jobname.UWMad.PDFMetaData.aux
+                \c_job_name_tl.UWMad.PDFMetaData.aux
             }
             \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
                 \noexpand\ExplSyntaxOff
@@ -1640,18 +1635,19 @@
         } { }
     } { }
 }
-
 \tl_new:N \g__UWMad_ThesisInfo_Title_tl
 \tl_new:N \g__UWMad_ThesisInfo_Author_tl
 \tl_new:N \g__UWMad_ThesisInfo_DefenseDate_tl
 \tl_new:N \g__UWMad_ThesisInfo_Department_tl
 \tl_new:N \g__UWMad_ThesisInfo_Program_tl
 \tl_new:N \g__UWMad_ThesisInfo_Degree_tl
+\tl_new:N \g__UWMad_ThesisInfo_DocumentType_tl
 \tl_new:N \g__UWMad_ThesisInfo_AdvisorName_tl
 \tl_new:N \g__UWMad_ThesisInfo_AdvisorPosition_tl
 \tl_new:N \g__UWMad_ThesisInfo_AdvisorAssociation_tl
 \tl_new:N \g__UWMad_ThesisInfo_AdvisorMarker_tl
 \tl_new:N \g__UWMad_ThesisInfo_Institution_tl
+\tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {report}
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_Title_bool
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_Author_bool
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_DefenseDate_bool
@@ -1685,12 +1681,39 @@
     \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {#1}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
 }
+\DeclareDocumentCommand \DocumentType { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {#1}
+}
+\DeclareDocumentCommand \Dissertation { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
+        dissertation
+    }
+}
+\DeclareDocumentCommand \DoctoralThesis { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
+        doctoral~thesis
+    }
+}
+\DeclareDocumentCommand \MastersThesis { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
+        master's~thesis
+    }
+}
+\DeclareDocumentCommand \Thesis { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
+        thesis
+    }
+}
+\DeclareDocumentCommand \Prelim { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
+        preliminary~report
+    }
+}
 \DeclareDocumentCommand \DefenseDate { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DefenseDate_tl {#1}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_DefenseDate_bool
 }
 \cs_gset_eq:NN \DefenceDate \DefenseDate
-\cs_gset_eq:NN \Date        \DefenseDate
 \DeclareDocumentCommand \Institution { m } {
     \tl_gset:Nn       \g__UWMad_ThesisInfo_Institution_tl {#1}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Institution_bool
@@ -1713,31 +1736,46 @@
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Adviser}
 }
+\msg_new:nnn { UWMadThesis } { ThesisInfo / UnsetInformation } {
+    The~required~information~for~the~#1~is~not~set.
+}
+\DeclareDocumentCommand \IfInfoIsSetT { m +m } {
+    \bool_if:cTF {g__UWMad_ThesisInfo_IsSet_ #1 _bool} {
+        #2
+    } {
+        \msg_error:nnn
+            { UWMadThesis }
+            { ThesisInfo / UnsetInformation }
+            {#1}
+    }
+}
 \DeclareDocumentCommand \TheTitle { } {
     \g__UWMad_ThesisInfo_Title_tl
 }
 \DeclareDocumentCommand \TheAuthor { } {
     \g__UWMad_ThesisInfo_Author_tl
 }
-\DeclareDocumentCommand \TheProgram { m } {
+\DeclareDocumentCommand \TheProgram { } {
     \g__UWMad_ThesisInfo_Program_tl
 }
-\DeclareDocumentCommand \TheDegree { m } {
+\DeclareDocumentCommand \TheDegree { } {
     \g__UWMad_ThesisInfo_Degree_tl
 }
-\DeclareDocumentCommand \TheDefenseDate { m } {
+\DeclareDocumentCommand \TheDocumentType { } {
+    \g__UWMad_ThesisInfo_DocumentType_tl
+}
+\DeclareDocumentCommand \TheDefenseDate { } {
     \g__UWMad_ThesisInfo_DefenseDate_tl
 }
 \cs_gset_eq:NN \TheDefenceDate \TheDefenseDate
-\cs_gset_eq:NN \TheDate        \TheDefenseDate
-\DeclareDocumentCommand \TheInstitution { m } {
+\DeclareDocumentCommand \TheInstitution { } {
     \g__UWMad_ThesisInfo_Institution_tl
 }
 \cs_set_eq:NN \TheUniversity \TheInstitution
-\DeclareDocumentCommand \TheDepartment { m } {
+\DeclareDocumentCommand \TheDepartment { } {
     \g__UWMad_ThesisInfo_Department_tl
 }
-\DeclareDocumentCommand \TheAdvisor { m } {
+\DeclareDocumentCommand \TheAdvisor { } {
     \g__UWMad_ThesisInfo_AdvisorName_tl
 }
 \int_new:N \l__UWMad_ThesisInfo_CommitteeCount_int
@@ -1750,9 +1788,9 @@
 }
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
-        \g__UWMad_ThesisInfo_AdvisorName_tl{},~
-        \g__UWMad_ThesisInfo_AdvisorPosition_tl{},~
-        \g__UWMad_ThesisInfo_AdvisorAssociation_tl{}~
+         \g__UWMad_ThesisInfo_AdvisorName_tl{},~
+         \g__UWMad_ThesisInfo_AdvisorPosition_tl{},~
+         \g__UWMad_ThesisInfo_AdvisorAssociation_tl{}~
         (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
         \skip_vertical:n{-1em}
     } { }
@@ -1805,23 +1843,27 @@
 \DeclareDocumentCommand \FulfillmentClause { } {
     {
     \setstretch{1.1}
-    A~\TheDocument{}~submitted~in~partial~fulfillment~of~the~
+    A~\TheDocumentType{}~submitted~in~partial~fulfillment~of~the~
     requirements~for~the~degree~of
     }
 }
 
 \DeclareDocumentCommand \TitlePageTitle { } {
-    {
-        \huge
-        \textsc {\TheTitle{}}
+    \IfInfoIsSetT {Title} {
+        {
+            \huge
+            \textsc {\TheTitle}
+        }
     }
 }
 
 \DeclareDocumentCommand \TitlePageAuthor { } {
-    {
-        \large
-        by  \\[0.50em]
-        \TheAuthor{}
+    \IfInfoIsSetT {Author} {
+        {
+            \large
+            by  \\[0.50em]
+            \TheAuthor{}
+        }
     }
 }
 
@@ -1830,19 +1872,27 @@
 }
 
 \DeclareDocumentCommand \TitlePageDegree { } {
-    \TheDegree{}
+    \IfInfoIsSetT {Degree} {
+        \TheDegree{}
+    }
 }
 
 \DeclareDocumentCommand \TitlePageProgram { } {
-    \TheProgram{}
+    \IfInfoIsSetT {Program} {
+        \TheProgram{}
+    }
 }
 
 \DeclareDocumentCommand \TitlePageInstitution { } {
-    \textsc{\TheInstitution{}}
+    \IfInfoIsSetT {Institution} {
+        \textsc{\TheInstitution{}}
+    }
 }
 
 \DeclareDocumentCommand \TitlePageDefenseDate { } {
-    Date of final oral examination:~\TheDefenseDate{}
+    \IfInfoIsSetT {DefenseDate} {
+        Date~of~final~oral~examination:~\TheDefenseDate{}
+    }
 }
 
 \DeclareDocumentCommand \MakeTitlePage { } {
@@ -1850,6 +1900,7 @@
     \begin{center}
         \TitlePageTitle{}       \\[1.0em]
         \TitlePageAuthor{}      \\[1.0em]
+        \vfill
         \TitlePageFulFillment{} \\[1.0em]
         \TitlePageDegree{}      \\[1.0em]
         \TitlePageProgram{}     \\[1.0em]
@@ -1857,8 +1908,7 @@
         \TitlePageInstitution{}
         \vfill
     \end{center}
-    \TitlePageDefenseDate{}
-    \TitlePageProgram{}     \\[1.0em]
+    \TitlePageDefenseDate{}\\[1.0em]
     \PrintCommitteeMemberList{}
     \clearpage
 }

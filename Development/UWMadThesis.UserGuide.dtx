@@ -72,6 +72,42 @@ However, they do provide metadata for the PDF (e.g., keywords and document subje
 It is encouraged to use these commands in the preamble of the document.
 
 \begin{function} {
+    \DocumentType,
+    }
+    \begin{syntax}
+        \cs{DocumentType} \marg{document type}
+    \end{syntax}
+    By default, the \cs{MakeTitlePage} command prints the phrase \enquote{A \marg{document type} submitted in partial fulfillment of the requirements for the degree of'' on the title page}.
+    The default \marg{document type} is \enquote{report}.
+    This command sets the value to any valid text.
+    However, facilitate good semantic mark-up, some prepared commands to set the document type are given below.
+\end{function}
+
+\begin{function} {
+    \Dissertation,
+    \DoctoralThesis,
+    \MastersThesis,
+    \Thesis,
+    \Prelim
+    }
+    \begin{syntax}
+        \cs{Dissertation}
+        \cs{DoctoralThesis}
+        \cs{MastersThesis}
+        \cs{Thesis}
+        \cs{Prelim}
+    \end{syntax}
+    These commands set the value of \marg{document type} to a value similar to their command name:
+    \begin{itemize}
+        \item{\cs{Dissertation} sets \marg{document type} to \enquote{dissertation}}
+        \item{\cs{DoctoralThesis} sets \marg{document type} to \enquote{doctoral thesis}}
+        \item{\cs{MastersThesis} sets \marg{document type} to \enquote{master's thesis}}
+        \item{\cs{Thesis} sets \marg{document type} to \enquote{thesis}}
+        \item{\cs{Prelim} sets \marg{document type} to \enquote{preliminary report}}
+    \end{itemize}
+\end{function}
+
+\begin{function} {
     \Advisor,
     \Adviser
     }
@@ -113,7 +149,7 @@ It is encouraged to use these commands in the preamble of the document.
         \item[Producer] {The application used to convert the original document into the PDF.}
     \end{description}
     These are very thin distinctions and complicated by the typical workflow of a \LaTeX{} document: installing a \TeX{} distribution, editing a text file in \TeX{}/\LaTeX{} editor, and running the document through a \TeX{} engine with the \LaTeX{} format.
-    In order to give credit at all levels (while maintaining proper separation of the processes involved), it is recommended to state the editor and \TeX{} format used as the creator and state the engine and distribution used as the creator.
+    In order to give credit at all levels (while maintaining proper separation of the processes involved), it is recommended to state the editor and \TeX{} format used as the creator and state the engine and distribution used as the producer.
     For example, this document would declare the following:
     \begin{verbatim}
         \Creator{TeXnicCenter 2.02, LaTeX2e+}
@@ -122,11 +158,31 @@ It is encouraged to use these commands in the preamble of the document.
     But as stated before, this is all optional.
 \end{function}
 
+\UWSubFeature{Accessors}
+
+\begin{function} {
+    \TheTitle,
+    \TheAuthor,
+    \TheProgram,
+    \TheDegree,
+    \TheDefenseDate,
+    \TheDefenceDate,
+    \TheInstitution,
+    \TheDocumentType,
+    \TheAdvisor,
+    \TheSubject,
+    \TheKeywords,
+    \TheProducer,
+    \TheCreator
+    }
+If, for any reason, the thesis information or metadata registered with the document is required, these accessor commands exist to retrieve the stored value.
+\end{function}
+
 
 \UWFeature{Special Pages}
 
 \UWSubFeature{Title Page}
-This is a replace for the default \cs{maketitlepage}.
+This is a replace for the default \cs{maketitle}.
 Per the example provided by the \UWMadLong{} Graduate School's sample, the sample page flows (in order): thesis title, author by-line, partial fulfillment clause, degree, program, university identification, oral defense date, and oral committee list.
 The styles can be re-worked by redefining the commands as presented in the \RefSubModule{MakeTitlePage} implementation.
 The formatting of the commands is standard \LaTeXe{} to facilitate customization.
@@ -392,12 +448,13 @@ They are, however, readily changeable using the facilities of the packages used 
 The defaults and methods for changing the style are list in this section.
 
 \UWSubFeature{Captions}
-The \UWMadClass{}
+The \UWMadClass{} uses the \pkg{caption} and \pkg{subcaption} packages to style float captions and subcaptions.
+It is possible to adjust the defaults showcase below by using the packages' utilities outlines in their respective manuals.
 
 \vskip1em
 {
     \captionof {figure} {Here is an example of a figure caption.
-        The default style for the \UWMadClass{} class is a slanted font (abbrev. \enquote{sl}) and small capitals (abbrev. \enquote{sc}) for the float label.
+        The default style for the \UWMadClass{} is a slanted font (abbrev. \enquote{sl}) and small capitals (abbrev. \enquote{sc}) for the float label.
         Notice that long captions, like this, are indented such that the caption text is visibly separated from the float label.
     }
 
@@ -405,6 +462,14 @@ The \UWMadClass{}
         The default styling is identical to the figure caption.
     }
 }
+
+\UWSubFeature{Links}
+The \UWMadClass{} loads the \pkg{hyperref} and \pkg{bookmark} packages to create hyperlinks and a clickable documents.
+The default color for document links is \textcolor{blue}{blue}, for urls is \textcolor{violet}{violet}, and for citations is \textcolor{UWMadGreen}{UWMadGreen} (a darker version of \textcolor{green}{green}).
+These defaults can be change using the facilities of the \pkg{hyperref} package as described in its manual.
+New colors can be created using the facilities of the \pkg{xcolor} package as described in its manual.
+
+References may be handled by the \pkg{hyperref} package using \cs{autocite} or by the \pkg{cleveref} package using \cs{cref}/\cs{Cref} (the latter producing a capital letter for the reference type).
 
 
 \UWFeature{Sectioning}
@@ -1044,7 +1109,61 @@ Some are new while others are simply in a camel-cased versions of the standard o
 \end{function}
 
 \UWFeature{Programming}
-The Programming Module has no immediate user-facing features.
-The \RefModule[Implementation section]{Programming} for this module outlines the programming layer
-and is not intended for average use.
+The \RefModule[Implementation section]{Programming} for this module outlines the programming layer used for the class.
+There is a user-facing API but is not documented here as it is experimental.
+
+\iffalse
+\UWSubFeature{Utility Commands}
+
+\begin{function}{\LoadUtilityAPI}
+    \begin{syntax}
+        \cs{LoadUtilityAPI}
+    \end{syntax}
+    In order to use the following commands, this command must be used first to load them.
+\end{function}
+
+\begin{function}{
+    \IfCommandExistsTF,
+    \IfCommandDoesNotExistTF}
+    \begin{syntax}
+        \cs{IfCommandExistsTF}      \marg{command name}\marg{true code}\marg{false code}
+        \cs{IfCommandDoesNotExistTF}\marg{command name}\marg{true code}\marg{false code}
+    \end{syntax}
+    These commands test if a command with \marg{command name} exists or doesn't and branches to the appropriate code.
+\end{function}
+
+\begin{function}{\IfEmptyTF}
+    \begin{syntax}
+        \cs{IfEmptyTF} \marg{object}\marg{true code}\marg{false code}
+    \end{syntax}
+    This commands takes an argument, performs a full expansion of it, and branches to the appropriate code if the expansion is blank or not (just spaces or not).
+\end{function}
+
+\begin{function}{\IfCommandEmptyTF}
+    \begin{syntax}
+        \cs{IfCommandEmptyTF}\marg{command}\marg{true code}\marg{false code}
+    \end{syntax}
+    This function takes a command, expands it once, and branches to the appropriate code if the expansion is blank or not (just spaces or not).
+\end{function}
+
+\begin{function}{}
+    \begin{syntax}
+    \end{syntax}
+\end{function}
+
+\begin{function}{}
+    \begin{syntax}
+    \end{syntax}
+\end{function}
+
+\begin{function}{}
+    \begin{syntax}
+    \end{syntax}
+\end{function}
+
+\begin{function}{}
+    \begin{syntax}
+    \end{syntax}
+\end{function}
+\fi
 

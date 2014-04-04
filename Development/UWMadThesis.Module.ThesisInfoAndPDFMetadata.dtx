@@ -70,6 +70,42 @@ However, they do provide metadata for the PDF (e.g., keywords and document subje
 It is encouraged to use these commands in the preamble of the document.
 
 \begin{function} {
+    \DocumentType,
+    }
+    \begin{syntax}
+        \cs{DocumentType} \marg{document type}
+    \end{syntax}
+    By default, the \cs{MakeTitlePage} command prints the phrase \enquote{A \marg{document type} submitted in partial fulfillment of the requirements for the degree of'' on the title page}.
+    The default \marg{document type} is \enquote{report}.
+    This command sets the value to any valid text.
+    However, facilitate good semantic mark-up, some prepared commands to set the document type are given below.
+\end{function}
+
+\begin{function} {
+    \Dissertation,
+    \DoctoralThesis,
+    \MastersThesis,
+    \Thesis,
+    \Prelim
+    }
+    \begin{syntax}
+        \cs{Dissertation}
+        \cs{DoctoralThesis}
+        \cs{MastersThesis}
+        \cs{Thesis}
+        \cs{Prelim}
+    \end{syntax}
+    These commands set the value of \marg{document type} to a value similar to their command name:
+    \begin{itemize}
+        \item{\cs{Dissertation} sets \marg{document type} to \enquote{dissertation}}
+        \item{\cs{DoctoralThesis} sets \marg{document type} to \enquote{doctoral thesis}}
+        \item{\cs{MastersThesis} sets \marg{document type} to \enquote{master's thesis}}
+        \item{\cs{Thesis} sets \marg{document type} to \enquote{thesis}}
+        \item{\cs{Prelim} sets \marg{document type} to \enquote{preliminary report}}
+    \end{itemize}
+\end{function}
+
+\begin{function} {
     \Advisor,
     \Adviser
     }
@@ -115,7 +151,7 @@ It is encouraged to use these commands in the preamble of the document.
         \item[Producer] {The application used to convert the original document into the PDF.}
     \end{description}
     These are very thin distinctions and complicated by the typical workflow of a \LaTeX{} document: installing a \TeX{} distribution, editing a text file in \TeX{}/\LaTeX{} editor, and running the document through a \TeX{} engine with the \LaTeX{} format.
-    In order to give credit at all levels (while maintaining proper separation of the processes involved), it is recommended to state the editor and \TeX{} format used as the creator and state the engine and distribution used as the creator.
+    In order to give credit at all levels (while maintaining proper separation of the processes involved), it is recommended to state the editor and \TeX{} format used as the creator and state the engine and distribution used as the producer.
     For example, this document would declare the following:
     \begin{verbatim}
         \Creator{TeXnicCenter 2.02, LaTeX2e+}
@@ -124,6 +160,27 @@ It is encouraged to use these commands in the preamble of the document.
     But as stated before, this is all optional.
 \end{function}
 
+
+
+\UWSubFeature{Accessors}
+
+\begin{function} {
+    \TheTitle,
+    \TheAuthor,
+    \TheProgram,
+    \TheDegree,
+    \TheDefenseDate,
+    \TheDefenceDate,
+    \TheInstitution,
+    \TheDocumentType,
+    \TheAdvisor,
+    \TheSubject,
+    \TheKeywords,
+    \TheProducer,
+    \TheCreator
+    }
+If, for any reason, the thesis information or metadata registered with the document is required, these accessor commands exist to retrieve the stored value.
+\end{function}
 
 
 %</UserGuide>
@@ -144,34 +201,49 @@ It is encouraged to use these commands in the preamble of the document.
 %
 %   \UWModule{Thesis and PDF Information}
 %
+%
+%   \UWSubModule{Metadata clist and Aux Write}
 %   Since the metadata (i.e., properties) of a PDF must be set in the 
 %   preamble but typically a user defines them in the document, these
 %   routines write the supported metadata that a user may define to an
 %   auxiliary file that is then imported upon recompilation.  It uses
 %   the |expl3| |clist| commands to define and build the CSV list, and
-%   then writesto the file.
+%   then writes to the file.
 %
 %
-% Used to determine is the list was created
-%
+%   Define the |clist|.
 %    \begin{macrocode}
-%
-% Command used to append the data to the CSV list.  It is called in the 
-% metadata commands below
 \clist_new:N \g__UWMad_MetaDataList_clist
+%    \end{macrocode}
+%
+%   Define a command for pushing entries (with a brace guard) on to the
+%   |clist|.
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_MetaData_PushToList:nn {
    \clist_gput_right:Nn \g__UWMad_MetaDataList_clist {
         #1={#2}
     }
 }
-
+%    \end{macrocode}
+%
+%   Define to booleans: one to tell if a auxilary file is needed
+%   and to tell if the |document| has begun.
+%    \begin{macrocode}
 \bool_new:N \g__UWMad_MetaData_GenerateAux_bool
 \bool_new:N \g__UWMad_MetaData_IsDocument_bool
-
-\file_if_exist:nTF{\jobname.UWMad.PDFMetaData.aux} {
-    \file_input:n {\jobname.UWMad.PDFMetaData.aux}
+%    \end{macrocode}
+%
+%   Look for a auxilary file and load it if it exists.
+%    \begin{macrocode}
+\file_if_exist:nTF{\c_job_name_tl.UWMad.PDFMetaData.aux} {
+    \file_input:n {\c_job_name_tl.UWMad.PDFMetaData.aux}
 }{}
-
+%    \end{macrocode}
+%
+%   At the beginning of the document, if data has been pushed to the list,
+%   pass it to \cs{hypersetup} so the PDF gets it.
+%   Also, set the |IsDocument| boolean true.
+%    \begin{macrocode}
 \AtBeginDocument{
     \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
         \exp_args:Nx \hypersetup {
@@ -180,12 +252,17 @@ It is encouraged to use these commands in the preamble of the document.
     } { }
     \bool_gset_true:N \g__UWMad_MetaData_IsDocument_bool
 }
+%    \end{macrocode}
+%
+%   If thesis information of PDF metadata was used within |document|,
+%   write that information to an auxilary file.
+%    \begin{macrocode}
 \AtEndDocument{
     \bool_if:NTF \g__UWMad_MetaData_GenerateAux_bool {
         \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
             \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
             \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
-                \jobname.UWMad.PDFMetaData.aux
+                \c_job_name_tl.UWMad.PDFMetaData.aux
             }
             \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
                 \noexpand\ExplSyntaxOff
@@ -197,26 +274,33 @@ It is encouraged to use these commands in the preamble of the document.
         } { }
     } { }
 }
-
-
-
-% ------------------------------------------------------------------------ %
-%           Metadata Defining/Storing Commands (User's Interface)          %
-% ------------------------------------------------------------------------ %
+%    \end{macrocode}
 %
+%   \UWSubModule{Thesis Information}
+%
+%   Declare the |ThesisInfo| token list variables.
+%    \begin{macrocode}
 \tl_new:N \g__UWMad_ThesisInfo_Title_tl
 \tl_new:N \g__UWMad_ThesisInfo_Author_tl
 \tl_new:N \g__UWMad_ThesisInfo_DefenseDate_tl
 \tl_new:N \g__UWMad_ThesisInfo_Department_tl
 \tl_new:N \g__UWMad_ThesisInfo_Program_tl
 \tl_new:N \g__UWMad_ThesisInfo_Degree_tl
+\tl_new:N \g__UWMad_ThesisInfo_DocumentType_tl
 \tl_new:N \g__UWMad_ThesisInfo_AdvisorName_tl
 \tl_new:N \g__UWMad_ThesisInfo_AdvisorPosition_tl
 \tl_new:N \g__UWMad_ThesisInfo_AdvisorAssociation_tl
 \tl_new:N \g__UWMad_ThesisInfo_AdvisorMarker_tl
 \tl_new:N \g__UWMad_ThesisInfo_Institution_tl
+%    \end{macrocode}
 %
+%   Set the document type default.
+%    \begin{macrocode}
+\tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {report}
+%    \end{macrocode}
 %
+%   Define some booleans for required information/
+%    \begin{macrocode}
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_Title_bool
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_Author_bool
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_DefenseDate_bool
@@ -224,19 +308,39 @@ It is encouraged to use these commands in the preamble of the document.
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_Institution_bool
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+%    \end{macrocode}
 %
-%
-%
-%   User front-ends (Required)
+%   Declare the user front-end for the title.
+%    \begin{macrocode}
 \DeclareDocumentCommand \Title { m } {
+%    \end{macrocode}
+%   Set the associated token list variable
+%    \begin{macrocode}
     \tl_gset:Nn \g__UWMad_ThesisInfo_Title_tl {#1}
+%    \end{macrocode}
+%   Pass it to the default \LaTeX{} \cs{title} command.
+%    \begin{macrocode}
     \title{#1}
+%    \end{macrocode}
+%   Push the value to the MetaData |clist|.
+%    \begin{macrocode}
     \UWMad_MetaData_PushToList:nn{pdftitle}    {#1}
+%    \end{macrocode}
+%   If this command was used within the |document|, tell the class
+%   to write an auxilary file.
+%    \begin{macrocode}
     \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
         \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
     } { }
+%    \end{macrocode}
+%   Tell the class this variable is now set.
+%    \begin{macrocode}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Title_bool
 }
+%    \end{macrocode}
+%
+%   Similar flow to the \cs{Title} defintion.
+%    \begin{macrocode}
 \DeclareDocumentCommand \Author { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Author_tl {#1}
     \author{#1}
@@ -246,25 +350,95 @@ It is encouraged to use these commands in the preamble of the document.
     } { }
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Author_bool
 }
+%    \end{macrocode}
+%
+%   A simple setter command.
+%    \begin{macrocode}
 \DeclareDocumentCommand \Program { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Program_tl {#1}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Program_bool
 }
+%    \end{macrocode}
+%
+%   A simple setter command.
+%    \begin{macrocode}
 \DeclareDocumentCommand \Degree { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {#1}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
 }
+%    \end{macrocode}
+%
+%   A simple setter command.
+%    \begin{macrocode}
+\DeclareDocumentCommand \DocumentType { m } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {#1}
+}
+%    \end{macrocode}
+%
+%   A semantic setter command.
+%    \begin{macrocode}
+\DeclareDocumentCommand \Dissertation { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
+        dissertation
+    }
+}
+%    \end{macrocode}
+%
+%   A semantic setter command.
+%    \begin{macrocode}
+\DeclareDocumentCommand \DoctoralThesis { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
+        doctoral~thesis
+    }
+}
+%    \end{macrocode}
+%
+%   A semantic setter command.
+%    \begin{macrocode}
+\DeclareDocumentCommand \MastersThesis { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
+        master's~thesis
+    }
+}
+%    \end{macrocode}
+%
+%   A semantic setter command.
+%    \begin{macrocode}
+\DeclareDocumentCommand \Thesis { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
+        thesis
+    }
+}
+%    \end{macrocode}
+%
+%   A semantic setter command.
+%    \begin{macrocode}
+\DeclareDocumentCommand \Prelim { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
+        preliminary~report
+    }
+}
+%    \end{macrocode}
+%
+%   A simple setter command and aliases.
+%    \begin{macrocode}
 \DeclareDocumentCommand \DefenseDate { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DefenseDate_tl {#1}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_DefenseDate_bool
 }
 \cs_gset_eq:NN \DefenceDate \DefenseDate
-\cs_gset_eq:NN \Date        \DefenseDate
+%    \end{macrocode}
+%
+%   A simple setter command and aliases.
+%    \begin{macrocode}
 \DeclareDocumentCommand \Institution { m } {
     \tl_gset:Nn       \g__UWMad_ThesisInfo_Institution_tl {#1}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Institution_bool
 }
 \cs_set_eq:NN \University \Institution
+%
+%
+%
 %
 %
 %   User front-ends (Optional)
@@ -288,6 +462,22 @@ It is encouraged to use these commands in the preamble of the document.
 %
 %
 %
+\msg_new:nnn { UWMadThesis } { ThesisInfo / UnsetInformation } {
+    The~required~information~for~the~#1~is~not~set.
+}
+\DeclareDocumentCommand \IfInfoIsSetT { m +m } {
+    \bool_if:cTF {g__UWMad_ThesisInfo_IsSet_ #1 _bool} {
+        #2
+    } {
+        \msg_error:nnn
+            { UWMadThesis }
+            { ThesisInfo / UnsetInformation }
+            {#1}
+    }
+}
+%
+%
+%
 %
 %   User front-end accessors
 \DeclareDocumentCommand \TheTitle { } {
@@ -296,26 +486,28 @@ It is encouraged to use these commands in the preamble of the document.
 \DeclareDocumentCommand \TheAuthor { } {
     \g__UWMad_ThesisInfo_Author_tl
 }
-\DeclareDocumentCommand \TheProgram { m } {
+\DeclareDocumentCommand \TheProgram { } {
     \g__UWMad_ThesisInfo_Program_tl
 }
-\DeclareDocumentCommand \TheDegree { m } {
+\DeclareDocumentCommand \TheDegree { } {
     \g__UWMad_ThesisInfo_Degree_tl
 }
-\DeclareDocumentCommand \TheDefenseDate { m } {
+\DeclareDocumentCommand \TheDocumentType { } {
+    \g__UWMad_ThesisInfo_DocumentType_tl
+}
+\DeclareDocumentCommand \TheDefenseDate { } {
     \g__UWMad_ThesisInfo_DefenseDate_tl
 }
 \cs_gset_eq:NN \TheDefenceDate \TheDefenseDate
-\cs_gset_eq:NN \TheDate        \TheDefenseDate
-\DeclareDocumentCommand \TheInstitution { m } {
+\DeclareDocumentCommand \TheInstitution { } {
     \g__UWMad_ThesisInfo_Institution_tl
 }
 \cs_set_eq:NN \TheUniversity \TheInstitution
 %
-\DeclareDocumentCommand \TheDepartment { m } {
+\DeclareDocumentCommand \TheDepartment { } {
     \g__UWMad_ThesisInfo_Department_tl
 }
-\DeclareDocumentCommand \TheAdvisor { m } {
+\DeclareDocumentCommand \TheAdvisor { } {
     \g__UWMad_ThesisInfo_AdvisorName_tl
 }
 %
@@ -331,9 +523,9 @@ It is encouraged to use these commands in the preamble of the document.
 }
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
-        \g__UWMad_ThesisInfo_AdvisorName_tl{},~
-        \g__UWMad_ThesisInfo_AdvisorPosition_tl{},~
-        \g__UWMad_ThesisInfo_AdvisorAssociation_tl{}~
+         \g__UWMad_ThesisInfo_AdvisorName_tl{},~
+         \g__UWMad_ThesisInfo_AdvisorPosition_tl{},~
+         \g__UWMad_ThesisInfo_AdvisorAssociation_tl{}~
         (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
         \skip_vertical:n{-1em}
     } { }

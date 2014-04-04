@@ -5,7 +5,7 @@
 \UWFeature{Special Pages}
 
 \UWSubFeature{Title Page}
-This is a replace for the default \cs{maketitlepage}.
+This is a replace for the default \cs{maketitle}.
 Per the example provided by the \UWMadLong{} Graduate School's sample, the sample page flows (in order): thesis title, author by-line, partial fulfillment clause, degree, program, university identification, oral defense date, and oral committee list.
 The styles can be re-worked by redefining the commands as presented in the \RefSubModule{MakeTitlePage} implementation.
 The formatting of the commands is standard \LaTeXe{} to facilitate customization.
@@ -291,23 +291,27 @@ This input would generate the following text at the bottom of a new page (with a
 \DeclareDocumentCommand \FulfillmentClause { } {
     {
     \setstretch{1.1}
-    A~\TheDocument{}~submitted~in~partial~fulfillment~of~the~
+    A~\TheDocumentType{}~submitted~in~partial~fulfillment~of~the~
     requirements~for~the~degree~of
     }
 }
 
 \DeclareDocumentCommand \TitlePageTitle { } {
-    {
-        \huge
-        \textsc {\TheTitle{}}
+    \IfInfoIsSetT {Title} {
+        {
+            \huge
+            \textsc {\TheTitle}
+        }
     }
 }
 
 \DeclareDocumentCommand \TitlePageAuthor { } {
-    {
-        \large
-        by  \\[0.50em]
-        \TheAuthor{}
+    \IfInfoIsSetT {Author} {
+        {
+            \large
+            by  \\[0.50em]
+            \TheAuthor{}
+        }
     }
 }
 
@@ -316,19 +320,27 @@ This input would generate the following text at the bottom of a new page (with a
 }
 
 \DeclareDocumentCommand \TitlePageDegree { } {
-    \TheDegree{}
+    \IfInfoIsSetT {Degree} {
+        \TheDegree{}
+    }
 }
 
 \DeclareDocumentCommand \TitlePageProgram { } {
-    \TheProgram{}
+    \IfInfoIsSetT {Program} {
+        \TheProgram{}
+    }
 }
 
 \DeclareDocumentCommand \TitlePageInstitution { } {
-    \textsc{\TheInstitution{}}
+    \IfInfoIsSetT {Institution} {
+        \textsc{\TheInstitution{}}
+    }
 }
 
 \DeclareDocumentCommand \TitlePageDefenseDate { } {
-    Date of final oral examination:~\TheDefenseDate{}
+    \IfInfoIsSetT {DefenseDate} {
+        Date~of~final~oral~examination:~\TheDefenseDate{}
+    }
 }
 
 
@@ -337,6 +349,7 @@ This input would generate the following text at the bottom of a new page (with a
     \begin{center}
         \TitlePageTitle{}       \\[1.0em]
         \TitlePageAuthor{}      \\[1.0em]
+        \vfill
         \TitlePageFulFillment{} \\[1.0em]
         \TitlePageDegree{}      \\[1.0em]
         \TitlePageProgram{}     \\[1.0em]
@@ -344,8 +357,7 @@ This input would generate the following text at the bottom of a new page (with a
         \TitlePageInstitution{}
         \vfill
     \end{center}
-    \TitlePageDefenseDate{}
-    \TitlePageProgram{}     \\[1.0em]
+    \TitlePageDefenseDate{}\\[1.0em]
     \PrintCommitteeMemberList{}
     \clearpage
 }
