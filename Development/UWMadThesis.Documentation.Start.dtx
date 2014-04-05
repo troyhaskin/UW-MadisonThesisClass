@@ -6,15 +6,13 @@
 %   \iffalse
 \documentclass{UWMadThesisL3Doc}
 %
-    % \usepackage[english]{babel}
-
     \ExplSyntaxOn
     \DeclareDocumentCommand \LaTeXPL { } {
         \texttt{expl3}
     }
     \ExplSyntaxOff
 
-    \Title{UWMadThesis Manual}
+    \Title{UWMadThesis Class Manual}
     \Author{Troy Christopher Haskin}
 
     \EnableCrossrefs
@@ -22,20 +20,52 @@
     \CodelineIndex
 
     \begin{document}
+
+% ============================================= %
+%                   Title Page                  %
+% ============================================= %
+            \clearpage
+            \newgeometry{
+                marginparwidth = 0in,
+                left           = 0.25in,
+                right          = 0.25in,
+                bottom         = 1.00in,
+                top            = 1.00in,
+            }
+            \begin{center}
+                \thispagestyle{empty}
+                \null\vfill
+                {
+                    \huge
+                    \texttt{UWMadThesis} Class Manual
+                }
+                \vskip0.25in
+                {
+                    \Large
+                    \TheAuthor{}
+                }
+                \vskip2in
+                \vfill
+            \end{center}
+        \clearpage
+%        \restoregeometry
+
+% ============================================= %
+%                      TOC                      %
+% ============================================= %
         \ExplSyntaxOn
             \group_begin:
-             %   \setstretch{1.05}
-             %   \phantomsection
-             %   \__UWMad_FrontMatter_Register:nn
-             %       {part}
-             %       {\contentsname}
-                \cs_show:N\UWMad_TOC_Default_TableOfContents:
-             %   \clearpage
+                \setstretch{1.05}
+                \phantomsection
+                \__UWMad_FrontMatter_Register:nn
+                    {part}
+                    {Table of Contents}
+                \UWMad_TOC_Default_TableOfContents:
+                \clearpage
             \group_end:
         \ExplSyntaxOff
         \DocInput{\jobname.dtx}
     \end{document}
-%
 %
 %   \fi
 %
@@ -58,20 +88,13 @@
 %    Grave accent  \`    Left brace   \{     Vertical bar  \|
 %    Right brace   \}    Tilde \~}
 %
-%   \maketitle
-%
 %   \input{UWMadThesis.Documentation.IndexExclusions.dtx}
-%
-%
-%   \changes{1.0}{Hello}{Hello}
-%
-%
+%   \input{UWMadThesis.Documentation.ChangeLog.dtx}
 %   \input{UWMadThesis.UserGuide.dtx}
-%   \GetFileInfo{UWMadThesis.cls}
-%
 %
 %   \StopEventually{
 %       \clearpage
+%       \renewcommand{\glossaryname}{Change History}
 %       \PrintChanges
 %       \clearpage
 %       \newgeometry{

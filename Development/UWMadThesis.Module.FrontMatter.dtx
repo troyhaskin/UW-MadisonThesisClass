@@ -42,39 +42,39 @@
 }%
 %    \end{macrocode}
 %
-%   Assuming the the |expl3| package is recent enough, we provide the class
-%   using the \LaTeXPL{}'s provide function.
+%
 %    \begin{macrocode}
-\ProvidesExplClass
-    {UWMadThesis}{2013/08/21}{1.0}{LaTeX2e+~Thesis~Class~for~UW-Madison}
+\ExplSyntaxOn
 %    \end{macrocode}
 %
 %
 %   \UWSubModule{Identification and Defaults}
 %
-%   Now, we define some identification variables (token lists).
+%   If the |expl3| package is recent enoughw, define some identification
+%   variables (token lists).
 %    \begin{macrocode}
-\tl_const:Nn \c_UWMad_ClassName_tl        {UWMadThesis}
-\tl_const:Nn \c_UWMad_Class_tl            {\texttt{UWMadThesis}~class}
-\tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin--Madison}
-\tl_const:Nn \c_UWMad_UniversityShort_tl  {UW-Madison}
-\tl_const:Nn \c_UWMad_ClassVersion_tl     {1.0}
-\tl_const:Nn \c_UWMad_ClassVersionDate_tl {2012/01/09}
+\tl_const:Nn \c__UWMad_Class_Name_tl        {UWMadThesis}
+\tl_const:Nn \c__UWMad_Class_Version_tl     {1.0}
+\tl_const:Nn \c__UWMad_Class_Date_tl        {2012/01/09}
+\tl_const:Nn \c__UWMad_Class_Description_tl {
+    LaTeX2e+~Thesis~Class~for~UW-Madison
+}
+\tl_const:Nn \c__UWMad_UniversityLong_tl   {University~of~Wisconsin--Madison}
+\tl_const:Nn \c__UWMad_UniversityShort_tl  {UW--Madison}
 %    \end{macrocode}
 %
-%   And since these identifications may be desired in typsetting more,
-%   where \LaTeXPL{}'s syntax will be turned off, we define some aliases.
+%   Assuming the the |expl3| package is recent enough, we provide the class
+%   using the \LaTeXPL{}'s provide function.
 %    \begin{macrocode}
-\cs_new_eq:NN \UWMadClassName    \c_UWMad_ClassName_tl
-\cs_new_eq:NN \UWMadClass        \c_UWMad_Class_tl
-\cs_new_eq:NN \UWMadLong         \c_UWMad_UniversityLong_tl
-\cs_new_eq:NN \UWMadShort        \c_UWMad_UniversityShort_tl
-\cs_new_eq:NN \UWMadClassVersion \c_UWMad_ClassVersion_tl
-\cs_new_eq:NN \UWMadClassDate    \c_UWMad_ClassVersionDate_tl
+\ProvidesExplClass
+    {\c__UWMad_Class_Name_tl}   {\c__UWMad_Class_Date_tl}
+    {\c__UWMad_Class_Version_tl}{\c__UWMad_Class_Description_tl}
 %    \end{macrocode}
+%
+%
 %
 %   In an effort to allow the thesis class to adapt to new underlying classes,
-%   the class that \UWMadClassName{} loads is decalred as a mutable
+%   the class that the \UWMadClass{} loads is decalred as a mutable
 %   token list.  The default is the \LaTeX{} base class |report|.
 %    \begin{macrocode}
 \tl_new:N   \g_UWMad_ParentClass_tl
@@ -213,14 +213,12 @@
 %    \end{macrocode}
 %
 %
-%   If math was not negated by options, the \AmS{} suite is loaded.
+%   Load the \AmS{} suite.
 %    \begin{macrocode}
-\bool_if:NTF \g__UWMad_MathTweaks_bool {
-    \RequirePackage{amsmath}
-    \RequirePackage{amsfonts}
-    \RequirePackage{amssymb}
-    \RequirePackage{mathtools}
-} { }
+\RequirePackage{amsmath}
+\RequirePackage{amsfonts}
+\RequirePackage{amssymb}
+\RequirePackage{mathtools}
 %    \end{macrocode}
 %
 %   And now we load some packages that give nice features and are
@@ -239,6 +237,40 @@
 \RequirePackage{hyperref}
 \RequirePackage{bookmark}
 %    \end{macrocode}
+%
+%
+%    \begin{macrocode}
+\bool_if:NTF \xetex_if_engine_p: {
+    \RequirePackage{polyglossia}
+} {
+    \RequirePackage[english]{babel}
+}
+%    \end{macrocode}
+%
+%
+%
+%   And since these identifications may be desired in typsetting more,
+%   where \LaTeXPL{}'s syntax will be turned off, we define some aliases.
+%    \begin{macrocode}
+\DeclareDocumentCommand \UWMadClass { } {
+    \texttt{\c__UWMad_Class_Name_tl}~class
+}
+\DeclareDocumentCommand \UWMadClassVersion { } {
+    \c__UWMad_Class_Version_tl
+}
+\DeclareDocumentCommand \UWMadClassDate { } {
+    \c__UWMad_Class_Date_tl
+}
+\DeclareDocumentCommand \UWMadLong { } {
+    \c__UWMad_UniversityLong_tl
+}
+\DeclareDocumentCommand \UWMadShort { } {
+    \c__UWMad_UniversityShort_tl
+}
+%    \end{macrocode}
+%
+%
+%
 %
 %   \iffalse
 %</Code>

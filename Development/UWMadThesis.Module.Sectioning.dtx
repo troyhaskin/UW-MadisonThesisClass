@@ -189,8 +189,11 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %   and section level into the Table of Contents.
 %    \begin{macrocode}
 \cs_new:Nn \__UWMad_FrontMatter_Register:nn {
-    \addcontentsline{toc}{#1}{#2}
     \int_gincr:N \g__UWMad_FrontMatter_Counter_int
+    \addcontentsline
+        {toc}
+        {#1}
+        {#2}
 }
 %    \end{macrocode}
 %

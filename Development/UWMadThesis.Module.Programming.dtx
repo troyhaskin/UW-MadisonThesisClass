@@ -71,7 +71,7 @@ There is a user-facing API but is not documented here as it is experimental.
 %   \fi
 %
 %   \UWModule{Programming}
-%   This section outlines the Programming module for the \UWMadClassName{}.
+%   This section outlines the Programming module for the \UWMadClass{}.
 %   It encompasses thin abstractions from the standard \LaTeXPL{}'s type
 %   and collection systems and provides \LaTeXe{} abstractions for
 %   several other features.
@@ -829,14 +829,14 @@ There is a user-facing API but is not documented here as it is experimental.
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfCommandExistsTF { m +m +m }{
+\DeclareDocumentCommand \IfCommandExistsTF { m +m +m } {
     \cs_if_exist:cTF {#1}{
         #2
     }{
         #3
     }
 }
-\DeclareDocumentCommand \IfCommandDoesNotExistTF { m +m +m }{
+\DeclareDocumentCommand \IfCommandDoesNotExistTF { m +m +m } {
     \cs_if_free:cTF {#1}{
         #2
     }{
@@ -859,7 +859,7 @@ There is a user-facing API but is not documented here as it is experimental.
 %
 %    \begin{macrocode}
 \cs_generate_variant:Nn \tl_if_blank:nTF {fTF}
-\DeclareDocumentCommand \IfEmptyTF { m +m +m }{
+\DeclareDocumentCommand \IfEmptyTF { m +m +m } {
     \tl_if_blank:fTF {#1}{
         #2
     }{

@@ -94,7 +94,12 @@
             \skip_vertical:n{1em}
             \textbf{\LARGE{#2}}
         \group_end:
-        \addcontentsline{toc}{section}{#1}
+        \addcontentsline {toc} {section} {
+            \protect\numberline {
+                \g__UWMad_TheModule_tl
+            }
+            #1
+        }
         \label{Module:#1}
         \skip_vertical:n{1em}
         \par

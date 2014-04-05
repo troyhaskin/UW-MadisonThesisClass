@@ -7,20 +7,18 @@
       }%
     \endinput
 }%
+\ExplSyntaxOn
+\tl_const:Nn \c__UWMad_Class_Name_tl        {UWMadThesis}
+\tl_const:Nn \c__UWMad_Class_Version_tl     {1.0}
+\tl_const:Nn \c__UWMad_Class_Date_tl        {2012/01/09}
+\tl_const:Nn \c__UWMad_Class_Description_tl {
+    LaTeX2e+~Thesis~Class~for~UW-Madison
+}
+\tl_const:Nn \c__UWMad_UniversityLong_tl   {University~of~Wisconsin--Madison}
+\tl_const:Nn \c__UWMad_UniversityShort_tl  {UW--Madison}
 \ProvidesExplClass
-    {UWMadThesis}{2013/08/21}{1.0}{LaTeX2e+~Thesis~Class~for~UW-Madison}
-\tl_const:Nn \c_UWMad_ClassName_tl        {UWMadThesis}
-\tl_const:Nn \c_UWMad_Class_tl            {\texttt{UWMadThesis}~class}
-\tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin--Madison}
-\tl_const:Nn \c_UWMad_UniversityShort_tl  {UW-Madison}
-\tl_const:Nn \c_UWMad_ClassVersion_tl     {1.0}
-\tl_const:Nn \c_UWMad_ClassVersionDate_tl {2012/01/09}
-\cs_new_eq:NN \UWMadClassName    \c_UWMad_ClassName_tl
-\cs_new_eq:NN \UWMadClass        \c_UWMad_Class_tl
-\cs_new_eq:NN \UWMadLong         \c_UWMad_UniversityLong_tl
-\cs_new_eq:NN \UWMadShort        \c_UWMad_UniversityShort_tl
-\cs_new_eq:NN \UWMadClassVersion \c_UWMad_ClassVersion_tl
-\cs_new_eq:NN \UWMadClassDate    \c_UWMad_ClassVersionDate_tl
+    {\c__UWMad_Class_Name_tl}   {\c__UWMad_Class_Date_tl}
+    {\c__UWMad_Class_Version_tl}{\c__UWMad_Class_Description_tl}
 \tl_new:N   \g_UWMad_ParentClass_tl
 \tl_gset:Nn \g_UWMad_ParentClass_tl {report}
 \cs_new:Nn \__UWMad_ThrowWarnings:NTF {
@@ -91,18 +89,36 @@
 \RequirePackage{graphicx}
 \RequirePackage{setspace}
 \RequirePackage{geometry}
-\bool_if:NTF \g__UWMad_MathTweaks_bool {
-    \RequirePackage{amsmath}
-    \RequirePackage{amsfonts}
-    \RequirePackage{amssymb}
-    \RequirePackage{mathtools}
-} { }
+\RequirePackage{amsmath}
+\RequirePackage{amsfonts}
+\RequirePackage{amssymb}
+\RequirePackage{mathtools}
 \RequirePackage[noabbrev,nameinlink]{cleveref}
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
 \RequirePackage{caption}
 \RequirePackage{subcaption}
 \RequirePackage{hyperref}
 \RequirePackage{bookmark}
+\bool_if:NTF \xetex_if_engine_p: {
+    \RequirePackage{polyglossia}
+} {
+    \RequirePackage[english]{babel}
+}
+\DeclareDocumentCommand \UWMadClass { } {
+    \texttt{\c__UWMad_Class_Name_tl}~class
+}
+\DeclareDocumentCommand \UWMadClassVersion { } {
+    \c__UWMad_Class_Version_tl
+}
+\DeclareDocumentCommand \UWMadClassDate { } {
+    \c__UWMad_Class_Date_tl
+}
+\DeclareDocumentCommand \UWMadLong { } {
+    \c__UWMad_UniversityLong_tl
+}
+\DeclareDocumentCommand \UWMadShort { } {
+    \c__UWMad_UniversityShort_tl
+}
 \msg_new:nnn {UWMadThesis} {Programming/UnregisteredVariable} {
     `#1'~is~not~a~registered~#2.~~The~#2~must~be~defined~
     before~usage~by~the~function~\string\UWMad_#2_DefineLocal:n~or~
@@ -392,14 +408,14 @@
         \cs_undefine:c {g__UWMad_Hash_#1}
     }
 }
-\DeclareDocumentCommand \IfCommandExistsTF { m +m +m }{
+\DeclareDocumentCommand \IfCommandExistsTF { m +m +m } {
     \cs_if_exist:cTF {#1}{
         #2
     }{
         #3
     }
 }
-\DeclareDocumentCommand \IfCommandDoesNotExistTF { m +m +m }{
+\DeclareDocumentCommand \IfCommandDoesNotExistTF { m +m +m } {
     \cs_if_free:cTF {#1}{
         #2
     }{
@@ -407,7 +423,7 @@
     }
 }
 \cs_generate_variant:Nn \tl_if_blank:nTF {fTF}
-\DeclareDocumentCommand \IfEmptyTF { m +m +m }{
+\DeclareDocumentCommand \IfEmptyTF { m +m +m } {
     \tl_if_blank:fTF {#1}{
         #2
     }{
@@ -647,8 +663,11 @@
 }
 \int_new:N \g__UWMad_FrontMatter_Counter_int
 \cs_new:Nn \__UWMad_FrontMatter_Register:nn {
-    \addcontentsline{toc}{#1}{#2}
     \int_gincr:N \g__UWMad_FrontMatter_Counter_int
+    \addcontentsline
+        {toc}
+        {#1}
+        {#2}
 }
 \tl_new:N   \g__UWMad_FrontMatter_Title_Dedications_tl
 \tl_new:N   \g__UWMad_FrontMatter_Title_Acknowledgments_tl
@@ -670,8 +689,11 @@
 
 \DeclareDocumentCommand \dedications { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Title_Dedications_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Dedications_tl
+                {#1}
+        }
     }
     \chapter*{\g__UWMad_FrontMatter_Title_Dedications_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
@@ -694,8 +716,11 @@
 }
 \DeclareDocumentCommand \abstract { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Title_Abstract_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Abstract_tl
+                {#1}
+        }
     }
     \chapter*{\g__UWMad_FrontMatter_Title_Abstract_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
@@ -704,8 +729,11 @@
 }
 \DeclareDocumentCommand \umiabstract { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Title_UMIAbstract_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_UMIAbstract_tl
+                {#1}
+        }
     }
     \chapter*{\g__UWMad_FrontMatter_Title_UMIAbstract_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
@@ -714,8 +742,11 @@
 }
 \DeclareDocumentCommand \preface { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Title_Preface_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Preface_tl
+                {#1}
+        }
     }
     \chapter*{\g__UWMad_FrontMatter_Title_Preface_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
@@ -1851,7 +1882,7 @@
 \DeclareDocumentCommand \TitlePageTitle { } {
     \IfInfoIsSetT {Title} {
         {
-            \huge
+            \LARGE
             \textsc {\TheTitle}
         }
     }

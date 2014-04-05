@@ -4,15 +4,13 @@
 %   \iffalse
 \documentclass{UWMadThesisL3Doc}
 %
-    % \usepackage[english]{babel}
-
     \ExplSyntaxOn
     \DeclareDocumentCommand \LaTeXPL { } {
         \texttt{expl3}
     }
     \ExplSyntaxOff
 
-    \Title{UWMadThesis Manual}
+    \Title{UWMadThesis Class Manual}
     \Author{Troy Christopher Haskin}
 
     \EnableCrossrefs
@@ -20,20 +18,52 @@
     \CodelineIndex
 
     \begin{document}
+
+% ============================================= %
+%                   Title Page                  %
+% ============================================= %
+            \clearpage
+            \newgeometry{
+                marginparwidth = 0in,
+                left           = 0.25in,
+                right          = 0.25in,
+                bottom         = 1.00in,
+                top            = 1.00in,
+            }
+            \begin{center}
+                \thispagestyle{empty}
+                \null\vfill
+                {
+                    \huge
+                    \texttt{UWMadThesis} Class Manual
+                }
+                \vskip0.25in
+                {
+                    \Large
+                    \TheAuthor{}
+                }
+                \vskip2in
+                \vfill
+            \end{center}
+        \clearpage
+%        \restoregeometry
+
+% ============================================= %
+%                      TOC                      %
+% ============================================= %
         \ExplSyntaxOn
             \group_begin:
-             %   \setstretch{1.05}
-             %   \phantomsection
-             %   \__UWMad_FrontMatter_Register:nn
-             %       {part}
-             %       {\contentsname}
-                \cs_show:N\UWMad_TOC_Default_TableOfContents:
-             %   \clearpage
+                \setstretch{1.05}
+                \phantomsection
+                \__UWMad_FrontMatter_Register:nn
+                    {part}
+                    {Table of Contents}
+                \UWMad_TOC_Default_TableOfContents:
+                \clearpage
             \group_end:
         \ExplSyntaxOff
         \DocInput{\jobname.dtx}
     \end{document}
-%
 %
 %   \fi
 %
@@ -56,20 +86,13 @@
 %    Grave accent  \`    Left brace   \{     Vertical bar  \|
 %    Right brace   \}    Tilde \~}
 %
-%   \maketitle
-%
 %   \input{UWMadThesis.Documentation.IndexExclusions.dtx}
-%
-%
-%   \changes{1.0}{Hello}{Hello}
-%
-%
+%   \input{UWMadThesis.Documentation.ChangeLog.dtx}
 %   \input{UWMadThesis.UserGuide.dtx}
-%   \GetFileInfo{UWMadThesis.cls}
-%
 %
 %   \StopEventually{
 %       \clearpage
+%       \renewcommand{\glossaryname}{Change History}
 %       \PrintChanges
 %       \clearpage
 %       \newgeometry{
@@ -128,39 +151,39 @@
 }%
 %    \end{macrocode}
 %
-%   Assuming the the |expl3| package is recent enough, we provide the class
-%   using the \LaTeXPL{}'s provide function.
+%
 %    \begin{macrocode}
-\ProvidesExplClass
-    {UWMadThesis}{2013/08/21}{1.0}{LaTeX2e+~Thesis~Class~for~UW-Madison}
+\ExplSyntaxOn
 %    \end{macrocode}
 %
 %
 %   \UWSubModule{Identification and Defaults}
 %
-%   Now, we define some identification variables (token lists).
+%   If the |expl3| package is recent enoughw, define some identification
+%   variables (token lists).
 %    \begin{macrocode}
-\tl_const:Nn \c_UWMad_ClassName_tl        {UWMadThesis}
-\tl_const:Nn \c_UWMad_Class_tl            {\texttt{UWMadThesis}~class}
-\tl_const:Nn \c_UWMad_UniversityLong_tl   {University~of~Wisconsin--Madison}
-\tl_const:Nn \c_UWMad_UniversityShort_tl  {UW-Madison}
-\tl_const:Nn \c_UWMad_ClassVersion_tl     {1.0}
-\tl_const:Nn \c_UWMad_ClassVersionDate_tl {2012/01/09}
+\tl_const:Nn \c__UWMad_Class_Name_tl        {UWMadThesis}
+\tl_const:Nn \c__UWMad_Class_Version_tl     {1.0}
+\tl_const:Nn \c__UWMad_Class_Date_tl        {2012/01/09}
+\tl_const:Nn \c__UWMad_Class_Description_tl {
+    LaTeX2e+~Thesis~Class~for~UW-Madison
+}
+\tl_const:Nn \c__UWMad_UniversityLong_tl   {University~of~Wisconsin--Madison}
+\tl_const:Nn \c__UWMad_UniversityShort_tl  {UW--Madison}
 %    \end{macrocode}
 %
-%   And since these identifications may be desired in typsetting more,
-%   where \LaTeXPL{}'s syntax will be turned off, we define some aliases.
+%   Assuming the the |expl3| package is recent enough, we provide the class
+%   using the \LaTeXPL{}'s provide function.
 %    \begin{macrocode}
-\cs_new_eq:NN \UWMadClassName    \c_UWMad_ClassName_tl
-\cs_new_eq:NN \UWMadClass        \c_UWMad_Class_tl
-\cs_new_eq:NN \UWMadLong         \c_UWMad_UniversityLong_tl
-\cs_new_eq:NN \UWMadShort        \c_UWMad_UniversityShort_tl
-\cs_new_eq:NN \UWMadClassVersion \c_UWMad_ClassVersion_tl
-\cs_new_eq:NN \UWMadClassDate    \c_UWMad_ClassVersionDate_tl
+\ProvidesExplClass
+    {\c__UWMad_Class_Name_tl}   {\c__UWMad_Class_Date_tl}
+    {\c__UWMad_Class_Version_tl}{\c__UWMad_Class_Description_tl}
 %    \end{macrocode}
+%
+%
 %
 %   In an effort to allow the thesis class to adapt to new underlying classes,
-%   the class that \UWMadClassName{} loads is decalred as a mutable
+%   the class that the \UWMadClass{} loads is decalred as a mutable
 %   token list.  The default is the \LaTeX{} base class |report|.
 %    \begin{macrocode}
 \tl_new:N   \g_UWMad_ParentClass_tl
@@ -299,14 +322,12 @@
 %    \end{macrocode}
 %
 %
-%   If math was not negated by options, the \AmS{} suite is loaded.
+%   Load the \AmS{} suite.
 %    \begin{macrocode}
-\bool_if:NTF \g__UWMad_MathTweaks_bool {
-    \RequirePackage{amsmath}
-    \RequirePackage{amsfonts}
-    \RequirePackage{amssymb}
-    \RequirePackage{mathtools}
-} { }
+\RequirePackage{amsmath}
+\RequirePackage{amsfonts}
+\RequirePackage{amssymb}
+\RequirePackage{mathtools}
 %    \end{macrocode}
 %
 %   And now we load some packages that give nice features and are
@@ -326,6 +347,40 @@
 \RequirePackage{bookmark}
 %    \end{macrocode}
 %
+%
+%    \begin{macrocode}
+\bool_if:NTF \xetex_if_engine_p: {
+    \RequirePackage{polyglossia}
+} {
+    \RequirePackage[english]{babel}
+}
+%    \end{macrocode}
+%
+%
+%
+%   And since these identifications may be desired in typsetting more,
+%   where \LaTeXPL{}'s syntax will be turned off, we define some aliases.
+%    \begin{macrocode}
+\DeclareDocumentCommand \UWMadClass { } {
+    \texttt{\c__UWMad_Class_Name_tl}~class
+}
+\DeclareDocumentCommand \UWMadClassVersion { } {
+    \c__UWMad_Class_Version_tl
+}
+\DeclareDocumentCommand \UWMadClassDate { } {
+    \c__UWMad_Class_Date_tl
+}
+\DeclareDocumentCommand \UWMadLong { } {
+    \c__UWMad_UniversityLong_tl
+}
+\DeclareDocumentCommand \UWMadShort { } {
+    \c__UWMad_UniversityShort_tl
+}
+%    \end{macrocode}
+%
+%
+%
+%
 %   \iffalse
 %</Code>
 %   \fi
@@ -334,7 +389,7 @@
 %   \fi
 %
 %   \UWModule{Programming}
-%   This section outlines the Programming module for the \UWMadClassName{}.
+%   This section outlines the Programming module for the \UWMadClass{}.
 %   It encompasses thin abstractions from the standard \LaTeXPL{}'s type
 %   and collection systems and provides \LaTeXe{} abstractions for
 %   several other features.
@@ -1092,14 +1147,14 @@
 %   \end{Usage}
 %
 %    \begin{macrocode}
-\DeclareDocumentCommand \IfCommandExistsTF { m +m +m }{
+\DeclareDocumentCommand \IfCommandExistsTF { m +m +m } {
     \cs_if_exist:cTF {#1}{
         #2
     }{
         #3
     }
 }
-\DeclareDocumentCommand \IfCommandDoesNotExistTF { m +m +m }{
+\DeclareDocumentCommand \IfCommandDoesNotExistTF { m +m +m } {
     \cs_if_free:cTF {#1}{
         #2
     }{
@@ -1122,7 +1177,7 @@
 %
 %    \begin{macrocode}
 \cs_generate_variant:Nn \tl_if_blank:nTF {fTF}
-\DeclareDocumentCommand \IfEmptyTF { m +m +m }{
+\DeclareDocumentCommand \IfEmptyTF { m +m +m } {
     \tl_if_blank:fTF {#1}{
         #2
     }{
@@ -1597,8 +1652,11 @@
 %   and section level into the Table of Contents.
 %    \begin{macrocode}
 \cs_new:Nn \__UWMad_FrontMatter_Register:nn {
-    \addcontentsline{toc}{#1}{#2}
     \int_gincr:N \g__UWMad_FrontMatter_Counter_int
+    \addcontentsline
+        {toc}
+        {#1}
+        {#2}
 }
 %    \end{macrocode}
 %
@@ -1632,8 +1690,11 @@
 
 \DeclareDocumentCommand \dedications { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Title_Dedications_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Dedications_tl
+                {#1}
+        }
     }
     \chapter*{\g__UWMad_FrontMatter_Title_Dedications_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
@@ -1656,8 +1717,11 @@
 }
 \DeclareDocumentCommand \abstract { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Title_Abstract_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Abstract_tl
+                {#1}
+        }
     }
     \chapter*{\g__UWMad_FrontMatter_Title_Abstract_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
@@ -1666,8 +1730,11 @@
 }
 \DeclareDocumentCommand \umiabstract { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Title_UMIAbstract_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_UMIAbstract_tl
+                {#1}
+        }
     }
     \chapter*{\g__UWMad_FrontMatter_Title_UMIAbstract_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
@@ -1676,8 +1743,11 @@
 }
 \DeclareDocumentCommand \preface { g } {
     \IfNoValueTF { #1 } { } {
-        \tl_gset:Nn \g__UWMad_FrontMatter_Title_Preface_tl
-            {#1}
+        \IfEmptyTF { #1 } { } {
+            \tl_gset:Nn
+                \g__UWMad_FrontMatter_Title_Preface_tl
+                {#1}
+        }
     }
     \chapter*{\g__UWMad_FrontMatter_Title_Preface_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
@@ -3566,7 +3636,7 @@
 \DeclareDocumentCommand \TitlePageTitle { } {
     \IfInfoIsSetT {Title} {
         {
-            \huge
+            \LARGE
             \textsc {\TheTitle}
         }
     }
