@@ -10,7 +10,7 @@
 \ProvidesExplClass
     {UWMadThesisL3Doc}{2014/03/13}{1.0}{Documentation class for UWMadThesis}
 \ProcessOptions\relax
-\LoadClass[l3doc,full]{UWMadThesis}[2013/01/01]
+\LoadClass[l3doc,full]{UWMadThesis}[2014/04/01]
 %
 %
 %
@@ -94,10 +94,8 @@
             \skip_vertical:n{1em}
             \textbf{\LARGE{#2}}
         \group_end:
-        \addcontentsline {toc} {section} {
-            \protect\numberline {
-                \g__UWMad_TheModule_tl
-            }
+        \addcontentsline{toc}{section}{
+            \protect\numberline{\g__UWMad_TheModule_tl}
             #1
         }
         \label{Module:#1}
@@ -124,7 +122,10 @@
                 }
             }
         \group_end:
-        \addcontentsline{toc}{subsection}{#1}
+        \addcontentsline{toc}{subsection}{
+            \protect\numberline{\g__UWMad_TheSubModule_tl}
+            #1
+        }
         \label{SubModule:#1}
         \skip_vertical:n{0.25em}
         \par
@@ -148,7 +149,10 @@
                 }
             }
         \group_end:
-        \addcontentsline{toc}{subsubsection}{#1}
+        \addcontentsline{toc}{subsubsection}{
+            \protect\numberline{\g__UWMad_TheSubSubModule_tl}
+            #1
+        }
         \label{SubSubModule:#1}
         \skip_vertical:n{0.25em}
         \par
@@ -229,7 +233,10 @@
             \skip_vertical:n{1em}
             \textbf{\LARGE{#2}}
         \group_end:
-        \addcontentsline{toc}{section}{#1}
+        \addcontentsline{toc}{section}{
+            \protect\numberline{\g__UWMad_TheFeature_tl}
+            #1
+        }
         \label{Feature:#1}
         \skip_vertical:n{1em}
         \par
@@ -252,7 +259,10 @@
                 }
             }
         \group_end:
-        \addcontentsline{toc}{subsection}{#1}
+        \addcontentsline{toc}{subsection}{
+            \protect\numberline{\g__UWMad_TheSubFeature_tl}
+            #1
+        }
         \label{SubFeature:#1}
         \skip_vertical:n{0.25em}
         \par
@@ -274,7 +284,10 @@
                 }
             }
         \group_end:
-        \addcontentsline{toc}{subsubsection}{#1}
+        \addcontentsline{toc}{subsubsection}{
+            \protect\numberline{\g__UWMad_TheSubSubFeature_tl}
+            #1
+        }
         \label{SubSubFeature:#1}
         \skip_vertical:n{0.25em}
         \par
@@ -337,7 +350,7 @@
 %
 %
 %
-    \DeclareDocumentCommand   \UWPart { o m } {
+    \DeclareDocumentCommand   \UWPart { m } {
         \int_incr:N \g__UWMad_Sectioning_Part_int
         \cleardoublepage
         \group_begin:
@@ -347,13 +360,12 @@
             \textbf{
                 \huge{Part~\g__UWMad_ThePart_tl}
                 \skip_vertical:n{1em}
-                \Huge{#2}
+                \Huge{#1}
             }
-            \IfNoValueTF{#1} {
-                \addcontentsline{toc}{chapter}{#2}
-            } {
-                \addcontentsline{toc}{chapter}{#1}
-            }
+        \addcontentsline{toc}{part}{
+            \protect\numberline{\g__UWMad_ThePart_tl}
+            #1
+        }
         \group_end:
         \skip_vertical:n{2em}
     }
@@ -391,6 +403,25 @@
                     \setlength{\parsep}{0em}
                     \setlength{\leftmargin}{1em}}}
         {   \end{list}}
+%
+%
+%
+%
+\cs_undefine:N \TableOfContents
+\DeclareDocumentCommand \TableOfContents { } {
+
+    \tl_gset_eq:NN \contentsname \g__UWMad_TOC_Name_TOC_tl
+
+    \group_begin:
+        \setstretch{1.05}
+        \phantomsection
+        \ExplSyntaxOff
+            \TableOfContentsDefault
+        \ExplSyntaxOn
+        \clearpage
+    \group_end:
+}
+%
 %
 %
 %

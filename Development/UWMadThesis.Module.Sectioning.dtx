@@ -14,14 +14,14 @@ The Front Matter commands are all semantically named and set as starred (unnumbe
 
 \begin{function} {
     \dedications,
-    \acknowledgements,
+    \acknowledgments,
     \abstract,
     \umiabstract,
     \preface
     }
     \begin{syntax}
         \cs{dedications}      \marg{title}
-        \cs{acknowledgements} \marg{title}
+        \cs{acknowledgments} \marg{title}
         \cs{abstract}         \marg{title}
         \cs{umiabstract}      \marg{title}
         \cs{preface}          \marg{title}
@@ -189,6 +189,11 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %   and section level into the Table of Contents.
 %    \begin{macrocode}
 \cs_new:Nn \__UWMad_FrontMatter_Register:nn {
+
+    \int_compare:nNnTF {\g__UWMad_FrontMatter_Counter_int} = {0} {
+        \pagenumbering{roman}
+    } { }
+
     \int_gincr:N \g__UWMad_FrontMatter_Counter_int
     \addcontentsline
         {toc}
@@ -225,71 +230,38 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 \cs_undefine:N \abstract
 \cs_undefine:N \endabstract
 
-\DeclareDocumentCommand \dedications { g } {
-    \IfNoValueTF { #1 } { } {
-        \IfEmptyTF { #1 } { } {
-            \tl_gset:Nn
-                \g__UWMad_FrontMatter_Title_Dedications_tl
-                {#1}
-        }
-    }
-    \chapter*{\g__UWMad_FrontMatter_Title_Dedications_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Title_Dedications_tl
-    }
-}
+\DeclareDocumentCommand \FrontMatterSetSection { m m } {
 
-\DeclareDocumentCommand \acknowledgements { g } {
+    \tl_set_eq:Nc
+        \l_tmpa_tl
+        {g__UWMad_FrontMatter_Title_#2_tl}
+
     \IfNoValueTF { #1 } { } {
         \IfEmptyTF { #1 } { } {
-            \tl_gset:Nn
-                \g__UWMad_FrontMatter_Title_Acknowledgments_tl
-                {#1}
+            \tl_set:Nn \l_tmpa_tl {#1}
         }
     }
-    \chapter*{\g__UWMad_FrontMatter_Title_Acknowledgments_tl}
+
+    \chapter*{\l_tmpa_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Title_Acknowledgments_tl
+        \l_tmpa_tl
     }
+
+}
+\DeclareDocumentCommand \dedications { g } {
+    \FrontMatterSetSection{#1}{Dedications}
+}
+\DeclareDocumentCommand \acknowledgments { g } {
+    \FrontMatterSetSection{#1}{Acknowledgments}
 }
 \DeclareDocumentCommand \abstract { g } {
-    \IfNoValueTF { #1 } { } {
-        \IfEmptyTF { #1 } { } {
-            \tl_gset:Nn
-                \g__UWMad_FrontMatter_Title_Abstract_tl
-                {#1}
-        }
-    }
-    \chapter*{\g__UWMad_FrontMatter_Title_Abstract_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Title_Abstract_tl
-    }
+    \FrontMatterSetSection{#1}{Abstract}
 }
 \DeclareDocumentCommand \umiabstract { g } {
-    \IfNoValueTF { #1 } { } {
-        \IfEmptyTF { #1 } { } {
-            \tl_gset:Nn
-                \g__UWMad_FrontMatter_Title_UMIAbstract_tl
-                {#1}
-        }
-    }
-    \chapter*{\g__UWMad_FrontMatter_Title_UMIAbstract_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Title_UMIAbstract_tl
-    }
+    \FrontMatterSetSection{#1}{Abstract}
 }
 \DeclareDocumentCommand \preface { g } {
-    \IfNoValueTF { #1 } { } {
-        \IfEmptyTF { #1 } { } {
-            \tl_gset:Nn
-                \g__UWMad_FrontMatter_Title_Preface_tl
-                {#1}
-        }
-    }
-    \chapter*{\g__UWMad_FrontMatter_Title_Preface_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Title_Preface_tl
-    }
+    \FrontMatterSetSection{#1}{Preface}
 }
 %    \end{macrocode}
 %
@@ -305,9 +277,9 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %
 %   First, store the original commands and then undefine them.
 %    \begin{macrocode}
-\cs_gset_eq:NN \UWMad_TOC_Default_TableOfContents: \tableofcontents
-\cs_gset_eq:NN \UWMad_TOC_Default_ListOfTables:    \listoftables
-\cs_gset_eq:NN \UWMad_TOC_Default_ListOfFigures:   \listoffigures
+\cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
+\cs_gset_eq:NN \ListOfTablesDefault    \listoftables
+\cs_gset_eq:NN \ListOfFiguresDefault   \listoffigures
 \cs_undefine:N \tableofcontents
 \cs_undefine:N \listoftables
 \cs_undefine:N \listoffigures
@@ -330,15 +302,17 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %    \begin{macrocode}
 \DeclareDocumentCommand \tableofcontents { } {
 
-    \cs_gset_eq:NN \contentsname \g__UWMad_TOC_Name_TOC_tl
+    \tl_gset_eq:NN \contentsname \g__UWMad_TOC_Name_TOC_tl
 
     \group_begin:
         \setstretch{1.05}
         \phantomsection
+        \ExplSyntaxOff
+            \TableOfContentsDefault
+        \ExplSyntaxOn
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\contentsname}
-        \UWMad_TOC_Default_TableOfContents:
         \clearpage
     \group_end:
 }
@@ -348,10 +322,12 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 
     \group_begin:
         \setstretch{1.05}
+        \ExplSyntaxOff
+            \ListOfTablesDefault
+        \ExplSyntaxOn
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listtablename}
-        \\UWMad_TOC_Default_ListOfTables:
         \clearpage
     \group_end:
 }
@@ -361,10 +337,12 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 
     \group_begin:
         \setstretch{1.05}
+        \ExplSyntaxOff
+            \ListOfFiguresDefault
+        \ExplSyntaxOn
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listfigurename}
-        \UWMad_TOC_Default_ListOfFigures:
         \clearpage
     \group_end:
 }

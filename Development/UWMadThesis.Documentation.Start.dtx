@@ -6,15 +6,18 @@
 %   \iffalse
 \documentclass{UWMadThesisL3Doc}
 %
-    \ExplSyntaxOn
-    \DeclareDocumentCommand \LaTeXPL { } {
-        \texttt{expl3}
+    \DeclareDocumentCommand \LaTeXPL { } {%
+        \texttt{expl3}%
     }
-    \ExplSyntaxOff
-
+%
+%
+    \setcounter{page}{-1000}
+%
+%
     \Title{UWMadThesis Class Manual}
     \Author{Troy Christopher Haskin}
-
+%s
+%
     \EnableCrossrefs
     \RecordChanges
     \CodelineIndex
@@ -24,7 +27,6 @@
 % ============================================= %
 %                   Title Page                  %
 % ============================================= %
-            \clearpage
             \newgeometry{
                 marginparwidth = 0in,
                 left           = 0.25in,
@@ -32,9 +34,9 @@
                 bottom         = 1.00in,
                 top            = 1.00in,
             }
+            \thispagestyle{empty}
+            \null\vfill
             \begin{center}
-                \thispagestyle{empty}
-                \null\vfill
                 {
                     \huge
                     \texttt{UWMadThesis} Class Manual
@@ -48,22 +50,13 @@
                 \vfill
             \end{center}
         \clearpage
-%        \restoregeometry
+        \restoregeometry
 
 % ============================================= %
 %                      TOC                      %
 % ============================================= %
-        \ExplSyntaxOn
-            \group_begin:
-                \setstretch{1.05}
-                \phantomsection
-                \__UWMad_FrontMatter_Register:nn
-                    {part}
-                    {Table of Contents}
-                \UWMad_TOC_Default_TableOfContents:
-                \clearpage
-            \group_end:
-        \ExplSyntaxOff
+        \pagenumbering{roman}
+        \TableOfContents
         \DocInput{\jobname.dtx}
     \end{document}
 %

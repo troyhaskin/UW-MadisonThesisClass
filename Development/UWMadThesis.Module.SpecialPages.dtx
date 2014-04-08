@@ -345,6 +345,7 @@ This input would generate the following text at the bottom of a new page (with a
 
 
 \DeclareDocumentCommand \MakeTitlePage { } {
+    \clearpage
     \thispagestyle{empty}
     \begin{center}
         \TitlePageTitle{}       \\[1.0em]
@@ -359,7 +360,7 @@ This input would generate the following text at the bottom of a new page (with a
     \end{center}
     \TitlePageDefenseDate{}\\[1.0em]
     \PrintCommitteeMemberList{}
-    \clearpage
+    \cleardoublepage
 }
 
 
@@ -380,7 +381,6 @@ This input would generate the following text at the bottom of a new page (with a
     \tex_hbox:D{}
     \tex_vfill:D
     \phantomsection
-    \addcontentsline {toc} {chapter} {License}
 }
 %
 %    \end{macrocode}
@@ -559,7 +559,7 @@ This input would generate the following text at the bottom of a new page (with a
 %   Page Printer
 \cs_new:Nn \__UWMad_CCLicense_LicenseText: {
     \begin{center}
-        \large
+        \setstretch{1.05}
         This~work~is~released~under~a~
         \href {\l__UWMad_CCLicense_URL_tl} {
             \l__UWMad_CCLicense_URLText_tl

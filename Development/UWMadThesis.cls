@@ -10,7 +10,7 @@
 \ExplSyntaxOn
 \tl_const:Nn \c__UWMad_Class_Name_tl        {UWMadThesis}
 \tl_const:Nn \c__UWMad_Class_Version_tl     {1.0}
-\tl_const:Nn \c__UWMad_Class_Date_tl        {2012/01/09}
+\tl_const:Nn \c__UWMad_Class_Date_tl        {2014/04/01}
 \tl_const:Nn \c__UWMad_Class_Description_tl {
     LaTeX2e+~Thesis~Class~for~UW-Madison
 }
@@ -618,7 +618,6 @@
     }
 }
 \pagestyle{myheadings}
-\pagenumbering{roman}
 \setlength{\parindent}{ 0pt}
 \setlength{\parskip}  {10pt}
 \setlength{\headsep}  {15pt}
@@ -663,6 +662,11 @@
 }
 \int_new:N \g__UWMad_FrontMatter_Counter_int
 \cs_new:Nn \__UWMad_FrontMatter_Register:nn {
+
+    \int_compare:nNnTF {\g__UWMad_FrontMatter_Counter_int} = {0} {
+        \pagenumbering{roman}
+    } { }
+
     \int_gincr:N \g__UWMad_FrontMatter_Counter_int
     \addcontentsline
         {toc}
@@ -687,75 +691,42 @@
 \cs_undefine:N \abstract
 \cs_undefine:N \endabstract
 
-\DeclareDocumentCommand \dedications { g } {
-    \IfNoValueTF { #1 } { } {
-        \IfEmptyTF { #1 } { } {
-            \tl_gset:Nn
-                \g__UWMad_FrontMatter_Title_Dedications_tl
-                {#1}
-        }
-    }
-    \chapter*{\g__UWMad_FrontMatter_Title_Dedications_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Title_Dedications_tl
-    }
-}
+\DeclareDocumentCommand \FrontMatterSetSection { m m } {
 
-\DeclareDocumentCommand \acknowledgements { g } {
+    \tl_set_eq:Nc
+        \l_tmpa_tl
+        {g__UWMad_FrontMatter_Title_#2_tl}
+
     \IfNoValueTF { #1 } { } {
         \IfEmptyTF { #1 } { } {
-            \tl_gset:Nn
-                \g__UWMad_FrontMatter_Title_Acknowledgments_tl
-                {#1}
+            \tl_set:Nn \l_tmpa_tl {#1}
         }
     }
-    \chapter*{\g__UWMad_FrontMatter_Title_Acknowledgments_tl}
+
+    \chapter*{\l_tmpa_tl}
     \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Title_Acknowledgments_tl
+        \l_tmpa_tl
     }
+
+}
+\DeclareDocumentCommand \dedications { g } {
+    \FrontMatterSetSection{#1}{Dedications}
+}
+\DeclareDocumentCommand \acknowledgments { g } {
+    \FrontMatterSetSection{#1}{Acknowledgments}
 }
 \DeclareDocumentCommand \abstract { g } {
-    \IfNoValueTF { #1 } { } {
-        \IfEmptyTF { #1 } { } {
-            \tl_gset:Nn
-                \g__UWMad_FrontMatter_Title_Abstract_tl
-                {#1}
-        }
-    }
-    \chapter*{\g__UWMad_FrontMatter_Title_Abstract_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Title_Abstract_tl
-    }
+    \FrontMatterSetSection{#1}{Abstract}
 }
 \DeclareDocumentCommand \umiabstract { g } {
-    \IfNoValueTF { #1 } { } {
-        \IfEmptyTF { #1 } { } {
-            \tl_gset:Nn
-                \g__UWMad_FrontMatter_Title_UMIAbstract_tl
-                {#1}
-        }
-    }
-    \chapter*{\g__UWMad_FrontMatter_Title_UMIAbstract_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Title_UMIAbstract_tl
-    }
+    \FrontMatterSetSection{#1}{Abstract}
 }
 \DeclareDocumentCommand \preface { g } {
-    \IfNoValueTF { #1 } { } {
-        \IfEmptyTF { #1 } { } {
-            \tl_gset:Nn
-                \g__UWMad_FrontMatter_Title_Preface_tl
-                {#1}
-        }
-    }
-    \chapter*{\g__UWMad_FrontMatter_Title_Preface_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \g__UWMad_FrontMatter_Title_Preface_tl
-    }
+    \FrontMatterSetSection{#1}{Preface}
 }
-\cs_gset_eq:NN \UWMad_TOC_Default_TableOfContents: \tableofcontents
-\cs_gset_eq:NN \UWMad_TOC_Default_ListOfTables:    \listoftables
-\cs_gset_eq:NN \UWMad_TOC_Default_ListOfFigures:   \listoffigures
+\cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
+\cs_gset_eq:NN \ListOfTablesDefault    \listoftables
+\cs_gset_eq:NN \ListOfFiguresDefault   \listoffigures
 \cs_undefine:N \tableofcontents
 \cs_undefine:N \listoftables
 \cs_undefine:N \listoffigures
@@ -767,15 +738,17 @@
 \tl_gset:Nn \g__UWMad_TOC_Name_LOF_tl {List~of~Figures}
 \DeclareDocumentCommand \tableofcontents { } {
 
-    \cs_gset_eq:NN \contentsname \g__UWMad_TOC_Name_TOC_tl
+    \tl_gset_eq:NN \contentsname \g__UWMad_TOC_Name_TOC_tl
 
     \group_begin:
         \setstretch{1.05}
         \phantomsection
+        \ExplSyntaxOff
+            \TableOfContentsDefault
+        \ExplSyntaxOn
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\contentsname}
-        \UWMad_TOC_Default_TableOfContents:
         \clearpage
     \group_end:
 }
@@ -785,10 +758,12 @@
 
     \group_begin:
         \setstretch{1.05}
+        \ExplSyntaxOff
+            \ListOfTablesDefault
+        \ExplSyntaxOn
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listtablename}
-        \\UWMad_TOC_Default_ListOfTables:
         \clearpage
     \group_end:
 }
@@ -798,10 +773,12 @@
 
     \group_begin:
         \setstretch{1.05}
+        \ExplSyntaxOff
+            \ListOfFiguresDefault
+        \ExplSyntaxOn
         \__UWMad_FrontMatter_Register:nn
             {chapter}
             {\listfigurename}
-        \UWMad_TOC_Default_ListOfFigures:
         \clearpage
     \group_end:
 }
@@ -1927,6 +1904,7 @@
 }
 
 \DeclareDocumentCommand \MakeTitlePage { } {
+    \clearpage
     \thispagestyle{empty}
     \begin{center}
         \TitlePageTitle{}       \\[1.0em]
@@ -1941,7 +1919,7 @@
     \end{center}
     \TitlePageDefenseDate{}\\[1.0em]
     \PrintCommitteeMemberList{}
-    \clearpage
+    \cleardoublepage
 }
 
 \cs_new:Nn \__UWMad_LicensePage_StartPage: {
@@ -1950,7 +1928,6 @@
     \tex_hbox:D{}
     \tex_vfill:D
     \phantomsection
-    \addcontentsline {toc} {chapter} {License}
 }
 \bool_new:N   \l__UWMad_Copyright_UseCopyright_bool
 \cs_set_eq:NN \CopyrightSymbol \copyright
@@ -2086,7 +2063,7 @@
 }
 \cs_new:Nn \__UWMad_CCLicense_LicenseText: {
     \begin{center}
-        \large
+        \setstretch{1.05}
         This~work~is~released~under~a~
         \href {\l__UWMad_CCLicense_URL_tl} {
             \l__UWMad_CCLicense_URLText_tl
