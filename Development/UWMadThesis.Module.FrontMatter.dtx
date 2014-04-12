@@ -238,7 +238,8 @@
 \RequirePackage{bookmark}
 %    \end{macrocode}
 %
-%
+%   Conditionally load either the \pkg{polyglossia} or \pkg{babel}
+%   language packages depending on the engine in use.
 %    \begin{macrocode}
 \bool_if:NTF \xetex_if_engine_p: {
     \RequirePackage{polyglossia}
