@@ -238,12 +238,22 @@
 \RequirePackage{bookmark}
 %    \end{macrocode}
 %
+%
 %   Conditionally load either the \pkg{polyglossia} or \pkg{babel}
 %   language packages depending on the engine in use.
 %    \begin{macrocode}
-\bool_if:NTF \xetex_if_engine_p: {
+\bool_if:nTF {\xetex_if_engine_p: || \luatex_if_engine_p:} {
+    \RequirePackage{fontspec}
+    \setmainfont
+        [SmallCapsFont = {Latin~Modern~Roman~Caps}]
+        {Latin~Modern~Roman}
+%
     \RequirePackage{polyglossia}
+    \setmainlanguage[variant = usmax]{english}
 } {
+    \RequirePackage[T1]{fontenc}
+    \RequirePackage{lmodern}
+%
     \RequirePackage[english]{babel}
 }
 %    \end{macrocode}

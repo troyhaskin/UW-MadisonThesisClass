@@ -15,7 +15,7 @@ These command set deal with quick and easy typesetting of derivatives.
         \cs{tderiv} \Arg{function} \Arg{variable} \Arg{order}
     \end{syntax}
     This function set is meant to typeset three different kinds of derivatives: ordinary, partial, and total (i.e., material or Lagragian).
-    The only difference between them is the differential symbol: \cs{deriv} uses `$\mathrm{d}$', \cs{pderiv} uses `$\partial$', and \cs{tderiv} used `$\mathrm{D}$'.
+    The only difference between them is the differential symbol: \cs{deriv} uses `$\derivSymbol$', \cs{pderiv} uses `$\pderivSymbol$', and \cs{tderiv} used `$\tderivSymbol$'.
 
     These commands typeset the derivative of a given \Arg{function} with respect to \Arg{variable} of $n$-th \Arg{order} using Leibniz's notation.
     The \Arg{order} is optional and defaults to empty (first derivative).
@@ -572,6 +572,8 @@ Some are new while others are simply in a camel-cased versions of the standard o
         $#2$
     }
 }
+\cs_gset_eq:NN \supsipa \sups
+\cs_undefine:N \sups
 \ExplSyntaxOff
     \DeclareDocumentCommand \subs { O{} +m } {%
         \IfMathModeTF{%

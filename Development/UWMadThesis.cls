@@ -99,9 +99,16 @@
 \RequirePackage{subcaption}
 \RequirePackage{hyperref}
 \RequirePackage{bookmark}
-\bool_if:NTF \xetex_if_engine_p: {
+\bool_if:nTF {\xetex_if_engine_p: || \luatex_if_engine_p:} {
+    \RequirePackage{fontspec}
+    \setmainfont
+        [SmallCapsFont = {Latin~Modern~Roman~Caps}]
+        {Latin~Modern~Roman}
     \RequirePackage{polyglossia}
+    \setmainlanguage[variant = usmax]{english}
 } {
+    \RequirePackage[T1]{fontenc}
+    \RequirePackage{lmodern}
     \RequirePackage[english]{babel}
 }
 \DeclareDocumentCommand \UWMadClass { } {
@@ -1020,6 +1027,8 @@
         $#2$
     }
 }
+\cs_gset_eq:NN \supsipa \sups
+\cs_undefine:N \sups
 \ExplSyntaxOff
     \DeclareDocumentCommand \subs { O{} +m } {%
         \IfMathModeTF{%
@@ -1940,10 +1949,6 @@
         \l__UWMad_LicensePage_Owner_tl{}
     \end{center}
 }
-\cs_set:Nn \__UWMad_Copyright_PrintPage: {
-    \__UWMad_LicensePage_StartPage:
-    \__UWMad_Copyright_LicenseText:
-}
 \tl_new:N    \l__UWMad_CCLicense_Porting_tl
 \tl_new:N    \l__UWMad_CCLicense_Version_tl
 \tl_new:N    \l__UWMad_CCLicense_TypeAbbreviation_tl
@@ -2073,10 +2078,6 @@
         \l__UWMad_LicensePage_Year_tl{}
     \end{center}
 }
-\cs_new:Nn \__UWMad_CCLicense_PrintPage: {
-    \__UWMad_LicensePage_StartPage:
-    \__UWMad_CCLicense_LicenseText:
-}
     \tl_new:N  \l__UWMad_LicensePage_Year_tl
     \tl_new:N  \l__UWMad_LicensePage_Owner_tl
     \tl_set:Nn \l__UWMad_LicensePage_Owner_tl {
@@ -2137,27 +2138,41 @@
 }
 } {
 
-    \bool_if:nTF {  \l__UWMad_CCLicense_UseCreativeCommons_bool &&
-                    \l__UWMad_Copyright_UseCopyright_bool       } {
+    \bool_if:nTF {
+        \l__UWMad_CCLicense_UseCreativeCommons_bool &&
+        \l__UWMad_Copyright_UseCopyright_bool
+    } {
         \msg_new:nnn { UWMadThesis } { SpecialPages / MultipleLicenses } {
             Both~Creative~Commons~and~Copyright~have~been~declared.~
             Please,~pick~one.
         }
         \msg_error:nn { UWMadThesis } { SpecialPages / MultipleLicenses }
-    } {
+    } { }
 
-        \bool_if:NTF \l__UWMad_CCLicense_UseCreativeCommons_bool {
-            \__UWMad_CCLicense_CreateType:
-            \__UWMad_CCLicense_CheckTypeValidity:
-            \bool_if:NTF \l__UWMad_CCLicense_IsValid_bool {
-                \__UWMad_CCLicense_PrintPage:
-            } { }
+    \bool_if:NTF \l__UWMad_CCLicense_UseCreativeCommons_bool {
+
+        \__UWMad_CCLicense_CreateType:
+        \__UWMad_CCLicense_CheckTypeValidity:
+        \bool_if:NTF \l__UWMad_CCLicense_IsValid_bool {
+            \cs_new_eq:NN
+                \__UWMad_LicensePage_LicenseText:
+                \__UWMad_CCLicense_LicenseText:
         } { }
 
-        \bool_if:NTF \l__UWMad_Copyright_UseCopyright_bool {
-            \__UWMad_Copyright_PrintPage:
-        } { }
-    }
+    } { }
+
+    \bool_if:NTF \l__UWMad_Copyright_UseCopyright_bool {
+        \cs_new_eq:NN
+            \__UWMad_LicensePage_LicenseText:
+            \__UWMad_Copyright_LicenseText:
+    } { }
+
+    \cs_if_exist:NTF \__UWMad_LicensePage_LicenseText: {
+        \__UWMad_LicensePage_StartPage:
+        \vbox_to_ht:nn {0.3333\textheight} {
+            \__UWMad_LicensePage_LicenseText:
+        }
+    } { }
 
 }
 \ExplSyntaxOff

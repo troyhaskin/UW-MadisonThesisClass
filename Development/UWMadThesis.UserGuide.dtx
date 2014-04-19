@@ -2,6 +2,8 @@
 \UWPart{User Guide}
 
 The \UWMadClass{} is aimed at providing a \LaTeXe{} class that conforms to the style and format guidelines of the Graduate School of the \UWMadLong{}.
+A copy of the current style guidelines and other associated
+
 In addition to that primary goal, the class also loads a number of useful packages and defines or expands on a number of commands and utilities for creating a high-quality document.
 
 
@@ -798,7 +800,7 @@ These command set deal with quick and easy typesetting of derivatives.
         \cs{tderiv} \Arg{function} \Arg{variable} \Arg{order}
     \end{syntax}
     This function set is meant to typeset three different kinds of derivatives: ordinary, partial, and total (i.e., material or Lagragian).
-    The only difference between them is the differential symbol: \cs{deriv} uses `$\mathrm{d}$', \cs{pderiv} uses `$\partial$', and \cs{tderiv} used `$\mathrm{D}$'.
+    The only difference between them is the differential symbol: \cs{deriv} uses `$\derivSymbol$', \cs{pderiv} uses `$\pderivSymbol$', and \cs{tderiv} used `$\tderivSymbol$'.
 
     These commands typeset the derivative of a given \Arg{function} with respect to \Arg{variable} of $n$-th \Arg{order} using Leibniz's notation.
     The \Arg{order} is optional and defaults to empty (first derivative).

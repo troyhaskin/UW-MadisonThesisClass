@@ -398,11 +398,6 @@ This input would generate the following text at the bottom of a new page (with a
     \end{center}
 }
 %
-\cs_set:Nn \__UWMad_Copyright_PrintPage: {
-    \__UWMad_LicensePage_StartPage:
-    \__UWMad_Copyright_LicenseText:
-}
-%
 %
 %
 %
@@ -569,10 +564,6 @@ This input would generate the following text at the bottom of a new page (with a
         \l__UWMad_LicensePage_Year_tl{}
     \end{center}
 }
-\cs_new:Nn \__UWMad_CCLicense_PrintPage: {
-    \__UWMad_LicensePage_StartPage:
-    \__UWMad_CCLicense_LicenseText:
-}
 %
 %    \end{macrocode}
 %^^A ====================================================================== %
@@ -666,27 +657,48 @@ This input would generate the following text at the bottom of a new page (with a
 %
 } {
 
-    \bool_if:nTF {  \l__UWMad_CCLicense_UseCreativeCommons_bool &&
-                    \l__UWMad_Copyright_UseCopyright_bool       } {
+    \bool_if:nTF {
+        \l__UWMad_CCLicense_UseCreativeCommons_bool &&
+        \l__UWMad_Copyright_UseCopyright_bool
+    } {
         \msg_new:nnn { UWMadThesis } { SpecialPages / MultipleLicenses } {
             Both~Creative~Commons~and~Copyright~have~been~declared.~
             Please,~pick~one.
         }
         \msg_error:nn { UWMadThesis } { SpecialPages / MultipleLicenses }
-    } {
+    } { }
 
-        \bool_if:NTF \l__UWMad_CCLicense_UseCreativeCommons_bool {
-            \__UWMad_CCLicense_CreateType:
-            \__UWMad_CCLicense_CheckTypeValidity:
-            \bool_if:NTF \l__UWMad_CCLicense_IsValid_bool {
-                \__UWMad_CCLicense_PrintPage:
-            } { }
+
+
+    \bool_if:NTF \l__UWMad_CCLicense_UseCreativeCommons_bool {
+
+        \__UWMad_CCLicense_CreateType:
+        \__UWMad_CCLicense_CheckTypeValidity:
+        \bool_if:NTF \l__UWMad_CCLicense_IsValid_bool {
+            \cs_new_eq:NN
+                \__UWMad_LicensePage_LicenseText:
+                \__UWMad_CCLicense_LicenseText:
         } { }
 
-        \bool_if:NTF \l__UWMad_Copyright_UseCopyright_bool {
-            \__UWMad_Copyright_PrintPage:
-        } { }
-    }
+    } { }
+
+
+
+    \bool_if:NTF \l__UWMad_Copyright_UseCopyright_bool {
+        \cs_new_eq:NN
+            \__UWMad_LicensePage_LicenseText:
+            \__UWMad_Copyright_LicenseText:
+    } { }
+
+
+
+    \cs_if_exist:NTF \__UWMad_LicensePage_LicenseText: {
+        \__UWMad_LicensePage_StartPage:
+        \vbox_to_ht:nn {0.3333\textheight} {
+            \__UWMad_LicensePage_LicenseText:
+        }
+    } { }
+
 
 }
 %
