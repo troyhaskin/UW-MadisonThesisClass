@@ -191,3 +191,5 @@ pip-log.txt
 ## I want synced References
 ############################
 !References/*
+!Release/*
+
