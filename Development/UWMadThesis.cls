@@ -101,14 +101,15 @@
 \RequirePackage{bookmark}
 \bool_if:nTF {\xetex_if_engine_p: || \luatex_if_engine_p:} {
     \RequirePackage{fontspec}
+    \defaultfontfeatures{Ligatures={TeX}}
     \setmainfont
         [SmallCapsFont = {Latin~Modern~Roman~Caps}]
         {Latin~Modern~Roman}
     \RequirePackage{polyglossia}
     \setmainlanguage[variant = usmax]{english}
 } {
-    \RequirePackage[T1]{fontenc}
     \RequirePackage{lmodern}
+    \RequirePackage[T1]{fontenc}
     \RequirePackage[english]{babel}
 }
 \DeclareDocumentCommand \UWMadClass { } {
