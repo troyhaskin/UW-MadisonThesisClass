@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <txcop:outputProfiles version="2" xmlns:txcop="http://schemas.ToolsCenter.org/TeXnicCenter/OutputProfiles.xsd">
 	<outputProfileList>
+		<outputProfile name="UWMadDocumentation" stopOnLatexError="false">
+			<texCommand execute="true" path="pdflatex.exe" arguments="-interaction=nonstopmode -max-print-line=120 &quot;%dm\Make.ins&quot;"/>
+			<bibTexCommand execute="false" path="" arguments=""/>
+			<makeIndexCommand execute="false" path="" arguments=""/>
+			<preProcessors/>
+			<postProcessors/>
+			<viewer path="FOXIT READER.EXE" closeBeforeCompilation="false">
+				<viewProjectCommand type="commandLine">
+					<commandLineCommand path="FOXIT READER.EXE" arguments=""/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewProjectCommand>
+				<viewCurrentFileCommand type="commandLine">
+					<commandLineCommand path="FOXIT READER.EXE" arguments=""/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewCurrentFileCommand>
+				<viewCloseCommand type="commandLine">
+					<commandLineCommand path="" arguments=""/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewCloseCommand>
+			</viewer>
+		</outputProfile>
 		<outputProfile name="LaTeX &#8680; PS" stopOnLatexError="false">
 			<texCommand execute="true" path="latex.exe" arguments="-src -max-print-line=120 -interaction=nonstopmode &quot;%wm&quot;"/>
 			<bibTexCommand execute="true" path="bibtex.exe" arguments="&quot;%tm&quot;"/>
@@ -157,12 +178,15 @@
 		</outputProfile>
 		<outputProfile name="UWMad_LuaLaTeX" stopOnLatexError="false">
 			<texCommand execute="true" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx"/>
-			<bibTexCommand execute="true" path="bibtex.exe" arguments="&quot;%tm&quot;"/>
-			<makeIndexCommand execute="true" path="makeindex.exe" arguments="&quot;%tm.idx&quot; -t &quot;%tm.ilg&quot; -o &quot;%tm.ind&quot;"/>
+			<bibTexCommand execute="false" path="bibtex.exe" arguments="&quot;%tm&quot;"/>
+			<makeIndexCommand execute="false" path="makeindex.exe" arguments="&quot;%tm.idx&quot; -t &quot;%tm.ilg&quot; -o &quot;%tm.ind&quot;"/>
 			<preProcessors>
 				<processor name="RunMakeINS" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode Make.ins" inputFile="" outputFile=""/>
 			</preProcessors>
-			<postProcessors/>
+			<postProcessors>
+				<processor name="MakeIndex" path="makeindex.exe" arguments="-s gind.ist UWMadThesis.Documentation.idx" inputFile="" outputFile=""/>
+				<processor name="MakeChanges" path="makeindex.exe" arguments="-s gglo.ist -o UWMadThesis.Documentation.gls UWMadThesis.Documentation.glo" inputFile="" outputFile=""/>
+			</postProcessors>
 			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
 					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
