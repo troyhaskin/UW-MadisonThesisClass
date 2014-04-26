@@ -168,6 +168,7 @@
 			<postProcessors>
 				<processor name="MakeIndex" path="makeindex.exe" arguments="-s gind.ist UWMadThesis.Documentation.idx" inputFile="" outputFile=""/>
 				<processor name="MakeChanges" path="makeindex.exe" arguments="-s gglo.ist -o UWMadThesis.Documentation.gls UWMadThesis.Documentation.glo" inputFile="" outputFile=""/>
+				<processor name="CopyToTests" path="xcopy.exe" arguments="/y %dm\UWMadThesis.cls %dm\..\Tests\UWMadThesis.cls" inputFile="" outputFile=""/>
 			</postProcessors>
 			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
