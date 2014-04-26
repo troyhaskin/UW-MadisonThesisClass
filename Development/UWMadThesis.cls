@@ -1796,19 +1796,33 @@
 \DeclareDocumentCommand \TheAdvisor { } {
     \g__UWMad_ThesisInfo_AdvisorName_tl
 }
+\tl_new:N   \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+\tl_gset:Nn \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl {,}
 \int_new:N \l__UWMad_ThesisInfo_CommitteeCount_int
 \UWMad_ListOf_Define:n {CommitteeList}
 \DeclareDocumentCommand \CommitteeMember { m m m } {
     \int_incr:N \l__UWMad_ThesisInfo_CommitteeCount_int
     \UWMad_ListOf_PushEntry:nn {CommitteeList} {
-        #1,~#2,~#3\skip_vertical:n{-1em}
+        #1
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        ~
+        \textsl{#2}
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        ~
+        \textsl{#3}
+        \skip_vertical:n{-1em}
     }
 }
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
-         \g__UWMad_ThesisInfo_AdvisorName_tl{},~
-         \g__UWMad_ThesisInfo_AdvisorPosition_tl{},~
-         \g__UWMad_ThesisInfo_AdvisorAssociation_tl{}~
+        \g__UWMad_ThesisInfo_AdvisorName_tl{}
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        ~
+        \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        ~
+        \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
+        ~
         (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
         \skip_vertical:n{-1em}
     } { }
@@ -1827,21 +1841,21 @@
 }
 \DeclareDocumentCommand \Keywords { m } {
     \tl_gset:Nn \g__UWMad_PDFMetaData_Keywords_tl {#1}
-    \UWMad_MetaData_PushToList:nn{pdfproducer} {#1}
+    \UWMad_MetaData_PushToList:nn{pdfkeywords} {#1}
     \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
         \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
     } { }
 }
 \DeclareDocumentCommand \Producer { m } {
     \tl_gset:Nn \g__UWMad_PDFMetaData_Producer_tl {#1}
-    \UWMad_MetaData_PushToList:nn{pdfcreator}  {#1}
+    \UWMad_MetaData_PushToList:nn{pdfproducer}  {#1}
     \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
         \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
     } { }
 }
 \DeclareDocumentCommand \Creator { m } {
     \tl_gset:Nn \g__UWMad_PDFMetaData_Creator_tl {#1}
-    \UWMad_MetaData_PushToList:nn{pdfkeywords} {#1}
+    \UWMad_MetaData_PushToList:nn{pdfcreator} {#1}
     \bool_if:NTF \g__UWMad_MetaData_IsDocument_bool {
         \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
     } { }
