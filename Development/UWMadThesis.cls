@@ -627,8 +627,8 @@
 }
 \pagestyle{myheadings}
 \setlength{\parindent}{ 0pt}
-\setlength{\parskip}  {10pt}
-\setlength{\headsep}  {15pt}
+\setlength{\parskip}  {1em}
+\setlength{\headsep}  {1.15em}
 \UWMad_Hook_Prepend:Nn \@chapter {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {

@@ -52,15 +52,22 @@ References may be handled by the \pkg{hyperref} package using \cs{autocite} or b
 %
 %
 %
+%   One inche magrins and letter (paper size) are set.
 %    \begin{macrocode}
 \geometry{
     includehead = true,
     margin      = 1.0in,
     paper       = letterpaper,
 }
+%    \end{macrocode}
 %
+%   Make equation references of the form (\#).
+%    \begin{macrocode}
 \creflabelformat{equation}{#2#1#3}
+%    \end{macrocode}
 %
+%   Default table style
+%       \begin{macrocode}
 \captionsetup [table] {
     format        = hang                ,
     labelsep      = colon               ,
@@ -72,7 +79,10 @@ References may be handled by the \pkg{hyperref} package using \cs{autocite} or b
     position      = above               ,
     skip          = 0.50em
 }
+%    \end{macrocode}
 %
+%   Default figure style.
+%    \begin{macrocode}
 \captionsetup [figure] {
     format        = hang                ,
     labelsep      = colon               ,
@@ -84,7 +94,11 @@ References may be handled by the \pkg{hyperref} package using \cs{autocite} or b
     position      = above               ,
     skip          = 0.5em
 }
+%    \end{macrocode}
 %
+%
+%   Define a new color and hyperlink defaults
+%    \begin{macrocode}
 \definecolor{UWMadGreen}{rgb}{0,0.7,0}
 \hypersetup {
     colorlinks         = true       ,
@@ -102,7 +116,11 @@ References may be handled by the \pkg{hyperref} package using \cs{autocite} or b
     unicode            = true
 }
 %
+%    \end{macrocode}
 %
+%   Invoke `doublespacing' and set a warning in case any others invoke
+%   the `not cool' commands according to the \UWMadShort{} Guidelines.
+%    \begin{macrocode}
 \doublespacing
 \UWMad_Hook_Prepend:Nn \singlespacing {
     \__UWMad_FrontMatter_StyleWarning:n {
@@ -116,15 +134,22 @@ References may be handled by the \pkg{hyperref} package using \cs{autocite} or b
         If~this~is~for~temporary~use,~please~use~the~spacing~environment.
     }
 }
+%    \end{macrocode}
 %
-%
-%
-%   Standard \LaTeX{} styles and lengths
+%   Declare the default style of the \UWMadClass{} from the author:
+%   no indentation with extra space between paragraphs.
+%    \begin{macrocode}
 \pagestyle{myheadings}
 \setlength{\parindent}{ 0pt}
-\setlength{\parskip}  {10pt}
-\setlength{\headsep}  {15pt}
+\setlength{\parskip}  {1em}
+\setlength{\headsep}  {1.15em}
 %    \end{macrocode}
+%
+%
+%   The \UWMadLong{} does not explicitly state a style.
+%   The preferrec style of the author is no indent and
+%   \num{1.5em}
+%
 %
 %
 %
@@ -133,3 +158,9 @@ References may be handled by the \pkg{hyperref} package using \cs{autocite} or b
 %   \fi
 %Verbatim
 %</Implementation>
+
+
+
+
+
+
