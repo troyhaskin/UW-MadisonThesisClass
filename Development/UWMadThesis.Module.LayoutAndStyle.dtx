@@ -147,9 +147,14 @@ References may be handled by the \pkg{hyperref} package using \cs{autocite} or b
 %
 %
 %   The \UWMadLong{} does not explicitly state a style.
-%   The preferrec style of the author is no indent and
-%   \num{1.5em}
-%
+%   The preferred style of the author is no indent and
+%   1.5em parapgragh skip.
+%    \begin{macrocode}
+\pagestyle{myheadings}
+\setlength{\parindent}{ 0pt}
+\setlength{\parskip}  {1em}
+\setlength{\headsep}  {1.15em}
+%    \end{macrocode}
 %
 %
 %

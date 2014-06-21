@@ -309,6 +309,7 @@
 \RequirePackage{fixltx2e}
 \RequirePackage{microtype}
 \RequirePackage{array}
+\RequirePackage{float}
 \RequirePackage{graphicx}
 \RequirePackage{setspace}
 \RequirePackage{geometry}
@@ -1562,8 +1563,19 @@
 }
 %    \end{macrocode}
 %
-%   Declare the default style of theses from the author:
+%   Declare the default style of the \UWMadClass{} from the author:
 %   no indentation with extra space between paragraphs.
+%    \begin{macrocode}
+\pagestyle{myheadings}
+\setlength{\parindent}{ 0pt}
+\setlength{\parskip}  {1em}
+\setlength{\headsep}  {1.15em}
+%    \end{macrocode}
+%
+%
+%   The \UWMadLong{} does not explicitly state a style.
+%   The preferred style of the author is no indent and
+%   1.5em parapgragh skip.
 %    \begin{macrocode}
 \pagestyle{myheadings}
 \setlength{\parindent}{ 0pt}
@@ -1576,6 +1588,7 @@
 %   \iffalse
 %</Code>
 %   \fi
+
 %\iffalse
 %<*Code>
 %\fi
@@ -3292,7 +3305,15 @@
 }
 %    \end{macrocode}
 %
+%
+%
+%
+%
+%
+%
 %   \UWSubModule{Thesis Information}
+%
+%
 %
 %   Declare the |ThesisInfo| token list variables.
 %    \begin{macrocode}
@@ -3445,39 +3466,44 @@
 \cs_gset_eq:NN \DefenceDate \DefenseDate
 %    \end{macrocode}
 %
-%   A simple setter command and aliases.
+%   A simple setter command and alias.
 %    \begin{macrocode}
 \DeclareDocumentCommand \Institution { m } {
     \tl_gset:Nn       \g__UWMad_ThesisInfo_Institution_tl {#1}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Institution_bool
 }
 \cs_set_eq:NN \University \Institution
+%    \end{macrocode}
 %
-%
-%
-%
-%
-%   User front-ends (Optional)
+%   Define the optional user interface.
+%    \begin{macrocode}
 \DeclareDocumentCommand \Department { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Department_tl {#1}
 }
-\DeclareDocumentCommand \Advisor { m m m } {
-    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+%    \end{macrocode}
+%
+%   Define the Advisor and Adviser user interface.
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ThesisInfo_AdvisorInfo:nnn {
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Advisor}
+}
+\DeclareDocumentCommand \Advisor { m m m } {
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+    \UWMad_ThesisInfo_AdvisorInfo:nnn{#1}{#2}{#3}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl {Advisor}
  }
 \DeclareDocumentCommand \Adviser { m m m } {
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Adviser}
+    \UWMad_ThesisInfo_AdvisorInfo:nnn{#1}{#2}{#3}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl {Adviser}
 }
+%    \end{macrocode}
 %
-%
-%
+%   Define an author interface for determingin if required information
+%   has been set.
+%    \begin{macrocode}
 \msg_new:nnn { UWMadThesis } { ThesisInfo / UnsetInformation } {
     The~required~information~for~the~#1~is~not~set.
 }
@@ -3491,11 +3517,10 @@
             {#1}
     }
 }
+%    \end{macrocode}
 %
-%
-%
-%
-%   User front-end accessors
+%   Define user accessors for thesis info.
+%    \begin{macrocode}
 \DeclareDocumentCommand \TheTitle { } {
     \g__UWMad_ThesisInfo_Title_tl
 }
@@ -3526,36 +3551,50 @@
 \DeclareDocumentCommand \TheAdvisor { } {
     \g__UWMad_ThesisInfo_AdvisorName_tl
 }
+%    \end{macrocode}
 %
 %
 %
 %
 %
+%   \UWSubModule{Committee Member List}
+%
+%
+%   Define internals for the Committee member list: a separator, a count, and
+%   and |ListOf|.
+%    \begin{macrocode}
 \tl_new:N   \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
 \tl_gset:Nn \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl {,}
-%
 \int_new:N \l__UWMad_ThesisInfo_CommitteeCount_int
 \UWMad_ListOf_Define:n {CommitteeList}
+%    \end{macrocode}
+%
+%   Define user interface for adding a person to the committee list.
+%    \begin{macrocode}
 \DeclareDocumentCommand \CommitteeMember { m m m } {
     \int_incr:N \l__UWMad_ThesisInfo_CommitteeCount_int
     \UWMad_ListOf_PushEntry:nn {CommitteeList} {
         #1
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{#2}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{#3}
         \skip_vertical:n{-1em}
     }
 }
+%    \end{macrocode}
+%
+%   Define an author interface for printing the Committee member list.
+%    \begin{macrocode}
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
         \g__UWMad_ThesisInfo_AdvisorName_tl{}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
         ~
@@ -3564,19 +3603,26 @@
     } { }
     \UWMad_ListOf_PrintEntries:n {CommitteeList}
 }
+%    \end{macrocode}
 %
 %
 %
 %
 %
+%   \UWSubModule{PDF Metadata}
+%
+%
+%
+%   Define metadata internals.
+%    \begin{macrocode}
 \tl_new:N \g__UWMad_PDFMetaData_Subject_tl
 \tl_new:N \g__UWMad_PDFMetaData_Keywords_tl
 \tl_new:N \g__UWMad_PDFMetaData_Producer_tl
 \tl_new:N \g__UWMad_PDFMetaData_Creator_tl
+%    \end{macrocode}
 %
-%
-%
-%   User front-end (Optional)
+%   Define user interface for setting metadata.
+%    \begin{macrocode}
 \DeclareDocumentCommand \Subject { m } {
     \tl_gset:Nn \g__UWMad_PDFMetaData_Subject_tl {#1}
     \UWMad_MetaData_PushToList:nn{pdfsubject}  {#1}
@@ -3605,10 +3651,10 @@
         \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
     } { }
 }
+%    \end{macrocode}
 %
-%
-%
-%   User front-end accessors.
+%   Define user interface for accessing metadata.
+%    \begin{macrocode}
 \DeclareDocumentCommand \TheSubject { } {
     \g__UWMad_PDFMetaData_Subject_tl
 }

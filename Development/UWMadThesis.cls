@@ -86,6 +86,7 @@
 \RequirePackage{fixltx2e}
 \RequirePackage{microtype}
 \RequirePackage{array}
+\RequirePackage{float}
 \RequirePackage{graphicx}
 \RequirePackage{setspace}
 \RequirePackage{geometry}
@@ -629,6 +630,11 @@
 \setlength{\parindent}{ 0pt}
 \setlength{\parskip}  {1em}
 \setlength{\headsep}  {1.15em}
+\pagestyle{myheadings}
+\setlength{\parindent}{ 0pt}
+\setlength{\parskip}  {1em}
+\setlength{\headsep}  {1.15em}
+
 \UWMad_Hook_Prepend:Nn \@chapter {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {
@@ -1740,19 +1746,20 @@
 \DeclareDocumentCommand \Department { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Department_tl {#1}
 }
-\DeclareDocumentCommand \Advisor { m m m } {
-    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+\cs_new:Nn \UWMad_ThesisInfo_AdvisorInfo:nnn {
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Advisor}
+}
+\DeclareDocumentCommand \Advisor { m m m } {
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+    \UWMad_ThesisInfo_AdvisorInfo:nnn{#1}{#2}{#3}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl {Advisor}
  }
 \DeclareDocumentCommand \Adviser { m m m } {
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Adviser}
+    \UWMad_ThesisInfo_AdvisorInfo:nnn{#1}{#2}{#3}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl {Adviser}
 }
 \msg_new:nnn { UWMadThesis } { ThesisInfo / UnsetInformation } {
     The~required~information~for~the~#1~is~not~set.
@@ -1804,10 +1811,10 @@
     \int_incr:N \l__UWMad_ThesisInfo_CommitteeCount_int
     \UWMad_ListOf_PushEntry:nn {CommitteeList} {
         #1
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{#2}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{#3}
         \skip_vertical:n{-1em}
@@ -1816,10 +1823,10 @@
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
         \g__UWMad_ThesisInfo_AdvisorName_tl{}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
         ~
