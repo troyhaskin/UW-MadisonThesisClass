@@ -474,7 +474,56 @@ The default color for document links is \textcolor{blue}{blue}, for urls is \tex
 These defaults can be change using the facilities of the \pkg{hyperref} package as described in its manual.
 New colors can be created using the facilities of the \pkg{xcolor} package as described in its manual.
 
+\UWSubSubFeature{Link Colors}
+To more easily facilitate color changes to links, several user interface commands have been defined.
+
+\begin{function} {\MakeLinksTheseColors}
+    \begin{syntax}
+        \cs{MakeLinksTheseColors}\Arg{link color}\Arg{cite color}\Arg{url color}
+    \end{syntax}
+    Redefines the colors used for (internal) links, cites, and URLs.
+    Any valid color, including those defined by the \pkg{xcolor} package, is allowed for all three, required arguments.
+\end{function}
+\begin{function} {\MakeLinksThisColor}
+    \begin{syntax}
+        \cs{MakeLinksThisColor}\Arg{color}
+    \end{syntax}
+    Redefines the colors used for (internal) links, cites, and URLs to be the single indicated color.
+    Any valid color, including those defined by the \pkg{xcolor} package, is allowed for the one required arguments.
+\end{function}
+
+\begin{function} {\MakeLinksBlack,\MakeLinksBlue,\MakeLinksRed}
+    \begin{syntax}
+        \cs{MakeLinksBlack}
+        \cs{MakeLinksBlue}
+        \cs{MakeLinksRed}
+    \end{syntax}
+    These commands take no argument and define all links to have the color indicated in the command name.
+\end{function}
+
+\UWSubSubFeature{References}
 References may be handled by the \pkg{hyperref} package using \cs{autocite} or by the \pkg{cleveref} package using \cs{cref}/\cs{Cref} (the latter producing a capital letter for the reference type).
+The user is referred to their respective manuals for more options and feature descriptions.
+
+\UWSubFeature{Paragraph Spacing}
+In general, there are two dominant methods for indicating separate paragraphs: no indentation with extra space between paragraphs (compared to between lines) and indentation with no extra space between paragraphs.
+The default of the \UWMadClass{} is the former but some may prefer the latter.
+To facilitate either, two commands have been created.
+
+\begin{function} {\PadParagraphs}
+    \begin{syntax}
+        \cs{PadParagraphs}
+    \end{syntax}
+    This command adds 1em of vertical space between paragraphs with no indentation.
+    This is the default style of this class.
+\end{function}
+
+\begin{function} {\IndentParagraphs}
+    \begin{syntax}
+        \cs{IndentParagraphs}
+    \end{syntax}
+    This command adds 1.5em of indent at the beginning of paragraphs (save those that follow section heads) with no extra vertical space.
+\end{function}
 
 
 

@@ -31,7 +31,61 @@ The default color for document links is \textcolor{blue}{blue}, for urls is \tex
 These defaults can be change using the facilities of the \pkg{hyperref} package as described in its manual.
 New colors can be created using the facilities of the \pkg{xcolor} package as described in its manual.
 
+
+\UWSubSubFeature{Link Colors}
+To more easily facilitate color changes to links, several user interface commands have been defined.
+
+\begin{function} {\MakeLinksTheseColors}
+    \begin{syntax}
+        \cs{MakeLinksTheseColors}\Arg{link color}\Arg{cite color}\Arg{url color}
+    \end{syntax}
+    Redefines the colors used for (internal) links, cites, and URLs.
+    Any valid color, including those defined by the \pkg{xcolor} package, is allowed for all three, required arguments.
+\end{function}
+\begin{function} {\MakeLinksThisColor}
+    \begin{syntax}
+        \cs{MakeLinksThisColor}\Arg{color}
+    \end{syntax}
+    Redefines the colors used for (internal) links, cites, and URLs to be the single indicated color.
+    Any valid color, including those defined by the \pkg{xcolor} package, is allowed for the one required arguments.
+\end{function}
+
+\begin{function} {\MakeLinksBlack,\MakeLinksBlue,\MakeLinksRed}
+    \begin{syntax}
+        \cs{MakeLinksBlack}
+        \cs{MakeLinksBlue}
+        \cs{MakeLinksRed}
+    \end{syntax}
+    These commands take no argument and define all links to have the color indicated in the command name.
+\end{function}
+
+
+\UWSubSubFeature{References}
 References may be handled by the \pkg{hyperref} package using \cs{autocite} or by the \pkg{cleveref} package using \cs{cref}/\cs{Cref} (the latter producing a capital letter for the reference type).
+The user is referred to their respective manuals for more options and feature descriptions.
+
+
+
+
+\UWSubFeature{Paragraph Spacing}
+In general, there are two dominant methods for indicating separate paragraphs: no indentation with extra space between paragraphs (compared to between lines) and indentation with no extra space between paragraphs.
+The default of the \UWMadClass{} is the former but some may prefer the latter.
+To facilitate either, two commands have been created.
+
+\begin{function} {\PadParagraphs}
+    \begin{syntax}
+        \cs{PadParagraphs}
+    \end{syntax}
+    This command adds 1em of vertical space between paragraphs with no indentation.
+    This is the default style of this class.
+\end{function}
+
+\begin{function} {\IndentParagraphs}
+    \begin{syntax}
+        \cs{IndentParagraphs}
+    \end{syntax}
+    This command adds 1.5em of indent at the beginning of paragraphs (save those that follow section heads) with no extra vertical space.
+\end{function}
 
 %</UserGuide>
 %
@@ -50,16 +104,7 @@ References may be handled by the \pkg{hyperref} package using \cs{autocite} or b
 %   \UWModule{Layout And Styles}
 %
 %
-%
-%
-%   One inche magrins and letter (paper size) are set.
-%    \begin{macrocode}
-\geometry{
-    includehead = true,
-    margin      = 1.0in,
-    paper       = letterpaper,
-}
-%    \end{macrocode}
+%   \UWSubModule{Float Styles}
 %
 %   Make equation references of the form (\#).
 %    \begin{macrocode}
@@ -97,25 +142,99 @@ References may be handled by the \pkg{hyperref} package using \cs{autocite} or b
 %    \end{macrocode}
 %
 %
-%   Define a new color and hyperlink defaults
+%
+%
+%
+%
+%   \UWSubModule{Links}
+%
+%   Define a darker green than |green|.
 %    \begin{macrocode}
 \definecolor{UWMadGreen}{rgb}{0,0.7,0}
+%    \end{macrocode}
+%
+%   Define the default colors for the (internal) links, cites, and URLs.
+%    \begin{macrocode}
+\tl_new:N  \l_UWMad_LayoutStyle_Color_Link_tl
+\tl_set:Nn \l_UWMad_LayoutStyle_Color_Link_tl {blue}
+\tl_new:N  \l_UWMad_LayoutStyle_Color_Cite_tl
+\tl_set:Nn \l_UWMad_LayoutStyle_Color_Cite_tl {UWMadGreen}
+\tl_new:N  \l_UWMad_LayoutStyle_Color_URL_tl
+\tl_set:Nn \l_UWMad_LayoutStyle_Color_URL_tl  {violet}
+%    \end{macrocode}
+%
+%   Define a new color and hyperlink defaults
+%    \begin{macrocode}
 \hypersetup {
-    colorlinks         = true       ,
-    linkcolor          = blue       ,
-    citecolor          = UWMadGreen ,
-    urlcolor           = violet     ,
-    pdfdisplaydoctitle = true       ,
-    pdfview            = {FitH}     ,
-    pdfstartview       = {FitH}     ,
-    pdfpagelayout      = OneColumn  ,
-    plainpages         = false      ,
-    hypertexnames      = true       ,
-    bookmarksopenlevel = 1          ,
-    bookmarksopen      = true       ,
+    colorlinks         = true,
+    linkcolor          = \l_UWMad_LayoutStyle_Color_Link_tl,
+    citecolor          = \l_UWMad_LayoutStyle_Color_Cite_tl,
+    urlcolor           = \l_UWMad_LayoutStyle_Color_URL_tl,
+    pdfdisplaydoctitle = true,
+    pdfview            = {FitH},
+    pdfstartview       = {FitH},
+    pdfpagelayout      = OneColumn,
+    plainpages         = false,
+    hypertexnames      = true,
+    bookmarksopenlevel = 1,
+    bookmarksopen      = true,
     unicode            = true
 }
+%    \end{macrocode}
 %
+%   Define a helper commands to redefine all of the \pkg{hyperref}
+%   link colors using this class's color token lists.
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_LayoutStyle_ResetLinkColors: {
+    \hypersetup {
+        colorlinks = true,
+        linkcolor  = \l_UWMad_LayoutStyle_Color_Link_tl,
+        citecolor  = \l_UWMad_LayoutStyle_Color_Cite_tl,
+        urlcolor   = \l_UWMad_LayoutStyle_Color_URL_tl
+    }
+}
+%    \end{macrocode}
+%
+%   Define user interfaces to setting link colors.
+%    \begin{macrocode}
+\DeclareDocumentCommand \MakeLinksTheseColors { m m m } {
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Link_tl {#1}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Cite_tl {#2}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_URL_tl  {#3}
+    \UWMad_LayoutStyle_ResetLinkColors:
+}
+\DeclareDocumentCommand \MakeLinksThisColor { m } {
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Link_tl {#1}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Cite_tl {#1}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_URL_tl  {#1}
+    \UWMad_LayoutStyle_ResetLinkColors:
+}
+%    \end{macrocode}
+%
+%   Define user interfaces to specialized color commands.
+%    \begin{macrocode}
+\DeclareDocumentCommand \MakeLinksBlack { } {
+    \MakeLinksThisColor{black}
+}
+\DeclareDocumentCommand \MakeLinksBlue { } {
+    \MakeLinksThisColor{blue}
+}
+\DeclareDocumentCommand \MakeLinksRed { } {
+    \MakeLinksThisColor{red}
+}
+%    \end{macrocode}
+%
+%
+%
+%   \UWSubModule{Page Layout}
+%
+%   One inche magrins and letter (paper size) are set.
+%    \begin{macrocode}
+\geometry{
+    includehead = true,
+    margin      = 1.0in,
+    paper       = letterpaper,
+}
 %    \end{macrocode}
 %
 %   Invoke `doublespacing' and set a warning in case any others invoke
@@ -136,26 +255,32 @@ References may be handled by the \pkg{hyperref} package using \cs{autocite} or b
 }
 %    \end{macrocode}
 %
+%   This setting puts the page numbers in the upper right-hand corner and
+%   atleast one inch from the top and right sides of the page (per
+%   the \UWMadShort{} guidelines).
+%    \begin{macrocode}
+\pagestyle{myheadings}
+\setlength{\headsep}  {1.15em}
+%    \end{macrocode}
+%
+%   Define user interface for defining different indentation styles.
+%    \begin{macrocode}
+\DeclareDocumentCommand \IndentParagraphs { } {
+    \setlength{\parindent}{1.50em}
+    \setlength{\parskip}  {0pt}
+
+}
+\DeclareDocumentCommand \PadParagraphs { } {
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}  {1em}
+}
+%    \end{macrocode}
+%
 %   Declare the default style of the \UWMadClass{} from the author:
 %   no indentation with extra space between paragraphs.
 %    \begin{macrocode}
-\pagestyle{myheadings}
-\setlength{\parindent}{ 0pt}
-\setlength{\parskip}  {1em}
-\setlength{\headsep}  {1.15em}
+\PadParagraphs
 %    \end{macrocode}
-%
-%
-%   The \UWMadLong{} does not explicitly state a style.
-%   The preferred style of the author is no indent and
-%   1.5em parapgragh skip.
-%    \begin{macrocode}
-\pagestyle{myheadings}
-\setlength{\parindent}{ 0pt}
-\setlength{\parskip}  {1em}
-\setlength{\headsep}  {1.15em}
-%    \end{macrocode}
-%
 %
 %
 %   \iffalse

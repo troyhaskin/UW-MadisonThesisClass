@@ -86,6 +86,7 @@
 \RequirePackage{fixltx2e}
 \RequirePackage{microtype}
 \RequirePackage{array}
+\RequirePackage{float}
 \RequirePackage{graphicx}
 \RequirePackage{setspace}
 \RequirePackage{geometry}
@@ -97,8 +98,6 @@
 \RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
 \RequirePackage{caption}
 \RequirePackage{subcaption}
-\RequirePackage{hyperref}
-\RequirePackage{bookmark}
 \bool_if:nTF {\xetex_if_engine_p: || \luatex_if_engine_p:} {
     \RequirePackage{fontspec}
     \defaultfontfeatures{Ligatures={TeX}}
@@ -112,6 +111,8 @@
     \RequirePackage[T1]{fontenc}
     \RequirePackage[english]{babel}
 }
+\RequirePackage{hyperref}
+\RequirePackage{bookmark}
 \DeclareDocumentCommand \UWMadClass { } {
     \texttt{\c__UWMad_Class_Name_tl}~class
 }
@@ -568,11 +569,6 @@
 \DeclareDocumentCommand \CounterToRoman { m } {
     \int_to_roman:c {g__UWMad_Programming_API_#1_int}
 }
-\geometry{
-    includehead = true,
-    margin      = 1.0in,
-    paper       = letterpaper,
-}
 \creflabelformat{equation}{#2#1#3}
 \captionsetup [table] {
     format        = hang                ,
@@ -597,20 +593,60 @@
     skip          = 0.5em
 }
 \definecolor{UWMadGreen}{rgb}{0,0.7,0}
+\tl_new:N  \l_UWMad_LayoutStyle_Color_Link_tl
+\tl_set:Nn \l_UWMad_LayoutStyle_Color_Link_tl {blue}
+\tl_new:N  \l_UWMad_LayoutStyle_Color_Cite_tl
+\tl_set:Nn \l_UWMad_LayoutStyle_Color_Cite_tl {UWMadGreen}
+\tl_new:N  \l_UWMad_LayoutStyle_Color_URL_tl
+\tl_set:Nn \l_UWMad_LayoutStyle_Color_URL_tl  {violet}
 \hypersetup {
-    colorlinks         = true       ,
-    linkcolor          = blue       ,
-    citecolor          = UWMadGreen ,
-    urlcolor           = violet     ,
-    pdfdisplaydoctitle = true       ,
-    pdfview            = {FitH}     ,
-    pdfstartview       = {FitH}     ,
-    pdfpagelayout      = OneColumn  ,
-    plainpages         = false      ,
-    hypertexnames      = true       ,
-    bookmarksopenlevel = 1          ,
-    bookmarksopen      = true       ,
+    colorlinks         = true,
+    linkcolor          = \l_UWMad_LayoutStyle_Color_Link_tl,
+    citecolor          = \l_UWMad_LayoutStyle_Color_Cite_tl,
+    urlcolor           = \l_UWMad_LayoutStyle_Color_URL_tl,
+    pdfdisplaydoctitle = true,
+    pdfview            = {FitH},
+    pdfstartview       = {FitH},
+    pdfpagelayout      = OneColumn,
+    plainpages         = false,
+    hypertexnames      = true,
+    bookmarksopenlevel = 1,
+    bookmarksopen      = true,
     unicode            = true
+}
+\cs_new:Nn \UWMad_LayoutStyle_ResetLinkColors: {
+    \hypersetup {
+        colorlinks = true,
+        linkcolor  = \l_UWMad_LayoutStyle_Color_Link_tl,
+        citecolor  = \l_UWMad_LayoutStyle_Color_Cite_tl,
+        urlcolor   = \l_UWMad_LayoutStyle_Color_URL_tl
+    }
+}
+\DeclareDocumentCommand \MakeLinksTheseColors { m m m } {
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Link_tl {#1}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Cite_tl {#2}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_URL_tl  {#3}
+    \UWMad_LayoutStyle_ResetLinkColors:
+}
+\DeclareDocumentCommand \MakeLinksThisColor { m } {
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Link_tl {#1}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Cite_tl {#1}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_URL_tl  {#1}
+    \UWMad_LayoutStyle_ResetLinkColors:
+}
+\DeclareDocumentCommand \MakeLinksBlack { } {
+    \MakeLinksThisColor{black}
+}
+\DeclareDocumentCommand \MakeLinksBlue { } {
+    \MakeLinksThisColor{blue}
+}
+\DeclareDocumentCommand \MakeLinksRed { } {
+    \MakeLinksThisColor{red}
+}
+\geometry{
+    includehead = true,
+    margin      = 1.0in,
+    paper       = letterpaper,
 }
 \doublespacing
 \UWMad_Hook_Prepend:Nn \singlespacing {
@@ -626,9 +662,18 @@
     }
 }
 \pagestyle{myheadings}
-\setlength{\parindent}{ 0pt}
-\setlength{\parskip}  {10pt}
-\setlength{\headsep}  {15pt}
+\setlength{\headsep}  {1.15em}
+\DeclareDocumentCommand \IndentParagraphs { } {
+    \setlength{\parindent}{1.50em}
+    \setlength{\parskip}  {0pt}
+
+}
+\DeclareDocumentCommand \PadParagraphs { } {
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}  {1em}
+}
+\PadParagraphs
+
 \UWMad_Hook_Prepend:Nn \@chapter {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {
@@ -1740,19 +1785,20 @@
 \DeclareDocumentCommand \Department { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Department_tl {#1}
 }
-\DeclareDocumentCommand \Advisor { m m m } {
-    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+\cs_new:Nn \UWMad_ThesisInfo_AdvisorInfo:nnn {
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Advisor}
+}
+\DeclareDocumentCommand \Advisor { m m m } {
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+    \UWMad_ThesisInfo_AdvisorInfo:nnn{#1}{#2}{#3}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl {Advisor}
  }
 \DeclareDocumentCommand \Adviser { m m m } {
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl      {Adviser}
+    \UWMad_ThesisInfo_AdvisorInfo:nnn{#1}{#2}{#3}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl {Adviser}
 }
 \msg_new:nnn { UWMadThesis } { ThesisInfo / UnsetInformation } {
     The~required~information~for~the~#1~is~not~set.
@@ -1804,10 +1850,10 @@
     \int_incr:N \l__UWMad_ThesisInfo_CommitteeCount_int
     \UWMad_ListOf_PushEntry:nn {CommitteeList} {
         #1
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{#2}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{#3}
         \skip_vertical:n{-1em}
@@ -1816,10 +1862,10 @@
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
         \g__UWMad_ThesisInfo_AdvisorName_tl{}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
+        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         ~
         \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
         ~

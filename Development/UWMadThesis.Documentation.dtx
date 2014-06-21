@@ -334,14 +334,6 @@
 %    \end{macrocode}
 %
 %
-%   If links were not negated by the options, \pkg{bookmark} and
-%   \pkg{hyperref} are loaded.
-%    \begin{macrocode}
-\RequirePackage{hyperref}
-\RequirePackage{bookmark}
-%    \end{macrocode}
-%
-%
 %   Conditionally load either the \pkg{polyglossia} or \pkg{babel}
 %   language packages depending on the engine in use.
 %    \begin{macrocode}
@@ -361,6 +353,15 @@
     \RequirePackage[english]{babel}
 }
 %    \end{macrocode}
+%
+%
+%   If links were not negated by the options, \pkg{bookmark} and
+%   \pkg{hyperref} are loaded.
+%    \begin{macrocode}
+\RequirePackage{hyperref}
+\RequirePackage{bookmark}
+%    \end{macrocode}
+%
 %
 %
 %
@@ -1477,16 +1478,7 @@
 %   \UWModule{Layout And Styles}
 %
 %
-%
-%
-%   One inche magrins and letter (paper size) are set.
-%    \begin{macrocode}
-\geometry{
-    includehead = true,
-    margin      = 1.0in,
-    paper       = letterpaper,
-}
-%    \end{macrocode}
+%   \UWSubModule{Float Styles}
 %
 %   Make equation references of the form (\#).
 %    \begin{macrocode}
@@ -1524,25 +1516,99 @@
 %    \end{macrocode}
 %
 %
-%   Define a new color and hyperlink defaults
+%
+%
+%
+%
+%   \UWSubModule{Links}
+%
+%   Define a darker green than |green|.
 %    \begin{macrocode}
 \definecolor{UWMadGreen}{rgb}{0,0.7,0}
+%    \end{macrocode}
+%
+%   Define the default colors for the (internal) links, cites, and URLs.
+%    \begin{macrocode}
+\tl_new:N  \l_UWMad_LayoutStyle_Color_Link_tl
+\tl_set:Nn \l_UWMad_LayoutStyle_Color_Link_tl {blue}
+\tl_new:N  \l_UWMad_LayoutStyle_Color_Cite_tl
+\tl_set:Nn \l_UWMad_LayoutStyle_Color_Cite_tl {UWMadGreen}
+\tl_new:N  \l_UWMad_LayoutStyle_Color_URL_tl
+\tl_set:Nn \l_UWMad_LayoutStyle_Color_URL_tl  {violet}
+%    \end{macrocode}
+%
+%   Define a new color and hyperlink defaults
+%    \begin{macrocode}
 \hypersetup {
-    colorlinks         = true       ,
-    linkcolor          = blue       ,
-    citecolor          = UWMadGreen ,
-    urlcolor           = violet     ,
-    pdfdisplaydoctitle = true       ,
-    pdfview            = {FitH}     ,
-    pdfstartview       = {FitH}     ,
-    pdfpagelayout      = OneColumn  ,
-    plainpages         = false      ,
-    hypertexnames      = true       ,
-    bookmarksopenlevel = 1          ,
-    bookmarksopen      = true       ,
+    colorlinks         = true,
+    linkcolor          = \l_UWMad_LayoutStyle_Color_Link_tl,
+    citecolor          = \l_UWMad_LayoutStyle_Color_Cite_tl,
+    urlcolor           = \l_UWMad_LayoutStyle_Color_URL_tl,
+    pdfdisplaydoctitle = true,
+    pdfview            = {FitH},
+    pdfstartview       = {FitH},
+    pdfpagelayout      = OneColumn,
+    plainpages         = false,
+    hypertexnames      = true,
+    bookmarksopenlevel = 1,
+    bookmarksopen      = true,
     unicode            = true
 }
+%    \end{macrocode}
 %
+%   Define a helper commands to redefine all of the \pkg{hyperref}
+%   link colors using this class's color token lists.
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_LayoutStyle_ResetLinkColors: {
+    \hypersetup {
+        colorlinks = true,
+        linkcolor  = \l_UWMad_LayoutStyle_Color_Link_tl,
+        citecolor  = \l_UWMad_LayoutStyle_Color_Cite_tl,
+        urlcolor   = \l_UWMad_LayoutStyle_Color_URL_tl
+    }
+}
+%    \end{macrocode}
+%
+%   Define user interfaces to setting link colors.
+%    \begin{macrocode}
+\DeclareDocumentCommand \MakeLinksTheseColors { m m m } {
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Link_tl {#1}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Cite_tl {#2}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_URL_tl  {#3}
+    \UWMad_LayoutStyle_ResetLinkColors:
+}
+\DeclareDocumentCommand \MakeLinksThisColor { m } {
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Link_tl {#1}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_Cite_tl {#1}
+    \tl_set:Nn \l_UWMad_LayoutStyle_Color_URL_tl  {#1}
+    \UWMad_LayoutStyle_ResetLinkColors:
+}
+%    \end{macrocode}
+%
+%   Define user interfaces to specialized color commands.
+%    \begin{macrocode}
+\DeclareDocumentCommand \MakeLinksBlack { } {
+    \MakeLinksThisColor{black}
+}
+\DeclareDocumentCommand \MakeLinksBlue { } {
+    \MakeLinksThisColor{blue}
+}
+\DeclareDocumentCommand \MakeLinksRed { } {
+    \MakeLinksThisColor{red}
+}
+%    \end{macrocode}
+%
+%
+%
+%   \UWSubModule{Page Layout}
+%
+%   One inche magrins and letter (paper size) are set.
+%    \begin{macrocode}
+\geometry{
+    includehead = true,
+    margin      = 1.0in,
+    paper       = letterpaper,
+}
 %    \end{macrocode}
 %
 %   Invoke `doublespacing' and set a warning in case any others invoke
@@ -1563,26 +1629,32 @@
 }
 %    \end{macrocode}
 %
+%   This setting puts the page numbers in the upper right-hand corner and
+%   atleast one inch from the top and right sides of the page (per
+%   the \UWMadShort{} guidelines).
+%    \begin{macrocode}
+\pagestyle{myheadings}
+\setlength{\headsep}  {1.15em}
+%    \end{macrocode}
+%
+%   Define user interface for defining different indentation styles.
+%    \begin{macrocode}
+\DeclareDocumentCommand \IndentParagraphs { } {
+    \setlength{\parindent}{1.50em}
+    \setlength{\parskip}  {0pt}
+
+}
+\DeclareDocumentCommand \PadParagraphs { } {
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}  {1em}
+}
+%    \end{macrocode}
+%
 %   Declare the default style of the \UWMadClass{} from the author:
 %   no indentation with extra space between paragraphs.
 %    \begin{macrocode}
-\pagestyle{myheadings}
-\setlength{\parindent}{ 0pt}
-\setlength{\parskip}  {1em}
-\setlength{\headsep}  {1.15em}
+\PadParagraphs
 %    \end{macrocode}
-%
-%
-%   The \UWMadLong{} does not explicitly state a style.
-%   The preferred style of the author is no indent and
-%   1.5em parapgragh skip.
-%    \begin{macrocode}
-\pagestyle{myheadings}
-\setlength{\parindent}{ 0pt}
-\setlength{\parskip}  {1em}
-\setlength{\headsep}  {1.15em}
-%    \end{macrocode}
-%
 %
 %
 %   \iffalse
