@@ -1851,10 +1851,10 @@
     \UWMad_ListOf_PushEntry:nn {CommitteeList} {
         #1
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        ~
+        \
         \textsl{#2}
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        ~
+        \
         \textsl{#3}
         \skip_vertical:n{-1em}
     }
@@ -1863,12 +1863,12 @@
     \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
         \g__UWMad_ThesisInfo_AdvisorName_tl{}
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        ~
+        \
         \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        ~
+        \
         \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
-        ~
+        \
         (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
         \skip_vertical:n{-1em}
     } { }

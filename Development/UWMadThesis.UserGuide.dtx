@@ -447,14 +447,14 @@ This input would generate the following text at the bottom of a new page (with a
 
 \UWFeature{Layout And Style}
 
-The \UWMadClass{} class has several default styling differences from the standard \LaTeXe{} class it is based on.
+The \UWMadClass{} has several default styling differences from the standard \LaTeXe{} class it is based on.
 Some of these changes exist to abide by the \UWMadShort{} dissertation guidelines and others are based on the author's preferences.
 They are, however, readily changeable using the facilities of the packages used to make the changes.
-The defaults and methods for changing the style are list in this section.
+The defaults and methods for changing the styles are list in this section or the references manuals.
 
 \UWSubFeature{Captions}
 The \UWMadClass{} uses the \pkg{caption} and \pkg{subcaption} packages to style float captions and subcaptions.
-It is possible to adjust the defaults showcase below by using the packages' utilities outlines in their respective manuals.
+It is possible to adjust the defaults showcased below by using the packages' utilities outlined in their respective manuals.
 
 \vskip1em
 {
@@ -471,7 +471,7 @@ It is possible to adjust the defaults showcase below by using the packages' util
 \UWSubFeature{Links}
 The \UWMadClass{} loads the \pkg{hyperref} and \pkg{bookmark} packages to create hyperlinks and a clickable documents.
 The default color for document links is \textcolor{blue}{blue}, for urls is \textcolor{violet}{violet}, and for citations is \textcolor{UWMadGreen}{UWMadGreen} (a darker version of \textcolor{green}{green}).
-These defaults can be change using the facilities of the \pkg{hyperref} package as described in its manual.
+These defaults can be changed using the commands below or the facilities of the \pkg{hyperref} package as described in its manual.
 New colors can be created using the facilities of the \pkg{xcolor} package as described in its manual.
 
 \UWSubSubFeature{Link Colors}
@@ -531,12 +531,12 @@ To facilitate either, two commands have been created.
 
 Sectioning concerns the overall structure of your document into chunks called sections.
 The default sections in \LaTeXe{} are |part|, |chapter|, |section|, |subsection|, |subsubsection|, |paragraph|, and |subparagraph|.
-The \UWMadClass{} Class defines some new section commands and makes some other adjustments to the default commands.
+The \UWMadClass{} defines some new section commands and makes some other adjustments to the default commands.
 
 \UWSubFeature{Front Matter}
-Front Matter (or preliminary pages) is the whole of content that precedes the main document (i.e., the first unstarred chapter).
+Front Matter (or preliminary pages) is the whole-of-content that precedes the main document (i.e., the first unstarred chapter).
 \UWMadShort{} requires that these pages are numbered in lower roman numerals and have that page number in the upper right-hand corner.
-This requirement is automatically  handled by the class.
+This requirement is automatically handled by the class.
 The Front Matter commands are all semantically named and set as starred (unnumbered) chapters.
 
 \begin{function} {
@@ -559,8 +559,8 @@ The Front Matter commands are all semantically named and set as starred (unnumbe
 \end{function}
 
 \UWSubFeature{Appendix}
-The standard method of including appendices in \LaTeX{} is calling for some initialization to be done by using the \cs{appendix} command and then using the \cs{chapter} commands.
-The \UWMadClass{} class takes a different approach to encourage good semantic mark-up in \LaTeX{} documents and, therefore, redefines \cs{appendix}.
+The standard method of including appendices in \LaTeX{} is calling for some initialization to be done by using the \cs{appendix} command and then using the \cs{chapter} command.
+The \UWMadClass{} takes a different approach to encourage good semantic mark-up in \LaTeX{} documents and, therefore, redefines \cs{appendix}.
 
 \begin{function} {
     \appendix
@@ -569,7 +569,7 @@ The \UWMadClass{} class takes a different approach to encourage good semantic ma
         \cs{appendix} \oarg{short title}\marg{title}
         \cs{appendix}*\oarg{short title}\marg{title}
     \end{syntax}
-    The appendix commands now acts like a \cs{chapter} commands and is typeset in the Table of Contents as one.
+    The appendix commands now acts like \cs{chapter} commands and are typeset in the Table of Contents as such.
 
     \textsc{Note}:
     The usage \cs{appendix} should be after all the chapter material is set since some of the \cs{chapter} internals are changed.

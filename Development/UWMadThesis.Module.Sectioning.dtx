@@ -4,12 +4,12 @@
 
 Sectioning concerns the overall structure of your document into chunks called sections.
 The default sections in \LaTeXe{} are |part|, |chapter|, |section|, |subsection|, |subsubsection|, |paragraph|, and |subparagraph|.
-The \UWMadClass{} Class defines some new section commands and makes some other adjustments to the default commands.
+The \UWMadClass{} defines some new section commands and makes some other adjustments to the default commands.
 
 \UWSubFeature{Front Matter}
-Front Matter (or preliminary pages) is the whole of content that precedes the main document (i.e., the first unstarred chapter).
+Front Matter (or preliminary pages) is the whole-of-content that precedes the main document (i.e., the first unstarred chapter).
 \UWMadShort{} requires that these pages are numbered in lower roman numerals and have that page number in the upper right-hand corner.
-This requirement is automatically  handled by the class.
+This requirement is automatically handled by the class.
 The Front Matter commands are all semantically named and set as starred (unnumbered) chapters.
 
 \begin{function} {
@@ -33,8 +33,8 @@ The Front Matter commands are all semantically named and set as starred (unnumbe
 
 
 \UWSubFeature{Appendix}
-The standard method of including appendices in \LaTeX{} is calling for some initialization to be done by using the \cs{appendix} command and then using the \cs{chapter} commands.
-The \UWMadClass{} class takes a different approach to encourage good semantic mark-up in \LaTeX{} documents and, therefore, redefines \cs{appendix}.
+The standard method of including appendices in \LaTeX{} is calling for some initialization to be done by using the \cs{appendix} command and then using the \cs{chapter} command.
+The \UWMadClass{} takes a different approach to encourage good semantic mark-up in \LaTeX{} documents and, therefore, redefines \cs{appendix}.
 
 \begin{function} {
     \appendix
@@ -43,7 +43,7 @@ The \UWMadClass{} class takes a different approach to encourage good semantic ma
         \cs{appendix} \oarg{short title}\marg{title}
         \cs{appendix}*\oarg{short title}\marg{title}
     \end{syntax}
-    The appendix commands now acts like a \cs{chapter} commands and is typeset in the Table of Contents as one.
+    The appendix commands now acts like \cs{chapter} commands and are typeset in the Table of Contents as such.
     
     \textsc{Note}:
     The usage \cs{appendix} should be after all the chapter material is set since some of the \cs{chapter} internals are changed.
