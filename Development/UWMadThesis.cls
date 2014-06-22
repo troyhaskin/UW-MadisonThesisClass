@@ -1427,7 +1427,7 @@
     %
     % Define description width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthDescription_dim {
-        0.999\textwidth -
+        0.995\textwidth -
         \l__UWMad_Nomenclature_Entry_MarginLeft_dim  -
         \l__UWMad_Nomenclature_Entry_WidthSymbol_dim -
         \l__UWMad_Nomenclature_Entry_Padding_dim
