@@ -41,6 +41,7 @@ If the commands are used within the |document| environment, it will require anot
         \end{syntax}
         Only one of these commands is required to define the \marg{degree} variable.
         The generic \cs{Degree} function will accept any valid text or expandable content for defining the degree variable.
+        
         The other three commands take no argument and are semantic commands for defining the degree variable:
             \begin{itemize}
             \item{\cs{Doctorate} sets \marg{degree} to \enquote{Doctor of Philosophy}}
@@ -102,17 +103,6 @@ It is encouraged to use these commands in the preamble of the document.
 
 \begin{function} {
     \DocumentType,
-    }
-    \begin{syntax}
-        \cs{DocumentType} \marg{document type}
-    \end{syntax}
-    By default, the \cs{MakeTitlePage} command prints the phrase \enquote{A \marg{document type} submitted in partial fulfillment of the requirements for the degree of'' on the title page}.
-    The default \marg{document type} is \enquote{report}.
-    This command sets the value to any valid text.
-    However, facilitate good semantic mark-up, some prepared commands to set the document type are given below.
-\end{function}
-
-\begin{function} {
     \Dissertation,
     \DoctoralThesis,
     \MastersThesis,
@@ -120,13 +110,19 @@ It is encouraged to use these commands in the preamble of the document.
     \Prelim
     }
     \begin{syntax}
+        \cs{DocumentType} \marg{document type}
         \cs{Dissertation}
         \cs{DoctoralThesis}
         \cs{MastersThesis}
         \cs{Thesis}
         \cs{Prelim}
     \end{syntax}
-    These commands set the value of \marg{document type} to a value similar to their command name:
+    By default, the \cs{MakeTitlePage} command prints the phrase \enquote{A \marg{document type} submitted in partial fulfillment of the requirements for the degree of'' on the title page}.
+    The default \marg{document type} is \enquote{report}.
+    This command sets the value to any valid text.
+    
+    To facilitate good semantic mark-up, some prepared commands to set the document type were made.
+    These commands take no argument and set the value of \marg{document type} to something similar to their command name:
     \begin{itemize}
         \item{\cs{Dissertation} sets \marg{document type} to \enquote{dissertation}}
         \item{\cs{DoctoralThesis} sets \marg{document type} to \enquote{doctoral thesis}}
