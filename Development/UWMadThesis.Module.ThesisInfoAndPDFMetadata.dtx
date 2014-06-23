@@ -9,23 +9,44 @@ It is highly encouraged to use all of these commands in the preamble such that a
 If the commands are used within the |document| environment, it will require another \LaTeX{} compilation to include the metadata since \UWMadClass{} will automatically write the information to an external file.
 
 \UWSubFeature{Required}
-    These commands are required for the document to be typeset properly.
+    These commands are required.
+    If any of these commands is not present, usage of the \RefSubFeature[title page]{Title Page} command will throw an error.
     It is encouraged to use these commands in the preamble of the document.
 
     \begin{function} {
         \Title,
         \Author,
         \Program,
-        \Degree
     }
         \begin{syntax}
             \cs{Title}   \marg{title}
             \cs{Author}  \marg{author name}
             \cs{Program} \marg{program}
-            \cs{Degree}  \marg{degree}
         \end{syntax}
-        Each of these commands must be used once; if not, their respective variables be empty while being typeset.
-        They can, of course, be used more than once, but the additional usages would only redefine the value of the associated variable.
+        Each of these commands must be used once; if not, their respective variables will be empty and usage of the \
+        They can, of course, be used more than once, but the additional uses would only redefine the value of the associated variable.
+    \end{function}
+    
+    \begin{function}{
+        \Degree,
+        \Doctorate,
+        \Masters,
+        \Bachelors
+    }
+        \begin{syntax}
+            \cs{Degree}  \marg{degree}
+            \cs{Doctorate}
+            \cs{Masters}
+            \cs{Bachelors}
+        \end{syntax}
+        Only one of these commands is required to define the \marg{degree} variable.
+        The generic \cs{Degree} function will accept any valid text or expandable content for defining the degree variable.
+        The other three commands take no argument and are semantic commands for defining the degree variable:
+            \begin{itemize}
+            \item{\cs{Doctorate} sets \marg{degree} to \enquote{Doctor of Philosophy}}
+            \item{\cs{Masters} sets \marg{degree} to \enquote{Master's}}
+            \item{\cs{Bachelors} sets \marg{degree} to \enquote{Bachelor's}}
+            \end{itemize}
     \end{function}
 
     \begin{function} {
@@ -39,7 +60,7 @@ If the commands are used within the |document| environment, it will require anot
         Only one of these commands is needed since they all point to the same variable \marg{defense date}.
         The aliases were created for personal preference only.
 
-        Since \marg{defense date} has no parsing performed on it, it may be entered any which way and will be typeset as-entered.
+        Since \marg{defense date} has no parsing performed on it, any valid text or expandable argument may be entered and will be typeset as-entered.
     \end{function}
 
     \begin{function} {
@@ -376,6 +397,22 @@ If, for any reason, the thesis information or metadata registered with the docum
 }
 %    \end{macrocode}
 %
+%   Semantic names for the \cs{Degree} function.
+%    \begin{macrocode}
+\DeclareDocumentCommand \Doctorate { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Doctor of Philosophy}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+}
+\DeclareDocumentCommand \Masters { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Master's}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+}
+\DeclareDocumentCommand \Bachelors { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Bachelor's}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+}
+%    \end{macrocode}
+%
 %   A simple setter command.
 %    \begin{macrocode}
 \DeclareDocumentCommand \DocumentType { m } {
@@ -383,44 +420,28 @@ If, for any reason, the thesis information or metadata registered with the docum
 }
 %    \end{macrocode}
 %
-%   A semantic setter command.
+%   Semantic names for the \cs{DocumentType} function.
 %    \begin{macrocode}
 \DeclareDocumentCommand \Dissertation { } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
         dissertation
     }
 }
-%    \end{macrocode}
-%
-%   A semantic setter command.
-%    \begin{macrocode}
 \DeclareDocumentCommand \DoctoralThesis { } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
         doctoral~thesis
     }
 }
-%    \end{macrocode}
-%
-%   A semantic setter command.
-%    \begin{macrocode}
 \DeclareDocumentCommand \MastersThesis { } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
         master's~thesis
     }
 }
-%    \end{macrocode}
-%
-%   A semantic setter command.
-%    \begin{macrocode}
 \DeclareDocumentCommand \Thesis { } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
         thesis
     }
 }
-%    \end{macrocode}
-%
-%   A semantic setter command.
-%    \begin{macrocode}
 \DeclareDocumentCommand \Prelim { } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
         preliminary~report

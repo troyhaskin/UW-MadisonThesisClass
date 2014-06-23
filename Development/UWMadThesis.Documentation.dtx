@@ -3477,6 +3477,22 @@
 }
 %    \end{macrocode}
 %
+%   Semantic names for the \cs{Degree} function.
+%    \begin{macrocode}
+\DeclareDocumentCommand \Doctorate { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Doctor of Philosophy}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+}
+\DeclareDocumentCommand \Masters { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Master's}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+}
+\DeclareDocumentCommand \Bachelors { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Bachelor's}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+}
+%    \end{macrocode}
+%
 %   A simple setter command.
 %    \begin{macrocode}
 \DeclareDocumentCommand \DocumentType { m } {
@@ -3484,44 +3500,28 @@
 }
 %    \end{macrocode}
 %
-%   A semantic setter command.
+%   Semantic names for the \cs{DocumentType} function.
 %    \begin{macrocode}
 \DeclareDocumentCommand \Dissertation { } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
         dissertation
     }
 }
-%    \end{macrocode}
-%
-%   A semantic setter command.
-%    \begin{macrocode}
 \DeclareDocumentCommand \DoctoralThesis { } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
         doctoral~thesis
     }
 }
-%    \end{macrocode}
-%
-%   A semantic setter command.
-%    \begin{macrocode}
 \DeclareDocumentCommand \MastersThesis { } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
         master's~thesis
     }
 }
-%    \end{macrocode}
-%
-%   A semantic setter command.
-%    \begin{macrocode}
 \DeclareDocumentCommand \Thesis { } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
         thesis
     }
 }
-%    \end{macrocode}
-%
-%   A semantic setter command.
-%    \begin{macrocode}
 \DeclareDocumentCommand \Prelim { } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {
         preliminary~report

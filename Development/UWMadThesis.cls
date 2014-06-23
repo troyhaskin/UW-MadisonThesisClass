@@ -1744,6 +1744,18 @@
     \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {#1}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
 }
+\DeclareDocumentCommand \Doctorate { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Doctor of Philosophy}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+}
+\DeclareDocumentCommand \Masters { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Master's}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+}
+\DeclareDocumentCommand \Bachelors { } {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Bachelor's}
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
+}
 \DeclareDocumentCommand \DocumentType { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {#1}
 }
