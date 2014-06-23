@@ -1098,6 +1098,7 @@
         }%
     }%
 \ExplSyntaxOn
+\cs_gset_eq:NN \supsubs \subsups
 \DeclareDocumentCommand \OneOver { +m } {
     \frac{1}{#1}
 }

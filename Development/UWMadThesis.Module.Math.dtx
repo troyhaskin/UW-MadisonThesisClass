@@ -10,9 +10,9 @@ These command set deal with quick and easy typesetting of derivatives.
 
 \begin{function}{\deriv , \pderiv , \tderiv}
     \begin{syntax}
-        \cs{deriv}  \Arg{function} \Arg{variable} \Arg{order}    \\
-        \cs{pderiv} \Arg{function} \Arg{variable} \Arg{order}    \\
-        \cs{tderiv} \Arg{function} \Arg{variable} \Arg{order}
+        \cs{deriv}  \marg{function} \marg{variable} \marg{order}    \\
+        \cs{pderiv} \marg{function} \marg{variable} \marg{order}    \\
+        \cs{tderiv} \marg{function} \marg{variable} \marg{order}
     \end{syntax}
     This function set is meant to typeset three different kinds of derivatives: ordinary, partial, and total (i.e., material or Lagragian).
     The only difference between them is the differential symbol: \cs{deriv} uses `$\derivSymbol$', \cs{pderiv} uses `$\pderivSymbol$', and \cs{tderiv} used `$\tderivSymbol$'.
@@ -363,24 +363,21 @@ Some are new while others are simply in a camel-cased versions of the standard o
 %
 %
 %
-%
+%   We default the \cs{frac} command to a display style for all display
+%   environments.
 %    \begin{macrocode}
-%
-%
-%
 \tex_everydisplay:D \exp_after:wN {
     \tex_the:D \tex_everydisplay:D
     \cs_set_eq:NN \frac \dfrac
 }
+%    \end{macrocode}
 %
 %
 %
 %
-%
-% =========================================================================== %
-%                             Derivative Commands                             %
-% =========================================================================== %
-%
+%   \UWSubModule{Derivative Commands}
+%   Define the token list variables for the three supported derivative types.
+%    \begin{macrocode}
 \tl_new:N   \g_UWMad_Math_derivSymbol_tl
 \tl_gset:Nn \g_UWMad_Math_derivSymbol_tl   {\mathrm{d}}
 \tl_new:N   \g_UWMad_Math_pderivSymbol_tl
@@ -393,8 +390,11 @@ Some are new while others are simply in a camel-cased versions of the standard o
 \tl_gset:Nn \g_UWMad_Math_DelimiterDefaultRight_tl {]}
 \tl_new:N   \l_UWMad_Math_DelimiterLeft_tl
 \tl_new:N   \l_UWMad_Math_DelimiterRight_tl
+%    \end{macrocode}
 %
 %
+%   Define the user interface accessors.
+%    \begin{macrocode}
 \DeclareDocumentCommand \derivSymbol { } {
     \g_UWMad_Math_derivSymbol_tl
 }
@@ -404,8 +404,11 @@ Some are new while others are simply in a camel-cased versions of the standard o
 \DeclareDocumentCommand \tderivSymbol { } {
     \g_UWMad_Math_tderivSymbol_tl
 }
+%    \end{macrocode}
 %
 %
+%   Define the user interface local mutators.
+%    \begin{macrocode}
 \DeclareDocumentCommand \derivSymbolChange { m } {
     \tl_set:Nn \g_UWMad_Math_derivSymbol_tl {#1}
 }
@@ -415,8 +418,11 @@ Some are new while others are simply in a camel-cased versions of the standard o
 \DeclareDocumentCommand \tderivSymbolChange { m } {
     \tl_set:Nn \g_UWMad_Math_tderivSymbol_tl {#1}
 }
+%    \end{macrocode}
 %
 %
+%   Define the user interface global mutators.
+%    \begin{macrocode}
 \DeclareDocumentCommand \derivSymbolChangeDefault { m } {
     \tl_gset:Nn \g_UWMad_Math_derivSymbol_tl {#1}
 }
@@ -426,14 +432,20 @@ Some are new while others are simply in a camel-cased versions of the standard o
 \DeclareDocumentCommand \tderivSymbolChangeDefault { m } {
     \tl_gset:Nn \g_UWMad_Math_tderivSymbol_tl {#1}
 }
+%    \end{macrocode}
 %
 %
+%   Define the \cs{left} and \cs{right} delimiter global mutators.
+%    \begin{macrocode}
 \DeclareDocumentCommand \DelimiterChangeDefault { m m } {
     \tl_gset:Nn  \g_UWMad_Math_DelimiterDefaultLeft_tl  {#1}
     \tl_gset:Nn  \g_UWMad_Math_DelimiterDefaultRight_tl {#2}
 }
+%    \end{macrocode}
 %
 %
+%   Define the generic regular and big derivative functions.
+%    \begin{macrocode}
 \DeclareDocumentCommand \DerivativeGeneral { +m +m m m } {
     \frac{ #4^{#3} #1      }
          { #4      #2^{#3} }
@@ -463,8 +475,11 @@ Some are new while others are simply in a camel-cased versions of the standard o
         #1 
     \right\l_UWMad_Math_DelimiterRight_tl
 }
+%    \end{macrocode}
 %
 %
+%   Define the three supported derivative types' small forms.
+%    \begin{macrocode}
 \DeclareDocumentCommand \deriv { +m +m G{} } {
     \DerivativeGeneral
         {#1}{#2}{#3}{\derivSymbol}
@@ -477,8 +492,11 @@ Some are new while others are simply in a camel-cased versions of the standard o
     \DerivativeGeneral
         {#1}{#2}{#3}{\tderivSymbol}
 }
+%    \end{macrocode}
 %
 %
+%   Define the three supported derivative types' big forms.
+%    \begin{macrocode}
 \DeclareDocumentCommand \derivbig { o +m o +m G{} } {
     \DerivativeGeneralBig
         {#2}{#4}{#5}{\derivSymbol}{#1}{#3}
@@ -491,10 +509,11 @@ Some are new while others are simply in a camel-cased versions of the standard o
     \DerivativeGeneralBig
         {#2}{#4}{#5}{\tderivSymbol}{#1}{#3}
 }
+%    \end{macrocode}
 %
-%
-%
-%
+%   \UWSubModule{Operators and Functions}
+%   Define all of the operators and function described in the user manual.
+%    \begin{macrocode}
 \DeclareMathOperator*{\Sup}    {Sup}
 \DeclareMathOperator*{\Inf}    {Inf}
 \DeclareMathOperator*{\Lim}    {Lim}
@@ -530,14 +549,13 @@ Some are new while others are simply in a camel-cased versions of the standard o
 \DeclareMathOperator{\ArcSech} {ArcSech}
 \DeclareMathOperator{\ArcCsch} {ArcCsch}
 \DeclareMathOperator{\ArcCoth} {ArcCoth}
+%    \end{macrocode}
+%
+%   \UWSubModule{Miscallaneous Functions}
 %
 %
-%
-%
-%
-% ===================================================================== %
-%                          Miscellaneous Commands                       %
-% ===================================================================== %
+%   Define the root function that has a tail.
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Math_RootWithTail:nn {
 
     \hbox_set:Nn \l_tmpa_box {
@@ -563,8 +581,11 @@ Some are new while others are simply in a camel-cased versions of the standard o
 \DeclareDocumentCommand \Sqrt { O{} m } {
     \UWMad_Math_RootWithTail:nn{#1}{#2}
 }
+%    \end{macrocode}
 %
 %
+%   User interface math mode check.
+%    \begin{macrocode}
 \DeclareExpandableDocumentCommand \IfMathModeTF { +m +m } {
     \mode_if_math:TF {
         #1
@@ -572,8 +593,19 @@ Some are new while others are simply in a camel-cased versions of the standard o
         $#2$
     }
 }
+%    \end{macrocode}
+%
+%
+%   Undefine the \cs{sups} commands defined by the IPA package.
+%    \begin{macrocode}
 \cs_gset_eq:NN \supsipa \sups
 \cs_undefine:N \sups
+%    \end{macrocode}
+%
+%
+%   Then define the \cs{subs}, \cs{sups}, and \cs{subsups} commands as
+%   described in the manual.
+%    \begin{macrocode}
 \ExplSyntaxOff
     \DeclareDocumentCommand \subs { O{} +m } {%
         \IfMathModeTF{%
@@ -597,22 +629,42 @@ Some are new while others are simply in a camel-cased versions of the standard o
         }%
     }%
 \ExplSyntaxOn
+\cs_gset_eq:NN \supsubs \subsups
+%    \end{macrocode}
 %
+%
+%   The one-over functions discussed in the manual.
+%    \begin{macrocode}
 \DeclareDocumentCommand \OneOver { +m } {
     \frac{1}{#1}
 }
 \DeclareDocumentCommand \oneo { +m } {
     \OneOver{#1}
 }
+%    \end{macrocode}
+%
+%
+%   The non-math `d' discussed in the manual.
+%    \begin{macrocode}
 \DeclareDocumentCommand \dd { m } {
     \mathrm{d}{#1}
 }
+%    \end{macrocode}
+%
+%
+%   The prime commands discussed in the manual.
+%    \begin{macrocode}
 \DeclareDocumentCommand \dprime { } {
     {\prime\prime}
 }
 \DeclareDocumentCommand \tprime { } {
     {\prime\prime\prime}
 }
+%    \end{macrocode}
+%
+%
+%   Two commands that were necessary for proper typesetting.
+%    \begin{macrocode}
 \DeclareDocumentCommand \LessThan        { } {<}
 \DeclareDocumentCommand \GreaterThanThan { } {>}
 %
