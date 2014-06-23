@@ -30,7 +30,6 @@ If the commands are used within the |document| environment, it will require anot
             \cs{Title}   \marg{title}
             \cs{Author}  \marg{author name}
             \cs{Program} \marg{program}
-            \cs{Degree}  \marg{degree}
         \end{syntax}
         Each of these commands must be used once; if not, their respective variables will be empty and usage of the \
         They can, of course, be used more than once, but the additional uses would only redefine the value of the associated variable.
@@ -50,7 +49,7 @@ If the commands are used within the |document| environment, it will require anot
         \end{syntax}
         Only one of these commands is required to define the \marg{degree} variable.
         The generic \cs{Degree} function will accept any valid text or expandable content for defining the degree variable.
-        The other three commands take no argument and a simply semantic commands for defining the degree variable:
+        The other three commands take no argument and are semantic commands for defining the degree variable:
             \begin{itemize}
             \item{\cs{Doctorate} sets \marg{degree} to \enquote{Doctor of Philosophy}}
             \item{\cs{Masters} sets \marg{degree} to \enquote{Master's}}
@@ -84,13 +83,23 @@ If the commands are used within the |document| environment, it will require anot
         The aliases were created for personal preference only.
     \end{function}
 
-    \begin{function} {\CommitteeMember}
+    \begin{function} {
+        \CommitteeMember,
+        \Advisor,
+        \Adviser
+    }
         \begin{syntax}
-            \cs{CommitteeMember} \marg{member name} \marg{member position}
+            \cs{CommitteeMember} \marg{member name}  \marg{member position}  \marg{member program}
+            \cs{Advisor}         \marg{advisor name} \marg{advisor position} \marg{advisor program}
+            \cs{Adviser}         \marg{advisor name} \marg{advisor position} \marg{advisor program}
         \end{syntax}
         \cs{CommitteeMember} can be used as many times as required.
         However, if the list of members becomes too large, formatting of the \RefSubFeature[title page]{Title Page} will suffer.
-        This may be fixed in the future but would require a much more sophisticated template for the title page (possibly using |expl3| |coffins|).
+
+        Using either the \cs{Advisor} or \cs{Adviser} commands automatically adds the advisor/adviser to the top of the committee list created by \cs{CommitteeMember}.
+        Also, on the title page's committee list, the advisor/adviser is marked as such by ``(Advisor)'' or ``(Adviser)''.
+        This is a rare exception where the choice of alias has a side-effect.
+        Either of these commands are not required but semantic in nature.
     \end{function}
 
 \UWSubFeature{Optional}
@@ -132,19 +141,6 @@ It is encouraged to use these commands in the preamble of the document.
         \item{\cs{Thesis} sets \marg{document type} to \enquote{thesis}}
         \item{\cs{Prelim} sets \marg{document type} to \enquote{preliminary report}}
     \end{itemize}
-\end{function}
-
-\begin{function} {
-    \Advisor,
-    \Adviser
-    }
-    \begin{syntax}
-        \cs{Advisor} \marg{advisor name} \marg{advisor position}
-        \cs{Adviser} \marg{advisor name} \marg{advisor position}
-    \end{syntax}
-    Using either of these commands automatically adds the advisor/adviser to the top of the committee list created by \cs{CommitteeMember}.
-    Also, on the title page's committee list, the advisor/adviser is marked as such by ``(Advisor)'' or ``(Adviser)''.
-    This is a rare exception where the choice of alias has a side-effect.
 \end{function}
 
 \begin{function} {
@@ -209,8 +205,8 @@ If, for any reason, the thesis information or metadata registered with the docum
 \UWFeature{Special Pages}
 
 \UWSubFeature{Title Page}
-This is a replace for the default \cs{maketitle}.
-Per the example provided by the \UWMadLong{} Graduate School's sample, the sample page flows (in order): thesis title, author by-line, partial fulfillment clause, degree, program, university identification, oral defense date, and oral committee list.
+This is a replacement for the default \cs{maketitle}.
+Per the example provided by the \UWMadShort{} Graduate School's sample, the title page flows (in order): report title, author by-line, partial fulfillment clause, degree, program, university identification, oral defense date, and oral committee list.
 The styles can be re-worked by redefining the commands as presented in the \RefSubModule{MakeTitlePage} implementation.
 The formatting of the commands is standard \LaTeXe{} to facilitate customization.
 
@@ -310,11 +306,12 @@ To quote from \href{http://creativecommons.org/about}{CreativeCommons.org}:
 \begin{quote}
 Creative Commons is a nonprofit organization that enables the sharing and use of creativity and knowledge through free legal tools. ...
 
-If you want to give people the right to share, use, and even build upon a work you've created, you should consider publishing it under a Creative Commons license. CC gives you flexibility (for example, you can choose to allow only non-commercial uses) and protects the people who use your work, so they don't have to worry about copyright infringement, as long as they abide by the conditions you have specified.
+If you want to give people the right to share, use, and even build upon a work you've created, you should consider publishing it under a Creative Commons license.
+CC gives you flexibility (for example, you can choose to allow only non-commercial uses) and protects the people who use your work, so they don't have to worry about copyright infringement, as long as they abide by the conditions you have specified.
 \end{quote}
 
-Therefore, the goal of CC is to begin from the ''most free'' license of public domain (termed CC0) and then add on conditions for legal use of the material.
-CC license are copyright licenses in that (aside from CC0) that author retains certain ownership rights, but a subset of the rights are relaxed or waived to encourage free sharing and extension of the work.
+Therefore, the goal of CC is to begin from the ``most free'' license of public domain (termed CC0) and then add on conditions for legal use of the material.
+CC licenses are copyright licenses in that (aside from CC0) the author retains certain ownership rights, but a subset of the rights are relaxed or waived to encourage free sharing and extension of the work.
 To this end, Creative Commons defines the following four conditions:
 \begin{description}
     \item[Attribution]{
@@ -333,7 +330,7 @@ To this end, Creative Commons defines the following four conditions:
 \end{description}
 These conditions are then combined into six, non-contradictory licenses.
 The licenses are ``layered'' into Legal Code (the official text determining the delineating usage), the License deed (non-legal text aimed to be non-lawyer readable), and machine readable code (the license put into an HTML-like style for search engines).
-The CC licenses and associated links) for the latest version are
+The CC licenses (and associated links) for the latest version are
 \begin{description}
     \item[CC BY]{
         \hfill\\
@@ -381,8 +378,8 @@ The CC licenses and associated links) for the latest version are
 
 Prior to version 4.0 (the current one), there were a number of ``ports'' of the licenses to particular locales to deal with the specifics of individual countries.
 However, with the release of version 4.0 of the CC licenses, usage of the international version is highly encouraged as ports will be made ``\href{http://wiki.creativecommons.org/License_Versions#International_License_Development_Process}{only where a compelling need is demonstrated}''.
-As such, version 4.0 International is the default license base for the \UWMadClass{} class.
-Of course, this choice can be changed.
+As such, version 4.0 International is the default license base for the \UWMadClass{}.
+Of course, this choice can be circumvented.
 
 \begin{function}{\CreativeCommons}
     \begin{syntax}
@@ -426,7 +423,7 @@ This input would generate the following text at the bottom of a new page (with a
         \ExplSyntaxOff
     \end{LicensePage}
 \end{center}
-Notice that since neither the \cs{LicenseOwner} nor \cs{LicenseYear} commands were used, the author of this document and then-current year were used as defaults.
+Notice that since neither the \cs{LicenseOwner} nor \cs{LicenseYear} commands were used, the author of this document and current year were used as defaults.
 
 \begin{function}{
     \CCVersion,

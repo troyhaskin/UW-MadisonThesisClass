@@ -1873,6 +1873,7 @@
 }
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
+        \skip_horizontal:n{2em}
         \g__UWMad_ThesisInfo_AdvisorName_tl{}
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         \
@@ -1963,7 +1964,7 @@
 
 \DeclareDocumentCommand \TitlePageDegree { } {
     \IfInfoIsSetT {Degree} {
-        \TheDegree{}
+        (\TheDegree{})
     }
 }
 
