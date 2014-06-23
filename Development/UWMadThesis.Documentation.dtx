@@ -423,46 +423,77 @@
 %
 %
 %
-%   \begin{macro} {
-%       \UWMad_Hook_Prepend:nn,
-%       \UWMad_Hook_Append:nn}
-%   These commands allow additional code to be prepended or appended to a
+%   \begin{function} {
+%       \UWMad_Hook_Prepend:cn,
+%       \UWMad_Hook_Prepend:Nn}
+%       \begin{syntax}
+%           \cs{UWMad_Hook_Prepend:cn} \Arg{command name} \Arg{prepend code}
+%           \cs{UWMad_Hook_Prepend:Nn} \meta{command} \Arg{prepend code}
+%       \end{syntax}
+%
+%   These commands allow additional code to be prepended to a
 %   specified command.
 %
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_Hook_Prepend:nn{
+\cs_new:Nn \UWMad_Hook_Prepend:cn {
     \cs_new_eq:cc  {#1-Default:} {#1}
     \cs_gset:cn    {#1:}         {#2 \cs:w #1-Default:\cs_end:}
     \cs_undefine:c {#1}
     \cs_new_eq:cc  {#1}          {#1:}
 }
-\cs_new:Nn \UWMad_Hook_Append:nn{
-    \cs_new_eq:cc  {#1-Default:} {#1}
-    \cs_gset:cn    {#1:}        {\cs:w #1-Default:\cs_end: #2}
-    \cs_undefine:c {#1}
-    \cs_new_eq:cc  {#1}          {#1:}
-}
-\cs_new:Nn \UWMad_Hook_Prepend:Nn{
+\cs_new:Nn \UWMad_Hook_Prepend:Nn {
     \cs_new_eq:cN  {\string#1-Default:} #1
     \cs_gset:cn    {\string#1:}         {#2 \cs:w\string#1-Default:\cs_end:}
     \cs_undefine:N  #1
     \cs_new_eq:Nc   #1          {\string#1:}
 }
-\cs_new:Nn \UWMad_Hook_Append:Nn{
+%    \end{macrocode}
+%   \end{function}
+%
+%
+%   \begin{function} {
+%       \UWMad_Hook_Append:cn,
+%       \UWMad_Hook_Append:Nn}
+%       \begin{syntax}
+%           \cs{UWMad_Hook_Append:cn} \Arg{command name} \Arg{append code}
+%           \cs{UWMad_Hook_Append:Nn} \meta{command} \Arg{append code}
+%       \end{syntax}
+%
+%   These commands allow additional code to be appended to a
+%   specified command.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_Hook_Append:cn {
+    \cs_new_eq:cc  {#1-Default:} {#1}
+    \cs_gset:cn    {#1:}        {\cs:w #1-Default:\cs_end: #2}
+    \cs_undefine:c {#1}
+    \cs_new_eq:cc  {#1}          {#1:}
+}
+\cs_new:Nn \UWMad_Hook_Append:Nn {
     \cs_new_eq:cN  {\string#1-Default:} #1
     \cs_gset:cn    {\string#1:}         {\cs:w\string#1-Default:\cs_end: #2}
     \cs_undefine:N  #1
     \cs_new_eq:Nc   #1          {\string#1:}
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
 %
-%   \begin{macro} {
-%       \UWMad_Definition_Swap:nn,
-%       \UWMad_Definition_Reset:nn}
+%   \begin{function} {
+%       \UWMad_Definition_Swap:Nn,
+%       \UWMad_Definition_Reset:N,
+%       \UWMad_Definition_Swap:cn,
+%       \UWMad_Definition_Reset:c}
+%
+%       \begin{syntax}
+%           \cs{UWMad_Definition_Swap:Nn} \meta{command} \Arg{replacement code}
+%           \cs{UWMad_Definition_Reset:N} \meta{command}
+%           \cs{UWMad_Definition_Swap:cn} \Arg{command name} \Arg{replacement code}
+%           \cs{UWMad_Definition_Reset:c} \Arg{command name}
+%       \end{syntax}
+%
 %   These commands \enquote{swap} in a new definition of a command and,
 %   when called, reset it to it's default definition.
 %
@@ -484,22 +515,23 @@
 \cs_generate_variant:Nn \UWMad_Definition_Swap:Nn {cn}
 \cs_generate_variant:Nn \UWMad_Definition_Reset:N {c}
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
-%   \begin{macro}[internal]{
+%   \begin{function}{
 %       \__UWMad_IfDefined:nnnnT,
 %       \__UWMad_IfUndefined:nnnnT}
+%
+%   \begin{syntax}
+%       \cs{__UWMad_IfDefined:nnnnT}\Arg{Prefix}\Arg{ID}\Arg{Suffix}\Arg{Type}\Arg{Code}
+%       \cs{__UWMad_IfUndefined:nnnnT}\Arg{Prefix}\Arg{ID}\Arg{Suffix}\Arg{Type}\Arg{Code}
+%   \end{syntax}
+%
 %   These commands accept a \marg{Prefix}, an \marg{ID}, a \marg{Suffix},
 %   a \marg{Type}, and \marg{Code}.  It determines if a command named by the
 %   concatenation of \marg{Prefix}, \marg{ID}, and \marg{Suffix}
 %   is defined or not and executes \marg{Code} depending on the existence.
-%
-%   \begin{Usage}
-%       \item |\__UWMad_IfUndefined:nnnnT|
-%           \marg{Prefix}\marg{ID}\marg{Suffix}\marg{Type}\marg{Code}
-%   \end{Usage}
 %
 %    \begin{macrocode}
 \cs_new:Nn \__UWMad_IfDefined:nnnnT{
@@ -525,30 +557,29 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
-%   \begin{macro}[internal]{
+%   \begin{function}{
 %       \__UWMad_IfDefined:nT,
 %       \__UWMad_IfUndefined:nT}
+%   \begin{syntax}
+%       \cs{__UWMad_IfDefined:nT}\Arg{CommandName}\Arg{TrueCode}
+%       \cs{__UWMad_IfUndefined:nT}\Arg{CommandName}\Arg{TrueCode}
+%   \end{syntax}
 %   These commands are simplifications of the above commands and
 %   that only take a \marg{CommandName} and \marg{TrueCode}.
 %
-%   \begin{Usage}
-%       \item |\__UWMad_IfUndefined:nT|
-%           \marg{CommandName}\marg{TrueCode}
-%   \end{Usage}
-%
 %    \begin{macrocode}
 \cs_new:Nn \__UWMad_IfDefined:nT{
-    \_UWMad_IfDefined:nnnnT{#1}{}{}{command}{#2}
+    \_UWMad_IfDefined:nnnnT{}{#1}{}{command}{#2}
 }
 \cs_new:Nn \__UWMad_IfUndefined:nT{
-    \_UWMad_IfUndefined:nnnnT{#1}{}{}{command}{#2}
+    \_UWMad_IfUndefined:nnnnT{}{#1}{}{command}{#2}
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
@@ -588,9 +619,13 @@
 %
 %
 %
-%   \begin{macro}[internal]{
-%       \__UWMad_Stack_IfDefined:nT,
-%       \__UWMad_Stack_IfUndefined:nT}
+%   \begin{function}{
+%       \@@@@UWMad_Stack_IfDefined:nT,
+%       \@@@@UWMad_Stack_IfUndefined:nT}
+%       \begin{syntax}
+%           \cs{__UWMad_Stack_IfDefined:nT}\Arg{stack name}\Arg{true code}
+%           \cs{__UWMad_Stack_IfUndefined:nT}\Arg{stack name}\Arg{true code}
+%       \end{syntax}
 %   Shortcuts for the more general commands outlined above.
 %
 %    \begin{macrocode}
@@ -601,10 +636,10 @@
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Stack_}{#1}{}{Stack}{#2}
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Stack_Define:n}
+%   \begin{function}{\UWMad_Stack_Define:n}
 %   Define a new Stack.
 %
 %    \begin{macrocode}
@@ -614,10 +649,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Stack_Clear:n}
+%   \begin{function}{\UWMad_Stack_Clear:n}
 %   Clear but do not undefine a defined Stack.
 %
 %    \begin{macrocode}
@@ -627,10 +662,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Stack_Delete:n}
+%   \begin{function}{\UWMad_Stack_Delete:n}
 %   Clear and undefine a defined Stack.
 %
 %    \begin{macrocode}
@@ -641,10 +676,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Stack_Push:nn}
+%   \begin{function}{\UWMad_Stack_Push:nn}
 %   Push a value on to a defined Stack.
 %
 %    \begin{macrocode}
@@ -658,10 +693,10 @@
 \cs_generate_variant:Nn \tl_head:N { c }
 \cs_generate_variant:Nn \tl_tail:N { c }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Stack_Pop:n}
+%   \begin{function}{\UWMad_Stack_Pop:n}
 %   Pop a value off a defined Stack and place it in the
 %   input stream.
 %
@@ -674,10 +709,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Stack_Walk:nn}
+%   \begin{function}{\UWMad_Stack_Walk:nn}
 %   Iterate of the elements of a defined Stack in a FILO sense
 %   with supplied code.
 %
@@ -686,7 +721,7 @@
     \tl_map_inline:cn {g__UWMad_Stack_#1} {#2}
 }
 %    \end{macrocode}
-%    \end{macro}
+%    \end{function}
 %
 %
 %
@@ -703,7 +738,7 @@
 %
 %
 %
-%   \begin{macro}[internal]{
+%   \begin{function} {
 %       \__UWMad_Queue_IfDefined:nT,
 %       \__UWMad_Queue_IfUndefined:nT}
 %   Shortcuts for the more general commands outlined above.
@@ -716,10 +751,10 @@
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Queue_}{#1}{}{Queue}{#2}
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Queue_Define:n}
+%   \begin{function}{\UWMad_Queue_Define:n}
 %   Define a new Queue.
 %
 %    \begin{macrocode}
@@ -729,10 +764,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Queue_Clear:n}
+%   \begin{function}{\UWMad_Queue_Clear:n}
 %   Clear but do not undefine a defined Queue.
 %
 %    \begin{macrocode}
@@ -742,10 +777,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Queue_Delete:n}
+%   \begin{function}{\UWMad_Queue_Delete:n}
 %   Clear and undefine a defined Queue.
 %
 %    \begin{macrocode}
@@ -756,10 +791,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Queue_Pop:nn}
+%   \begin{function}{\UWMad_Queue_Pop:nn}
 %   Push an item on to the start of a defined Queue.
 %
 %    \begin{macrocode}
@@ -773,10 +808,10 @@
 \cs_generate_variant:Nn \tl_head:N { c }
 \cs_generate_variant:Nn \tl_tail:N { c }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Queue_Pop:n}
+%   \begin{function}{\UWMad_Queue_Pop:n}
 %   Pop an item from the end of a defined Queue
 %   and place it in the input stream.
 %
@@ -793,10 +828,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Queue_Walk:nn}
+%   \begin{function}{\UWMad_Queue_Walk:nn}
 %   Iterate of the elements of a defined Queue in a FIFO sense
 %   with supplied code.
 %
@@ -810,10 +845,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Queue_IfEmpty:nTF}
+%   \begin{function}{\UWMad_Queue_IfEmpty:nTF}
 %   Execute true/false code depending on the emptiness
 %   of a defined Queue.
 %
@@ -828,7 +863,7 @@
     }
 }
 %    \end{macrocode}
-%    \end{macro}
+%    \end{function}
 %
 %
 %^^A ======================================================================= %
@@ -843,7 +878,7 @@
 %
 %
 %
-%   \begin{macro}[internal]{
+%   \begin{function} {
 %       \__UWMad_Deque_IfDefined:nT,
 %       \__UWMad_Deque_IfUndefined:nT}
 %   Shortcuts for the more general  commands outlined above.
@@ -856,10 +891,10 @@
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Deque_}{#1}{}{Deque}{#2}
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Deque_Define:n}
+%   \begin{function}{\UWMad_Deque_Define:n}
 %   Define a new Deque.
 %
 %    \begin{macrocode}
@@ -869,10 +904,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Deque_Clear:n}
+%   \begin{function}{\UWMad_Deque_Clear:n}
 %   Clear but do not undefine a defined Deque.
 %
 %    \begin{macrocode}
@@ -882,10 +917,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Deque_Clear:n}
+%   \begin{function}{\UWMad_Deque_Delete:n}
 %   Clear and undefine a defined Deque.
 %
 %    \begin{macrocode}
@@ -896,10 +931,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{
+%   \begin{function}{
 %       \UWMad_Deque_PushLeft:nn,
 %       \UWMad_Deque_PushRight:nn}
 %   Push an element on to the left or right of a defined Deque.
@@ -916,12 +951,12 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{
-%       \UWMad_Deque_PushLeft:nn,
-%       \UWMad_Deque_PushRight:nn}
+%   \begin{function}{
+%       \UWMad_Deque_PopLeft:nn,
+%       \UWMad_Deque_PopRight:nn}
 %   Pop an element from the left or right of a defined Deque
 %   and place it into the input stream.
 %
@@ -939,10 +974,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{
+%   \begin{function}{
 %       \UWMad_Deque_WalkLeftToRight:nn,
 %       \UWMad_Deque_WalkRightToLeft:nn}
 %   Iterate over the elements left-to-right or right-to-left
@@ -964,7 +999,7 @@
     }
 }
 %    \end{macrocode}
-%    \end{macro}
+%    \end{function}
 %
 %
 %
@@ -1005,7 +1040,7 @@
 %    \end{macrocode}
 %
 %
-%   \begin{macro}[internal]{
+%   \begin{function} {
 %       \__UWMad_Hash_IfDefined:nT,
 %       \__UWMad_Hash_IfUndefined:nT}
 %   Shortcuts for the more general commands outlined above.
@@ -1018,10 +1053,10 @@
     \__UWMad_IfUndefined:nnnnT{g__UWMad_Hash_}{#1}{}{Hash}{#2}
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Hash_Define:n}
+%   \begin{function}{\UWMad_Hash_Define:n}
 %   Define a new Hash.
 %
 %    \begin{macrocode}
@@ -1031,10 +1066,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Hash_Set:nnn}
+%   \begin{function}{\UWMad_Hash_Set:nnn}
 %   Set the value of a key of a defined Hash.
 %
 %   \begin{Usage}
@@ -1048,10 +1083,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Hash_Get:nn}
+%   \begin{function}{\UWMad_Hash_Get:nn}
 %   Get the value of a key of a defined Hash and place
 %   it into the input stream.
 %
@@ -1063,10 +1098,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Hash_Unset:nn}
+%   \begin{function}{\UWMad_Hash_Unset:nn}
 %   Undefine a key-value pair in a defined Hash.
 %
 %    \begin{macrocode}
@@ -1076,10 +1111,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Hash_IfKeySet:nnTF}
+%   \begin{function}{\UWMad_Hash_IfKeySet:nnTF}
 %   Execute true/false code depending on if a key is set in
 %   a defined Hash.
 %
@@ -1095,10 +1130,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Hash_Walk:nn}
+%   \begin{function}{\UWMad_Hash_Walk:nn}
 %   Iterate over the key-value pairs of a defined Hash with
 %   supplied code. \textbf{No order is gauranteed.}
 %
@@ -1109,10 +1144,10 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\UWMad_Hash_Delete:n}
+%   \begin{function}{\UWMad_Hash_Delete:n}
 %   Clear and undefine a defined Hash.
 %
 %    \begin{macrocode}
@@ -1123,7 +1158,7 @@
     }
 }
 %    \end{macrocode}
-%    \end{macro}
+%    \end{function}
 %
 %
 %
@@ -1142,7 +1177,7 @@
 %   \UWSubSubModule{Utility Commands}
 %
 %
-%   \begin{macro}{\IfCommandExists,\IfCommandDoesNotExist}
+%   \begin{function}{\IfCommandExists,\IfCommandDoesNotExist}
 %   This command pair is used instead of \LaTeX{}'s |\@ifundefined|.
 %   Since it is \eTeX{}, this command will allow for a switch to
 %   |\@ifundefined| if problems arise from non-\eTeX{} users in the
@@ -1169,11 +1204,11 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
-%   \begin{macro}{\IfStringEmpty}
+%   \begin{function}{\IfStringEmpty}
 %   Checks if a given string is empty.
 %   It uses the |etoolbox|'s |\ifblank|.
 %   This command will not expand input.
@@ -1192,11 +1227,11 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
-%   \begin{macro}{\IfCommandEmpty}
+%   \begin{function}{\IfCommandEmpty}
 %   Uses the |etoolbox|'s |\ifdefempty| command to test if a command expands
 %   to an empty string and is followed by the given conditional code.
 %
@@ -1213,7 +1248,7 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
@@ -1227,7 +1262,7 @@
 %   \UWSubSubModule{Command Creators}
 %
 %
-%   \begin{macro}{\MakeCommand,\ReMakeCommand}
+%   \begin{function}{\MakeCommand,\ReMakeCommand}
 %   This command pair uses the |etoolbox|'s |\csdef| to define a commands
 %   via a supplied string \marg{Command Name} and a set of \marg{Code}.
 %   If the requested command is not defined, |\MakeCommand| will create it;
@@ -1260,11 +1295,11 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
-%   \begin{macro}{\MakeGlobalCommand}
+%   \begin{function}{\MakeGlobalCommand}
 %   Similar to |\MakeCommand| except the creation is made regardless of the
 %   requested command's definition and the creation is global.
 %
@@ -1277,10 +1312,10 @@
     \cs_gset:cpn {#2} #1 {#3}
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
-%   \begin{macro}{\MakeCommandUndefined}
+%   \begin{function}{\MakeCommandUndefined}
 %   Globally undefines the command specified by \marg{Command Name}.
 %
 %   \begin{Usage}
@@ -1292,11 +1327,11 @@
     \cs_undefine:c {#1}
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
-%   \begin{macro}{\CopyCommand}
+%   \begin{function}{\CopyCommand}
 %   Copies the defintion of the command named \marg{Command Name 1} to
 %   a new command named \marg{Command Name 2}.  If \marg{Command Name 2}
 %   already has a definition, |\CopyCommand| will throw a warning
@@ -1321,7 +1356,7 @@
     }
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
@@ -1329,7 +1364,7 @@
 %
 %   \UWSubSubModule{Types}
 %
-%   \begin{macro}{
+%   \begin{function}{
 %       \CreateBoolean,
 %       \CreateBooleanTrue,
 %       \CreateBooleanFalse,
@@ -1370,11 +1405,11 @@
     }
 }
 %    \end{macrocode}
-%    \end{macro}
+%    \end{function}
 %
 %
 %
-%   \begin{macro}{
+%   \begin{function}{
 %       \CreateLength,
 %       \AddToLength,
 %       \SetLength,
@@ -1403,11 +1438,11 @@
     }
 }
 %    \end{macrocode}
-%    \end{macro}
+%    \end{function}
 %
 %
 %
-%   \begin{macro}{
+%   \begin{function}{
 %       \CreateCounter,
 %       \AddToCounter,
 %       \StepCounter,
@@ -1460,7 +1495,7 @@
     \int_to_roman:c {g__UWMad_Programming_API_#1_int}
 }
 %    \end{macrocode}
-%    \end{macro}
+%    \end{function}
 %
 %
 %
@@ -3408,7 +3443,7 @@
 \tl_gset:Nn \g__UWMad_ThesisInfo_DocumentType_tl {report}
 %    \end{macrocode}
 %
-%   Define some booleans for required information/
+%   Define some booleans for required information.
 %    \begin{macrocode}
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_Title_bool
 \bool_new:N \g__UWMad_ThesisInfo_IsSet_Author_bool

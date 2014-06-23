@@ -140,25 +140,25 @@
 \msg_new:nnn {UWMadThesis} {Programming/Defined} {
     The~#2~`#1'~is~already~defined~and~will~not~altered.
 }
-\cs_new:Nn \UWMad_Hook_Prepend:nn{
+\cs_new:Nn \UWMad_Hook_Prepend:cn {
     \cs_new_eq:cc  {#1-Default:} {#1}
     \cs_gset:cn    {#1:}         {#2 \cs:w #1-Default:\cs_end:}
     \cs_undefine:c {#1}
     \cs_new_eq:cc  {#1}          {#1:}
 }
-\cs_new:Nn \UWMad_Hook_Append:nn{
-    \cs_new_eq:cc  {#1-Default:} {#1}
-    \cs_gset:cn    {#1:}        {\cs:w #1-Default:\cs_end: #2}
-    \cs_undefine:c {#1}
-    \cs_new_eq:cc  {#1}          {#1:}
-}
-\cs_new:Nn \UWMad_Hook_Prepend:Nn{
+\cs_new:Nn \UWMad_Hook_Prepend:Nn {
     \cs_new_eq:cN  {\string#1-Default:} #1
     \cs_gset:cn    {\string#1:}         {#2 \cs:w\string#1-Default:\cs_end:}
     \cs_undefine:N  #1
     \cs_new_eq:Nc   #1          {\string#1:}
 }
-\cs_new:Nn \UWMad_Hook_Append:Nn{
+\cs_new:Nn \UWMad_Hook_Append:cn {
+    \cs_new_eq:cc  {#1-Default:} {#1}
+    \cs_gset:cn    {#1:}        {\cs:w #1-Default:\cs_end: #2}
+    \cs_undefine:c {#1}
+    \cs_new_eq:cc  {#1}          {#1:}
+}
+\cs_new:Nn \UWMad_Hook_Append:Nn {
     \cs_new_eq:cN  {\string#1-Default:} #1
     \cs_gset:cn    {\string#1:}         {\cs:w\string#1-Default:\cs_end: #2}
     \cs_undefine:N  #1
@@ -203,10 +203,10 @@
     }
 }
 \cs_new:Nn \__UWMad_IfDefined:nT{
-    \_UWMad_IfDefined:nnnnT{#1}{}{}{command}{#2}
+    \_UWMad_IfDefined:nnnnT{}{#1}{}{command}{#2}
 }
 \cs_new:Nn \__UWMad_IfUndefined:nT{
-    \_UWMad_IfUndefined:nnnnT{#1}{}{}{command}{#2}
+    \_UWMad_IfUndefined:nnnnT{}{#1}{}{command}{#2}
 }
 \cs_new:Nn \__UWMad_Stack_IfDefined:nT {
     \__UWMad_IfDefined:nnnnT{g__UWMad_Stack_}{#1}{}{Stack}{#2}
