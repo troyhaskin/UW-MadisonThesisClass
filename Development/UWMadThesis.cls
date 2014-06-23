@@ -1745,7 +1745,7 @@
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
 }
 \DeclareDocumentCommand \Doctorate { } {
-    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Doctor of Philosophy}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_Degree_tl {Doctor~of~Philosophy}
     \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Degree_bool
 }
 \DeclareDocumentCommand \Masters { } {
@@ -1856,11 +1856,13 @@
 }
 \tl_new:N   \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
 \tl_gset:Nn \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl {,}
-\int_new:N \l__UWMad_ThesisInfo_CommitteeCount_int
+\int_new:N \g__UWMad_ThesisInfo_CommitteeCount_int
 \UWMad_ListOf_Define:n {CommitteeList}
 \DeclareDocumentCommand \CommitteeMember { m m m } {
-    \int_incr:N \l__UWMad_ThesisInfo_CommitteeCount_int
+    \int_gincr:N \g__UWMad_ThesisInfo_CommitteeCount_int
     \UWMad_ListOf_PushEntry:nn {CommitteeList} {
+        \tex_hbox:D{}
+        \skip_horizontal:n{2em}
         #1
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         \
@@ -1872,7 +1874,10 @@
     }
 }
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
+    {
+    \setstretch{1}
     \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
+        \tex_hbox:D{}
         \skip_horizontal:n{2em}
         \g__UWMad_ThesisInfo_AdvisorName_tl{}
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
@@ -1886,6 +1891,7 @@
         \skip_vertical:n{-1em}
     } { }
     \UWMad_ListOf_PrintEntries:n {CommitteeList}
+    }
 }
 \tl_new:N \g__UWMad_PDFMetaData_Subject_tl
 \tl_new:N \g__UWMad_PDFMetaData_Keywords_tl
@@ -1976,7 +1982,9 @@
 
 \DeclareDocumentCommand \TitlePageInstitution { } {
     \IfInfoIsSetT {Institution} {
-        \textsc{\TheInstitution{}}
+        at~the                      \\[0.50em]
+        \textsc{\TheInstitution{}}  \\[0.50em]
+         \the\year
     }
 }
 

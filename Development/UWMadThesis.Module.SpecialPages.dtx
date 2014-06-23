@@ -333,7 +333,9 @@ This input would generate the following text at the bottom of a new page (with a
 
 \DeclareDocumentCommand \TitlePageInstitution { } {
     \IfInfoIsSetT {Institution} {
-        \textsc{\TheInstitution{}}
+        at~the                      \\[0.50em]
+        \textsc{\TheInstitution{}}  \\[0.50em]
+         \the\year
     }
 }
 
