@@ -51,12 +51,19 @@
     \Entry{$\rho$}{Density}
 \end{Nomenclature}
 
+\ExplSyntaxOn
+    \file_add_path:nN{\c_job_name_tl}\l_tmpa_tl
+    \typeout{!!!!!!!!!!!!!!!!!!\l_tmpa_tl}
+\ExplSyntaxOff
+\IncludeChapter{Chapter-1}{Main}
+\IncludeChapter{Chapter-2}{Main}
 
-\chapter{First Chapter}
+
+\chapter{Three Chapter}
 \lipsum[2-3]
 
 
-\chapter{Second Chapter}
+\chapter{Four Chapter}
 \lipsum[4-6]
 
 

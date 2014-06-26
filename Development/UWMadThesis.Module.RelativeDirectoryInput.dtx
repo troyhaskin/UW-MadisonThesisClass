@@ -1,118 +1,209 @@
-% =============================================================================================== %
-%                                Relative Directory Input Commands                                %
-% =============================================================================================== %
+%<*UserGuide>
 
-\newif\ifUWMad@DefaultFileNameDefined\UWMad@DefaultFileNameDefinedfalse
-\newcommand{\TheDefaultFileName}    {}
-\newcommand{\DefaultFileName}   [1] {\renewcommand{\TheDefaultFileName}{#1}\UWMad@DefaultFileNameDefinedtrue}
 
-\newcommand{\DirectoryPrefixChapter} {Chapter-}
-\newcommand{\DirectoryPrefixAppendix}{Appendix-}
-\newcommand{\DirectoryPrefixSections}{Sections}
+%</UserGuide>
+%
+%
+%
+%
+%
+%
+%<*Implementation>
+%<<Verbatim
+%   \iffalse
+%<*Code>
+%   \fi
+%
+% \UWModule{Relative Directory Input}
+%
+%
+%
+%    \begin{macrocode}
+\keys_define:nn { UWMadThesis / RelativeDirectory } {
+    chapter-directory-prefix    .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Chapter_Prefix_tl,
+    chapter-directory-suffix    .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Chapter_Suffix_tl,
+    section-directory-prefix    .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Section_Prefix_tl,
+    section-directory-suffix    .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Section_Suffix_tl,
+    subsection-directory-prefix .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Subsection_Prefix_tl,
+    subsection-directory-suffix .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Subsection_Suffix_tl,
+    chapter-directory-prefix    .default:n = ,
+    chapter-directory-suffix    .default:n = ,
+    section-directory-prefix    .default:n = ,
+    section-directory-suffix    .default:n = ,
+    subsection-directory-prefix .default:n = ,
+    subsection-directory-suffix .default:n = ,
+}
+\keys_set:nn { UWMadThesis / RelativeDirectory } {
+    chapter-directory-prefix,
+    chapter-directory-suffix,
+    section-directory-prefix,
+    section-directory-suffix,
+    subsection-directory-prefix,
+    subsection-directory-suffix
+}
 
-%\newcommand{\CurrentFileName}  {}
-%\global\def\CurrentFileName{}
-\newcommand{\ChapterDirectory} {}
-\newcommand{\AppendixDirectory}{}
-\newcommand{\SectionsDirectory}{}
+\DeclareDocumentCommand \RelativeDirectorySetup { m } {
+    \keys_set:nn { UWMadThesis / RelativeDirectory } { #1 }
+}
 
-\newcommand{\UpdateChapterDirectory} [1]{\renewcommand{\ChapterDirectory} {\DirectoryPrefixChapter#1} }
-\newcommand{\UpdateAppendixDirectory}[1]{\renewcommand{\AppendixDirectory}{\DirectoryPrefixAppendix#1}}
-\newcommand{\UpdateSectionsDirectory}[1]{\renewcommand{\SectionsDirectory}{\DirectoryPrefixSections#1}}
 
-\newif\ifUWMad@LoadUnsuccessful\UWMad@LoadUnsuccessfultrue
-\newif\ifUWMad@NotAlreadyLoaded\UWMad@NotAlreadyLoadedfalse
 
-\newcommand{\InputIfFileExistsAndIsNotCurrentFile}[3]{
-    
-    \@ifundefined{#1FileLoaded}{
 
-        \InputIfFileExists{#1}{
-            \MakeCommand{#1FileLoaded}{}
-            #2
-            \UWMad@ClassMessage{Loaded #1.}
-        }{
-            \UWMad@ClassMessage{The file #1.tex does not exist.}
-            #3
+\tl_new:N  \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl
+\tl_new:N  \g__UWMad_RelativeDirectory_Chapter_CurrentName_tl
+\tl_new:N  \g__UWMad_RelativeDirectory_Section_CurrentPath_tl
+\tl_new:N  \g__UWMad_RelativeDirectory_Section_CurrentName_tl
+\tl_new:N  \g__UWMad_RelativeDirectory_Subsection_CurrentPath_tl
+\tl_new:N  \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
+\seq_new:N \g__UWMad_RelativeDirectory_PathStack_seq
+
+\bool_new:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+
+\DeclareDocumentCommand \IncludeChapter { m g } {
+
+    \UWMad_RelativeDirectory_Chapter_UpdatePathStack:n{#1}
+
+    \IfNoValueTF { #2 } {
+        \UWMad_RelativeDirectory_InputFile:n {
+            \g__UWMad_RelativeDirectory_Chapter_CurrentName_tl
         }
-        
-    }{
-        \UWMad@NotAlreadyLoadedfalse
-        \ClassWarning{\UWMad@ClassName}{The File #1 was already input. It was not input again.}
+    } {
+        \UWMad_RelativeDirectory_InputFile:n {#2}
     }
+
 }
 
-\newcommand{\AttemptToLoadFile}[2]{ % #1 = path, #2 = FileName
+\DeclareDocumentCommand \IncludeSection { m g } {
+    \UWMad_RelativeDirectory_Section_UpdatePathStack:n{#1}
 
-    \UWMad@LoadUnsuccessfultrue                                     % Set load to unsuccessful
+    \IfNoValueTF { #2 } {
+        \UWMad_RelativeDirectory_InputFile:n {
+            \g__UWMad_RelativeDirectory_Section_CurrentName_tl
+        }
+    } {
+        \UWMad_RelativeDirectory_InputFile:n {#2}
+    }
 
-    \edef\TheFile{#1/#2}
-    \InputIfFileExistsAndIsNotCurrentFile{\TheFile}{                 % Look for ./Path/FileName.tex
-        \UWMad@LoadUnsuccessfulfalse                                % Load was successful
-    }{
-        \ifUWMad@DefaultFileNameDefined
-            \edef\TheFile{#1/\TheDefaultFileName}                                   
-            \InputIfFileExistsAndIsNotCurrentFile{\TheFile}{    % Look for ./Path/DefaultFileName.tex
-                \UWMad@LoadUnsuccessfulfalse                    % Load was successful
-            }{
-                \edef\TheFile{#2}                                   
-                \InputIfFileExistsAndIsNotCurrentFile{\TheFile}{    % Look for ./FileName.tex
-                    \UWMad@LoadUnsuccessfulfalse                    % Load was successful
-                }{
-                    % ****** NOT FOUND AT ALL ****** %
-                }
-            }
+}
+\DeclareDocumentCommand \IncludeSubsection { m g } {
+    \UWMad_RelativeDirectory_Subsection_UpdatePathStack:n{#1}
 
-        \else
-            \edef\TheFile{#2}                                   
-            \InputIfFileExistsAndIsNotCurrentFile{\TheFile}{    % Look for ./FileName.tex
-                \UWMad@LoadUnsuccessfulfalse                   % Load was successful
-            }{
-                % ****** NOT FOUND AT ALL ****** %
-            }
-        \fi
+    \IfNoValueTF { #2 } {
+        \UWMad_RelativeDirectory_InputFile:n {
+            \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
+        }
+    } {
+        \UWMad_RelativeDirectory_InputFile:n {#2}
     }
 }
 
 
-\newcommand{\InputChapter}[2]{
-    \UWMad@NotAlreadyLoadedtrue
-    \UpdateChapterDirectory{#1}             % Update the current Chapter Directory
-    \AttemptToLoadFile{\ChapterDirectory}{#2} % Attempt to input the file
+\cs_new:Nn \UWMad_RelativeDirectory_Chapter_UpdatePathStack:n {
 
-    \ifUWMad@LoadUnsuccessful
-        \ifUWMad@NotAlreadyLoaded
-            \ClassWarning{\UWMad@ClassName}{Did not find #2.tex in \ChapterDirectory\space directory or in the parent directory.}
-        \fi
-    \fi 
+    \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_seq
+
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl {
+        \g__UWMad_RelativeDirectory_Chapter_Prefix_tl
+        #1
+        \g__UWMad_RelativeDirectory_Chapter_Suffix_tl
+    }
+    \tl_gset_eq:NN
+        \g__UWMad_RelativeDirectory_Chapter_CurrentName_tl
+        \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl
+    \seq_gpush:Nn \g__UWMad_RelativeDirectory_PathStack_seq {
+        \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl
+    }
 
 }
 
-\newcommand{\InputAppendix}[1]{
-    % The appendix is a special kind of chapter, so the commands are not duplicated.
-    \renewcommand{\DirectoryPrefixChapter}{\DirectoryPrefixAppendix}    % Redefine the prefix
-    \InputChapter{#1}                                                   % Call the chapter input command
+
+\cs_new:Nn \UWMad_RelativeDirectory_Section_UpdatePathStack:n {
+
+    \tl_if_blank:NTF \g__UWMad_RelativeDirectory_Section_CurrentName_tl { } {
+        \seq_gpop:NN \g__UWMad_RelativeDirectory_PathStack_seq \g_tmpa_seq
+    }
+
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_Section_CurrentName_tl {
+        \g__UWMad_RelativeDirectory_Section_Prefix_tl
+        #1
+        \g__UWMad_RelativeDirectory_Section_Suffix_tl
+    }
+    \tl_if_blank:NTF \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl {
+        \tl_gset_eq:NN
+            \g__UWMad_RelativeDirectory_Section_CurrentPath_tl
+            \g__UWMad_RelativeDirectory_Section_CurrentName_tl
+    } {
+        \tl_gset:Nx \g__UWMad_RelativeDirectory_Section_CurrentPath_tl {
+            \g__UWMad_RelativeDirectory_Chapter_Suffix_tl
+            /
+            \g__UWMad_RelativeDirectory_Section_CurrentName_tl
+        }
+    }
+    \seq_gpush:Nn \g__UWMad_RelativeDirectory_PathStack_seq {
+        \g__UWMad_RelativeDirectory_Section_CurrentPath_tl
+    }
 }
 
-\newcommand{\InputSection}[1]{
-    \UWMad@NotAlreadyLoadedtrue
-    \AttemptToLoadFile{\ChapterDirectory}{#1}
+
+\cs_new:Nn \UWMad_RelativeDirectory_Subsection_UpdatePathStack:n {
+
+    \tl_if_blank:NTF \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl { } {
+        \seq_gpop:NN \g__UWMad_RelativeDirectory_PathStack_seq \g_tmpa_seq
+    }
+
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl {
+        \g__UWMad_RelativeDirectory_Subsection_Prefix_tl
+        #1
+        \g__UWMad_RelativeDirectory_Subsection_Suffix_tl
+    }
+   \tl_if_blank:NTF \g__UWMad_RelativeDirectory_Section_CurrentPath_tl {
+        \tl_gset_eq:NN
+            \g__UWMad_RelativeDirectory_Subsection_CurrentPath_tl
+            \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
+    } {
+        \tl_gset:Nn \g__UWMad_RelativeDirectory_Subsection_CurrentPath_tl {
+            \g__UWMad_RelativeDirectory_Section_Suffix_tl
+            /
+            \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
+        }
+    }
+
+    \seq_gpush:Nn \g__UWMad_RelativeDirectory_PathStack_seq {
+        \g__UWMad_RelativeDirectory_Subsection_CurrentPath_tl
+    }
+}
+
+
+\cs_new:Nn \UWMad_RelativeDirectory_InputFile:n {
+    \bool_set_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
     
-    \ifUWMad@LoadUnsuccessful
-        \AttemptToLoadFile{\ChapterDirectory/\DirectoryPrefixSections}{#1}
-        
-        \ifUWMad@LoadUnsuccessful
-            \UpdateSectionsDirectory{-#1}
-            \AttemptToLoadFile{\ChapterDirectory/\SectionsDirectory}{#1}
+    \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_seq {
+        \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
+            \file_path_include:n{./##1/}
+            \file_if_exist:nTF {##1/#1} {
+                \file_input:n{##1/#1}
+                \bool_set_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+            } { }
+            \file_path_remove:n{./##1/}
+        }
+    }
 
-            \ifUWMad@LoadUnsuccessful
-                \ifUWMad@NotAlreadyLoaded
-                    \ClassWarning{\UWMad@ClassName}{Could not find nor load section #1.}
-                \fi
-            \fi
-
-        \fi
-    \fi
-
+    \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
+        \typeout{******************** FILE NOT FOUND *******************}
+    }
 }
 
+
+%    \end{macrocode}
+%
+%   \iffalse
+%</Code>
+%   \fi
+%Verbatim
+%</Implementation>

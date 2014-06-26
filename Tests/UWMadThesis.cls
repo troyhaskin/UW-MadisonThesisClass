@@ -140,25 +140,25 @@
 \msg_new:nnn {UWMadThesis} {Programming/Defined} {
     The~#2~`#1'~is~already~defined~and~will~not~altered.
 }
-\cs_new:Nn \UWMad_Hook_Prepend:nn{
+\cs_new:Nn \UWMad_Hook_Prepend:cn {
     \cs_new_eq:cc  {#1-Default:} {#1}
     \cs_gset:cn    {#1:}         {#2 \cs:w #1-Default:\cs_end:}
     \cs_undefine:c {#1}
     \cs_new_eq:cc  {#1}          {#1:}
 }
-\cs_new:Nn \UWMad_Hook_Append:nn{
-    \cs_new_eq:cc  {#1-Default:} {#1}
-    \cs_gset:cn    {#1:}        {\cs:w #1-Default:\cs_end: #2}
-    \cs_undefine:c {#1}
-    \cs_new_eq:cc  {#1}          {#1:}
-}
-\cs_new:Nn \UWMad_Hook_Prepend:Nn{
+\cs_new:Nn \UWMad_Hook_Prepend:Nn {
     \cs_new_eq:cN  {\string#1-Default:} #1
     \cs_gset:cn    {\string#1:}         {#2 \cs:w\string#1-Default:\cs_end:}
     \cs_undefine:N  #1
     \cs_new_eq:Nc   #1          {\string#1:}
 }
-\cs_new:Nn \UWMad_Hook_Append:Nn{
+\cs_new:Nn \UWMad_Hook_Append:cn {
+    \cs_new_eq:cc  {#1-Default:} {#1}
+    \cs_gset:cn    {#1:}        {\cs:w #1-Default:\cs_end: #2}
+    \cs_undefine:c {#1}
+    \cs_new_eq:cc  {#1}          {#1:}
+}
+\cs_new:Nn \UWMad_Hook_Append:Nn {
     \cs_new_eq:cN  {\string#1-Default:} #1
     \cs_gset:cn    {\string#1:}         {\cs:w\string#1-Default:\cs_end: #2}
     \cs_undefine:N  #1
@@ -203,10 +203,10 @@
     }
 }
 \cs_new:Nn \__UWMad_IfDefined:nT{
-    \_UWMad_IfDefined:nnnnT{#1}{}{}{command}{#2}
+    \_UWMad_IfDefined:nnnnT{}{#1}{}{command}{#2}
 }
 \cs_new:Nn \__UWMad_IfUndefined:nT{
-    \_UWMad_IfUndefined:nnnnT{#1}{}{}{command}{#2}
+    \_UWMad_IfUndefined:nnnnT{}{#1}{}{command}{#2}
 }
 \cs_new:Nn \__UWMad_Stack_IfDefined:nT {
     \__UWMad_IfDefined:nnnnT{g__UWMad_Stack_}{#1}{}{Stack}{#2}
@@ -1098,6 +1098,7 @@
         }%
     }%
 \ExplSyntaxOn
+\cs_gset_eq:NN \supsubs \subsups
 \DeclareDocumentCommand \OneOver { +m } {
     \frac{1}{#1}
 }
@@ -1447,7 +1448,7 @@
     %
     % Define description width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthDescription_dim {
-        0.999\textwidth -
+        0.995\textwidth -
          \l__UWMad_Nomenclature_Entry_MarginLeft_dim  -
          \l__UWMad_Nomenclature_Entry_WidthSymbol_dim -
          \l__UWMad_Nomenclature_Entry_WidthUnit_dim   -
@@ -2257,4 +2258,179 @@
     } { }
 
 }
+\keys_define:nn { UWMadThesis / RelativeDirectory } {
+    chapter-directory-prefix    .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Chapter_Prefix_tl,
+    chapter-directory-suffix    .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Chapter_Suffix_tl,
+    section-directory-prefix    .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Section_Prefix_tl,
+    section-directory-suffix    .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Section_Suffix_tl,
+    subsection-directory-prefix .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Subsection_Prefix_tl,
+    subsection-directory-suffix .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Subsection_Suffix_tl,
+    chapter-directory-prefix    .default:n = ,
+    chapter-directory-suffix    .default:n = ,
+    section-directory-prefix    .default:n = ,
+    section-directory-suffix    .default:n = ,
+    subsection-directory-prefix .default:n = ,
+    subsection-directory-suffix .default:n = ,
+}
+\keys_set:nn { UWMadThesis / RelativeDirectory } {
+    chapter-directory-prefix,
+    chapter-directory-suffix,
+    section-directory-prefix,
+    section-directory-suffix,
+    subsection-directory-prefix,
+    subsection-directory-suffix
+}
+
+\DeclareDocumentCommand \RelativeDirectorySetup { m } {
+    \keys_set:nn { UWMadThesis / RelativeDirectory } { #1 }
+}
+
+\tl_new:N  \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl
+\tl_new:N  \g__UWMad_RelativeDirectory_Chapter_CurrentName_tl
+\tl_new:N  \g__UWMad_RelativeDirectory_Section_CurrentPath_tl
+\tl_new:N  \g__UWMad_RelativeDirectory_Section_CurrentName_tl
+\tl_new:N  \g__UWMad_RelativeDirectory_Subsection_CurrentPath_tl
+\tl_new:N  \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
+\seq_new:N \g__UWMad_RelativeDirectory_PathStack_seq
+
+\bool_new:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+
+\DeclareDocumentCommand \IncludeChapter { m g } {
+
+    \typeout{!!!!!!!!!!!!!!!!!!!!!! Path:~#1;~~~~~~~~~~~Filename:~#2}
+
+    \UWMad_RelativeDirectory_Chapter_UpdatePathStack:n{#1}
+
+    \IfNoValueTF { #2 } {
+        \UWMad_RelativeDirectory_InputFile:n {
+            \g__UWMad_RelativeDirectory_Chapter_CurrentName_tl
+        }
+    } {
+        \UWMad_RelativeDirectory_InputFile:n {#2}
+    }
+
+}
+
+\DeclareDocumentCommand \IncludeSection { m g } {
+    \UWMad_RelativeDirectory_Section_UpdatePathStack:n{#1}
+
+    \IfNoValueTF { #2 } {
+        \UWMad_RelativeDirectory_InputFile:n {
+            \g__UWMad_RelativeDirectory_Section_CurrentName_tl
+        }
+    } {
+        \UWMad_RelativeDirectory_InputFile:n {#2}
+    }
+
+}
+\DeclareDocumentCommand \IncludeSubsection { m g } {
+    \UWMad_RelativeDirectory_Subsection_UpdatePathStack:n{#1}
+
+    \IfNoValueTF { #2 } {
+        \UWMad_RelativeDirectory_InputFile:n {
+            \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
+        }
+    } {
+        \UWMad_RelativeDirectory_InputFile:n {#2}
+    }
+}
+
+\cs_new:Nn \UWMad_RelativeDirectory_Chapter_UpdatePathStack:n {
+
+    \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_seq
+
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl {
+        \g__UWMad_RelativeDirectory_Chapter_Prefix_tl
+        #1
+        \g__UWMad_RelativeDirectory_Chapter_Suffix_tl
+    }
+    \tl_gset_eq:NN
+        \g__UWMad_RelativeDirectory_Chapter_CurrentName_tl
+        \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl
+    \seq_gpush:Nn \g__UWMad_RelativeDirectory_PathStack_seq {
+        \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl
+    }
+
+}
+
+\cs_new:Nn \UWMad_RelativeDirectory_Section_UpdatePathStack:n {
+
+    \tl_if_blank:NTF \g__UWMad_RelativeDirectory_Section_CurrentName_tl { } {
+        \seq_gpop:NN \g__UWMad_RelativeDirectory_PathStack_seq \g_tmpa_seq
+    }
+
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_Section_CurrentName_tl {
+        \g__UWMad_RelativeDirectory_Section_Prefix_tl
+        #1
+        \g__UWMad_RelativeDirectory_Section_Suffix_tl
+    }
+    \tl_if_blank:NTF \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl {
+        \tl_gset_eq:NN
+            \g__UWMad_RelativeDirectory_Section_CurrentPath_tl
+            \g__UWMad_RelativeDirectory_Section_CurrentName_tl
+    } {
+        \tl_gset:Nx \g__UWMad_RelativeDirectory_Section_CurrentPath_tl {
+            \g__UWMad_RelativeDirectory_Chapter_Suffix_tl
+            /
+            \g__UWMad_RelativeDirectory_Section_CurrentName_tl
+        }
+    }
+    \seq_gpush:Nn \g__UWMad_RelativeDirectory_PathStack_seq {
+        \g__UWMad_RelativeDirectory_Section_CurrentPath_tl
+    }
+}
+
+\cs_new:Nn \UWMad_RelativeDirectory_Subsection_UpdatePathStack:n {
+
+    \tl_if_blank:NTF \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl { } {
+        \seq_gpop:NN \g__UWMad_RelativeDirectory_PathStack_seq \g_tmpa_seq
+    }
+
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl {
+        \g__UWMad_RelativeDirectory_Subsection_Prefix_tl
+        #1
+        \g__UWMad_RelativeDirectory_Subsection_Suffix_tl
+    }
+   \tl_if_blank:NTF \g__UWMad_RelativeDirectory_Section_CurrentPath_tl {
+        \tl_gset_eq:NN
+            \g__UWMad_RelativeDirectory_Subsection_CurrentPath_tl
+            \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
+    } {
+        \tl_gset:Nn \g__UWMad_RelativeDirectory_Subsection_CurrentPath_tl {
+            \g__UWMad_RelativeDirectory_Section_Suffix_tl
+            /
+            \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
+        }
+    }
+
+    \seq_gpush:Nn \g__UWMad_RelativeDirectory_PathStack_seq {
+        \g__UWMad_RelativeDirectory_Subsection_CurrentPath_tl
+    }
+}
+
+\cs_new:Nn \UWMad_RelativeDirectory_InputFile:n {
+    \bool_set_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+
+    \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_seq {
+        \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
+            \file_path_include:n{./##1/}
+            \file_if_exist:nTF {##1/#1} {
+                \file_input:n{##1/#1}
+                \bool_set_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+            } { }
+            \file_path_remove:n{./##1/}
+        }
+    }
+
+    \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
+        \typeout{******************** FILE NOT FOUND *******************}
+    }
+}
+
 \ExplSyntaxOff
