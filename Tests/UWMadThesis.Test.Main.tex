@@ -54,9 +54,18 @@
 \ExplSyntaxOn
     \file_add_path:nN{\c_job_name_tl}\l_tmpa_tl
     \typeout{!!!!!!!!!!!!!!!!!!\l_tmpa_tl}
+    \cs_show:N \UWMad_RelativeDirectory_Section_SetName:
 \ExplSyntaxOff
-\IncludeChapter{Chapter-1}{Main}
-\IncludeChapter{Chapter-2}{Main}
+
+\RelativeDirectorySetup {
+    chapter-directory-prefix = {Chapter-},
+    chapter-directory-name   = increment
+}
+
+\IncludeChapter{Main}
+    \IncludeSection{Section-1}
+    \IncludeSection{Section-2}
+\IncludeChapter{Main}
 
 
 \chapter{Three Chapter}
