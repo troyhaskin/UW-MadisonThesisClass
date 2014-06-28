@@ -53,14 +53,34 @@
 
 
 \RelativeDirectorySetup {
-    chapter-directory-prefix = {Chapter-},
+    chapter-directory-prefix = Chapter-,
     chapter-directory-name   = increment
 }
-
 \IncludeChapter{Main}
     \IncludeSection{Section-1}
     \IncludeSection{Section-2}
+%
+%
+%
+\RelativeDirectorySetup {
+    section-directory-prefix = Section-,
+    section-directory-name   = increment
+}
+%
+%
+%
 \IncludeChapter{Main}
+    \IncludeSection{Main}
+    \IncludeSection{Main}
+\RelativeDirectorySetup {
+    chapter-directory-prefix = {},
+    chapter-directory-name   = same,
+    chapter-directory-suffix = {-Chapter},
+    section-directory-name   = same,
+    section-directory-suffix = {-Section}
+}
+\IncludeChapter{SameNameTest}
+    \IncludeSection{SameNameTest}
 
 
 \chapter{Three Chapter}

@@ -37,6 +37,7 @@
 \tl_new:N   \g__UWMad_RelativeDirectory_Section_ParentPath_tl
 \tl_gset:Nn \g__UWMad_RelativeDirectory_Section_ParentPath_tl {
     \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl/
+    \typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl/}
 }
 \bool_new:N        \g__UWMad_RelativeDirectory_IsSection_bool
 \bool_gset_false:N \g__UWMad_RelativeDirectory_IsSection_bool
@@ -62,7 +63,8 @@
 \tl_const:Nn \c__UWMad_RelativeDirectory_None_tl {none}
 \tl_const:Nn \c__UWMad_RelativeDirectory_Same_tl {same}
 \tl_const:Nn \c__UWMad_RelativeDirectory_Increment_tl {increment}
-\tl_new:N    \g__UWMad_RelativeDirectory_FileName_Current_tl
+\tl_new:N    \g__UWMad_RelativeDirectory_File_CurrentName_tl
+\tl_new:N    \g__UWMad_RelativeDirectory_OptionalPath_tl
 \seq_new:N   \g__UWMad_RelativeDirectory_PathStack_seq
 \bool_new:N  \g__UWMad_RelativeDirectory_IsFileFound_bool
 %    \end{macrocode}
@@ -96,40 +98,50 @@
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_Same:n {
     \tl_gset:cn   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Prefix_tl}
-        \g__UWMad_RelativeDirectory_FileName_Current_tl
+        \g__UWMad_RelativeDirectory_File_CurrentName_tl
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Suffix_tl}
     }
+    \typeout{\tl_use:c{g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}}
 }
 %    \end{macrocode}
 %
 %
 %   Name and path setter.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_RelativeDirectory_SetNameAndPath:nn {
+\cs_new:Nn \UWMad_RelativeDirectory_SetNameAndPath:n {
 
     \tl_gclear:c {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
     \tl_gclear:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
 
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_FileName_Current_tl {#2}
-    \use:c {UWMad_RelativeDirectory_ #1 _SetName:}
+    \tl_if_blank:VTF {\g__UWMad_RelativeDirectory_OptionalPath_tl} {
+        \use:c {UWMad_RelativeDirectory_ #1 _SetName:}
+    } {
+        \tl_gset_eq:cN
+            {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
+            \g__UWMad_RelativeDirectory_OptionalPath_tl
+    }
 
     \tl_gset:cn   {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _ParentPath_tl}
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
     }
+\typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@~\tl_use:c {g__UWMad_RelativeDirectory_ #1 _ParentPath_tl}}
+\tl_show:c{g__UWMad_RelativeDirectory_ #1 _ParentPath_tl}
+\typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@~\tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}}
+\typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@~\int_to_arabic:n{\g__UWMad_RelativeDirectory_Chapter_Count_int}}
 }
 %    \end{macrocode}
 %
 %
 %   Path stack updater.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_RelativeDirectory_UpdatePathStack:nn {
+\cs_new:Nn \UWMad_RelativeDirectory_UpdatePathStack:n {
 
     \bool_if:cTF {g__UWMad_RelativeDirectory_Is #1 _bool} {
         \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_seq
     } { }
 
-    \UWMad_RelativeDirectory_SetNameAndPath:nn{#1}{#2}
+    \UWMad_RelativeDirectory_SetNameAndPath:n{#1}
 
     \tl_gset_eq:Nc
         \g_tmpa_tl
@@ -148,23 +160,31 @@
 %   for the file from deepest to highest and the other only searches the
 %   deepest (i.e., current) directory.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_RelativeDirectory_InputFile_CycleThrough:n {
+\cs_new:Nn \UWMad_RelativeDirectory_InputFile_CycleThrough: {
     \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_seq {
+        \tl_gset:Nn \g_tmpa_tl {
+            ./##1/
+            \g__UWMad_RelativeDirectory_File_CurrentName_tl
+        }
         \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
-            \file_if_exist:nTF {./##1/#1} {
-                \file_input:n{./##1/#1}
+            \file_if_exist:nTF { \g_tmpa_tl } {
+                \file_input:n{ \g_tmpa_tl }
                 \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
             } { }
         }
     }
 }
-\cs_new:Nn \UWMad_RelativeDirectory_InputFile_CheckDeepest:n {
+\cs_new:Nn \UWMad_RelativeDirectory_InputFile_CheckDeepest: {
     
     \seq_get:NN
         \g__UWMad_RelativeDirectory_PathStack_seq
         \g_tmpa_tl
-    \file_if_exist:nTF {./##1/#1} {
-        \file_input:n{./##1/#1}
+    \tl_gset:Nn \g_tmpb_tl {
+            ./\g_tmpa_tl/
+            \g__UWMad_RelativeDirectory_File_CurrentName_tl
+    }
+    \file_if_exist:nTF {g_tmpb_tl} {
+        \file_input:n{g_tmpb_tl}
         \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
     } { }
 }
@@ -180,24 +200,24 @@
     The~requested~file~'#1'~was~not~found~in~the~current~search~stack~nor~the~
     main~LaTeX~directory~for~the~job~'\c_job_name_tl'.
 }
-\cs_new:Nn \UWMad_RelativeDirectory_InputFile:n {
+\cs_new:Nn \UWMad_RelativeDirectory_InputFile: {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
 
     \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThroughStack_bool {
-        \UWMad_RelativeDirectory_InputFile_CycleThrough:n{#1}
+        \UWMad_RelativeDirectory_InputFile_CycleThrough:
     } {
-        \UWMad_RelativeDirectory_InputFile_CheckDeepest:n{#1}
+        \UWMad_RelativeDirectory_InputFile_CheckDeepest:
     }
 
     \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
-        \file_if_exist:nTF { #1 } {
-            \file_input:n{ #1 }
+        \file_if_exist:nTF {\g__UWMad_RelativeDirectory_File_CurrentName_tl} {
+            \file_input:n{ \g__UWMad_RelativeDirectory_File_CurrentName_tl }
             \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
         } {
             \msg_warning:nnx
                 { UWMadThesis }
                 { RelativeDirectory / FileNotFound }
-                { #1 }
+                { \g__UWMad_RelativeDirectory_File_CurrentName_tl }
         }
     }
 }
@@ -330,34 +350,37 @@
 
 \DeclareDocumentCommand \IncludeChapter { o m } {
 
-    \IfNoValueTF { #1 } {
-        \UWMad_RelativeDirectory_UpdatePathStack:nn{Chapter}{}
-    } {
-        \UWMad_RelativeDirectory_UpdatePathStack:nn{Chapter}{#1}
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
     }
-    \UWMad_RelativeDirectory_InputFile:n {#2}
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+
+    \UWMad_RelativeDirectory_UpdatePathStack:n{Chapter}
+    \UWMad_RelativeDirectory_InputFile:
 
 }
 
 \DeclareDocumentCommand \IncludeSection { o m } {
 
-    \IfNoValueTF { #1 } {
-        \UWMad_RelativeDirectory_UpdatePathStack:nn{Section}{}
-    } {
-        \UWMad_RelativeDirectory_UpdatePathStack:nn{Section}{#1}
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
     }
-    \UWMad_RelativeDirectory_InputFile:n {#2}
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+
+    \UWMad_RelativeDirectory_UpdatePathStack:n{Section}
+    \UWMad_RelativeDirectory_InputFile:
 
 }
 
 \DeclareDocumentCommand \IncludeSubsection { o m } {
 
-    \IfNoValueTF { #1 } {
-        \UWMad_RelativeDirectory_UpdatePathStack:nn{Subsection}{}
-    } {
-        \UWMad_RelativeDirectory_UpdatePathStack:nn{SubSection}{#1}
+    \IfNoValueTF { #1 } { } {
+        \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
     }
-    \UWMad_RelativeDirectory_InputFile:n {#2}
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+
+    \UWMad_RelativeDirectory_UpdatePathStack:n{Subsection}
+    \UWMad_RelativeDirectory_InputFile:
 
 }
 
