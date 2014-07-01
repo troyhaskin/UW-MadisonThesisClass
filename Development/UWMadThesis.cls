@@ -2271,7 +2271,6 @@
 \tl_new:N   \g__UWMad_RelativeDirectory_Section_ParentPath_tl
 \tl_gset:Nn \g__UWMad_RelativeDirectory_Section_ParentPath_tl {
     \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl/
-    \typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@@@ \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl/}
 }
 \bool_new:N        \g__UWMad_RelativeDirectory_IsSection_bool
 \bool_gset_false:N \g__UWMad_RelativeDirectory_IsSection_bool
@@ -2298,12 +2297,11 @@
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_None: {}
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_Increment:n {
     \int_gincr:c {g__UWMad_RelativeDirectory_ #1 _Count_int}
-    \int_gset_eq:Nc
-        \g_tmpa_int
-        {g__UWMad_RelativeDirectory_ #1 _Count_int}
     \tl_gset:cn   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Prefix_tl}
-        \int_to_arabic:n{\g_tmpa_int}
+        \int_to_arabic:n{
+            \int_use:c{g__UWMad_RelativeDirectory_ #1 _Count_int}
+        }
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Suffix_tl}
     }
 }
@@ -2313,7 +2311,7 @@
         \g__UWMad_RelativeDirectory_File_CurrentName_tl
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Suffix_tl}
     }
-    \typeout{\tl_use:c{g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}}
+    \typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@~Level=#1:~\tl_use:c{g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}}
 }
 \cs_new:Nn \UWMad_RelativeDirectory_SetNameAndPath:n {
 
@@ -2327,15 +2325,13 @@
             {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
             \g__UWMad_RelativeDirectory_OptionalPath_tl
     }
-
     \tl_gset:cn   {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _ParentPath_tl}
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
     }
-\typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@~\tl_use:c {g__UWMad_RelativeDirectory_ #1 _ParentPath_tl}}
-\tl_show:c{g__UWMad_RelativeDirectory_ #1 _ParentPath_tl}
-\typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@~\tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}}
-\typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@~\int_to_arabic:n{\g__UWMad_RelativeDirectory_Chapter_Count_int}}
+    %\typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@~SetNameAndPath::Level:~#1}
+    %\typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@~SetNameAndPath::ChapterCount:~\int_to_arabic:n{\g__UWMad_RelativeDirectory_Chapter_Count_int}}
+    %\typeout{@@@@@@@@@@@@@@@@@@@@@@@@@@~SetNameAndPath::ChapterPath:~\g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl}
 }
 \cs_new:Nn \UWMad_RelativeDirectory_UpdatePathStack:n {
 

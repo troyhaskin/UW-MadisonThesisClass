@@ -13,6 +13,7 @@
 \University{University of Wisconsin--Madison}
 \Dissertation
 
+
 \MakeLinksBlack
 
 
@@ -25,12 +26,13 @@
 \CommitteeMember{Jake Blanchard}     {Professor}{Engineering Physics}
 \CommitteeMember{Christopher Rutland}{Professor}{Mechanical Engineering}
 
-\setlength{\parskip}{1em}
-
 \begin{document}
 
-\MakeTitlePage{}
 
+% =========================================================================== %
+%                              SpecialPages Tests                             %
+% =========================================================================== %
+\MakeTitlePage{}
 \begin{LicensePage}
     \CreativeCommons
     \Attribution
@@ -38,6 +40,11 @@
     \ShareAlike
 \end{LicensePage}
 
+
+
+% =========================================================================== %
+%                              Front Matter Tests                             %
+% =========================================================================== %
 \TableOfContents
 
 \acknowledgments{}
@@ -47,11 +54,26 @@
 \lipsum[2-3]
 
 
+
+
+% =========================================================================== %
+%                               Nomenclature Tests                            %
+% =========================================================================== %
 \begin{Nomenclature}
     \Entry{$\rho$}{Density}
 \end{Nomenclature}
 
 
+
+
+
+% =========================================================================== %
+%                            RelativeDirectory Tests                          %
+% =========================================================================== %
+%
+%   RelativeDirectory Test:
+%       o Chapter directory prefix {Chapter-} in increment mode
+%       o Empty section *-fixes to test the stack-pushing conditions
 \RelativeDirectorySetup {
     chapter-directory-prefix = Chapter-,
     chapter-directory-name   = increment
@@ -61,21 +83,28 @@
     \IncludeSection{Section-2}
 %
 %
-%
+%   RelativeDirectory Test:
+%       o Chapter directory prefix {Chapter-} in increment mode
+%       o Section directory prefix {Section-} in increment mode
+%       o All same name to test the stack-pushing conditions
 \RelativeDirectorySetup {
     section-directory-prefix = Section-,
     section-directory-name   = increment
 }
-%
-%
-%
 \IncludeChapter{Main}
     \IncludeSection{Main}
     \IncludeSection{Main}
+%
+%
+%   RelativeDirectory Test:
+%       o Chapter directory prefix {} and suffix {-Chapter} in same mode
+%       o Section directory prefix {} and suffix {-Section} in same mode
+%       o All same name to test the stack-pushing conditions
 \RelativeDirectorySetup {
     chapter-directory-prefix = {},
     chapter-directory-name   = same,
     chapter-directory-suffix = {-Chapter},
+    section-directory-prefix = {},
     section-directory-name   = same,
     section-directory-suffix = {-Section}
 }
@@ -97,8 +126,6 @@
 
 \appendix{Second Appendix}
 \lipsum[10-15]
-
-\show\doublespacing
 
 
 \end{document}
