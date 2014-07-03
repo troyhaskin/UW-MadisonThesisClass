@@ -50,7 +50,6 @@
 \tl_new:N   \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Subsection_ParentPath_tl
 \tl_gset:Nn \g__UWMad_RelativeDirectory_Subsection_ParentPath_tl {
-    \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl/
     \g__UWMad_RelativeDirectory_Section_CurrentPath_tl/
 }
 \bool_new:N        \g__UWMad_RelativeDirectory_IsSubsection_bool
@@ -80,10 +79,27 @@
 %
 %   \UWSubModule{Back End Code}
 %
+%   Special hooks for the automatic naming function below.
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_RelativeDirectory_SetName_Increment_Hook_Chapter: {
+    \int_gset:cn {g__UWMad_RelativeDirectory_Section_Count_int}{0}
+    \int_gset:cn {g__UWMad_RelativeDirectory_Subsection_Count_int}{0}
+}
+\cs_new:Nn \UWMad_RelativeDirectory_SetName_Increment_Hook_Section: {
+    \int_gset:cn {g__UWMad_RelativeDirectory_Subsection_Count_int}{0}
+}
+\cs_new:Nn \UWMad_RelativeDirectory_SetName_Increment_Hook_Subsection: {}
+%    \end{macrocode}
+%
+%
+%
+%
+%
 %   Directory name-setting functions.
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_None: {}
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_Increment:n {
+    \use:c{UWMad_RelativeDirectory_SetName_Increment_Hook_ #1 :}
     \int_gincr:c {g__UWMad_RelativeDirectory_ #1 _Count_int}
     \tl_gset:cn   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Prefix_tl}
@@ -143,7 +159,7 @@
             \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
         }
     }
-
+    \typeout{@@@@@@@@@@@@@@@@@@@@@@@@Level~=~#1;~~~Path:~\tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}}
 }
 %    \end{macrocode}
 %
@@ -373,7 +389,7 @@
 
     \UWMad_RelativeDirectory_UpdatePathStack:n{Subsection}
     \UWMad_RelativeDirectory_InputFile:
-
+    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
 
 
