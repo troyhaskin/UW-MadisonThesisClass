@@ -2283,12 +2283,14 @@
 }
 \bool_new:N        \g__UWMad_RelativeDirectory_IsSubsection_bool
 \bool_gset_false:N \g__UWMad_RelativeDirectory_IsSubsection_bool
+\tl_new:N \g__UWMad_RelativeDirectory_GraphicsDirectoryName_tl
 \tl_const:Nn \c__UWMad_RelativeDirectory_None_tl {none}
 \tl_const:Nn \c__UWMad_RelativeDirectory_Same_tl {same}
 \tl_const:Nn \c__UWMad_RelativeDirectory_Increment_tl {increment}
 \tl_new:N    \g__UWMad_RelativeDirectory_File_CurrentName_tl
 \tl_new:N    \g__UWMad_RelativeDirectory_OptionalPath_tl
-\seq_new:N   \g__UWMad_RelativeDirectory_PathStack_seq
+\seq_new:N   \g__UWMad_RelativeDirectory_PathStack_Files_seq
+\seq_new:N   \g__UWMad_RelativeDirectory_PathStack_Graphics_seq
 \bool_new:N  \g__UWMad_RelativeDirectory_IsFileFound_bool
 \cs_new:Nn \UWMad_RelativeDirectory_Chapter_SetName:    {}
 \cs_new:Nn \UWMad_RelativeDirectory_Section_SetName:    {}
@@ -2305,7 +2307,7 @@
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_Increment:n {
     \use:c{UWMad_RelativeDirectory_SetName_Increment_Hook_ #1 :}
     \int_gincr:c {g__UWMad_RelativeDirectory_ #1 _Count_int}
-    \tl_gset:cn   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
+    \tl_gset:cV   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Prefix_tl}
         \int_to_arabic:n{
             \int_use:c{g__UWMad_RelativeDirectory_ #1 _Count_int}
@@ -2314,7 +2316,7 @@
     }
 }
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_Same:n {
-    \tl_gset:cn   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
+    \tl_gset:cV   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Prefix_tl}
         \g__UWMad_RelativeDirectory_File_CurrentName_tl
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Suffix_tl}
@@ -2332,31 +2334,36 @@
             {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
             \g__UWMad_RelativeDirectory_OptionalPath_tl
     }
-    \tl_gset:cn   {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl} {
+    \tl_gset:cV   {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _ParentPath_tl}
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
+    }
+}
+\cs_new:Nn \__UWMad_RelativeDirectory_StackPush:n {
+    \tl_gset_eq:Nc
+        \g_tmpa_tl
+        {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
+    \tl_if_blank:VTF {\g_tmpa_tl} { } {
+        \seq_gpush:Nx \g__UWMad_RelativeDirectory_PathStack_Files_seq {
+            \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
+        }
+        \seq_gpush:NV \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
+            \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
+        }
     }
 }
 \cs_new:Nn \UWMad_RelativeDirectory_UpdatePathStack:n {
 
     \bool_if:cTF {g__UWMad_RelativeDirectory_Is #1 _bool} {
-        \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_seq
+        \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_Files_seq
+        \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_Graphics_seq
     } { }
 
     \UWMad_RelativeDirectory_SetNameAndPath:n{#1}
-
-    \tl_gset_eq:Nc
-        \g_tmpa_tl
-        {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
-    \tl_if_blank:VTF {\g_tmpa_tl} { } {
-        \seq_gpush:NV \g__UWMad_RelativeDirectory_PathStack_seq {
-            \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
-        }
-    }
-    \typeout{@@@@@@@@@@@@@@@@@@@@@@@@Level~=~#1;~~~Path:~\tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}}
+    \__UWMad_RelativeDirectory_StackPush:n{#1}
 }
-\cs_new:Nn \UWMad_RelativeDirectory_InputFile_CycleThrough: {
-    \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_seq {
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeFile_CycleThrough: {
+    \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_Files_seq {
         \tl_gset:Nn \g_tmpa_tl {
             ./##1/
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
@@ -2369,12 +2376,12 @@
         }
     }
 }
-\cs_new:Nn \UWMad_RelativeDirectory_InputFile_CheckDeepest: {
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeFile_CheckDeepest: {
 
     \seq_get:NN
-        \g__UWMad_RelativeDirectory_PathStack_seq
+        \g__UWMad_RelativeDirectory_PathStack_Files_seq
         \g_tmpa_tl
-    \tl_gset:Nn \g_tmpb_tl {
+    \tl_gset:NV \g_tmpb_tl {
             ./\g_tmpa_tl/
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
     }
@@ -2387,13 +2394,13 @@
     The~requested~file~'#1'~was~not~found~in~the~current~search~stack~nor~the~
     main~LaTeX~directory~for~the~job~'\c_job_name_tl'.
 }
-\cs_new:Nn \UWMad_RelativeDirectory_InputFile: {
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeFile: {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
 
     \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThroughStack_bool {
-        \UWMad_RelativeDirectory_InputFile_CycleThrough:
+        \UWMad_RelativeDirectory_IncludeFile_CycleThrough:
     } {
-        \UWMad_RelativeDirectory_InputFile_CheckDeepest:
+        \UWMad_RelativeDirectory_IncludeFile_CheckDeepest:
     }
 
     \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
@@ -2408,26 +2415,90 @@
         }
     }
 }
+\cs_new_eq:NN
+    \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
+    \includegraphics
+\cs_undefine:N
+    \includegraphics
+\cs_new:Nn \__UWMad_RelativeDirectory_StackPush_FilesAndGraphics:n {
+    \tl_gset_eq:Nc
+        \g_tmpa_tl
+        {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
+    \tl_if_blank:VTF {\g_tmpa_tl} { } {
+        \seq_gpush:NV \g__UWMad_RelativeDirectory_PathStack_Files_seq {
+            \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
+        }
+        \seq_gpush:NV \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
+            \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
+        }
+        \seq_gpush:NV \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
+            \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}/
+            \g__UWMad_RelativeDirectory_GraphicsDirectoryName_tl
+        }
+    }
+}
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics_CycleThrough:n {
+    \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
+        \tl_gset:Nn \g_tmpa_tl {
+            ./##1/
+            \g__UWMad_RelativeDirectory_File_CurrentName_tl
+        }
+        \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
+            \file_if_exist:nTF { \g_tmpa_tl } {
+                \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
+                    [ #1 ]
+                    { \g_tmpa_tl }
+                \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+            } { }
+        }
+    }
+}
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics_CheckDeepest:n {
 
+    \seq_get:NN
+        \g__UWMad_RelativeDirectory_PathStack_Graphics_seq
+        \g_tmpa_tl
+    \tl_gset:NV \g_tmpb_tl {
+            ./\g_tmpa_tl/
+            \g__UWMad_RelativeDirectory_File_CurrentName_tl
+    }
+    \file_if_exist:nTF {g_tmpb_tl} {
+        \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
+            [ #1 ]
+            { \g_tmpa_tl }
+        \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+    } { }
+}
+\msg_new:nnn { UWMadThesis }{ RelativeDirectory / GraphicNotFound } {
+    The~requested~graphic~'#1'~was~not~found~in~the~current~search~stack~nor~
+    the~main~LaTeX~directory~for~the~job~'\c_job_name_tl'.
+}
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics:n {
+    \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+
+    \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThroughStack_bool {
+        \UWMad_RelativeDirectory_IncludeGraphics_CycleThrough:n{#1}
+    } {
+        \UWMad_RelativeDirectory_IncludeGraphics_CheckDeepest:n{#1}
+    }
+
+    \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
+        \file_if_exist:nTF {\g__UWMad_RelativeDirectory_File_CurrentName_tl} {
+            \file_input:n{ \g__UWMad_RelativeDirectory_File_CurrentName_tl }
+            \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+        } {
+            \msg_warning:nnx
+                { UWMadThesis }
+                { RelativeDirectory / GraphicNotFound }
+                { \g__UWMad_RelativeDirectory_File_CurrentName_tl }
+        }
+    }
+}
 \keys_define:nn { UWMadThesis / RelativeDirectory } {
     chapter-directory-prefix    .tl_gset:N =
         \g__UWMad_RelativeDirectory_Chapter_Prefix_tl,
     chapter-directory-suffix    .tl_gset:N =
         \g__UWMad_RelativeDirectory_Chapter_Suffix_tl,
-    section-directory-prefix    .tl_gset:N =
-        \g__UWMad_RelativeDirectory_Section_Prefix_tl,
-    section-directory-suffix    .tl_gset:N =
-        \g__UWMad_RelativeDirectory_Section_Suffix_tl,
-    subsection-directory-prefix .tl_gset:N =
-        \g__UWMad_RelativeDirectory_Subsection_Prefix_tl,
-    subsection-directory-suffix .tl_gset:N =
-        \g__UWMad_RelativeDirectory_Subsection_Suffix_tl,
-    chapter-directory-prefix    .default:n =,
-    chapter-directory-suffix    .default:n =,
-    section-directory-prefix    .default:n =,
-    section-directory-suffix    .default:n =,
-    subsection-directory-prefix .default:n =,
-    subsection-directory-suffix .default:n =,
     chapter-directory-name      .choice:,
     chapter-directory-name      .choice_code:n = {
         \tl_case:NnTF  \l_keys_choice_tl {
@@ -2451,6 +2522,13 @@
     chapter-directory-name .generate_choices:n = {
         increment , same , none
     },
+    chapter-directory-prefix    .default:n =,
+    chapter-directory-suffix    .default:n =,
+    chapter-directory-name      .default:n = none,
+    section-directory-prefix    .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Section_Prefix_tl,
+    section-directory-suffix    .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Section_Suffix_tl,
     section-directory-name      .choice:,
     section-directory-name      .choice_code:n = {
         \tl_case:NnTF  \l_keys_choice_tl {
@@ -2474,6 +2552,13 @@
     section-directory-name .generate_choices:n = {
         increment , same , none
     },
+    section-directory-prefix    .default:n =,
+    section-directory-suffix    .default:n =,
+    section-directory-name      .default:n = none,
+    subsection-directory-prefix .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Subsection_Prefix_tl,
+    subsection-directory-suffix .tl_gset:N =
+        \g__UWMad_RelativeDirectory_Subsection_Suffix_tl,
     subsection-directory-name      .choice:,
     subsection-directory-name      .choice_code:n = {
         \tl_case:NnTF  \l_keys_choice_tl {
@@ -2497,9 +2582,23 @@
     subsection-directory-name .generate_choices:n = {
         increment , same , none
     },
-    chapter-directory-name    .default:n = none,
-    section-directory-name    .default:n = none,
-    subsection-directory-name .default:n = none,
+    subsection-directory-prefix .default:n =,
+    subsection-directory-suffix .default:n =,
+    subsection-directory-name   .default:n = none,
+    graphics-directory-name .code:n = {
+        \tl_gset:Nn \g__UWMad_RelativeDirectory_GraphicsDirectoryName_tl {
+            #1
+        }
+        \tl_if_blank:VTF { #1 } {
+            \cs_gset:Nn \__UWMad_RelativeDirectory_StackPush:n {
+                \__UWMad_RelativeDirectory_StackPush_Files:n{##1}
+            }
+        } {
+            \cs_gset:Nn \__UWMad_RelativeDirectory_StackPush:n {
+                \__UWMad_RelativeDirectory_StackPush_FilesAndGraphics:n{##1}
+            }
+        }
+    },
     cycle-through-paths .bool_gset:N =
         \g__UWMad_RelativeDirectory_CycleThroughStack_bool,
     cycle-through-paths .default:n = true
@@ -2516,7 +2615,6 @@
     subsection-directory-name,
     cycle-through-paths
 }
-
 \DeclareDocumentCommand \RelativeDirectorySetup { m } {
     \keys_set:nn { UWMadThesis / RelativeDirectory } { #1 }
 }
@@ -2529,7 +2627,8 @@
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
 
     \UWMad_RelativeDirectory_UpdatePathStack:n{Chapter}
-    \UWMad_RelativeDirectory_InputFile:
+    \UWMad_RelativeDirectory_IncludeFile:
+    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 
 }
 
@@ -2541,8 +2640,8 @@
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
 
     \UWMad_RelativeDirectory_UpdatePathStack:n{Section}
-    \UWMad_RelativeDirectory_InputFile:
-
+    \UWMad_RelativeDirectory_IncludeFile:
+    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
 
 \DeclareDocumentCommand \IncludeSubsection { o m } {
@@ -2553,8 +2652,19 @@
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
 
     \UWMad_RelativeDirectory_UpdatePathStack:n{Subsection}
-    \UWMad_RelativeDirectory_InputFile:
+    \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
 
+\DeclareDocumentCommand \IncludeGraphics { o m } {
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+    \IfNoValueTF { #1 } {
+        \__UWMad_RelativeDirectory_IncludeGraphics:n{}
+    } {
+        \__UWMad_RelativeDirectory_IncludeGraphics:n{#1}
+    }
+}
+\cs_new_eq:NN
+    \includegraphics
+    \IncludeGraphics
 \ExplSyntaxOff

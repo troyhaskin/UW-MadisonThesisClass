@@ -71,6 +71,13 @@
 %                            RelativeDirectory Tests                          %
 % =========================================================================== %
 %
+%   This section of input aims to test the RelativeDirectory module of the
+%   \UWMadClass{}.  It switches naming conventions mid-document to achieve
+%   this goal efficiently.  It is advised to NOT CHANGE naming modes as this
+%   example does.
+%
+%
+%
 %   RelativeDirectory Test:
 %       o Chapter directory prefix {Chapter-} in increment mode
 %       o Empty section *-fixes to test the stack-pushing conditions
@@ -121,14 +128,13 @@
 \IncludeChapter{SameNameTest}
     \IncludeSection{SameNameTest}
         \IncludeSubsection{SameNameTest}
-
-
-\chapter{Three Chapter}
-\lipsum[2-3]
-
-
-\chapter{Four Chapter}
-\lipsum[4-6]
+%
+%
+%   RelativeDirectory Test:
+%       o Chapter    directory is user-supplied: OptionalDirectoryName.
+%       o Section continues the name-mode from above (same) to test chaining.
+\IncludeChapter[OptionalDirectoryName]{Optional}
+    \IncludeSection{ChainTest}
 
 
 \appendix{First Appendix}
