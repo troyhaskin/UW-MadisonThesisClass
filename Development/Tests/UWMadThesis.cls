@@ -180,6 +180,61 @@
 }
 \cs_generate_variant:Nn \UWMad_Definition_Swap:Nn {cn}
 \cs_generate_variant:Nn \UWMad_Definition_Reset:N {c}
+\tl_new:N   \g__UWMad_File_Path_tl
+\tl_new:N   \g__UWMad_File_Extension_tl
+\tl_new:N   \g__UWMad_File_Marker_Extension_tl
+\tl_new:N   \g__UWMad_File_Marker_Directory_tl
+\tl_gset:Nn \g__UWMad_File_Marker_Extension_tl {.}
+\tl_gset:Nn \g__UWMad_File_Marker_Directory_tl {/}
+\bool_new:N \g__UWMad_File_IsExtensionFound_bool
+\bool_new:N \g__UWMad_File_IsDirectoryFound_bool
+\cs_new:Nn \UWMad_File_GetExtension:nNN {
+    \tl_gclear:N \g__UWMad_File_Path_tl
+    \tl_gclear:N \g__UWMad_File_Extension_tl
+
+    \tl_set:Nx \l_tmpa_tl {
+        \tl_reverse:V {#1}
+    }
+
+    \bool_set_false:N \g__UWMad_File_IsExtensionFound_bool
+    \bool_set_false:N \g__UWMad_File_IsDirectoryFound_bool
+
+    \tl_map_inline:Nn \l_tmpa_tl {
+
+        \tl_set:NV {\l_tmpb_tl}{##1}
+
+        \bool_if:nTF {
+            \g__UWMad_File_IsExtensionFound_bool ||
+            \g__UWMad_File_IsDirectoryFound_bool
+        } {
+            \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
+        } {
+            \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Extension_tl {
+                \bool_gset_true:N \g__UWMad_File_IsExtensionFound_bool
+            } {
+                \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Extension_tl {
+                    \bool_gset_true:N \g__UWMad_File_IsDirectoryFound_bool
+                } {
+                    \tl_gput_left:Nn \g__UWMad_File_Extension_tl {##1}
+                }
+            }
+        }
+    }
+
+    \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool { } {
+        \tl_gset_eq:NN
+            \g__UWMad_File_Path_tl
+            \g__UWMad_File_Extension_tl
+        \tl_gclear:N \g__UWMad_File_Extension_tl
+    }
+
+    \tl_gset_eq:NN
+        #2
+        \g__UWMad_File_Path_tl
+    \tl_gset_eq:NN
+        #3
+        \g__UWMad_File_Extension_tl
+}
 \cs_new:Nn \__UWMad_IfDefined:nnnnT{
     \cs_if_exist:cTF {#1#2#3} {
         #5
