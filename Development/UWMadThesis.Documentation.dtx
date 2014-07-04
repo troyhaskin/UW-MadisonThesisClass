@@ -4574,14 +4574,14 @@
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics_CycleThrough:n {
     \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
         \tl_gset:Nn \g_tmpa_tl {
-            ./##1/
+            ##1/
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
         }
         \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
             \file_if_exist:nTF { \g_tmpa_tl } {
                 \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
                     [ #1 ]
-                    { \g_tmpa_tl }
+                    {\g_tmpa_tl}
                 \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
             } { }
         }
@@ -4850,9 +4850,9 @@
 \DeclareDocumentCommand \IncludeGraphics { o m } {
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
     \IfNoValueTF { #1 } {
-        \__UWMad_RelativeDirectory_IncludeGraphics:n{}
+        \UWMad_RelativeDirectory_IncludeGraphics:n{}
     } {
-        \__UWMad_RelativeDirectory_IncludeGraphics:n{#1}
+        \UWMad_RelativeDirectory_IncludeGraphics:n{#1}
     }
 }
 \cs_new_eq:NN
