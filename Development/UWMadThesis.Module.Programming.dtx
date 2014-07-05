@@ -224,29 +224,29 @@ There is a user-facing API but is not documented here as it is experimental.
         \tl_reverse:V {#1}
     }
 
-   \tl_map_inline:Nn \l_tmpa_tl {
-   
-     \tl_set:Nn {\l_tmpb_tl}{##1}
-   
-     \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool {
+\tl_map_inline:Nn \l_tmpa_tl {
+    
+    \tl_set:Nn {\l_tmpb_tl}{##1}
+    
+    \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool {
         \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
-     } {
+    } {
         \bool_if:NTF \g__UWMad_File_IsDirectoryFound_bool {
-           \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
+            \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
         } {
-           \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Extension_tl {
-             \bool_set_true:N \g__UWMad_File_IsExtensionFound_bool
-           } {
-             \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Directory_tl {
-               \bool_gset_true:N \g__UWMad_File_IsDirectoryFound_bool
-                \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
-             } {
-               \tl_gput_left:Nn \g__UWMad_File_Extension_tl {##1}
-             }
-          }
+            \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Extension_tl {
+                \bool_set_true:N \g__UWMad_File_IsExtensionFound_bool
+            } {
+                \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Directory_tl {
+                    \bool_gset_true:N \g__UWMad_File_IsDirectoryFound_bool
+                    \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
+                } {
+                    \tl_gput_left:Nn \g__UWMad_File_Extension_tl {##1}
+                }
+            }
         }
-     }
-   }
+    }
+}
 
     \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool { } {
         \tl_gput_right:NV \g__UWMad_File_Path_tl {

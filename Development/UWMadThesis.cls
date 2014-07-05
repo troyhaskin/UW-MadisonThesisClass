@@ -199,32 +199,29 @@
         \tl_reverse:V {#1}
     }
 
-   \tl_map_inline:Nn \l_tmpa_tl {
+\tl_map_inline:Nn \l_tmpa_tl {
 
-     \tl_set:Nn {\l_tmpb_tl}{##1}
+    \tl_set:Nn {\l_tmpb_tl}{##1}
 
-     \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool {
+    \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool {
         \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
-     } {
+    } {
         \bool_if:NTF \g__UWMad_File_IsDirectoryFound_bool {
-           \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
+            \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
         } {
-           \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Extension_tl {
-             \bool_set_true:N \g__UWMad_File_IsExtensionFound_bool
-\typeout{+++++++++++++++++++++++++++~extension~marker~found}
-           } {
-             \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Directory_tl {
-               \bool_gset_true:N \g__UWMad_File_IsDirectoryFound_bool
-                \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
-\typeout{+++++++++++++++++++++++++++~directory~marker~found}
-             } {
-               \tl_gput_left:Nn \g__UWMad_File_Extension_tl {##1}
-\typeout{+++++++++++++++++++++++++++~putting~##1~into~extension~tlvar}
-             }
-          }
+            \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Extension_tl {
+                \bool_set_true:N \g__UWMad_File_IsExtensionFound_bool
+            } {
+                \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Directory_tl {
+                    \bool_gset_true:N \g__UWMad_File_IsDirectoryFound_bool
+                    \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
+                } {
+                    \tl_gput_left:Nn \g__UWMad_File_Extension_tl {##1}
+                }
+            }
         }
-     }
-   }
+    }
+}
 
     \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool { } {
         \tl_gput_right:NV \g__UWMad_File_Path_tl {
@@ -2343,7 +2340,9 @@
 }
 \bool_new:N        \g__UWMad_RelativeDirectory_IsSubsection_bool
 \bool_gset_false:N \g__UWMad_RelativeDirectory_IsSubsection_bool
-\tl_new:N \g__UWMad_RelativeDirectory_GraphicsDirectoryName_tl
+\tl_new:N \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl
+\tl_new:N \g__UWMad_RelativeDirectory_Graphics_Extension_tl
+\tl_new:N \g__UWMad_RelativeDirectory_Graphics_BasePath_tl
 \tl_const:Nn \c__UWMad_RelativeDirectory_None_tl {none}
 \tl_const:Nn \c__UWMad_RelativeDirectory_Same_tl {same}
 \tl_const:Nn \c__UWMad_RelativeDirectory_Increment_tl {increment}
@@ -2493,21 +2492,28 @@
         }
         \seq_gpush:NV \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
             \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}/
-            \g__UWMad_RelativeDirectory_GraphicsDirectoryName_tl
+            \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl
         }
     }
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics_CycleThrough:n {
+
     \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
-        \tl_gset:Nn \g_tmpa_tl {
-            ##1/
+
+        \tl_gset:Nx \g_tmpa_tl {
+            ./##1/
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
         }
+
+        \UWMad_File_GetExtension:nNN {\g_tmpa_tl}
+            \g__UWMad_RelativeDirectory_Graphics_BasePath_tl
+            \g__UWMad_RelativeDirectory_Graphics_Extension_tl
+
         \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
             \file_if_exist:nTF { \g_tmpa_tl } {
                 \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
                     [ #1 ]
-                    {\g_tmpa_tl}
+                    {\g__UWMad_RelativeDirectory_Graphics_BasePath_tl}
                 \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
             } { }
         }
@@ -2522,7 +2528,7 @@
             ./\g_tmpa_tl/
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
     }
-    \file_if_exist:nTF {g_tmpb_tl} {
+    \file_if_exist:nTF { \g_tmpb_tl } {
         \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
             [ #1 ]
             { \g_tmpa_tl }
@@ -2646,7 +2652,7 @@
     subsection-directory-suffix .default:n =,
     subsection-directory-name   .default:n = none,
     graphics-directory-name .code:n = {
-        \tl_gset:Nn \g__UWMad_RelativeDirectory_GraphicsDirectoryName_tl {
+        \tl_gset:Nn \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl {
             #1
         }
         \tl_if_blank:VTF { #1 } {
