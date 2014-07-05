@@ -198,6 +198,7 @@
             \file_if_exist:nTF { \g_tmpa_tl } {
                 \file_input:n{ \g_tmpa_tl }
                 \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+                \seq_map_break:
             } { }
         }
     }
@@ -286,13 +287,13 @@
         \g_tmpa_tl
         {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
     \tl_if_blank:VTF {\g_tmpa_tl} { } {
-        \seq_gpush:NV \g__UWMad_RelativeDirectory_PathStack_Files_seq {
+        \seq_gpush:Nx \g__UWMad_RelativeDirectory_PathStack_Files_seq {
             \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
         }
-        \seq_gpush:NV \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
+        \seq_gpush:Nx \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
             \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
         }
-        \seq_gpush:NV \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
+        \seq_gpush:Nx \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
             \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}/
             \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl
         }
@@ -324,6 +325,7 @@
                     [ #1 ]
                     {\g__UWMad_RelativeDirectory_Graphics_BasePath_tl}
                 \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
+                \seq_map_break:
             } { }
         }
     }
@@ -509,7 +511,7 @@
         \tl_gset:Nn \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl {
             #1
         }
-        \tl_if_blank:VTF { #1 } { 
+        \tl_if_blank:nTF { #1 } { 
             \cs_gset:Nn \__UWMad_RelativeDirectory_StackPush:n {
                 \__UWMad_RelativeDirectory_StackPush_Files:n{##1}
             }
