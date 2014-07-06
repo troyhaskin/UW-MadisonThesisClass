@@ -42,7 +42,7 @@ These command set deal with quick and easy typesetting of derivatives.
         \cs{pderivbig}  \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order} \\
         \cs{tderivbig}  \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order}
     \end{syntax}
-    This function set is identical to the non-|big| versions above, except that \Arg{function} is placed to the right of the derivative operator and wrapped by |\left| and |\right|.
+    This function set is identical to the non-	\texttt{big} versions above, except that \Arg{function} is placed to the right of the derivative operator and wrapped by \cs{left} and \cs{right}.
     The default delimiters for the stretch commands are `[' and ']', and either can be individually overridden via the two optional arguments.
     For example, the input
     \begin{verbatim}
@@ -67,18 +67,18 @@ These command set deal with quick and easy typesetting of derivatives.
         \cs{DerivativeGeneral}     \Arg{function} \Arg{variable} \Arg{order} \Arg{symbol}
         \cs{DerivativeGeneralBig}  \Arg{function} \Arg{variable} \Arg{order} \Arg{symbol} \Arg{left delim} \Arg{right delim}
     \end{syntax}
-    These commands are lower-level commands used by the |deriv| family above.
+    These commands are lower-level commands used by the \texttt{deriv} family above.
     All of the arguments are mandatory.
-    If a change to the general style of the derivatives or another version of the |deriv| family is desire, these commands are available for usage.
+    If a change to the general style of the derivatives or another version of the \texttt{deriv} family is desire, these commands are available for usage.
 \end{function}
 
 \begin{function}{\derivSymbol,\pderivSymbol,\tderivSymbol}
     \begin{syntax}
         \cs{derivSymbol}
     \end{syntax}
-    These commands take no arguments and expand to the current symbol used for the associated |deriv| command.
+    These commands take no arguments and expand to the current symbol used for the associated \texttt{deriv} command.
     The defaults require math mode to be typeset.
-    Therefore, |$\pderivSymbol$| will be appear as $\pderivSymbol$.
+    Therefore, \texttt{\$\cs{pderivSymbol}\$} will be appear as $\pderivSymbol$.
 \end{function}
 
 
@@ -86,7 +86,7 @@ These command set deal with quick and easy typesetting of derivatives.
     \begin{syntax}
         \cs{derivSymbolChange} \Arg{symbol} \\[0.50em]
     \end{syntax}
-    These commands will \textsc{temporarily} change the symbol used by the associated |deriv| commands.
+    These commands will \textsc{temporarily} change the symbol used by the associated \texttt{deriv} commands.
     The symbol will revert back to the original, default value after leaving the \TeX{} group where the switch was made (more often than not for \LaTeX{} users, this means ``upon exiting an environment'').
     For example:
     \begin{verbatim}
@@ -115,7 +115,7 @@ These command set deal with quick and easy typesetting of derivatives.
         \cs{tderivSymbolChangeDefault} \Arg{symbol}
     \end{syntax}
 
-    These commands will \textsc{permanently} change the symbol used by the associated |deriv| commands.
+    These commands will \textsc{permanently} change the symbol used by the associated \texttt{deriv} commands.
     For example:
     \begin{verbatim}
         \begin{equation}
@@ -139,7 +139,7 @@ These command set deal with quick and easy typesetting of derivatives.
     \begin{syntax}
         \cs{DelimiterChangeDefault} \Arg{left delim} \Arg{right delim}
     \end{syntax}
-    This command changes the default delimiters used by the |big| commands above.
+    This command changes the default delimiters used by the \texttt{big} commands above.
     Any valid delimiters can be used.
     For example:
     \begin{verbatim}
@@ -273,8 +273,8 @@ Some are new while others are simply in a camel-cased versions of the standard o
     \begin{syntax}
         \cs{IfMathModeTF} \Arg{math mode code} \Arg{text mode code}
     \end{syntax}
-    This is an abstraction of |expl3|'s |\mode_if_math:TF| function.
-    It was added to give more control on the following \cs{subs} and \cs{sups} commands since |expl3|'s syntax is disabled to make |_| a subscript shift and not a letter.
+    This is an abstraction of \texttt{expl3}'s \verb|\mode_if_math:TF| function.
+    It was added to give more control on the following \cs{subs} and \cs{sups} commands since \texttt{expl3}'s syntax is disabled to make \texttt{_} a subscript shift and not a letter.
 \end{function}
 
 \begin{function}{\subs,\sups,\subsups}
@@ -287,7 +287,7 @@ Some are new while others are simply in a camel-cased versions of the standard o
     They are useful if the subscript or superscript are not variable, and therefore should be in non-math text, or for making subscripts or superscripts in text mode.
     The optional argument \oarg{space} is meant for adjusting the spacing of the scripts and exists in \textsc{in math mode}, so technically, any valid math statement can be used.
     However, it is encouraged to only use this argument for spacing.
-    For example, the input |`T\subs{P}, $T\subs{P}$, $T_P$'| is typeset as `T\subs{P}, $T\subs{P}$, $T_P$', and the input |`T\subs[\!]{P}, T\subs[\:]{P}'| is typeset as `T\subs[\!]{P}, T\subs[\:]{P}'.
+    For example, the input \verb|`T\subs{P}, $T\subs{P}$, $T_P$'| is typeset as `T\subs{P}, $T\subs{P}$, $T_P$', and the input \verb|`T\subs[\!]{P}, T\subs[\:]{P}'| is typeset as `T\subs[\!]{P}, T\subs[\:]{P}'.
     T\sups{P}
 \end{function}
 

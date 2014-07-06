@@ -2,16 +2,228 @@
 
 \UWFeature{Relative Directory Includes}
 
-\UWSubFeature{Commands}
+\LaTeX{} provides two commands for importing external files:
+\begin{description}
+    \setlength{\leftmargin}{2em}
+    \item[\cs{input}]{%
+        Simply adds the contents of the file to the input stream
+    }
+    \item[\cs{include}]{%
+        Performs a \cs{clearpage} before and after the file inclusion; also allows selective inclusion through the \cs{includeonly} command.
+    }
+\end{description}
+
+They work well but do have one deficiency for longer documents: they lack directory awareness.
+For example, if a chapter file named \texttt{Chapter-1.tex} existed a sub-directory named \texttt{Chapter-1}, the required markup would b:
+\begin{verbatim}
+    \input{Chapter-1/Chapter-1}
+\end{verbatim}
+This seems reasonable.
+However, the complexity (or possibly annoyance) increases if other files are imported from \texttt{Chapter-1.tex}.
+If there was a section file \texttt{Section.tex} in the \texttt{Chapter-1} directory that was desired to be included by \texttt{Chapter-1.tex} (a somewhat intuitive idea: chapter files include section files), the markup would need to be
+\begin{verbatim}
+    \input{Chapter-1/Section-1}
+\end{verbatim}
+\textsc{within} the \texttt{Chapter-1.tex} file itself.
+For large documents where sections, or even subsections, become large enough that they require their own files, adding these directory trees can be become burdensome and lead to poor-looking markup.
+
+The \UWMadClass{} Relative Directory feature provides a mechanism to make this process easier and cleaner.
+Commands are added to form a \meta{search stack} that is separate from the default \LaTeX{} search path.
+These commands and the convention built into the system are discussed below.
 
 
-\UWSubFeature{Directory Naming Modes}
+
+% ================================================================= %
+%                           File Inclusion                          %
+% ================================================================= %
+\UWSubFeature{File Inclusion}
+
+For including text files (i.e., not graphics files) the system operates through the usage of the following three commands.
+
+\begin{function} {
+    \IncludeChapter,
+    \IncludeSection,
+    \IncludeSubsection
+    }
+    \begin{syntax}
+        \cs{IncludeChapter}   \oarg{path}\marg{filename}
+        \cs{IncludeSection}   \oarg{path}\marg{filename}
+        \cs{IncludeSubsection}\oarg{path}\marg{filename}
+    \end{syntax}
+    These commands will augment the class's current search path according the conventions outlined in the \RefSubFeature[next section]{Naming Conventions}.
+    The \marg{filename} will then be searched for and, if found, added to the input stream.
+    These commands are meant to be used following the standard \LaTeX{} sectioning conventions: chapters then sections then subsections.
+    While the system may work if used out-of-order, the behavior is not tested and should be avoided.
+    
+    An optional \oarg{path} can be input to override the current \RefSubFeature[naming convention]{Naming Conventions} and is present for special circumstances.
+    
+    At first, these commands seem to be simple renamings of the \LaTeX{} system but with the path and file name having separate inputs.
+    This stance is entirely true if directory \RefSubFeature[naming conventions]{Naming Conventions} aren't used.
+    But it is highly recommended that they are.
+\end{function}
+
+
+
+
+
+% ================================================================= %
+%                     Directory Naming Conventions                  %
+% ================================================================= %
+\UWSubFeature{Naming Conventions}
+
+By default, there is no naming convention (referred to a \texttt{none} in the implementation).
+A naming convention is a pattern that tells the Relative Directory system how the directories that hold document files are named.
+Naming conventions are defined by the user through the \cs{UWMadSetup} function and the \texttt{RelativeDirectory} module name (see examples below).
+
+By default, there are currently two supported naming conventions: increment and same.
+More maybe added in the future.
+
 \UWSubSubFeature{Increment}
+Suppose a user has a \LaTeX{} document that is to be compiled from a file named \texttt{Main.tex} that exists in the directory \texttt{Main}.
+The user also has several chapters and and sections with the directory structure seen in \cref{Subtable:Increment}.
+Each of the directory names is prefixed with \texttt{Chapter-} or \texttt{Section-} and ended with an Arabic number.
+This directory structure exemplifies the Increment naming convention.
+
+The user can easily tell the Relative Directory system of this convention using the following input
+{
+\setstretch{1.0}
+\begin{verbatim}
+    \UWMadSetup{ RelativeDirectory } {
+        chapter-directory-prefix = Chapter-,
+        chapter-directory-name   = increment,
+        section-directory-prefix = Section-,
+        section-directory-name   = increment
+    }
+\end{verbatim}
+}
+Then, using the commands above, the user can include the files by adding the following input to \texttt{Main.tex}:
+{
+\setstretch{1.0}
+\begin{verbatim}
+    \IncludeChapter{Chapter}
+        \IncludeSection{Section-1}
+        \IncludeSection{Section-2}
+    \IncludeChapter{Chapter}
+        \IncludeSection{Section}
+        \IncludeSection{Section}
+\end{verbatim}
+}
+Or, the user can choose to only add the chapters in \texttt{Main.tex} while putting the section includes in their respective \texttt{Chapter.tex} files.
+The \UWMadClass{} \meta{search stack} will handle either.
+
+
 \UWSubSubFeature{Same}
-\UWSubSubFeature{Optional}
+Suppose a user has a \LaTeX{} document that is to be compiled from a file named \texttt{Main.tex} that exists in the directory \texttt{Main}.
+The user also has several chapters and and sections with the directory structure seen in \cref{Subtable:Same}.
+Each of the directory names is suffixed with \texttt{-Chapter} or \texttt{-Section} and begins with the file name of at least one of its files.
+This directory structure exemplifies the Same naming convention.
+The user can easily tell the Relative Directory system of this convention using the following input
+{
+\setstretch{1.0}
+\begin{verbatim}
+    \UWMadSetup{ RelativeDirectory } {
+        chapter-directory-name   = same,
+        chapter-directory-suffix = -Chapter,
+        section-directory-name   = same,
+        section-directory-suffix = -Section,
+    }
+\end{verbatim}
+}
+Then, using the commands above, the user can include the files by adding the following input to \texttt{Main.tex}:
+{
+\setstretch{1.0}
+\begin{verbatim}
+    \IncludeChapter{Introduction}
+        \IncludeSection{Motivation}
+        \IncludeSection{LiteratureReview}
+    \IncludeChapter{Theory}
+        \IncludeSection{LinearSystems}
+        \IncludeSection{NewtonsMethod}
+\end{verbatim}
+}
+Or, the user can choose to only add the chapters in \texttt{Main.tex} while putting the section includes in their respective \texttt{Chapter.tex} files.
+The \UWMadClass{} \meta{search stack} will handle either.
 
 
+
+\UWSubSubFeature{None}
+\texttt{None} is not so much a naming convention as it is the default.
+Without setting up one of the naming conventions described above, the system will require the optional argument for all of the include functions to be given for any file searching to be possible.
+The \UWMadClass{} \meta{search stack} will be updated according to these given paths, so relative definitions are acceptable.
+
+\begin{table}[t]%
+    \centering
+    \caption{Directory structure examples for naming conventions}
+    \begin{subtable}{0.21\textwidth}
+        \subcaption{Increment}
+        \label{Subtable:Increment}
+        \begin{tabular}{ >{\ttfamily}l<{}}
+            /Main/                  \\
+            |-{}- Main.tex            \\
+            |-{}- Chapter-1           \\
+            |   |-{}- Chapter.tex     \\
+            |   |-{}- Section-1.tex   \\
+            |   |-{}- Section-2.tex   \\
+            |-{}- Chapter-2           \\
+            |   |-{}- Chapter.tex     \\
+            |   |-{}- Section-1       \\
+            |   |   |-{}- Section.tex \\
+            |   |-{}- Section-2       \\
+            |   |   |-{}- Section.tex \\
+            |-{}-{}-{}-
+        \end{tabular}
+    \end{subtable}
+    \hspace{0.10\textwidth}
+    \begin{subtable}{0.40\textwidth}
+        \subcaption{Same}
+        \label{Subtable:Same}
+        \begin{tabular}{ >{\ttfamily}l<{}}
+            /Main/                              \\
+            |-{}- Main.tex                      \\
+            |-{}- Introduction-Chapter          \\
+            |   |-{}- Introduction.tex          \\
+            |   |-{}- Motivation.tex            \\
+            |   |-{}- LiteratureReview.tex      \\
+            |-{}- Theory-Chapter                \\
+            |   |-{}- Theory.tex                \\
+            |   |-{}- LinearSystems-Section     \\
+            |   |   |-{}- LinearSystems.tex     \\
+            |   |-{}- NewtonsMethod-Section     \\
+            |   |   |-{}- NewtonsMethods.tex    \\
+            |-{}-{}-{}-
+        \end{tabular}
+    \end{subtable}
+\end{table}
+
+
+
+
+
+% ================================================================= %
+%                           Including Graphics                      %
+% ================================================================= %
 \UWSubFeature{Including Graphics}
+
+For including graphics files (i.e., not text files), the system operates through the usage of one of the following commands.
+
+
+\begin{function} {
+    \IncludeGraphics,
+    \includegraphics
+}
+    \begin{syntax}
+        \cs{IncludeGraphics}\oarg{options}\marg{graphic name}
+        \cs{includegraphics}\oarg{options}\marg{graphic name}
+    \end{syntax}
+    The \UWMadClass{} augments the definition of the \cs{includegraphics} command (while adding 100\% equivalent camel-cased version) to use the \meta{search stack}.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % The one difference in using these commands from the default behavior is that the extension is required.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{function}
+
+
+\UWSubFeature{User Options}
 
 
 
@@ -245,7 +457,7 @@
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeFile: {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
 
-    \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThroughStack_bool {
+    \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThrough_Files_bool {
         \UWMad_RelativeDirectory_IncludeFile_CycleThrough:
     } {
         \UWMad_RelativeDirectory_IncludeFile_CheckDeepest:
@@ -374,7 +586,7 @@
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics:n {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
 
-    \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThroughStack_bool {
+    \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThrough_Graphics_bool {
         \UWMad_RelativeDirectory_IncludeGraphics_CycleThrough:n{#1}
     } {
         \UWMad_RelativeDirectory_IncludeGraphics_CheckDeepest:n{#1}
@@ -539,9 +751,12 @@
 %
 %   Path search keys.
 %    \begin{macrocode}
-    cycle-through-paths .bool_gset:N =
-        \g__UWMad_RelativeDirectory_CycleThroughStack_bool,
-    cycle-through-paths .default:n = true
+    cycle-file-paths .bool_gset:N =
+        \g__UWMad_RelativeDirectory_CycleThrough_Files_bool,
+    cycle-file-paths .default:n = true,
+    cycle-graphic-paths .bool_gset:N =
+        \g__UWMad_RelativeDirectory_CycleThrough_Graphics_bool,
+    cycle-graphic-paths .default:n = true
 }
 %    \end{macrocode}
 %
@@ -557,7 +772,8 @@
     chapter-directory-name,
     section-directory-name,
     subsection-directory-name,
-    cycle-through-paths
+    cycle-file-paths,
+    cycle-graphic-paths
 }
 %    \end{macrocode}
 %

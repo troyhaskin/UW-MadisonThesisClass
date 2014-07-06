@@ -2457,7 +2457,7 @@
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeFile: {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
 
-    \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThroughStack_bool {
+    \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThrough_Files_bool {
         \UWMad_RelativeDirectory_IncludeFile_CycleThrough:
     } {
         \UWMad_RelativeDirectory_IncludeFile_CheckDeepest:
@@ -2544,7 +2544,7 @@
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics:n {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
 
-    \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThroughStack_bool {
+    \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThrough_Graphics_bool {
         \UWMad_RelativeDirectory_IncludeGraphics_CycleThrough:n{#1}
     } {
         \UWMad_RelativeDirectory_IncludeGraphics_CheckDeepest:n{#1}
@@ -2667,9 +2667,12 @@
             }
         }
     },
-    cycle-through-paths .bool_gset:N =
-        \g__UWMad_RelativeDirectory_CycleThroughStack_bool,
-    cycle-through-paths .default:n = true
+    cycle-file-paths .bool_gset:N =
+        \g__UWMad_RelativeDirectory_CycleThrough_Files_bool,
+    cycle-file-paths .default:n = true,
+    cycle-graphic-paths .bool_gset:N =
+        \g__UWMad_RelativeDirectory_CycleThrough_Graphics_bool,
+    cycle-graphic-paths .default:n = true
 }
 \keys_set:nn { UWMadThesis / RelativeDirectory } {
     chapter-directory-prefix,
@@ -2681,7 +2684,8 @@
     chapter-directory-name,
     section-directory-name,
     subsection-directory-name,
-    cycle-through-paths
+    cycle-file-paths,
+    cycle-graphic-paths
 }
 \DeclareDocumentCommand \RelativeDirectorySetup { m } {
     \keys_set:nn { UWMadThesis / RelativeDirectory } { #1 }

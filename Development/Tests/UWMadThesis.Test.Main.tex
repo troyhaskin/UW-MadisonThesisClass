@@ -89,23 +89,16 @@
 %   RelativeDirectory Test:
 %       o Chapter directory prefix {Chapter-} in increment mode
 %       o Section directory prefix {Section-} in increment mode
-%       o All same name to test the stack-pushing conditions
+%       o All same name to test the stack-pushing conditions and file in 
+%           subfolders.
 \RelativeDirectorySetup {
     section-directory-prefix    = Section-,
     section-directory-name      = increment,
     subsection-directory-prefix = Subsection-,
-    subsection-directory-name   = increment
+    subsection-directory-name   = increment,
+    graphics-directory-name     = Graphics
 }
 \IncludeChapter{Main}
-    \IncludeSection{Main}
-        \IncludeSubsection{Main}
-        \IncludeSubsection{Main}
-    \IncludeSection{Main}
-        \IncludeSubsection{Main}
-        \RelativeDirectorySetup {
-            graphics-directory-name = Graphics
-        }
-        \IncludeSubsection{Main}
 %
 %
 %   RelativeDirectory Test:

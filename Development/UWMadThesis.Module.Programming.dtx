@@ -196,7 +196,7 @@ There is a user-facing API but is not documented here as it is experimental.
 %   \cs{UWMad_File_GetExtension:nNN}\Arg{path}\meta{tl var 1}\meta{tl var 2}
 %   \end{syntax}
 %   Searches through the given \Arg{file path} for an extension identifier
-%   (|.| by default) in the path.  If one is found, the path sans extension is 
+%   (\texttt{.} by default) in the path.  If one is found, the path sans extension is 
 %   assigned to \meta{tl var 1} with the extension assigned to \meta{tl var 2}.
 %
 %   Initializations of variables and booleans used in the function
@@ -346,7 +346,7 @@ There is a user-facing API but is not documented here as it is experimental.
 %   queues (FIFO), deques (LIFO+FIFO), and hashes (key-value pairs).
 %
 %   All of the collection systems are thin abstractions of \LaTeXPL{}'s
-%   |l3tl|, |l3seq|, and |l3prop| modules to avoid developing 
+%   \texttt{l3tl}, \texttt{l3seq}, and \texttt{l3prop} modules to avoid developing 
 %   one-shot systems while allowing more endeavoring authors access to the
 %   features without learning \LaTeX3{} programming if they load the
 %   abstractions.
@@ -774,7 +774,7 @@ There is a user-facing API but is not documented here as it is experimental.
 %   gauranteed, see the previous collection data types.
 %
 %   The system is a thin abstraction of \LaTeXPL's
-%   |l3prop| module to avoid developing a one-shot system while allowing more
+%   \texttt{l3prop} module to avoid developing a one-shot system while allowing more
 %   endeavoring authors access to the feature without learning \LaTeX3{}
 %   programming.
 %
@@ -822,9 +822,9 @@ There is a user-facing API but is not documented here as it is experimental.
 %   \begin{function}{\UWMad_Hash_Set:nnn}
 %   Set the value of a key of a defined Hash.
 %
-%   \begin{Usage}
-%       \item|\UWMad_Hash_Set:nnn|\marg{HashID}\marg{Key}\marg{Value}
-%   \end{Usage}
+%   \begin{syntax}
+%       \cs{UWMad_Hash_Set:nnn}\marg{HashID}\marg{Key}\marg{Value}
+%   \end{syntax}
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Hash_Set:nnn {
@@ -928,15 +928,15 @@ There is a user-facing API but is not documented here as it is experimental.
 %
 %
 %   \begin{function}{\IfCommandExists,\IfCommandDoesNotExist}
-%   This command pair is used instead of \LaTeX{}'s |\@ifundefined|.
+%   This command pair is used instead of \LaTeX{}'s \cs{@ifundefined}.
 %   Since it is \eTeX{}, this command will allow for a switch to
-%   |\@ifundefined| if problems arise from non-\eTeX{} users in the
+%   \cs{@ifundefined} if problems arise from non-\eTeX{} users in the
 %   future.
 %
-%   \begin{Usage}
-%       \item |\IfCommandExists|\marg{Command Name}\marg{True}\marg{False}
-%       \item |\IfCommandDoesNotExist|\marg{Command Name}\marg{True}\marg{False}
-%   \end{Usage}
+%   \begin{syntax}
+%       \cs{IfCommandExists}\marg{Command Name}\marg{True}\marg{False}
+%       \cs{IfCommandDoesNotExist}\marg{Command Name}\marg{True}\marg{False}
+%   \end{syntax}
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \IfCommandExistsTF { m +m +m } {
@@ -959,13 +959,11 @@ There is a user-facing API but is not documented here as it is experimental.
 %
 %
 %   \begin{function}{\IfStringEmpty}
-%   Checks if a given string is empty.
-%   It uses the |etoolbox|'s |\ifblank|.
-%   This command will not expand input.
+%   Checks if a given string is composed of no characters or just blank spaces.
 %
-%   \begin{Usage}
-%       \item |\IfStringEmpty|\marg{String}\marg{True}\marg{False}
-%   \end{Usage}
+%   \begin{syntax}
+%       \cs{IfStringEmpty}\marg{String}\marg{True}\marg{False}
+%   \end{syntax}
 %
 %    \begin{macrocode}
 \cs_generate_variant:Nn \tl_if_blank:nTF {fTF}
@@ -982,12 +980,11 @@ There is a user-facing API but is not documented here as it is experimental.
 %
 %
 %   \begin{function}{\IfCommandEmpty}
-%   Uses the |etoolbox|'s |\ifdefempty| command to test if a command expands
-%   to an empty string and is followed by the given conditional code.
+%   Determines if a commands contains no or only space after one expansion.
 %
-%   \begin{Usage}
-%       \item |IfCommandEmpty|\marg{Command}\marg{True}\marg{False}
-%   \end{Usage}
+%   \begin{syntax}
+%       \cs{IfCommandEmpty}\marg{Command}\marg{True}\marg{False}
+%   \end{syntax}
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \IfCommandEmptyTF { m +m +m }{
@@ -1013,19 +1010,17 @@ There is a user-facing API but is not documented here as it is experimental.
 %
 %
 %   \begin{function}{\MakeCommand,\ReMakeCommand}
-%   This command pair uses the |etoolbox|'s |\csdef| to define a commands
-%   via a supplied string \marg{Command Name} and a set of \marg{Code}.
-%   If the requested command is not defined, |\MakeCommand| will create it;
-%   however, if the requested command is already defined, |\MakeCommand| will
+%   If the requested command is not defined, \cs{MakeCommand} will create it;
+%   however, if the requested command is already defined, \cs{MakeCommand} will
 %   throw a warning and not make the command.
-%   If the requested command is defined, |\ReMakeCommand| will redefine it;
-%   however, if the requested command is not defined, |\ReMakeCommand| will
+%   If the requested command is defined, \cs{ReMakeCommand} will redefine it;
+%   however, if the requested command is not defined, \cs{ReMakeCommand} will
 %   throw a warning and not make the command.
 %
-%   \begin{Usage}
-%       \item |\MakeCommand|\marg{Command Name}\marg{Code}
-%       \item |\ReMakeCommand|\marg{Command Name}\marg{Code}
-%   \end{Usage}
+%   \begin{syntax}
+%       \cs{MakeCommand}\marg{Command Name}\marg{Code}
+%       \cs{ReMakeCommand}\marg{Command Name}\marg{Code}
+%   \end{syntax}
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \MakeCommand { O{} m +m } {
@@ -1050,12 +1045,12 @@ There is a user-facing API but is not documented here as it is experimental.
 %
 %
 %   \begin{function}{\MakeGlobalCommand}
-%   Similar to |\MakeCommand| except the creation is made regardless of the
+%   Similar to \cs{MakeCommand} except the creation is made regardless of the
 %   requested command's definition and the creation is global.
 %
-%   \begin{Usage}
-%       \item |\MakeGlobalCommand|\marg{Command Name}\marg{Code}
-%   \end{Usage}
+%   \begin{syntax}
+%       \cs{MakeGlobalCommand}\marg{Command Name}\marg{Code}
+%   \end{syntax}
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \MakeGlobalCommand { O{} +m m } {
@@ -1068,9 +1063,9 @@ There is a user-facing API but is not documented here as it is experimental.
 %   \begin{function}{\MakeCommandUndefined}
 %   Globally undefines the command specified by \marg{Command Name}.
 %
-%   \begin{Usage}
-%       \item |\MakeCommandUndefined|\marg{Command Name}
-%   \end{Usage}
+%   \begin{syntax}
+%       \cs{MakeCommandUndefined}\marg{Command Name}
+%   \end{syntax}
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \MakeCommandUndefined { m } {
@@ -1084,12 +1079,12 @@ There is a user-facing API but is not documented here as it is experimental.
 %   \begin{function}{\CopyCommand}
 %   Copies the defintion of the command named \marg{Command Name 1} to 
 %   a new command named \marg{Command Name 2}.  If \marg{Command Name 2}
-%   already has a definition, |\CopyCommand| will throw a warning
+%   already has a definition, \cs{CopyCommand} will throw a warning
 %   \emph{but} still make the copy.
 %
-%   \begin{Usage}
-%       \item |\CopyCommand|\marg{Command Name 1}\marg{Command Name 2}
-%   \end{Usage}
+%   \begin{syntax}
+%       \cs{CopyCommand}\marg{Command Name 1}\marg{Command Name 2}
+%   \end{syntax}
 %
 %    \begin{macrocode}
 \DeclareDocumentCommand \CopyCommand { m m } {

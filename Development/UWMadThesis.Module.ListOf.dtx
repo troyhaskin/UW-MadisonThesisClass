@@ -2,7 +2,7 @@
 
 \UWFeature{List Environments}
 
-The \UWMadClass{} has a special set of functions from creating list environments (called |ListOf| in the implementation).
+The \UWMadClass{} has a special set of functions from creating list environments (called \texttt{ListOf} in the implementation).
 The functions use queues and associative arrays to store and use data before it is typeset.
 These data structures allow for operations to be carried out without writing external files or repeating compilation; of course, there is added memory usage which could lead to problems on older systems.
 
@@ -10,9 +10,9 @@ The primary motivation for such a system was the creation of a nomenclature envi
 These two similar features are discussed here.
 
 \UWSubFeature{Nomenclature}
-The |Nomenclature| environment is, by default, a list of |(symbol, description)| entries.
-There is a user option for changing the system to a list of |(symbol, units, description)| entries if a separate unit column is desired.
-For every set of entries, the nomenclature system measures the width of the |symbol| and (if present) |units| to determine the maximum width of the |description| such that no text overflows into the margins of the page.
+The \texttt{Nomenclature} environment is, by default, a list of \texttt{(symbol, description)} entries.
+There is a user option for changing the system to a list of \texttt{(symbol, units, description)} entries if a separate unit column is desired.
+For every set of entries, the nomenclature system measures the width of the \texttt{symbol} and (if present) \texttt{units} to determine the maximum width of the \texttt{description} such that no text overflows into the margins of the page.
 
 When first adding entries to a nomenclature, the symbols are part of the so-called Main group.
 The Main group has a title and a section level associated with it.
@@ -25,14 +25,14 @@ All of these defaults can be changed by the \cs{NomenclatureSetup} command descr
 
 \UWSubSubFeature{Command Descriptions}
 
-A sketch of the |Nomenclature| implementation would be: \vskip1em
-    \hspace{1em}|\begin{Nomenclature}|\oarg{section}\marg{title}    \vskip0em
-    \hspace{3em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
-    \hspace{3em}|\Group|\marg{group title}                          \vskip0em
-    \hspace{6em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
-    \hspace{6em}|\Subgroup|\marg{subgroup title}                    \vskip0em
-    \hspace{9em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
-    \hspace{1em}|\end{Nomenclature}|                                \vskip1em
+A sketch of the \texttt{Nomenclature} implementation would be:              \vskip1em
+    \hspace{1em}\cs{begin{Nomenclature}}\cs{oarg}{section}\cs{marg}{title}  \vskip0em
+    \hspace{3em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
+    \hspace{3em}\cs{Group}\cs{marg}{group title}                            \vskip0em
+    \hspace{6em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
+    \hspace{6em}\cs{Subgroup}\cs{marg}{subgroup title}                      \vskip0em
+    \hspace{9em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
+    \hspace{1em}\cs{end{Nomenclature}}                                      \vskip1em
 
 The square brace-delimited \oarg{section} is \textsc{optional} and overrides the default Main group section.
 The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the default Main group title.
@@ -109,8 +109,8 @@ We can tweak the example a bit more by putting the second two items under a grou
         \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
 \rule{\textwidth}{0.1em}
-By default, the section level used by \cs{Group} is one below that of the main nomenclature section; therefore, since the nomenclature's section level is defined as |subsection|, the \cs{Group} is a |subsubsection|.
-Not shown: using \cs{Subgroup} would typeset the title as a |paragraph| in this example.
+By default, the section level used by \cs{Group} is one below that of the main nomenclature section; therefore, since the nomenclature's section level is defined as \texttt{subsection}, the \cs{Group} is a \texttt{subsubsection}.
+Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} in this example.
 
 
 \UWSubSubFeature{Customization}
@@ -142,17 +142,17 @@ These options are set by giving a comma-separate list of key-value pairs to the 
 \UWSubFeature{Acronym}
 
 \UWSubSubFeature{Description}
-The |Acronym| environment is a specialized extension of the |Nomenclature| environment.
-It has the same basic syntax, but a |units| column is not supported.
-Also, instead of \cs{Entry} taking |(symbol, description)| pairs, it takes |(acronym,meaning)| pairs.
+The \texttt{Acronym} environment is a specialized extension of the \texttt{Nomenclature} environment.
+It has the same basic syntax, but a \texttt{units} column is not supported.
+Also, instead of \cs{Entry} taking \texttt{(symbol, description)} pairs, it takes \texttt{(acronym,meaning)} pairs.
 Lastly, it comes equipped with a new command: \cs{Acro}.
 
 \begin{function}{\Acro}
     \begin{syntax}
         \cs{Acro}\marg{acronym}
     \end{syntax}
-    \cs{Acro} is meant to be used throughout the document to reference back to the |Acronym| environment where it was defined.
-    If an |Acronym| environment contains the line |\Entry{TBD}{To be determined}|, the first usage of |\Arco{TBD}| will be typeset as `To be determined (TBD)' while subsequent uses will simply be `TBD'.
+    \cs{Acro} is meant to be used throughout the document to reference back to the \texttt{Acronym} environment where it was defined.
+    If an \texttt{Acronym} environment contains the line \cs{Entry}\texttt{\{TBD\}\{To be determined\}}, the first usage of \cs{Arco}\texttt{\{TBD\}} will be typeset as `To be determined (TBD)' while subsequent uses will simply be `TBD'.
     Also, if links are not turned off (they are on by default), the acronym will be a link back to the original environment entry.
 \end{function}
 
@@ -192,7 +192,7 @@ is typeset as
     \end{Acronym}
 \rule{\textwidth}{0.1em}
 
-The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
+The first usage of \cs{Acro}\{NRC\} is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
 
 \begin{table}[H]
 \begin{center}
@@ -257,25 +257,25 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %   Lists are taken to be any collection of entries that is to be typeset
 %   with a particular style.  For example, a simple Nomenclature could be
 %   considered a list of (symbol, description) entries to be typeset with a
-%   fixed style for all entires.  The |ListOf| commands create a system
+%   fixed style for all entires.  The \texttt{ListOf} commands create a system
 %   specifically for this scenario.
 %
 %   Of course, as the commands description will show, lists can be much more
-%   complicated that two items.  For the |ListOf| system to function, an
-%   author really only needs to define the |ListOf|, create a command to push
-%   (enqueue) entries on to the |ListOf| queue, and at some point tell the
-%   |ListOf| to typeset the entries it has stored (if display of the content
+%   complicated that two items.  For the \texttt{ListOf} system to function, an
+%   author really only needs to define the \texttt{ListOf}, create a command to push
+%   (enqueue) entries on to the \texttt{ListOf} queue, and at some point tell the
+%   \texttt{ListOf} to typeset the entries it has stored (if display of the content
 %   is desired).
 %
 %
 %
 %   \begin{macro}{\UWMad_ListOf_Define:n}
-%   Define a new |ListOf| with \marg{ID}. This command creates the
+%   Define a new \texttt{ListOf} with \marg{ID}. This command creates the
 %   commands to store the section commands and title for each group,
 %   the booleans to indicate if the sections should be numbered and
 %   if the sections should be included in the table of contentst
 %   (regardless of numbering), a hash to hold of the user-defined
-%   hooks for the |ListOf|, and a queue to store the entries for
+%   hooks for the \texttt{ListOf}, and a queue to store the entries for
 %   typesetting.
 %
 %    \begin{macrocode}
@@ -305,7 +305,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %
 %
 %   \begin{macro}{\UWMad_ListOf_Delete:n}
-%   Simply undefines all of the commands created in the |Define| command
+%   Simply undefines all of the commands created in the \texttt{Define} command
 %   above for the given \marg{ID}.
 %
 %    \begin{macrocode}
@@ -332,7 +332,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %
 %
 %   \begin{macro}{\UWMad_ListOf_IfDefined:nT}
-%   Checks to see if a |ListOf| with \marg{ID} has been created and
+%   Checks to see if a \texttt{ListOf} with \marg{ID} has been created and
 %   errors if not.
 %
 %    \begin{macrocode}
@@ -351,7 +351,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %
 %   \begin{macro}{
 %   \UWMad_ListOf_MakeNumbered:n,\UWMad_ListOf_MakeNotNumbered:n}
-%   Makes the current section of the |ListOf| with \marg{ID} numbered
+%   Makes the current section of the \texttt{ListOf} with \marg{ID} numbered
 %   or unnumbered (i.e., a star version).
 %
 %    \begin{macrocode}
@@ -372,7 +372,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %
 %   \begin{macro}{\UWMad_ListOf_IfNumbered:nTF}
 %   Branches to \marg{True Code} or \marg{False Code} depending on whether
-%   the |ListOf| with \marg{ID} is numbered or not.
+%   the \texttt{ListOf} with \marg{ID} is numbered or not.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_IfNumbered:nTF {
@@ -391,7 +391,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %
 %   \begin{macro}{
 %   \UWMad_ListOf_IncludeInTOC:n,\UWMad_ListOf_DoNotIncludeInTOC:n}
-%   Makes the current section of the |ListOf| with \marg{ID} appear in
+%   Makes the current section of the \texttt{ListOf} with \marg{ID} appear in
 %   the Table of Contents (TOC)  or not, regardless of if it is
 %   numbered/unnumbered.
 %
@@ -413,7 +413,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %
 %   \begin{macro}{\UWMad_ListOf_IfIncludeInTOC:n}
 %   Branches to \marg{True Code} or \marg{False Code} depending on whether
-%   the |ListOf| with \marg{ID} is to be included or not.
+%   the \texttt{ListOf} with \marg{ID} is to be included or not.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_IfIncludeInTOC:nTF {
@@ -440,7 +440,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %       \cs{UWMad_ListOf_SetTitle_Subgroup:nn}\Arg{ID}\Arg{Title}
 %   \end{syntax}
 %   Sets the value of the title of the sections to \marg{Title} for the
-%   |ListOf| with \marg{ID}
+%   \texttt{ListOf} with \marg{ID}
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_SetTitle_Main:nn {
@@ -473,7 +473,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %       \cs{UWMad_ListOf_GetTitle_Subgroup:n}\Arg{ID}
 %   \end{syntax}
 %   Retrieces the value of the title of the section for the
-%   |ListOf| with \marg{ID}.
+%   \texttt{ListOf} with \marg{ID}.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_GetTitle_Main:n {
@@ -506,7 +506,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %       \cs{UWMad_ListOf_SetSection_Subgroup:nn}\Arg{ID}\Arg{Section}
 %   \end{syntax}
 %   Sets the value of the section level and (currently) the sectioning
-%   command for a particular group to \Arg{Section} of the |ListOf|
+%   command for a particular group to \Arg{Section} of the \texttt{ListOf}
 %   with \Arg{ID}.
 %
 %    \begin{macrocode}
@@ -540,7 +540,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %       \cs{UWMad_ListOf_GetSection_Subgroup:n}\Arg{ID}
 %   \end{syntax}
 %   Gets the value of the section level for a particular group of the
-%   |ListOf| with \Arg{ID}.
+%   \texttt{ListOf} with \Arg{ID}.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_GetSection_Main:n {
@@ -567,10 +567,10 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %   \begin{syntax}
 %       \cs{UWMad_ListOf_SetHook:nnn}\Arg{ID}\Arg{Hook name}\Arg{Hook code}
 %   \end{syntax}
-%   Sets \Arg{Hook name} to \Arg{Hook code} for the |ListOf|
+%   Sets \Arg{Hook name} to \Arg{Hook code} for the \texttt{ListOf}
 %   with \Arg{ID}.
-%   The current hooks used are: |PrePush|, |PostPush|,
-%   |PrePrint|, and |PostPrint|.
+%   The current hooks used are: \texttt{PrePush}, \texttt{PostPush},
+%   \texttt{PrePrint}, and \texttt{PostPrint}.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_SetHook:nnn {
@@ -585,7 +585,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %   \begin{syntax}
 %       \cs{UWMad_ListOf_PushEntry:nn} \Arg{ID}\Arg{Entry}
 %   \end{syntax}
-%   Pushes \Arg{Entry} on to the entry queue of the |ListOf| with \Arg{ID}.
+%   Pushes \Arg{Entry} on to the entry queue of the \texttt{ListOf} with \Arg{ID}.
 %
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_PushEntry:nn {
@@ -602,8 +602,8 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %   \begin{syntax}
 %       \cs{UWMad_ListOf_PrintEntries:n}\Arg{ID}
 %   \end{syntax}
-%   Prints all entries currently in the |ListOf| queue with \marg{ID} and
-%   clears the queue.  The |PrePrint| and |PostPrint| hooks
+%   Prints all entries currently in the \texttt{ListOf} queue with \marg{ID} and
+%   clears the queue.  The \texttt{PrePrint} and \texttt{PostPrint} hooks
 %   are also called here.
 %
 %    \begin{macrocode}
@@ -622,7 +622,7 @@ The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro
 %   \begin{syntax}
 %       \cs{UWMad_ListOf_PrintTitle:nn}\Arg{ID}\Arg{Group}
 %   \end{syntax}
-%   Prints the title for the \Arg{Group} of the |ListOf| with
+%   Prints the title for the \Arg{Group} of the \texttt{ListOf} with
 %   \Arg{ID} at the section indicated by its associated token
 %   list.
 %   Numbering and table of contents adding is done according to the

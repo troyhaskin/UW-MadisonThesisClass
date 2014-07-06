@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <txcop:outputProfiles version="2" xmlns:txcop="http://schemas.ToolsCenter.org/TeXnicCenter/OutputProfiles.xsd">
 	<outputProfileList>
+		<outputProfile name="UWMad_LuaLaTeX-SuperQuick" stopOnLatexError="false">
+			<texCommand execute="true" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.QuickBuild.tex"/>
+			<bibTexCommand execute="false" path="bibtex.exe" arguments="&quot;%tm&quot;"/>
+			<makeIndexCommand execute="false" path="makeindex.exe" arguments="-s l3doc.ist -o UWMadThesis.Documentation.ind UWMadThesis.Documentation.idx"/>
+			<preProcessors>
+				<processor name="RunMakeINS" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode Make.ins" inputFile="" outputFile=""/>
+			</preProcessors>
+			<postProcessors/>
+			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
+				<viewProjectCommand type="commandLine">
+					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewProjectCommand>
+				<viewCurrentFileCommand type="commandLine">
+					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewCurrentFileCommand>
+				<viewCloseCommand type="commandLine">
+					<commandLineCommand path="" arguments=""/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewCloseCommand>
+			</viewer>
+		</outputProfile>
 		<outputProfile name="LaTeX &#8680; PS" stopOnLatexError="false">
 			<texCommand execute="true" path="latex.exe" arguments="-src -max-print-line=120 -interaction=nonstopmode &quot;%wm&quot;"/>
 			<bibTexCommand execute="true" path="bibtex.exe" arguments="&quot;%tm&quot;"/>
@@ -91,13 +114,15 @@
 			</viewer>
 		</outputProfile>
 		<outputProfile name="UWMad_LuaLaTeX-Quick" stopOnLatexError="false">
-			<texCommand execute="true" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.QuickBuild.tex"/>
+			<texCommand execute="true" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx"/>
 			<bibTexCommand execute="false" path="bibtex.exe" arguments="&quot;%tm&quot;"/>
 			<makeIndexCommand execute="false" path="makeindex.exe" arguments="-s l3doc.ist -o UWMadThesis.Documentation.ind UWMadThesis.Documentation.idx"/>
 			<preProcessors>
 				<processor name="RunMakeINS" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode Make.ins" inputFile="" outputFile=""/>
 			</preProcessors>
-			<postProcessors/>
+			<postProcessors>
+				<processor name="LaTeXAgain" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx" inputFile="" outputFile=""/>
+			</postProcessors>
 			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
 					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
@@ -155,6 +180,29 @@
 				</viewCloseCommand>
 			</viewer>
 		</outputProfile>
+		<outputProfile name="UWMad_pdfLaTeX-SuperQuick" stopOnLatexError="false">
+			<texCommand execute="true" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.QuickBuild.tex"/>
+			<bibTexCommand execute="false" path="bibtex.exe" arguments="UWMadThesis.Documentation.dtx"/>
+			<makeIndexCommand execute="false" path="makeindex.exe" arguments="-s l3doc.ist -o UWMadThesis.Documentation.ind UWMadThesis.Documentation.idx"/>
+			<preProcessors>
+				<processor name="RunMakeINS" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode Make.ins" inputFile="" outputFile=""/>
+			</preProcessors>
+			<postProcessors/>
+			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
+				<viewProjectCommand type="commandLine">
+					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewProjectCommand>
+				<viewCurrentFileCommand type="commandLine">
+					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewCurrentFileCommand>
+				<viewCloseCommand type="commandLine">
+					<commandLineCommand path="" arguments=""/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewCloseCommand>
+			</viewer>
+		</outputProfile>
 		<outputProfile name="UWMad_pdfLaTeX" stopOnLatexError="false">
 			<texCommand execute="true" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx"/>
 			<bibTexCommand execute="false" path="bibtex.exe" arguments="UWMadThesis.Documentation.dtx"/>
@@ -183,13 +231,15 @@
 			</viewer>
 		</outputProfile>
 		<outputProfile name="UWMad_pdfLaTeX-Quick" stopOnLatexError="false">
-			<texCommand execute="true" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.QuickBuild.tex"/>
+			<texCommand execute="true" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx"/>
 			<bibTexCommand execute="false" path="bibtex.exe" arguments="UWMadThesis.Documentation.dtx"/>
 			<makeIndexCommand execute="false" path="makeindex.exe" arguments="-s l3doc.ist -o UWMadThesis.Documentation.ind UWMadThesis.Documentation.idx"/>
 			<preProcessors>
 				<processor name="RunMakeINS" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode Make.ins" inputFile="" outputFile=""/>
 			</preProcessors>
-			<postProcessors/>
+			<postProcessors>
+				<processor name="LaTeXAgain" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx" inputFile="" outputFile=""/>
+			</postProcessors>
 			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
 					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>

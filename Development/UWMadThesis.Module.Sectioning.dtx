@@ -3,7 +3,7 @@
 \UWFeature{Sectioning}
 
 Sectioning concerns the overall structure of your document into chunks called sections.
-The default sections in \LaTeXe{} are |part|, |chapter|, |section|, |subsection|, |subsubsection|, |paragraph|, and |subparagraph|.
+The default sections in \LaTeXe{} are \texttt{part}, \texttt{chapter}, \texttt{section}, \texttt{subsection}, \texttt{subsubsection}, \texttt{paragraph}, and \texttt{subparagraph}.
 The \UWMadClass{} defines some new section commands and makes some other adjustments to the default commands.
 
 \UWSubFeature{Front Matter}
@@ -28,7 +28,7 @@ The Front Matter commands are all semantically named and set as starred (unnumbe
     \end{syntax}
     The title \textsc{is optional}.
     If the title is omitted, the default is a capitalized version of the command's name.
-    For example, |\dedications| will have the title \enquote{Dedications}.
+    For example, \cs{dedications} will have the title \enquote{Dedications}.
 \end{function}
 
 
@@ -123,7 +123,7 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %   \UWSubModule{Appendix}
 %   Here the \cs{appendix} command is redefined to act like the 
 %   \cs{chapter} command.
-%   Before, \cs{appendix} simply changed the |chaptername| to 
+%   Before, \cs{appendix} simply changed the \texttt{chaptername} to 
 %   \enquote{Appendix}.
 %
 %   Define the appendix counter.
@@ -133,7 +133,7 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %    \end{macrocode}
 %
 %   This command is used when the first \cs{appendix} command
-%   is used.  It sets the |chaptername| to \enquote{Appendix}
+%   is used.  It sets the \texttt{chaptername} to \enquote{Appendix}
 %   and sets the \cs{thechapter} to use the appendix counter
 %   above.
 %    \begin{macrocode}
@@ -223,7 +223,7 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %    \end{macrocode}
 %
 %   
-%   First the |abstract| environment from the \LaTeX{} base class is 
+%   First the \texttt{abstract} environment from the \LaTeX{} base class is 
 %   undefined, and the Front Matter commands as described in the User
 %   Guide are defined.
 %    \begin{macrocode}
@@ -371,11 +371,11 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %   \UWSubModule{Section-Level Commands}
 %
 %   These commands are used internally when needing to check if a
-%   user-supplied |section| is a \LaTeXe{}-defined section and
+%   user-supplied \texttt{section} is a \LaTeXe{}-defined section and
 %   also easily acquired/use the relationships among section levels
 %   when needed.
 %
-%   These variables map a |section| to a level number and also serve
+%   These variables map a \texttt{section} to a level number and also serve
 %   to define the existence of the level.
 %    \begin{macrocode}
 \tl_const:Nn \c__UWMad_SectionsLevel_part_tl            {-1}

@@ -1,3 +1,4 @@
+\DeleteShortVerb{\|}
 \pagenumbering{arabic}
 \UWPart{User Guide}
 
@@ -552,7 +553,7 @@ To facilitate either, two commands have been created.
 \UWFeature{Sectioning}
 
 Sectioning concerns the overall structure of your document into chunks called sections.
-The default sections in \LaTeXe{} are |part|, |chapter|, |section|, |subsection|, |subsubsection|, |paragraph|, and |subparagraph|.
+The default sections in \LaTeXe{} are \texttt{part}, \texttt{chapter}, \texttt{section}, \texttt{subsection}, \texttt{subsubsection}, \texttt{paragraph}, and \texttt{subparagraph}.
 The \UWMadClass{} defines some new section commands and makes some other adjustments to the default commands.
 
 \UWSubFeature{Front Matter}
@@ -577,7 +578,7 @@ The Front Matter commands are all semantically named and set as starred (unnumbe
     \end{syntax}
     The title \textsc{is optional}.
     If the title is omitted, the default is a capitalized version of the command's name.
-    For example, |\dedications| will have the title \enquote{Dedications}.
+    For example, \cs{dedications} will have the title \enquote{Dedications}.
 \end{function}
 
 \UWSubFeature{Appendix}
@@ -632,7 +633,7 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 
 \UWFeature{List Environments}
 
-The \UWMadClass{} has a special set of functions from creating list environments (called |ListOf| in the implementation).
+The \UWMadClass{} has a special set of functions from creating list environments (called \texttt{ListOf} in the implementation).
 The functions use queues and associative arrays to store and use data before it is typeset.
 These data structures allow for operations to be carried out without writing external files or repeating compilation; of course, there is added memory usage which could lead to problems on older systems.
 
@@ -640,9 +641,9 @@ The primary motivation for such a system was the creation of a nomenclature envi
 These two similar features are discussed here.
 
 \UWSubFeature{Nomenclature}
-The |Nomenclature| environment is, by default, a list of |(symbol, description)| entries.
-There is a user option for changing the system to a list of |(symbol, units, description)| entries if a separate unit column is desired.
-For every set of entries, the nomenclature system measures the width of the |symbol| and (if present) |units| to determine the maximum width of the |description| such that no text overflows into the margins of the page.
+The \texttt{Nomenclature} environment is, by default, a list of \texttt{(symbol, description)} entries.
+There is a user option for changing the system to a list of \texttt{(symbol, units, description)} entries if a separate unit column is desired.
+For every set of entries, the nomenclature system measures the width of the \texttt{symbol} and (if present) \texttt{units} to determine the maximum width of the \texttt{description} such that no text overflows into the margins of the page.
 
 When first adding entries to a nomenclature, the symbols are part of the so-called Main group.
 The Main group has a title and a section level associated with it.
@@ -655,14 +656,14 @@ All of these defaults can be changed by the \cs{NomenclatureSetup} command descr
 
 \UWSubSubFeature{Command Descriptions}
 
-A sketch of the |Nomenclature| implementation would be: \vskip1em
-    \hspace{1em}|\begin{Nomenclature}|\oarg{section}\marg{title}    \vskip0em
-    \hspace{3em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
-    \hspace{3em}|\Group|\marg{group title}                          \vskip0em
-    \hspace{6em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
-    \hspace{6em}|\Subgroup|\marg{subgroup title}                    \vskip0em
-    \hspace{9em}|\Entry|\marg{symbol}\marg{description}             \vskip0em
-    \hspace{1em}|\end{Nomenclature}|                                \vskip1em
+A sketch of the \texttt{Nomenclature} implementation would be:              \vskip1em
+    \hspace{1em}\cs{begin{Nomenclature}}\cs{oarg}{section}\cs{marg}{title}  \vskip0em
+    \hspace{3em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
+    \hspace{3em}\cs{Group}\cs{marg}{group title}                            \vskip0em
+    \hspace{6em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
+    \hspace{6em}\cs{Subgroup}\cs{marg}{subgroup title}                      \vskip0em
+    \hspace{9em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
+    \hspace{1em}\cs{end{Nomenclature}}                                      \vskip1em
 
 The square brace-delimited \oarg{section} is \textsc{optional} and overrides the default Main group section.
 The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the default Main group title.
@@ -738,8 +739,8 @@ We can tweak the example a bit more by putting the second two items under a grou
         \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
 \rule{\textwidth}{0.1em}
-By default, the section level used by \cs{Group} is one below that of the main nomenclature section; therefore, since the nomenclature's section level is defined as |subsection|, the \cs{Group} is a |subsubsection|.
-Not shown: using \cs{Subgroup} would typeset the title as a |paragraph| in this example.
+By default, the section level used by \cs{Group} is one below that of the main nomenclature section; therefore, since the nomenclature's section level is defined as \texttt{subsection}, the \cs{Group} is a \texttt{subsubsection}.
+Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} in this example.
 
 \UWSubSubFeature{Customization}
 
@@ -766,17 +767,17 @@ These options are set by giving a comma-separate list of key-value pairs to the 
 \UWSubFeature{Acronym}
 
 \UWSubSubFeature{Description}
-The |Acronym| environment is a specialized extension of the |Nomenclature| environment.
-It has the same basic syntax, but a |units| column is not supported.
-Also, instead of \cs{Entry} taking |(symbol, description)| pairs, it takes |(acronym,meaning)| pairs.
+The \texttt{Acronym} environment is a specialized extension of the \texttt{Nomenclature} environment.
+It has the same basic syntax, but a \texttt{units} column is not supported.
+Also, instead of \cs{Entry} taking \texttt{(symbol, description)} pairs, it takes \texttt{(acronym,meaning)} pairs.
 Lastly, it comes equipped with a new command: \cs{Acro}.
 
 \begin{function}{\Acro}
     \begin{syntax}
         \cs{Acro}\marg{acronym}
     \end{syntax}
-    \cs{Acro} is meant to be used throughout the document to reference back to the |Acronym| environment where it was defined.
-    If an |Acronym| environment contains the line |\Entry{TBD}{To be determined}|, the first usage of |\Arco{TBD}| will be typeset as `To be determined (TBD)' while subsequent uses will simply be `TBD'.
+    \cs{Acro} is meant to be used throughout the document to reference back to the \texttt{Acronym} environment where it was defined.
+    If an \texttt{Acronym} environment contains the line \cs{Entry}\texttt{\{TBD\}\{To be determined\}}, the first usage of \cs{Arco}\texttt{\{TBD\}} will be typeset as `To be determined (TBD)' while subsequent uses will simply be `TBD'.
     Also, if links are not turned off (they are on by default), the acronym will be a link back to the original environment entry.
 \end{function}
 
@@ -816,7 +817,7 @@ is typeset as
     \end{Acronym}
 \rule{\textwidth}{0.1em}
 
-The first usage of |\Acro{NRC}| is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
+The first usage of \cs{Acro}\{NRC\} is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
 
 \begin{table}[H]
 \begin{center}
@@ -898,7 +899,7 @@ These command set deal with quick and easy typesetting of derivatives.
         \cs{pderivbig}  \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order} \\
         \cs{tderivbig}  \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order}
     \end{syntax}
-    This function set is identical to the non-|big| versions above, except that \Arg{function} is placed to the right of the derivative operator and wrapped by |\left| and |\right|.
+    This function set is identical to the non- \texttt{big} versions above, except that \Arg{function} is placed to the right of the derivative operator and wrapped by \cs{left} and \cs{right}.
     The default delimiters for the stretch commands are `[' and ']', and either can be individually overridden via the two optional arguments.
     For example, the input
     \begin{verbatim}
@@ -923,25 +924,25 @@ These command set deal with quick and easy typesetting of derivatives.
         \cs{DerivativeGeneral}     \Arg{function} \Arg{variable} \Arg{order} \Arg{symbol}
         \cs{DerivativeGeneralBig}  \Arg{function} \Arg{variable} \Arg{order} \Arg{symbol} \Arg{left delim} \Arg{right delim}
     \end{syntax}
-    These commands are lower-level commands used by the |deriv| family above.
+    These commands are lower-level commands used by the \texttt{deriv} family above.
     All of the arguments are mandatory.
-    If a change to the general style of the derivatives or another version of the |deriv| family is desire, these commands are available for usage.
+    If a change to the general style of the derivatives or another version of the \texttt{deriv} family is desire, these commands are available for usage.
 \end{function}
 
 \begin{function}{\derivSymbol,\pderivSymbol,\tderivSymbol}
     \begin{syntax}
         \cs{derivSymbol}
     \end{syntax}
-    These commands take no arguments and expand to the current symbol used for the associated |deriv| command.
+    These commands take no arguments and expand to the current symbol used for the associated \texttt{deriv} command.
     The defaults require math mode to be typeset.
-    Therefore, |$\pderivSymbol$| will be appear as $\pderivSymbol$.
+    Therefore, \texttt{\$\cs{pderivSymbol}\$} will be appear as $\pderivSymbol$.
 \end{function}
 
 \begin{function}{\derivSymbolChange,\pderivSymbolChange,\tderivSymbolChange}
     \begin{syntax}
         \cs{derivSymbolChange} \Arg{symbol} \\[0.50em]
     \end{syntax}
-    These commands will \textsc{temporarily} change the symbol used by the associated |deriv| commands.
+    These commands will \textsc{temporarily} change the symbol used by the associated \texttt{deriv} commands.
     The symbol will revert back to the original, default value after leaving the \TeX{} group where the switch was made (more often than not for \LaTeX{} users, this means ``upon exiting an environment'').
     For example:
     \begin{verbatim}
@@ -970,7 +971,7 @@ These command set deal with quick and easy typesetting of derivatives.
         \cs{tderivSymbolChangeDefault} \Arg{symbol}
     \end{syntax}
 
-    These commands will \textsc{permanently} change the symbol used by the associated |deriv| commands.
+    These commands will \textsc{permanently} change the symbol used by the associated \texttt{deriv} commands.
     For example:
     \begin{verbatim}
         \begin{equation}
@@ -992,7 +993,7 @@ These command set deal with quick and easy typesetting of derivatives.
     \begin{syntax}
         \cs{DelimiterChangeDefault} \Arg{left delim} \Arg{right delim}
     \end{syntax}
-    This command changes the default delimiters used by the |big| commands above.
+    This command changes the default delimiters used by the \texttt{big} commands above.
     Any valid delimiters can be used.
     For example:
     \begin{verbatim}
@@ -1114,8 +1115,8 @@ Some are new while others are simply in a camel-cased versions of the standard o
     \begin{syntax}
         \cs{IfMathModeTF} \Arg{math mode code} \Arg{text mode code}
     \end{syntax}
-    This is an abstraction of |expl3|'s |\mode_if_math:TF| function.
-    It was added to give more control on the following \cs{subs} and \cs{sups} commands since |expl3|'s syntax is disabled to make |_| a subscript shift and not a letter.
+    This is an abstraction of \texttt{expl3}'s \verb|\mode_if_math:TF| function.
+    It was added to give more control on the following \cs{subs} and \cs{sups} commands since \texttt{expl3}'s syntax is disabled to make \texttt{_} a subscript shift and not a letter.
 \end{function}
 
 \begin{function}{\subs,\sups,\subsups}
@@ -1128,7 +1129,7 @@ Some are new while others are simply in a camel-cased versions of the standard o
     They are useful if the subscript or superscript are not variable, and therefore should be in non-math text, or for making subscripts or superscripts in text mode.
     The optional argument \oarg{space} is meant for adjusting the spacing of the scripts and exists in \textsc{in math mode}, so technically, any valid math statement can be used.
     However, it is encouraged to only use this argument for spacing.
-    For example, the input |`T\subs{P}, $T\subs{P}$, $T_P$'| is typeset as `T\subs{P}, $T\subs{P}$, $T_P$', and the input |`T\subs[\!]{P}, T\subs[\:]{P}'| is typeset as `T\subs[\!]{P}, T\subs[\:]{P}'.
+    For example, the input \verb|`T\subs{P}, $T\subs{P}$, $T_P$'| is typeset as `T\subs{P}, $T\subs{P}$, $T_P$', and the input \verb|`T\subs[\!]{P}, T\subs[\:]{P}'| is typeset as `T\subs[\!]{P}, T\subs[\:]{P}'.
     T\sups{P}
 \end{function}
 
@@ -1240,12 +1241,188 @@ There is a user-facing API but is not documented here as it is experimental.
 
 \UWFeature{Relative Directory Includes}
 
-\UWSubFeature{Commands}
+\LaTeX{} provides two commands for importing external files:
+\begin{description}
+    \setlength{\leftmargin}{2em}
+    \item[\cs{input}]{%
+        Simply adds the contents of the file to the input stream
+    }
+    \item[\cs{include}]{%
+        Performs a \cs{clearpage} before and after the file inclusion; also allows selective inclusion through the \cs{includeonly} command.
+    }
+\end{description}
 
-\UWSubFeature{Directory Naming Mode}
+They work well but do have one deficiency for longer documents: they lack directory awareness.
+For example, if a chapter file named \texttt{Chapter-1.tex} existed a sub-directory named \texttt{Chapter-1}, the required markup would b:
+\begin{verbatim}
+    \input{Chapter-1/Chapter-1}
+\end{verbatim}
+This seems reasonable.
+However, the complexity (or possibly annoyance) increases if other files are imported from \texttt{Chapter-1.tex}.
+If there was a section file \texttt{Section.tex} in the \texttt{Chapter-1} directory that was desired to be included by \texttt{Chapter-1.tex} (a somewhat intuitive idea: chapter files include section files), the markup would need to be
+\begin{verbatim}
+    \input{Chapter-1/Section-1}
+\end{verbatim}
+\textsc{within} the \texttt{Chapter-1.tex} file itself.
+For large documents where sections, or even subsections, become large enough that they require their own files, adding these directory trees can be become burdensome and lead to poor-looking markup.
+
+The \UWMadClass{} Relative Directory feature provides a mechanism to make this process easier and cleaner.
+Commands are added to form a \meta{search stack} that is separate from the default \LaTeX{} search path.
+These commands and the convention built into the system are discussed below.
+
+\UWSubFeature{File Inclusion}
+
+For including text files (i.e., not graphics files) the system operates through the usage of the following three commands.
+
+\begin{function} {
+    \IncludeChapter,
+    \IncludeSection,
+    \IncludeSubsection
+    }
+    \begin{syntax}
+        \cs{IncludeChapter}   \oarg{path}\marg{filename}
+        \cs{IncludeSection}   \oarg{path}\marg{filename}
+        \cs{IncludeSubsection}\oarg{path}\marg{filename}
+    \end{syntax}
+    These commands will augment the class's current search path according the conventions outlined in the \RefSubFeature[next section]{Naming Conventions}.
+    The \marg{filename} will then be searched for and, if found, added to the input stream.
+    These commands are meant to be used following the standard \LaTeX{} sectioning conventions: chapters then sections then subsections.
+    While the system may work if used out-of-order, the behavior is not tested and should be avoided.
+
+    An optional \oarg{path} can be input to override the current \RefSubFeature[naming convention]{Naming Conventions} and is present for special circumstances.
+
+    At first, these commands seem to be simple renamings of the \LaTeX{} system but with the path and file name having separate inputs.
+    This stance is entirely true if directory \RefSubFeature[naming conventions]{Naming Conventions} aren't used.
+    But it is highly recommended that they are.
+\end{function}
+
+\UWSubFeature{Naming Conventions}
+
+By default, there is no naming convention (referred to a \texttt{none} in the implementation).
+A naming convention is a pattern that tells the Relative Directory system how the directories that hold document files are named.
+Naming conventions are defined by the user through the \cs{UWMadSetup} function and the \texttt{RelativeDirectory} module name (see examples below).
+
+By default, there are currently two supported naming conventions: increment and same.
+More maybe added in the future.
+
 \UWSubSubFeature{Increment}
+Suppose a user has a \LaTeX{} document that is to be compiled from a file named \texttt{Main.tex} that exists in the directory \texttt{Main}.
+The user also has several chapters and and sections with the directory structure seen in \cref{Subtable:Increment}.
+Each of the directory names is prefixed with \texttt{Chapter-} or \texttt{Section-} and ended with an Arabic number.
+This directory structure exemplifies the Increment naming convention.
+
+The user can easily tell the Relative Directory system of this convention using the following input
+{
+\setstretch{1.0}
+\begin{verbatim}
+    \UWMadSetup{ RelativeDirectory } {
+        chapter-directory-prefix = Chapter-,
+        chapter-directory-name   = increment,
+        section-directory-prefix = Section-,
+        section-directory-name   = increment
+    }
+\end{verbatim}
+}
+Then, using the commands above, the user can include the files by adding the following input to \texttt{Main.tex}:
+{
+\setstretch{1.0}
+\begin{verbatim}
+    \IncludeChapter{Chapter}
+        \IncludeSection{Section-1}
+        \IncludeSection{Section-2}
+    \IncludeChapter{Chapter}
+        \IncludeSection{Section}
+        \IncludeSection{Section}
+\end{verbatim}
+}
+Or, the user can choose to only add the chapters in \texttt{Main.tex} while putting the section includes in their respective \texttt{Chapter.tex} files.
+The \UWMadClass{} \meta{search stack} will handle either.
+
 \UWSubSubFeature{Same}
+Suppose a user has a \LaTeX{} document that is to be compiled from a file named \texttt{Main.tex} that exists in the directory \texttt{Main}.
+The user also has several chapters and and sections with the directory structure seen in \cref{Subtable:Same}.
+Each of the directory names is suffixed with \texttt{-Chapter} or \texttt{-Section} and begins with the file name of at least one of its files.
+This directory structure exemplifies the Same naming convention.
+The user can easily tell the Relative Directory system of this convention using the following input
+{
+\setstretch{1.0}
+\begin{verbatim}
+    \UWMadSetup{ RelativeDirectory } {
+        chapter-directory-name   = same,
+        chapter-directory-suffix = -Chapter,
+        section-directory-name   = same,
+        section-directory-suffix = -Section,
+    }
+\end{verbatim}
+}
+Then, using the commands above, the user can include the files by adding the following input to \texttt{Main.tex}:
+{
+\setstretch{1.0}
+\begin{verbatim}
+    \IncludeChapter{Introduction}
+        \IncludeSection{Motivation}
+        \IncludeSection{LiteratureReview}
+    \IncludeChapter{Theory}
+        \IncludeSection{LinearSystems}
+        \IncludeSection{NewtonsMethod}
+\end{verbatim}
+}
+Or, the user can choose to only add the chapters in \texttt{Main.tex} while putting the section includes in their respective \texttt{Chapter.tex} files.
+The \UWMadClass{} \meta{search stack} will handle either.
+
+\begin{table}[t]%
+    \centering
+    \caption{Directory structure examples for naming conventions}
+    \begin{subtable}{0.21\textwidth}
+        \subcaption{Increment}
+        \label{Subtable:Increment}
+        \begin{tabular}{ >{\ttfamily}l<{}}
+            /Main/                  \\
+            |-{}- Main.tex            \\
+            |-{}- Chapter-1           \\
+            |   |-{}- Chapter.tex     \\
+            |   |-{}- Section-1.tex   \\
+            |   |-{}- Section-2.tex   \\
+            |-{}- Chapter-2           \\
+            |   |-{}- Chapter.tex     \\
+            |   |-{}- Section-1       \\
+            |   |   |-{}- Section.tex \\
+            |   |-{}- Section-2       \\
+            |   |   |-{}- Section.tex \\
+            |-{}-{}-{}-
+        \end{tabular}
+    \end{subtable}
+    \hspace{0.10\textwidth}
+    \begin{subtable}{0.40\textwidth}
+        \subcaption{Same}
+        \label{Subtable:Same}
+        \begin{tabular}{ >{\ttfamily}l<{}}
+            /Main/                                  \\
+            |-{}- Main.tex                            \\
+            |-{}- Introduction-Chapter                \\
+            |   |-{}- Introduction.tex                \\
+            |   |-{}- Motivation.tex          \\
+            |   |-{}- LiteratureReview.tex    \\
+            |-{}- Theory-Chapter              \\
+            |   |-{}- Theory.tex                      \\
+            |   |-{}- LinearSystems-Section           \\
+            |   |   |-{}- LinearSystems.tex           \\
+            |   |-{}- NewtonsMethod-Section    \\
+            |   |   |-{}- NewtonsMethods.tex          \\
+            |-{}-{}-{}-
+        \end{tabular}
+    \end{subtable}
+\end{table}
+
 \UWSubSubFeature{Optional}
 
-\UWSubFeature{Graphics Inclusions}
+\UWSubFeature{Including Graphics}
+
+\begin{function} {}
+    \begin{syntax}
+    \end{syntax}
+
+\end{function}
+
+\UWSubFeature{User Options}
 
