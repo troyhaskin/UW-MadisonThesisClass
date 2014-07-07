@@ -1370,6 +1370,11 @@ Then, using the commands above, the user can include the files by adding the fol
 Or, the user can choose to only add the chapters in \texttt{Main.tex} while putting the section includes in their respective \texttt{Chapter.tex} files.
 The \UWMadClass{} \meta{search stack} will handle either.
 
+\UWSubSubFeature{None}
+\texttt{None} is not so much a naming convention as it is the default.
+Without setting up one of the naming conventions described above, the system will require the optional argument for all of the include functions to be given for any file searching to be possible.
+The \UWMadClass{} \meta{search stack} will be updated according to these given paths, so relative definitions are acceptable.
+
 \begin{table}[t]%
     \centering
     \caption{Directory structure examples for naming conventions}
@@ -1397,30 +1402,39 @@ The \UWMadClass{} \meta{search stack} will handle either.
         \subcaption{Same}
         \label{Subtable:Same}
         \begin{tabular}{ >{\ttfamily}l<{}}
-            /Main/                                  \\
-            |-{}- Main.tex                            \\
-            |-{}- Introduction-Chapter                \\
-            |   |-{}- Introduction.tex                \\
-            |   |-{}- Motivation.tex          \\
-            |   |-{}- LiteratureReview.tex    \\
-            |-{}- Theory-Chapter              \\
-            |   |-{}- Theory.tex                      \\
-            |   |-{}- LinearSystems-Section           \\
-            |   |   |-{}- LinearSystems.tex           \\
-            |   |-{}- NewtonsMethod-Section    \\
-            |   |   |-{}- NewtonsMethods.tex          \\
+            /Main/                              \\
+            |-{}- Main.tex                      \\
+            |-{}- Introduction-Chapter          \\
+            |   |-{}- Introduction.tex          \\
+            |   |-{}- Motivation.tex            \\
+            |   |-{}- LiteratureReview.tex      \\
+            |-{}- Theory-Chapter                \\
+            |   |-{}- Theory.tex                \\
+            |   |-{}- LinearSystems-Section     \\
+            |   |   |-{}- LinearSystems.tex     \\
+            |   |-{}- NewtonsMethod-Section     \\
+            |   |   |-{}- NewtonsMethods.tex    \\
             |-{}-{}-{}-
         \end{tabular}
     \end{subtable}
 \end{table}
 
-\UWSubSubFeature{Optional}
-
 \UWSubFeature{Including Graphics}
 
-\begin{function} {}
+For including graphics files (i.e., not text files), the system operates through the usage of one of the following commands.
+
+\begin{function} {
+    \IncludeGraphics,
+    \includegraphics
+}
     \begin{syntax}
+        \cs{IncludeGraphics}\oarg{options}\marg{graphic name}
+        \cs{includegraphics}\oarg{options}\marg{graphic name}
     \end{syntax}
+    The \UWMadClass{} augments the definition of the \cs{includegraphics} command (while adding 100\% equivalent camel-cased version) to use the \meta{search stack}.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % The one difference in using these commands from the default behavior is that the extension is required.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{function}
 

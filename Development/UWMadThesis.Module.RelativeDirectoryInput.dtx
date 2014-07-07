@@ -286,7 +286,7 @@ For including graphics files (i.e., not text files), the system operates through
 %    \begin{macrocode}
 \tl_new:N \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl
 \tl_new:N \g__UWMad_RelativeDirectory_Graphics_Extension_tl
-\tl_new:N \g__UWMad_RelativeDirectory_Graphics_BasePath_tl
+\tl_new:N \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
 %    \end{macrocode}
 %
 %   Miscellaneous variable initializations for the system
@@ -334,8 +334,8 @@ For including graphics files (i.e., not text files), the system operates through
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_None: {}
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_Increment:n {
     \use:c{UWMad_RelativeDirectory_SetName_Increment_Hook_ #1 :}
-    \int_gincr:c {g__UWMad_RelativeDirectory_ #1 _Count_int}
-    \tl_gset:cV   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
+    \int_gincr:c  {g__UWMad_RelativeDirectory_ #1 _Count_int}
+    \tl_gset:cx   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Prefix_tl}
         \int_to_arabic:n{
             \int_use:c{g__UWMad_RelativeDirectory_ #1 _Count_int}
@@ -344,7 +344,7 @@ For including graphics files (i.e., not text files), the system operates through
     }
 }
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_Same:n {
-    \tl_gset:cV   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
+    \tl_gset:cx   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Prefix_tl}
         \g__UWMad_RelativeDirectory_File_CurrentName_tl
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Suffix_tl}
@@ -367,7 +367,7 @@ For including graphics files (i.e., not text files), the system operates through
             {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
             \g__UWMad_RelativeDirectory_OptionalPath_tl
     }
-    \tl_gset:cV   {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl} {
+    \tl_gset:cx   {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl} {
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _ParentPath_tl}
         \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
     }
@@ -375,10 +375,11 @@ For including graphics files (i.e., not text files), the system operates through
 %    \end{macrocode}
 %
 %
-%   The default push function is for files only.
-%   If the user sets a graphics directory name, this function will be redefined.
+%   The default push function pushes to both the file and graphics stacks.
+%   However, if the user defines a single (the only) graphics folder, a files-
+%   only push function is also defined.
 %    \begin{macrocode}
-\cs_new:Nn \__UWMad_RelativeDirectory_StackPush:n {
+\cs_new:Nn \__UWMad_RelativeDirectory_StackPush_Default:n {
     \tl_gset_eq:Nc
         \g_tmpa_tl
         {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
@@ -386,7 +387,17 @@ For including graphics files (i.e., not text files), the system operates through
         \seq_gpush:Nx \g__UWMad_RelativeDirectory_PathStack_Files_seq {
             \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
         }
-        \seq_gpush:NV \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
+        \seq_gpush:Nx \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
+            \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
+        }
+    }
+}
+\cs_new:Nn \__UWMad_RelativeDirectory_StackPush_Files:n {
+    \tl_gset_eq:Nc
+        \g_tmpa_tl
+        {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl}
+    \tl_if_blank:VTF {\g_tmpa_tl} { } {
+        \seq_gpush:Nx \g__UWMad_RelativeDirectory_PathStack_Files_seq {
             \tl_use:c {g__UWMad_RelativeDirectory_ #1 _CurrentPath_tl}
         }
     }
@@ -394,18 +405,35 @@ For including graphics files (i.e., not text files), the system operates through
 %    \end{macrocode}
 %
 %
+%   The default push function uses the default function above.
+%   If the user sets a graphics directory name (in which there may be multiple
+%   graphics directories in all subdirectories), this will be re-defined.
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_RelativeDirectory_StackPush:n {
+    \__UWMad_RelativeDirectory_StackPush_Default:n{#1}
+}
+%    \end{macrocode}
+%
+%
+%   Pre-stack update functions for the supported sections.
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_RelativeDirectory_UpdateStack_Chapter_PreHook: {
+    \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_Files_seq
+    \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_Graphics_seq
+}
+\cs_new:Nn \UWMad_RelativeDirectory_UpdateStack_Section_PreHook: {}
+\cs_new:Nn \UWMad_RelativeDirectory_UpdateStack_Subsection_PreHook: {}
+%    \end{macrocode}
 %   This function updates the current name, path, and stack(s).
 %   Chapters inclusions always clear the stacks.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_RelativeDirectory_UpdatePathStack:n {
-
-    \bool_if:cTF {g__UWMad_RelativeDirectory_Is #1 _bool} {
-        \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_Files_seq
-        \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_Graphics_seq
-    } { }
-
+\cs_new:Nn \UWMad_RelativeDirectory_UpdateStack:n {
+    
+    \use:c {UWMad_RelativeDirectory_UpdateStack_ #1 _PreHook:}
+    
     \UWMad_RelativeDirectory_SetNameAndPath:n{#1}
     \__UWMad_RelativeDirectory_StackPush:n{#1}
+    
 }
 %    \end{macrocode}
 %
@@ -416,7 +444,7 @@ For including graphics files (i.e., not text files), the system operates through
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeFile_CycleThrough: {
     \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_Files_seq {
-        \tl_gset:Nn \g_tmpa_tl {
+        \tl_gset:Nx \g_tmpa_tl {
             ./##1/
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
         }
@@ -434,12 +462,12 @@ For including graphics files (i.e., not text files), the system operates through
     \seq_get:NN
         \g__UWMad_RelativeDirectory_PathStack_Files_seq
         \g_tmpa_tl
-    \tl_gset:NV \g_tmpb_tl {
+    \tl_gset:Nx \g_tmpa_tl {
             ./\g_tmpa_tl/
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
     }
-    \file_if_exist:nTF {g_tmpb_tl} {
-        \file_input:n{g_tmpb_tl}
+    \file_if_exist:nTF {g_tmpa_tl} {
+        \file_input:n{g_tmpa_tl}
         \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
     } { }
 }
@@ -462,7 +490,6 @@ For including graphics files (i.e., not text files), the system operates through
     } {
         \UWMad_RelativeDirectory_IncludeFile_CheckDeepest:
     }
-
     \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
         \file_if_exist:nTF {\g__UWMad_RelativeDirectory_File_CurrentName_tl} {
             \file_input:n{ \g__UWMad_RelativeDirectory_File_CurrentName_tl }
@@ -533,6 +560,11 @@ For including graphics files (i.e., not text files), the system operates through
 %   deepest (i.e., current graphic's) directory.
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics_CycleThrough:n {
+    
+    \UWMad_File_GetExtension:nNN
+        {\g__UWMad_RelativeDirectory_File_CurrentName_tl}
+        \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
+        \g__UWMad_RelativeDirectory_Graphics_Extension_tl
 
     \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
     
@@ -541,15 +573,14 @@ For including graphics files (i.e., not text files), the system operates through
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
         }
     
-        \UWMad_File_GetExtension:nNN {\g_tmpa_tl}
-            \g__UWMad_RelativeDirectory_Graphics_BasePath_tl
-            \g__UWMad_RelativeDirectory_Graphics_Extension_tl
-    
         \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
             \file_if_exist:nTF { \g_tmpa_tl } {
+                \tl_gset:Nx \g_tmpa_tl {
+                    ./##1/
+                    \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
+                }
                 \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
-                    [ #1 ]
-                    {\g__UWMad_RelativeDirectory_Graphics_BasePath_tl}
+                    [ #1 ] {\g_tmpa_tl}
                 \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
                 \seq_map_break:
             } { }
@@ -561,14 +592,20 @@ For including graphics files (i.e., not text files), the system operates through
     \seq_get:NN
         \g__UWMad_RelativeDirectory_PathStack_Graphics_seq
         \g_tmpa_tl
-    \tl_gset:NV \g_tmpb_tl {
+    
+    \tl_gset:Nx \g_tmpb_tl {
             ./\g_tmpa_tl/
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
     }
+    
+    \UWMad_File_GetExtension:nNN {\g_tmpb_tl}
+        \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
+        \g__UWMad_RelativeDirectory_Graphics_Extension_tl
+    
     \file_if_exist:nTF { \g_tmpb_tl } {
         \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
             [ #1 ]
-            { \g_tmpa_tl }
+            { \g__UWMad_RelativeDirectory_Graphics_BaseName_tl }
         \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
     } { }
 }
@@ -585,16 +622,16 @@ For including graphics files (i.e., not text files), the system operates through
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics:n {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
-
     \bool_if:NTF \g__UWMad_RelativeDirectory_CycleThrough_Graphics_bool {
         \UWMad_RelativeDirectory_IncludeGraphics_CycleThrough:n{#1}
     } {
         \UWMad_RelativeDirectory_IncludeGraphics_CheckDeepest:n{#1}
     }
-
     \bool_if:NTF \g__UWMad_RelativeDirectory_IsFileFound_bool { } {
         \file_if_exist:nTF {\g__UWMad_RelativeDirectory_File_CurrentName_tl} {
-            \file_input:n{ \g__UWMad_RelativeDirectory_File_CurrentName_tl }
+            \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
+            [ #1 ]
+            { \g__UWMad_RelativeDirectory_File_CurrentName_tl }
             \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
         } {
             \msg_warning:nnx
@@ -731,20 +768,34 @@ For including graphics files (i.e., not text files), the system operates through
 %    \end{macrocode}
 %
 %
-%   Graphics directory key.
+%   Graphics directory keys.
 %    \begin{macrocode}
     graphics-directory-name .code:n = {
         \tl_gset:Nn \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl {
             #1
         }
-        \tl_if_blank:nTF { #1 } { 
+        \tl_if_blank:nTF { #1 } {
             \cs_gset:Nn \__UWMad_RelativeDirectory_StackPush:n {
-                \__UWMad_RelativeDirectory_StackPush_Files:n{##1}
+                \__UWMad_RelativeDirectory_StackPush_Default:n{##1}
             }
         } {
             \cs_gset:Nn \__UWMad_RelativeDirectory_StackPush:n {
                 \__UWMad_RelativeDirectory_StackPush_FilesAndGraphics:n{##1}
             }
+        }
+    },
+    the-only-graphics-directory .code:n = {
+        \bool_set_false:N
+            \g__UWMad_RelativeDirectory_CycleThrough_Graphics_bool
+        \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_Graphics_seq
+        \seq_gpush:Nn \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
+            #1
+        }
+        \cs_gset:Nn \UWMad_RelativeDirectory_UpdateStack_Chapter_PreHook: {
+            \seq_gclear:N \g__UWMad_RelativeDirectory_PathStack_Files_seq
+        }
+        \cs_gset:Nn \__UWMad_RelativeDirectory_StackPush:n {
+            \__UWMad_RelativeDirectory_StackPush_Files:n{##1}
         }
     },
 %    \end{macrocode}
@@ -790,10 +841,9 @@ For including graphics files (i.e., not text files), the system operates through
     }
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
 
-    \UWMad_RelativeDirectory_UpdatePathStack:n{Chapter}
+    \UWMad_RelativeDirectory_UpdateStack:n{Chapter}
     \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
-
 }
 
 \DeclareDocumentCommand \IncludeSection { o m } {
@@ -803,7 +853,7 @@ For including graphics files (i.e., not text files), the system operates through
     }
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
 
-    \UWMad_RelativeDirectory_UpdatePathStack:n{Section}
+    \UWMad_RelativeDirectory_UpdateStack:n{Section}
     \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
@@ -815,7 +865,7 @@ For including graphics files (i.e., not text files), the system operates through
     }
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
 
-    \UWMad_RelativeDirectory_UpdatePathStack:n{Subsection}
+    \UWMad_RelativeDirectory_UpdateStack:n{Subsection}
     \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
