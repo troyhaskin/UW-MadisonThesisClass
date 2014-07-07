@@ -1432,10 +1432,11 @@ For including graphics files (i.e., not text files), the system operates through
         \cs{includegraphics}\oarg{options}\marg{graphic name}
     \end{syntax}
     The \UWMadClass{} augments the definition of the \cs{includegraphics} command (while adding 100\% equivalent camel-cased version) to use the \meta{search stack}.
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % The one difference in using these commands from the default behavior is that the extension is required.
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    The one difference in using these commands from the default behavior is that \textsc{the extension is required}.
+    These commands will follow the defined naming conventions and search the directories (from the lowest to highest) for the graphics file and input the first extant graphic matching the \marg{graphic name}.
 
+    If a dedicated graphics file is desired at \textsc{multiple levels}, one can be defined through the \texttt{graphics-directory-name} option.
+    If a dedicated graphics file is desired at \textsc{a single level}, one can be defined through the \texttt{the-only-graphics-directory} option.
 \end{function}
 
 \UWSubFeature{User Options}
