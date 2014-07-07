@@ -661,110 +661,107 @@ For including graphics files (i.e., not text files), the system operates through
 %
 %
 %
-%   Chapter directory keys.
+%   Chapter prefix and suffix keys.
 %    \begin{macrocode}
     chapter-directory-prefix    .tl_gset:N =
         \g__UWMad_RelativeDirectory_Chapter_Prefix_tl,
+    chapter-directory-prefix    .default:n =,
     chapter-directory-suffix    .tl_gset:N =
         \g__UWMad_RelativeDirectory_Chapter_Suffix_tl,
-    chapter-directory-name      .choice:,
-    chapter-directory-name      .choice_code:n = {
-        \tl_case:NnTF  \l_keys_choice_tl {
-            \c__UWMad_RelativeDirectory_None_tl {
-                \cs_gset:Nn \UWMad_RelativeDirectory_Chapter_SetName: {
-                    \UWMad_RelativeDirectory_SetName_None:
-                }
-            }
-            \c__UWMad_RelativeDirectory_Same_tl {
-                \cs_gset:Nn \UWMad_RelativeDirectory_Chapter_SetName: {
-                    \UWMad_RelativeDirectory_SetName_Same:n{Chapter}
-                }
-            }
-            \c__UWMad_RelativeDirectory_Increment_tl {
-                \cs_gset:Nn \UWMad_RelativeDirectory_Chapter_SetName: {
-                    \UWMad_RelativeDirectory_SetName_Increment:n{Chapter}
-                }
-            }
-        } { } { }
-    },
-    chapter-directory-name .generate_choices:n = {
-        increment , same , none
-    },
-    chapter-directory-prefix    .default:n =,
     chapter-directory-suffix    .default:n =,
+%    \end{macrocode}
+%
+%
+%
+%   Chapter naming conventions
+%    \begin{macrocode}
+    chapter-directory-name      .choice:,
+    chapter-directory-name / none .code:n = {
+        \cs_gset:Nn \UWMad_RelativeDirectory_Chapter_SetName: {
+            \UWMad_RelativeDirectory_SetName_None:
+        }
+    },
+    chapter-directory-name / same .code:n = {
+        \cs_gset:Nn \UWMad_RelativeDirectory_Chapter_SetName: {
+            \UWMad_RelativeDirectory_SetName_Same:n{Chapter}
+        }
+    },
+    chapter-directory-name / increment .code:n = {
+        \cs_gset:Nn \UWMad_RelativeDirectory_Chapter_SetName: {
+            \UWMad_RelativeDirectory_SetName_Increment:n{Chapter}
+        }
+    },
     chapter-directory-name      .default:n = none,
 %    \end{macrocode}
 %
 %
 %
-%   Section directory keys.
+%   Section prefix and suffix keys.
 %    \begin{macrocode}
     section-directory-prefix    .tl_gset:N =
         \g__UWMad_RelativeDirectory_Section_Prefix_tl,
+    section-directory-prefix    .default:n =,
     section-directory-suffix    .tl_gset:N =
         \g__UWMad_RelativeDirectory_Section_Suffix_tl,
-    section-directory-name      .choice:,
-    section-directory-name      .choice_code:n = {
-        \tl_case:NnTF  \l_keys_choice_tl {
-            \c__UWMad_RelativeDirectory_None_tl {
-                \cs_gset:Nn \UWMad_RelativeDirectory_Section_SetName: {
-                    \UWMad_RelativeDirectory_SetName_None:
-                }
-            }
-            \c__UWMad_RelativeDirectory_Same_tl {
-                \cs_gset:Nn \UWMad_RelativeDirectory_Section_SetName: {
-                    \UWMad_RelativeDirectory_SetName_Same:n{Section}
-                }
-            }
-            \c__UWMad_RelativeDirectory_Increment_tl {
-                \cs_gset:Nn \UWMad_RelativeDirectory_Section_SetName: {
-                    \UWMad_RelativeDirectory_SetName_Increment:n{Section}
-                }
-            }
-        } { } { }
-    },
-    section-directory-name .generate_choices:n = {
-        increment , same , none
-    },
-    section-directory-prefix    .default:n =,
     section-directory-suffix    .default:n =,
+%    \end{macrocode}
+%
+%
+%
+%   Section naming conventions
+%    \begin{macrocode}
+    section-directory-name      .choice:,
+    section-directory-name / none .code:n = {
+        \cs_gset:Nn \UWMad_RelativeDirectory_Section_SetName: {
+            \UWMad_RelativeDirectory_SetName_None:
+        }
+    },
+    section-directory-name / same .code:n = {
+        \cs_gset:Nn \UWMad_RelativeDirectory_Section_SetName: {
+            \UWMad_RelativeDirectory_SetName_Same:n{Section}
+        }
+    },
+    section-directory-name / increment .code:n = {
+        \cs_gset:Nn \UWMad_RelativeDirectory_Section_SetName: {
+            \UWMad_RelativeDirectory_SetName_Increment:n{Section}
+        }
+    },
     section-directory-name      .default:n = none,
 %    \end{macrocode}
 %
 %
 %
-%   Subsection directory keys.
+%   Subsection prefix and suffix keys.
 %    \begin{macrocode}
-    subsection-directory-prefix .tl_gset:N =
+    subsection-directory-prefix    .tl_gset:N =
         \g__UWMad_RelativeDirectory_Subsection_Prefix_tl,
-    subsection-directory-suffix .tl_gset:N =
+    subsection-directory-prefix    .default:n =,
+    subsection-directory-suffix    .tl_gset:N =
         \g__UWMad_RelativeDirectory_Subsection_Suffix_tl,
+    subsection-directory-suffix    .default:n =,
+%    \end{macrocode}
+%
+%
+%
+%   Subsection naming conventions
+%    \begin{macrocode}
     subsection-directory-name      .choice:,
-    subsection-directory-name      .choice_code:n = {
-        \tl_case:NnTF  \l_keys_choice_tl {
-            \c__UWMad_RelativeDirectory_None_tl {
-                \cs_gset:Nn \UWMad_RelativeDirectory_Subsection_SetName: {
-                    \UWMad_RelativeDirectory_SetName_None:
-                }
-            }
-            \c__UWMad_RelativeDirectory_Same_tl {
-                \cs_gset:Nn \UWMad_RelativeDirectory_Subsection_SetName: {
-                    \UWMad_RelativeDirectory_SetName_Same:n{Subsection}
-                }
-            }
-            \c__UWMad_RelativeDirectory_Increment_tl {
-                \cs_gset:Nn \UWMad_RelativeDirectory_Subsection_SetName: {
-                    \UWMad_RelativeDirectory_SetName_Increment:n{Subsection}
-                }
-            }
-        } { } { }
+    subsection-directory-name / none .code:n = {
+        \cs_gset:Nn \UWMad_RelativeDirectory_Subsection_SetName: {
+            \UWMad_RelativeDirectory_SetName_None:
+        }
     },
-    subsection-directory-name .generate_choices:n = {
-        increment , same , none
+    subsection-directory-name / same .code:n = {
+        \cs_gset:Nn \UWMad_RelativeDirectory_Subsection_SetName: {
+            \UWMad_RelativeDirectory_SetName_Same:n{Subsection}
+        }
     },
-    subsection-directory-prefix .default:n =,
-    subsection-directory-suffix .default:n =,
-    subsection-directory-name   .default:n = none,
+    subsection-directory-name / increment .code:n = {
+        \cs_gset:Nn \UWMad_RelativeDirectory_Subsection_SetName: {
+            \UWMad_RelativeDirectory_SetName_Increment:n{Subsection}
+        }
+    },
+    subsection-directory-name      .default:n = none,
 %    \end{macrocode}
 %
 %
