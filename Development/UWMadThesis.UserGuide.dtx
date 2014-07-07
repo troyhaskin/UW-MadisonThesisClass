@@ -1371,9 +1371,11 @@ Or, the user can choose to only add the chapters in \texttt{Main.tex} while putt
 The \UWMadClass{} \meta{search stack} will handle either.
 
 \UWSubSubFeature{None}
-\texttt{None} is not so much a naming convention as it is the default.
-Without setting up one of the naming conventions described above, the system will require the optional argument for all of the include functions to be given for any file searching to be possible.
-The \UWMadClass{} \meta{search stack} will be updated according to these given paths, so relative definitions are acceptable.
+\texttt{None} is the default naming convention used.
+This convention only forms a path from a concatenation of a section's prefix and suffix only.
+Without setting up one of the naming conventions described above, the system will require the optional argument for dynamic file searching to be possible.
+The \UWMadClass{} \meta{search stack} will be updated according to these given optional paths, so relative definitions are required.
+Also, this option can be used to create a static container directory be defining either the prefix or suffix (or both) to the static directory name; this can be useful for placing all section files into one directory instead of nesting them, for example.
 
 \begin{table}[t]%
     \centering
@@ -1438,6 +1440,18 @@ For including graphics files (i.e., not text files), the system operates through
     If a dedicated graphics file is desired at \textsc{multiple levels}, one can be defined through the \texttt{graphics-directory-name} option.
     If a dedicated graphics file is desired at \textsc{a single level}, one can be defined through the \texttt{the-only-graphics-directory} option.
 \end{function}
+
+\UWSubFeature{Search Controls}
+As mentioned above, the Relative Directory system builds a stack of directory paths and then searches them.
+The default behavior is different for files and graphics.
+
+By default, files are only searched for in the lowest (i.e., most recently added) directory path and the main search path.
+This default was chosen such that similarly named files at higher directory levels are not mistakenly included.
+The default can be changed by setting the \texttt{cycle-file-paths} to \texttt{true}.
+
+By default, graphics are searched for from lowest to highest directory and, if not found, in the main search path.
+This default was chosen such that the same graphic can be included across many input levels.
+The default can be changed by setting the \texttt{cycle-graphic-paths} to \texttt{false}.
 
 \UWSubFeature{User Options}
 

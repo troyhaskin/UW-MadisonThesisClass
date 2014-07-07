@@ -128,6 +128,25 @@
 %       o Section continues the name-mode from above (same) to test chaining.
 \IncludeChapter[OptionalDirectoryName]{Optional}
     \IncludeSection{ChainTest}
+%
+%
+%   RelativeDirectory Test:
+%       o Chapter    directory is user-supplied: OptionalDirectoryName.
+%       o Section continues the name-mode from above (same) to test chaining.
+\RelativeDirectorySetup {
+    chapter-directory-prefix    = SingleSectionDirectoryTest,
+    chapter-directory-name      = none,
+    chapter-directory-suffix    = {},
+    section-directory-prefix    = SectionsAndSubsections,
+    section-directory-name      = none,
+    section-directory-suffix    = {},
+    subsection-directory-prefix = {},
+    subsection-directory-name   = none,
+    subsection-directory-suffix = {}
+}
+\IncludeChapter{Chapter}
+    \IncludeSection{Section}
+        \IncludeSubsection{Subsection}
 
 
 \appendix{First Appendix}

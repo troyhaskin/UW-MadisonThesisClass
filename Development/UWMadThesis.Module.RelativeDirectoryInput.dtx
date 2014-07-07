@@ -147,9 +147,11 @@ The \UWMadClass{} \meta{search stack} will handle either.
 
 
 \UWSubSubFeature{None}
-\texttt{None} is not so much a naming convention as it is the default.
-Without setting up one of the naming conventions described above, the system will require the optional argument for all of the include functions to be given for any file searching to be possible.
-The \UWMadClass{} \meta{search stack} will be updated according to these given paths, so relative definitions are acceptable.
+\texttt{None} is the default naming convention used.
+This convention only forms a path from a concatenation of a section's prefix and suffix only.
+Without setting up one of the naming conventions described above, the system will require the optional argument for dynamic file searching to be possible.
+The \UWMadClass{} \meta{search stack} will be updated according to these given optional paths, so relative definitions are required.
+Also, this option can be used to create a static container directory be defining either the prefix or suffix (or both) to the static directory name; this can be useful for placing all section files into one directory instead of nesting them, for example.
 
 \begin{table}[t]%
     \centering
@@ -224,10 +226,41 @@ For including graphics files (i.e., not text files), the system operates through
 \end{function}
 
 
-\UWSubFeature{Searching}
 
 
+
+% ================================================================= %
+%                            Search Controls                        %
+% ================================================================= %
+\UWSubFeature{Search Controls}
+As mentioned above, the Relative Directory system builds a stack of directory paths and then searches them.
+The default behavior is different for files and graphics.
+
+By default, files are only searched for in the lowest (i.e., most recently added) directory path and the main search path.
+This default was chosen such that similarly named files at higher directory levels are not mistakenly included.
+The default can be changed by setting the \texttt{cycle-file-paths} to \texttt{true}.
+
+By default, graphics are searched for from lowest to highest directory and, if not found, in the main search path.
+This default was chosen such that the same graphic can be included across many input levels.
+The default can be changed by setting the \texttt{cycle-graphic-paths} to \texttt{false}.
+
+
+
+
+
+% ================================================================= %
+%                            User Options                           %
+% ================================================================= %
 \UWSubFeature{User Options}
+Below is a table for all of the user options for this feature set.
+
+\begin{table}%
+    \caption{Relative Directory system user options.}
+    \begin{tabular}{lcr}
+        
+    \end{tabular}
+\end{table}
+
 
 
 
@@ -335,7 +368,12 @@ For including graphics files (i.e., not text files), the system operates through
 %
 %   Directory name-setting functions.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_RelativeDirectory_SetName_None: {}
+\cs_new:Nn \UWMad_RelativeDirectory_SetName_None:n {
+    \tl_gset:cx   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
+        \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Prefix_tl}
+        \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Suffix_tl}
+    }
+}
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_Increment:n {
     \use:c{UWMad_RelativeDirectory_SetName_Increment_Hook_ #1 :}
     \int_gincr:c  {g__UWMad_RelativeDirectory_ #1 _Count_int}
@@ -682,7 +720,7 @@ For including graphics files (i.e., not text files), the system operates through
     chapter-directory-name      .choice:,
     chapter-directory-name / none .code:n = {
         \cs_gset:Nn \UWMad_RelativeDirectory_Chapter_SetName: {
-            \UWMad_RelativeDirectory_SetName_None:
+            \UWMad_RelativeDirectory_SetName_None:n{Chapter}
         }
     },
     chapter-directory-name / same .code:n = {
@@ -717,7 +755,7 @@ For including graphics files (i.e., not text files), the system operates through
     section-directory-name      .choice:,
     section-directory-name / none .code:n = {
         \cs_gset:Nn \UWMad_RelativeDirectory_Section_SetName: {
-            \UWMad_RelativeDirectory_SetName_None:
+            \UWMad_RelativeDirectory_SetName_None:n{Section}
         }
     },
     section-directory-name / same .code:n = {
@@ -752,7 +790,7 @@ For including graphics files (i.e., not text files), the system operates through
     subsection-directory-name      .choice:,
     subsection-directory-name / none .code:n = {
         \cs_gset:Nn \UWMad_RelativeDirectory_Subsection_SetName: {
-            \UWMad_RelativeDirectory_SetName_None:
+            \UWMad_RelativeDirectory_SetName_None:n{Subsection}
         }
     },
     subsection-directory-name / same .code:n = {
@@ -805,7 +843,7 @@ For including graphics files (i.e., not text files), the system operates through
 %    \begin{macrocode}
     cycle-file-paths .bool_gset:N =
         \g__UWMad_RelativeDirectory_CycleThrough_Files_bool,
-    cycle-file-paths .default:n = true,
+    cycle-file-paths .default:n = false,
     cycle-graphic-paths .bool_gset:N =
         \g__UWMad_RelativeDirectory_CycleThrough_Graphics_bool,
     cycle-graphic-paths .default:n = true

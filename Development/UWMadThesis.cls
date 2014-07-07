@@ -2362,7 +2362,12 @@
     \int_gset:cn {g__UWMad_RelativeDirectory_Subsection_Count_int}{0}
 }
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_Increment_Hook_Subsection: {}
-\cs_new:Nn \UWMad_RelativeDirectory_SetName_None: {}
+\cs_new:Nn \UWMad_RelativeDirectory_SetName_None:n {
+    \tl_gset:cx   {g__UWMad_RelativeDirectory_ #1 _CurrentName_tl} {
+        \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Prefix_tl}
+        \tl_use:c {g__UWMad_RelativeDirectory_ #1 _Suffix_tl}
+    }
+}
 \cs_new:Nn \UWMad_RelativeDirectory_SetName_Increment:n {
     \use:c{UWMad_RelativeDirectory_SetName_Increment_Hook_ #1 :}
     \int_gincr:c  {g__UWMad_RelativeDirectory_ #1 _Count_int}
@@ -2598,7 +2603,7 @@
     chapter-directory-name      .choice:,
     chapter-directory-name / none .code:n = {
         \cs_gset:Nn \UWMad_RelativeDirectory_Chapter_SetName: {
-            \UWMad_RelativeDirectory_SetName_None:
+            \UWMad_RelativeDirectory_SetName_None:n{Chapter}
         }
     },
     chapter-directory-name / same .code:n = {
@@ -2621,7 +2626,7 @@
     section-directory-name      .choice:,
     section-directory-name / none .code:n = {
         \cs_gset:Nn \UWMad_RelativeDirectory_Section_SetName: {
-            \UWMad_RelativeDirectory_SetName_None:
+            \UWMad_RelativeDirectory_SetName_None:n{Section}
         }
     },
     section-directory-name / same .code:n = {
@@ -2644,7 +2649,7 @@
     subsection-directory-name      .choice:,
     subsection-directory-name / none .code:n = {
         \cs_gset:Nn \UWMad_RelativeDirectory_Subsection_SetName: {
-            \UWMad_RelativeDirectory_SetName_None:
+            \UWMad_RelativeDirectory_SetName_None:n{Subsection}
         }
     },
     subsection-directory-name / same .code:n = {
@@ -2688,7 +2693,7 @@
     },
     cycle-file-paths .bool_gset:N =
         \g__UWMad_RelativeDirectory_CycleThrough_Files_bool,
-    cycle-file-paths .default:n = true,
+    cycle-file-paths .default:n = false,
     cycle-graphic-paths .bool_gset:N =
         \g__UWMad_RelativeDirectory_CycleThrough_Graphics_bool,
     cycle-graphic-paths .default:n = true

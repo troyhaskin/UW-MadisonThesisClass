@@ -116,23 +116,16 @@ Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} i
 \UWSubSubFeature{Customization}
 
 As mentioned, there are several options available to the user for customizing the nomenclature.
-These options are set by giving a comma-separate list of key-value pairs to the function \cs{NomenclatureSetup}
-
-\begin{function}{\NomenclatureSetup}
-    \begin{syntax}
-        \cs{NomenclatureSetup}\marg{key-value CSV}
-    \end{syntax}
-    The format is more appropriately shown as
+These options are set by giving a comma-separate list of key-value pairs to the function \cs{UWMadSetup} with the module name \texttt{Nomenclature}:
     \begin{verbatim}
-        \NomenclatureSetup {
+        \UWMadSetup { Nomenclature } {
             key-one = option,
             key-two = {option two},
             ...
             key-n =  {option n},
         }
     \end{verbatim}
-    A table of the keys, meaning, defaults, and allow value is given in \cref{Table:NomenclatureKeyValue}.
-\end{function}
+A table of the keys, meaning, defaults, and allow value is given in \cref{Table:NomenclatureKeyValue}.
 
 
 % ================================================================ %
@@ -156,13 +149,6 @@ Lastly, it comes equipped with a new command: \cs{Acro}.
     Also, if links are not turned off (they are on by default), the acronym will be a link back to the original environment entry.
 \end{function}
 
-\begin{function}{\AcronymSetup}
-    \begin{syntax}
-        \cs{AcronymSetup}\marg{key-value CSV}
-    \end{syntax}
-    An exact copy of \cs{NomenclatureSetup}.
-\end{function}
-
 \UWSubSubFeature{Example}
 The following input
 \begin{verbatim}
@@ -178,8 +164,6 @@ The following input
 \end{verbatim}
 is typeset as
 
-\clearpage
-
 \rule{\textwidth}{0.1em}
     \AcronymSetup {
         main-section  = section,
@@ -194,13 +178,20 @@ is typeset as
 
 The first usage of \cs{Acro}\{NRC\} is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
 
+
+\UWSubSubFeature{Customization}
+
+Since this feature is an extension of the \texttt{Nomenclature} feature, it is customized in a similar fashion: using \cs{UWMadSetup} and the \texttt{Acronym} module name.
+It shares all of the same keys with some additional ones outline in \cref{Table:AcronymKeyValue}.
+
+
 \begin{table}[H]
 \begin{center}
     \caption{List of key-value pairs for Nomenclature customization.}
     \label{Table:NomenclatureKeyValue}
     \begin{tabular}{c c c c}
         \toprule
-        Key & Meaning & Default & Allow value \\
+        Key & Meaning & Default & Allowed value \\
         \midrule
         title-skip          & Vertical space following the printed title     & 0pt          & dimension \\[10pt]
         print-skip          & Vertical space following a printing of entries & 1em          & dimension \\[10pt]
