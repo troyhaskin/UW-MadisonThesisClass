@@ -50,15 +50,15 @@ For including text files (i.e., not graphics files) the system operates through 
         \cs{IncludeSection}   \oarg{path}\marg{filename}
         \cs{IncludeSubsection}\oarg{path}\marg{filename}
     \end{syntax}
-    These commands will augment the class's current search path according the conventions outlined in the \RefSubFeature[next section]{Naming Conventions}.
+    These commands will augment the class's current search path according the conventions outlined in the \hyperref[UG/RelativeDirectory/Naming Conventions]{next section}.
     The \marg{filename} will then be searched for and, if found, added to the input stream.
     These commands are meant to be used following the standard \LaTeX{} sectioning conventions: chapters then sections then subsections.
     While the system may work if used out-of-order, the behavior is not tested and should be avoided.
     
-    An optional \oarg{path} can be input to override the current \RefSubFeature[naming convention]{Naming Conventions} and is present for special circumstances.
+    An optional \oarg{path} can be input to override the current \hyperref[UG/RelativeDirectory/Naming Conventions]{Naming Conventions} and is present for special circumstances.
     
     At first, these commands seem to be simple renamings of the \LaTeX{} system but with the path and file name having separate inputs.
-    This stance is entirely true if directory \RefSubFeature[naming conventions]{Naming Conventions} aren't used.
+    This stance is entirely true if directory \hyperref[UG/RelativeDirectory/Naming Conventions]{Naming Conventions} aren't used.
     But it is highly recommended that they are.
 \end{function}
 
@@ -69,7 +69,7 @@ For including text files (i.e., not graphics files) the system operates through 
 % ================================================================= %
 %                     Directory Naming Conventions                  %
 % ================================================================= %
-\UWSubFeature{Naming Conventions}
+\UWSubFeature{Naming Conventions}\label{UG/RelativeDirectory/Naming Conventions}
 
 By default, there is no naming convention (referred to a \texttt{none} in the implementation).
 A naming convention is a pattern that tells the Relative Directory system how the directories that hold document files are named.
@@ -232,7 +232,7 @@ For including graphics files (i.e., not text files), the system operates through
 % ================================================================= %
 %                            Search Controls                        %
 % ================================================================= %
-\UWSubFeature{Search Controls}
+    \UWSubFeature{Search Controls}
 As mentioned above, the Relative Directory system builds a stack of directory paths and then searches them.
 The default behavior is different for files and graphics.
 
@@ -254,11 +254,34 @@ The default can be changed by setting the \texttt{cycle-graphic-paths} to \textt
 \UWSubFeature{User Options}
 Below is a table for all of the user options for this feature set.
 
-\begin{table}%
-    \caption{Relative Directory system user options.}
-    \begin{tabular}{lcr}
-        
+\begin{table}[H]
+\begin{center}
+    \hspace{-0.80in}
+    \caption{List of key-value pairs for Relative Directory system.}
+    \label{Table:RelativeDirectoryKeyValue}
+    \hspace{-0.80in}
+    \begin{tabular}{c c c c}
+        \toprule
+        Key & Meaning & Default & Allowed value \\
+        \midrule
+        chapter-directory-prefix    & Directory prefix  used for \cs{IncludeChapter}           & ---   & text        \\[0.90em]
+        chapter-directory-suffix    & Directory suffix  used for \cs{IncludeChapter}           & ---   & text        \\[0.90em]
+        chapter-directory-name      & Naming convention used for \cs{IncludeChapter}           & none  & valid choice\sups{$\dagger$}\\[0.90em]
+        section-directory-prefix    & Directory prefix  used for \cs{IncludeSection}           & ---   & text        \\[0.90em]
+        section-directory-suffix    & Directory suffix  used for \cs{IncludeSection}           & ---   & text        \\[0.90em]
+        section-directory-name      & Naming convention used for \cs{IncludeSection}           & none  & valid choice\sups{$\dagger$}\\[0.90em]
+        subsection-directory-prefix & Directory prefix  used for \cs{IncludeSubsection}        & ---   & text        \\[0.90em]
+        subsection-directory-suffix & Directory suffix  used for \cs{IncludeSubsection}        & ---   & text        \\[0.90em]
+        subsection-directory-name   & Naming convention used for \cs{IncludeSubsection}        & none  & valid choice\sups{$\dagger$}\\[0.90em]
+        graphics-directory-name     & Graphics directory name for multiple directories         & ---   & text        \\[0.90em]
+        the-only-graphics-directory & Graphics directory name for a single directory           & ---   & text        \\[0.90em]
+        cycle-file-paths            & Search the entire file stack    or only the lowest level & false & boolean     \\[0.90em]
+        cycle-graphics-paths        & Search the entire graphic stack or only the lowest level & true  & boolean     \\
+        \bottomrule
     \end{tabular}
+\end{center}
+    \vskip-0.1in
+    \hspace{-0.60in}{}\sups{$\dagger$} Valid choices: none, same, increment
 \end{table}
 
 

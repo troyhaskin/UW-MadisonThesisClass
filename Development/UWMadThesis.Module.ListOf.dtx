@@ -44,7 +44,7 @@ The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the d
     \end{syntax}
     Within the environment, entries are added to the nomenclature using the \cs{Entry} command above.
     All arguments are required.
-    The second version above is if a units column is requested (see \RefSubSubFeature{Customization}).
+    The second version above is if a units column is requested (see \hyperref[UG/Nomenclature/Customization]{Customization}).
 \end{function}
 
 \begin{function}{\Group,\Subgroup}
@@ -53,7 +53,7 @@ The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the d
         \cs{Subgroup}\marg{subgroup title}
     \end{syntax}
     Creates a group or subgroup with the indicated title and using the default section.
-    The default section can be changed by the user (see \RefSubSubFeature{Customization}).
+    The default section can be changed by the user (see \hyperref[UG/Nomenclature/Customization]{Customization}).
 \end{function}
 
 
@@ -113,7 +113,7 @@ By default, the section level used by \cs{Group} is one below that of the main n
 Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} in this example.
 
 
-\UWSubSubFeature{Customization}
+\UWSubSubFeature{Customization}\label{UG/Nomenclature/Customization}
 
 As mentioned, there are several options available to the user for customizing the nomenclature.
 These options are set by giving a comma-separate list of key-value pairs to the function \cs{UWMadSetup} with the module name \texttt{Nomenclature}:
@@ -152,7 +152,7 @@ Lastly, it comes equipped with a new command: \cs{Acro}.
 \UWSubSubFeature{Example}
 The following input
 \begin{verbatim}
-    \AcronymSetup {
+    \UWMadSetup { Acronym } {
         main-section  = section,
         main-title = {Acronym Table},
         entry-padding = 1in
@@ -179,7 +179,7 @@ is typeset as
 The first usage of \cs{Acro}\{NRC\} is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
 
 
-\UWSubSubFeature{Customization}
+\UWSubSubFeature{Acronym Customization}
 
 Since this feature is an extension of the \texttt{Nomenclature} feature, it is customized in a similar fashion: using \cs{UWMadSetup} and the \texttt{Acronym} module name.
 It shares all of the same keys with some additional ones outline in \cref{Table:AcronymKeyValue}.

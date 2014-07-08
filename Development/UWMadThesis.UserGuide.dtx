@@ -11,15 +11,15 @@ In addition to that primary goal, the class also loads a number of useful packag
 
 \UWFeature{Thesis and PDF Information}
 
-In order for the \RefSubFeature{Title Page} to function properly, a certain amount of information about the thesis must be given.
+In order for the \hyperref[UG/Special Pages/Title Page]{Title Page} to function properly, a certain amount of information about the thesis must be given.
 The \UWMadClass{} has a set of commands to provide both the thesis information and PDF metadata to \LaTeX{}.
 
 It is highly encouraged to use all of these commands in the preamble such that any PDF metadata can be directly set before the document begins.
 If the commands are used within the |document| environment, it will require another \LaTeX{} compilation to include the metadata since \UWMadClass{} will automatically write the information to an external file.
 
-\UWSubFeature{Required}
+\UWSubFeature{Required}\label{UG/Thesis Information/Required}
     These commands are required.
-    If any of these commands is not present, usage of the \RefSubFeature[title page]{Title Page} command will throw an error.
+    If any of these commands is not present, usage of the \hyperref[UG/Special Pages/Title Page]{Title Page} command will throw an error.
     It is encouraged to use these commands in the preamble of the document.
 
     \begin{function} {
@@ -96,7 +96,7 @@ If the commands are used within the |document| environment, it will require anot
             \cs{Adviser}         \marg{advisor name} \marg{advisor position} \marg{advisor program}
         \end{syntax}
         \cs{CommitteeMember} can be used as many times as required.
-        However, if the list of members becomes too large, formatting of the \RefSubFeature[title page]{Title Page} will suffer.
+        However, if the list of members becomes too large, formatting of the \hyperref[UG/Special Pages/Title Page]{Title Page} will suffer.
 
         Using either the \cs{Advisor} or \cs{Adviser} commands automatically adds the advisor/adviser to the top of the committee list created by \cs{CommitteeMember}.
         Also, on the title page's committee list, the advisor/adviser is marked as such by ``(Advisor)'' or ``(Adviser)''.
@@ -201,18 +201,18 @@ If, for any reason, the thesis information or metadata registered with the docum
 
 \UWFeature{Special Pages}
 
-\UWSubFeature{Title Page}
+\UWSubFeature{Title Page}\label{UG/Special Pages/Title Page}
 This is a replacement for the default \cs{maketitle}.
 Per the example provided by the \UWMadShort{} Graduate School's sample, the title page flows (in order): report title, author by-line, partial fulfillment clause, degree, program, university identification, oral defense date, and oral committee list.
-The styles can be re-worked by redefining the commands as presented in the \RefSubModule{MakeTitlePage} implementation.
+The styles can be re-worked by redefining the commands as presented in the \hyperref[Imp/Special Pages/MakeTitlePage]{MakeTitlePage} implementation.
 The formatting of the commands is standard \LaTeXe{} to facilitate customization.
 
-\textsc{Note:} The \cs{MakeTitlePage} command needs the required thesis information from the commands described in the \RefSubFeature[Required subsection]{Required}.
+\textsc{Note:} The \cs{MakeTitlePage} command needs the required thesis information from the commands described in the \hyperref[UG/Thesis Information/Required]{Required}.
 
 \UWSubFeature{License Page}
 
 There are two main licenses \UWMadClass{} supports: Copyright and Creative Commons.
-If an author wishes to use these supported licenses to create a license page, all of the commands listed must be placed within a |LicensePage| environment, or the commands will not work (by design).
+If an author wishes to use these supported licenses to create a license page, all of the commands listed must be placed within a \texttt{LicensePage} environment, or the commands will not work (by design).
 
 To declare a simple Copyright input
 \begin{verbatim}
@@ -228,7 +228,7 @@ To declare a simple Creative Commons input
 \end{verbatim}
 There are more features for the Creative Commons license and are discussed below.
 
-The above examples will automatically create a page using default values for license owner (the \RefSubFeature[thesis author]{Required}), year (the current year), and license specifics (outlined below).
+The above examples will automatically create a page using default values for license owner (the \hyperref[UG/Thesis Information/Required]{thesis author}), year (the current year), and license specifics (outlined below).
 If either is incorrect for the current usage, use the following commands:
 \begin{function} {
         \LicenseOwner,
@@ -545,7 +545,7 @@ To facilitate either, two commands have been created.
 
 \UWFeature{Getting Started}
 
-\UWSubFeature{Class Options}
+\UWSubFeature{Options On-Load}
 \UWSubFeature{Feature Options}
 \UWSubFeature{Identification Commands}
 
@@ -675,7 +675,7 @@ The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the d
     \end{syntax}
     Within the environment, entries are added to the nomenclature using the \cs{Entry} command above.
     All arguments are required.
-    The second version above is if a units column is requested (see \RefSubSubFeature{Customization}).
+    The second version above is if a units column is requested (see \hyperref[UG/Nomenclature/Customization]{Customization}).
 \end{function}
 
 \begin{function}{\Group,\Subgroup}
@@ -684,7 +684,7 @@ The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the d
         \cs{Subgroup}\marg{subgroup title}
     \end{syntax}
     Creates a group or subgroup with the indicated title and using the default section.
-    The default section can be changed by the user (see \RefSubSubFeature{Customization}).
+    The default section can be changed by the user (see \hyperref[UG/Nomenclature/Customization]{Customization}).
 \end{function}
 
 \UWSubSubFeature{Examples}
@@ -742,26 +742,19 @@ We can tweak the example a bit more by putting the second two items under a grou
 By default, the section level used by \cs{Group} is one below that of the main nomenclature section; therefore, since the nomenclature's section level is defined as \texttt{subsection}, the \cs{Group} is a \texttt{subsubsection}.
 Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} in this example.
 
-\UWSubSubFeature{Customization}
+\UWSubSubFeature{Customization}\label{UG/Nomenclature/Customization}
 
 As mentioned, there are several options available to the user for customizing the nomenclature.
-These options are set by giving a comma-separate list of key-value pairs to the function \cs{NomenclatureSetup}
-
-\begin{function}{\NomenclatureSetup}
-    \begin{syntax}
-        \cs{NomenclatureSetup}\marg{key-value CSV}
-    \end{syntax}
-    The format is more appropriately shown as
+These options are set by giving a comma-separate list of key-value pairs to the function \cs{UWMadSetup} with the module name \texttt{Nomenclature}:
     \begin{verbatim}
-        \NomenclatureSetup {
+        \UWMadSetup { Nomenclature } {
             key-one = option,
             key-two = {option two},
             ...
             key-n =  {option n},
         }
     \end{verbatim}
-    A table of the keys, meaning, defaults, and allow value is given in \cref{Table:NomenclatureKeyValue}.
-\end{function}
+A table of the keys, meaning, defaults, and allow value is given in \cref{Table:NomenclatureKeyValue}.
 
 \clearpage
 \UWSubFeature{Acronym}
@@ -781,17 +774,10 @@ Lastly, it comes equipped with a new command: \cs{Acro}.
     Also, if links are not turned off (they are on by default), the acronym will be a link back to the original environment entry.
 \end{function}
 
-\begin{function}{\AcronymSetup}
-    \begin{syntax}
-        \cs{AcronymSetup}\marg{key-value CSV}
-    \end{syntax}
-    An exact copy of \cs{NomenclatureSetup}.
-\end{function}
-
 \UWSubSubFeature{Example}
 The following input
 \begin{verbatim}
-    \AcronymSetup {
+    \UWMadSetup { Acronym } {
         main-section  = section,
         main-title = {Acronym Table},
         entry-padding = 1in
@@ -802,8 +788,6 @@ The following input
     \end{Acronym}
 \end{verbatim}
 is typeset as
-
-\clearpage
 
 \rule{\textwidth}{0.1em}
     \AcronymSetup {
@@ -819,13 +803,18 @@ is typeset as
 
 The first usage of \cs{Acro}\{NRC\} is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
 
+\UWSubSubFeature{Acronym Customization}
+
+Since this feature is an extension of the \texttt{Nomenclature} feature, it is customized in a similar fashion: using \cs{UWMadSetup} and the \texttt{Acronym} module name.
+It shares all of the same keys with some additional ones outline in \cref{Table:AcronymKeyValue}.
+
 \begin{table}[H]
 \begin{center}
     \caption{List of key-value pairs for Nomenclature customization.}
     \label{Table:NomenclatureKeyValue}
     \begin{tabular}{c c c c}
         \toprule
-        Key & Meaning & Default & Allow value \\
+        Key & Meaning & Default & Allowed value \\
         \midrule
         title-skip          & Vertical space following the printed title     & 0pt          & dimension \\[10pt]
         print-skip          & Vertical space following a printing of entries & 1em          & dimension \\[10pt]
@@ -1187,7 +1176,7 @@ Some are new while others are simply in a camel-cased versions of the standard o
 \end{function}
 
 \UWFeature{Programming}
-The \RefModule[Implementation section]{Programming} for this module outlines the programming layer used for the class.
+The \hyperref[Imp/Programming]{Programming} for this module outlines the programming layer used for the class.
 There is a user-facing API but is not documented here as it is experimental.
 
 \iffalse
@@ -1284,19 +1273,19 @@ For including text files (i.e., not graphics files) the system operates through 
         \cs{IncludeSection}   \oarg{path}\marg{filename}
         \cs{IncludeSubsection}\oarg{path}\marg{filename}
     \end{syntax}
-    These commands will augment the class's current search path according the conventions outlined in the \RefSubFeature[next section]{Naming Conventions}.
+    These commands will augment the class's current search path according the conventions outlined in the \hyperref[UG/RelativeDirectory/Naming Conventions]{next section}.
     The \marg{filename} will then be searched for and, if found, added to the input stream.
     These commands are meant to be used following the standard \LaTeX{} sectioning conventions: chapters then sections then subsections.
     While the system may work if used out-of-order, the behavior is not tested and should be avoided.
 
-    An optional \oarg{path} can be input to override the current \RefSubFeature[naming convention]{Naming Conventions} and is present for special circumstances.
+    An optional \oarg{path} can be input to override the current \hyperref[UG/RelativeDirectory/Naming Conventions]{Naming Conventions} and is present for special circumstances.
 
     At first, these commands seem to be simple renamings of the \LaTeX{} system but with the path and file name having separate inputs.
-    This stance is entirely true if directory \RefSubFeature[naming conventions]{Naming Conventions} aren't used.
+    This stance is entirely true if directory \hyperref[UG/RelativeDirectory/Naming Conventions]{Naming Conventions} aren't used.
     But it is highly recommended that they are.
 \end{function}
 
-\UWSubFeature{Naming Conventions}
+\UWSubFeature{Naming Conventions}\label{UG/RelativeDirectory/Naming Conventions}
 
 By default, there is no naming convention (referred to a \texttt{none} in the implementation).
 A naming convention is a pattern that tells the Relative Directory system how the directories that hold document files are named.
@@ -1441,7 +1430,7 @@ For including graphics files (i.e., not text files), the system operates through
     If a dedicated graphics file is desired at \textsc{a single level}, one can be defined through the \texttt{the-only-graphics-directory} option.
 \end{function}
 
-\UWSubFeature{Search Controls}
+    \UWSubFeature{Search Controls}
 As mentioned above, the Relative Directory system builds a stack of directory paths and then searches them.
 The default behavior is different for files and graphics.
 
@@ -1454,4 +1443,35 @@ This default was chosen such that the same graphic can be included across many i
 The default can be changed by setting the \texttt{cycle-graphic-paths} to \texttt{false}.
 
 \UWSubFeature{User Options}
+Below is a table for all of the user options for this feature set.
+
+\begin{table}[H]
+\begin{center}
+    \hspace{-0.80in}
+    \caption{List of key-value pairs for Relative Directory system.}
+    \label{Table:RelativeDirectoryKeyValue}
+    \hspace{-0.80in}
+    \begin{tabular}{c c c c}
+        \toprule
+        Key & Meaning & Default & Allowed value \\
+        \midrule
+        chapter-directory-prefix    & Directory prefix  used for \cs{IncludeChapter}           & ---   & text        \\[0.90em]
+        chapter-directory-suffix    & Directory suffix  used for \cs{IncludeChapter}           & ---   & text        \\[0.90em]
+        chapter-directory-name      & Naming convention used for \cs{IncludeChapter}           & none  & valid choice\sups{$\dagger$}\\[0.90em]
+        section-directory-prefix    & Directory prefix  used for \cs{IncludeSection}           & ---   & text        \\[0.90em]
+        section-directory-suffix    & Directory suffix  used for \cs{IncludeSection}           & ---   & text        \\[0.90em]
+        section-directory-name      & Naming convention used for \cs{IncludeSection}           & none  & valid choice\sups{$\dagger$}\\[0.90em]
+        subsection-directory-prefix & Directory prefix  used for \cs{IncludeSubsection}        & ---   & text        \\[0.90em]
+        subsection-directory-suffix & Directory suffix  used for \cs{IncludeSubsection}        & ---   & text        \\[0.90em]
+        subsection-directory-name   & Naming convention used for \cs{IncludeSubsection}        & none  & valid choice\sups{$\dagger$}\\[0.90em]
+        graphics-directory-name     & Graphics directory name for multiple directories         & ---   & text        \\[0.90em]
+        the-only-graphics-directory & Graphics directory name for a single directory           & ---   & text        \\[0.90em]
+        cycle-file-paths            & Search the entire file stack    or only the lowest level & false & boolean     \\[0.90em]
+        cycle-graphics-paths        & Search the entire graphic stack or only the lowest level & true  & boolean     \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+    \vskip-0.1in
+    \hspace{-0.60in}{}\sups{$\dagger$} Valid choices: none, same, increment
+\end{table}
 

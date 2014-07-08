@@ -2,15 +2,15 @@
 
 \UWFeature{Thesis and PDF Information}
 
-In order for the \RefSubFeature{Title Page} to function properly, a certain amount of information about the thesis must be given.
+In order for the \hyperref[UG/Special Pages/Title Page]{Title Page} to function properly, a certain amount of information about the thesis must be given.
 The \UWMadClass{} has a set of commands to provide both the thesis information and PDF metadata to \LaTeX{}.
 
 It is highly encouraged to use all of these commands in the preamble such that any PDF metadata can be directly set before the document begins.
 If the commands are used within the |document| environment, it will require another \LaTeX{} compilation to include the metadata since \UWMadClass{} will automatically write the information to an external file.
 
-\UWSubFeature{Required}
+\UWSubFeature{Required}\label{UG/Thesis Information/Required}
     These commands are required.
-    If any of these commands is not present, usage of the \RefSubFeature[title page]{Title Page} command will throw an error.
+    If any of these commands is not present, usage of the \hyperref[UG/Special Pages/Title Page]{Title Page} command will throw an error.
     It is encouraged to use these commands in the preamble of the document.
 
     \begin{function} {
@@ -87,7 +87,7 @@ If the commands are used within the |document| environment, it will require anot
             \cs{Adviser}         \marg{advisor name} \marg{advisor position} \marg{advisor program}
         \end{syntax}
         \cs{CommitteeMember} can be used as many times as required.
-        However, if the list of members becomes too large, formatting of the \RefSubFeature[title page]{Title Page} will suffer.
+        However, if the list of members becomes too large, formatting of the \hyperref[UG/Special Pages/Title Page]{Title Page} will suffer.
         
         Using either the \cs{Advisor} or \cs{Adviser} commands automatically adds the advisor/adviser to the top of the committee list created by \cs{CommitteeMember}.
         Also, on the title page's committee list, the advisor/adviser is marked as such by ``(Advisor)'' or ``(Adviser)''.

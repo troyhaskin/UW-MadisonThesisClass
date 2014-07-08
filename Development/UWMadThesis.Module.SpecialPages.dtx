@@ -4,18 +4,18 @@
 
 \UWFeature{Special Pages}
 
-\UWSubFeature{Title Page}
+\UWSubFeature{Title Page}\label{UG/Special Pages/Title Page}
 This is a replacement for the default \cs{maketitle}.
 Per the example provided by the \UWMadShort{} Graduate School's sample, the title page flows (in order): report title, author by-line, partial fulfillment clause, degree, program, university identification, oral defense date, and oral committee list.
-The styles can be re-worked by redefining the commands as presented in the \RefSubModule{MakeTitlePage} implementation.
+The styles can be re-worked by redefining the commands as presented in the \hyperref[Imp/Special Pages/MakeTitlePage]{MakeTitlePage} implementation.
 The formatting of the commands is standard \LaTeXe{} to facilitate customization.
 
-\textsc{Note:} The \cs{MakeTitlePage} command needs the required thesis information from the commands described in the \RefSubFeature[Required subsection]{Required}.
+\textsc{Note:} The \cs{MakeTitlePage} command needs the required thesis information from the commands described in the \hyperref[UG/Thesis Information/Required]{Required}.
 
 \UWSubFeature{License Page}
 
 There are two main licenses \UWMadClass{} supports: Copyright and Creative Commons.
-If an author wishes to use these supported licenses to create a license page, all of the commands listed must be placed within a |LicensePage| environment, or the commands will not work (by design).
+If an author wishes to use these supported licenses to create a license page, all of the commands listed must be placed within a \texttt{LicensePage} environment, or the commands will not work (by design).
 
 To declare a simple Copyright input
 \begin{verbatim}
@@ -31,7 +31,7 @@ To declare a simple Creative Commons input
 \end{verbatim}
 There are more features for the Creative Commons license and are discussed below.
 
-The above examples will automatically create a page using default values for license owner (the \RefSubFeature[thesis author]{Required}), year (the current year), and license specifics (outlined below).
+The above examples will automatically create a page using default values for license owner (the \hyperref[UG/Thesis Information/Required]{thesis author}), year (the current year), and license specifics (outlined below).
 If either is incorrect for the current usage, use the following commands:
 \begin{function} {
         \LicenseOwner,
@@ -284,7 +284,7 @@ This input would generate the following text at the bottom of a new page (with a
 %
 %   \UWModule{Special Pages}
 %
-%   \UWSubModule{MakeTitlePage}
+%   \UWSubModule{MakeTitlePage}\label{Imp/Special Pages/MakeTitlePage}
 %
 %    \begin{macrocode}
 % That phrase that occurs on every title page design the class author has seen

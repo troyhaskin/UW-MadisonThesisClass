@@ -81,7 +81,6 @@
         \int_incr:N \g__UWMad_Sectioning_Module_int
         \int_set:Nn \g__UWMad_Sectioning_SubModule_int    {0}
         \int_set:Nn \g__UWMad_Sectioning_SubSubModule_int {0}
-
         \group_begin:
             \phantomsection
             \tex_hbox:D{}
@@ -98,7 +97,6 @@
             \protect\numberline{\g__UWMad_TheModule_tl}
             #1
         }
-        \label{Module:#1}
         \skip_vertical:n{1em}
         \par
     }
@@ -110,7 +108,10 @@
         \int_set:Nn \g__UWMad_Sectioning_SubSubModule_int {0}
         \int_incr:N \g__UWMad_Sectioning_SubModule_int
 
+        \tex_interlinepenalty:D -300
+
         \group_begin:
+            \tex_interlinepenalty:D -300
             \phantomsection
             \tex_hbox:D{}
             \skip_vertical:n{1em}
@@ -126,7 +127,6 @@
             \protect\numberline{\g__UWMad_TheSubModule_tl}
             #1
         }
-        \label{SubModule:#1}
         \skip_vertical:n{0.25em}
         \par
     }
@@ -137,7 +137,10 @@
 
         \int_incr:N \g__UWMad_Sectioning_SubSubModule_int
 
+        \tex_interlinepenalty:D -300
+
         \group_begin:
+            \tex_interlinepenalty:D -300
             \phantomsection
             \tex_hbox:D{}
             \skip_vertical:n{1em}
@@ -153,7 +156,6 @@
             \protect\numberline{\g__UWMad_TheSubSubModule_tl}
             #1
         }
-        \label{SubSubModule:#1}
         \skip_vertical:n{0.25em}
         \par
     }
@@ -185,33 +187,6 @@
 
 
 %^^A =================================================================== %
-%^^A                     Implementation Referencing                      %
-%^^A =================================================================== %
-    \DeclareDocumentCommand \RefModule { o m } {
-        \IfNoValueTF {#1} {
-            \hyperref[Module:#2]{#2}
-        } {
-            \hyperref[Module:#2]{#1}
-        }
-    }
-    \DeclareDocumentCommand \RefSubModule { o m } {
-        \IfNoValueTF {#1} {
-            \hyperref[SubModule:#2]{#2}
-        } {
-            \hyperref[SubModule:#2]{#1}
-        }
-    }
-    \DeclareDocumentCommand \RefSubSubModule { o m } {
-        \IfNoValueTF {#1} {
-            \hyperref[SubSubModule:#2]{#2}
-        } {
-            \hyperref[SubSubModule:#2]{#1}
-        }
-    }
-
-
-
-%^^A =================================================================== %
 %^^A                         User Guide Sectioning                       %
 %^^A =================================================================== %
     \cs_new:Nn \__UWMad_Sectioning_Feature:nn {
@@ -237,7 +212,6 @@
             \protect\numberline{\g__UWMad_TheFeature_tl}
             #1
         }
-        \label{Feature:#1}
         \skip_vertical:n{1em}
         \par
     }
@@ -247,7 +221,10 @@
         \int_incr:N \g__UWMad_Sectioning_SubFeature_int
         \int_set:Nn \g__UWMad_Sectioning_SubSubFeature_int {0}
 
+        \tex_interlinepenalty:D -300
+
         \group_begin:
+            \tex_interlinepenalty:D -300
             \phantomsection
             \tex_hbox:D{}
             \skip_vertical:n{1em}
@@ -263,7 +240,6 @@
             \protect\numberline{\g__UWMad_TheSubFeature_tl}
             #1
         }
-        \label{SubFeature:#1}
         \skip_vertical:n{0.25em}
         \par
     }
@@ -273,6 +249,7 @@
         \int_incr:N \g__UWMad_Sectioning_SubSubFeature_int
 
         \group_begin:
+            \tex_interlinepenalty:D -300
             \phantomsection
             \tex_hbox:D{}
             \skip_vertical:n{1em}
@@ -288,7 +265,6 @@
             \protect\numberline{\g__UWMad_TheSubSubFeature_tl}
             #1
         }
-        \label{SubSubFeature:#1}
         \skip_vertical:n{0.25em}
         \par
     }
@@ -323,27 +299,29 @@
 %^^A =================================================================== %
 %^^A                       User Guide Referencing                        %
 %^^A =================================================================== %
+\iffalse
     \DeclareDocumentCommand \RefFeature { o m } {
         \IfNoValueTF {#1} {
-            \hyperref[Feature:#2]{#2}
+            \hyperref[\g__UWMad_TheFeature_tl~::Feature:#2]{#2}
         } {
-            \hyperref[Feature:#2]{#1}
+            \hyperref[\g__UWMad_TheFeature_tl~::Feature:#2]{#1}
         }
     }
     \DeclareDocumentCommand \RefSubFeature { o m } {
         \IfNoValueTF {#1} {
-            \hyperref[SubFeature:#2]{#2}
+            \hyperref[\g__UWMad_TheSubFeature_tl!SubFeature:#2]{#2}
         } {
-            \hyperref[SubFeature:#2]{#1}
+            \hyperref[\g__UWMad_TheSubFeature_tl!SubFeature:#2]{#1}
         }
     }
     \DeclareDocumentCommand \RefSubSubFeature { o m } {
         \IfNoValueTF {#1} {
-            \hyperref[SubSubFeature:#2]{#2}
+            \hyperref[\g__UWMad_TheSubSubFeature_tl!SubSubFeature:#2]{#2}
         } {
-            \hyperref[SubSubFeature:#2]{#1}
+            \hyperref[\g__UWMad_TheSubSubFeature_tl!SubSubFeature:#2]{#1}
         }
     }
+\fi
 %
 %
 %

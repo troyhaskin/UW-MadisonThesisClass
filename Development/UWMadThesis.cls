@@ -21,52 +21,27 @@
     {\c__UWMad_Class_Version_tl}{\c__UWMad_Class_Description_tl}
 \tl_new:N   \g_UWMad_ParentClass_tl
 \tl_gset:Nn \g_UWMad_ParentClass_tl {report}
-\cs_new:Nn \__UWMad_ThrowWarnings:NTF {
-    \bool_if:NTF \g__UWMad_ThrowWarnings_bool {
-        \bool_if:NTF #1 {
-            #2
-        } {
-            #3
-        }
-    } {}
-}
-\cs_new:Nn \__UWMad_ThrowWarnings:TF {
-    \bool_if:NTF \g__UWMad_ThrowWarnings_bool {
-        #1
-    } {
-        #2
-    }
-}
-\msg_new:nnn{UWMadThesis}{Options/StyleViolation}{
+\msg_new:nnn{ UWMadThesis }{ Options / StyleViolation }{
     Option~'#1'~violates~\c_UWMadUniversityShort_tl{}~
     Dissertation~Guidelines;~consider~omission
 }
 \cs_new:Nn \__UWMad_FrontMatter_StyleWarning:n {
-    \__UWMad_ThrowWarnings:TF {
-    \msg_warning:nnn {UWMadThesis}{Options/StyleViolation}
-        {#1}
-    } { }
+    \msg_warning:nnn { UWMadThesis }{ Options / StyleViolation } { #1 }
    \PassOptionsToClass{#1}{\g_UWMad_ParentClass_tl}
 }
 \bool_new:N       \g__UWMad_MathTweaks_bool
 \bool_gset_true:N \g__UWMad_MathTweaks_bool
-\bool_new:N       \g__UWMad_ThrowWarnings_bool
-\bool_gset_true:N \g__UWMad_ThrowWarnings_bool
 \DeclareOption{NoMath} {
     \bool_gset_false:N \g__UWMad_MathTweaks_bool
 }
 \DeclareOption{Quiet} {
-    \bool_gset_false:N \g__UWMad_ThrowWarnings_bool
+    \msg_redirect_module:nnn { UWMadThesis } { warning } { none }
 }
 \DeclareOption{a4paper} {
-    \__UWMad_ThrowWarnings:TF {
-        \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
-    } { }
+    \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
 }
 \DeclareOption{twoside} {
-    \__UWMad_ThrowWarnings:TF {
-        \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
-    } { }
+    \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
 }
 \DeclareOption{article} {
     \tl_gset:Nn \g_UWMad_ParentClass_tl {article}
@@ -127,6 +102,9 @@
 }
 \DeclareDocumentCommand \UWMadShort { } {
     \c__UWMad_UniversityShort_tl
+}
+\DeclareDocumentCommand \UWMadSetup { m m } {
+    \keys_set:nn { UWMadThesis / #1 } { #2 }
 }
 \msg_new:nnn {UWMadThesis} {Programming/UnregisteredVariable} {
     `#1'~is~not~a~registered~#2.~~The~#2~must~be~defined~
