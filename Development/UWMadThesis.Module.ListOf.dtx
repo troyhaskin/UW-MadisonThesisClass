@@ -75,7 +75,7 @@ As an example, the following input
 would be typeset as:
 
 \setcounter{section}{1}
-\NomenclatureSetup{include-in-toc = false}
+\UWMadSetup{ Nomenclature } {include-in-toc = false}
 
 \rule{\textwidth}{0.1em}
     \begin{Nomenclature}[subsection]{Symbol Table}
@@ -727,7 +727,8 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %
 %   Now the keys for user-customization are defined:
 %    \begin{macrocode}
-\keys_define:nn { UWMad/Nomenclature } {
+\clist_new:N   \g__UWMad_Nomenclature_KeyValuePairs_clist
+\clist_gset:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {
 %    \end{macrocode}
 %
 %   Adjustable dimensions:
@@ -811,11 +812,17 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
     include-in-toc .default:n = true,
      with-units    .default:n = false
 }
+\exp_args:Nnf
+    \keys_define:nn
+    { UWMadThesis / Nomenclature }
+    {
+        \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
+    }
 %    \end{macrocode}
 %
 %   And the defaults for all keys are now set.
 %    \begin{macrocode}
-\keys_set:nn { UWMad/Nomenclature } {
+\keys_set:nn { UWMadThesis / Nomenclature } {
     title-skip          ,
     print-skip          ,
     entry-margin-left   ,
@@ -997,7 +1004,7 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %                              User Front-Ends                            %
 % ======================================================================= %
 \DeclareDocumentCommand \NomenclatureSetup { m } {
-    \keys_set:nn { UWMad/Nomenclature } { #1 }
+    \keys_set:nn { UWMadThesis / Nomenclature } { #1 }
 }
 %
 %

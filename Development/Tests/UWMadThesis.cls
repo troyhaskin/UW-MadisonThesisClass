@@ -103,8 +103,10 @@
 \DeclareDocumentCommand \UWMadShort { } {
     \c__UWMad_UniversityShort_tl
 }
-\DeclareDocumentCommand \UWMadSetup { m m } {
-    \keys_set:nn { UWMadThesis / #1 } { #2 }
+\DeclareDocumentCommand \UWMadSetup { >{ \TrimSpaces} m m } {
+    \keys_set:nn
+        { UWMadThesis / #1 }
+        { #2 }
 }
 \msg_new:nnn {UWMadThesis} {Programming/UnregisteredVariable} {
     `#1'~is~not~a~registered~#2.~~The~#2~must~be~defined~
@@ -1371,7 +1373,8 @@
 \tl_new:N \l__UWMad_Nomenclature_Title_Main_tl
 \tl_new:N \l__UWMad_Nomenclature_Title_Group_tl
 \tl_new:N \l__UWMad_Nomenclature_Title_Subgroup_tl
-\keys_define:nn { UWMad/Nomenclature } {
+\clist_new:N   \g__UWMad_Nomenclature_KeyValuePairs_clist
+\clist_gset:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {
     title-skip .dim_set:N = \l__UWMad_Nomenclature_TitleSkip_dim,
     print-skip .dim_set:N = \l__UWMad_Nomenclature_PrintSkip_dim,
     entry-margin-left .dim_set:N =
@@ -1421,7 +1424,13 @@
     include-in-toc .default:n = true,
      with-units    .default:n = false
 }
-\keys_set:nn { UWMad/Nomenclature } {
+\exp_args:Nnf
+    \keys_define:nn
+    { UWMadThesis / Nomenclature }
+    {
+        \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
+    }
+\keys_set:nn { UWMadThesis / Nomenclature } {
     title-skip          ,
     print-skip          ,
     entry-margin-left   ,
@@ -1548,7 +1557,7 @@
     }
 }
 \DeclareDocumentCommand \NomenclatureSetup { m } {
-    \keys_set:nn { UWMad/Nomenclature } { #1 }
+    \keys_set:nn { UWMadThesis / Nomenclature } { #1 }
 }
 \DeclareDocumentEnvironment {Nomenclature} { o g } {
     \UWMad_ListOf_Define:n {Nomenclature}

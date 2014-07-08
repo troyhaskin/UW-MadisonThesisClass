@@ -367,8 +367,10 @@
 %   This simple command creates a user interface for the key-value system used
 %   for several feature set options.
 %    \begin{macrocode}
-\DeclareDocumentCommand \UWMadSetup { m m } {
-    \keys_set:nn { UWMadThesis / #1 } { #2 }
+\DeclareDocumentCommand \UWMadSetup { >{ \TrimSpaces} m m } {
+    \keys_set:nn
+        { UWMadThesis / #1 }
+        { #2 }
 }
 %    \end{macrocode}
 %   \end{function}
@@ -2954,7 +2956,8 @@
 %
 %   Now the keys for user-customization are defined:
 %    \begin{macrocode}
-\keys_define:nn { UWMad/Nomenclature } {
+\clist_new:N   \g__UWMad_Nomenclature_KeyValuePairs_clist
+\clist_gset:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {
 %    \end{macrocode}
 %
 %   Adjustable dimensions:
@@ -3038,11 +3041,17 @@
     include-in-toc .default:n = true,
      with-units    .default:n = false
 }
+\exp_args:Nnf
+    \keys_define:nn
+    { UWMadThesis / Nomenclature }
+    {
+        \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
+    }
 %    \end{macrocode}
 %
 %   And the defaults for all keys are now set.
 %    \begin{macrocode}
-\keys_set:nn { UWMad/Nomenclature } {
+\keys_set:nn { UWMadThesis / Nomenclature } {
     title-skip          ,
     print-skip          ,
     entry-margin-left   ,
@@ -3224,7 +3233,7 @@
 %                              User Front-Ends                            %
 % ======================================================================= %
 \DeclareDocumentCommand \NomenclatureSetup { m } {
-    \keys_set:nn { UWMad/Nomenclature } { #1 }
+    \keys_set:nn { UWMadThesis / Nomenclature } { #1 }
 }
 %
 %
