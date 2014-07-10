@@ -77,7 +77,7 @@
 %   RelativeDirectory Test:
 %       o Chapter directory prefix {Chapter-} in increment mode
 %       o Empty section *-fixes to test the stack-pushing conditions
-\RelativeDirectorySetup {
+\UWMadSetup { RelativeDirectory } {
     chapter-directory-prefix = Chapter-,
     chapter-directory-name   = increment
 }
@@ -91,7 +91,7 @@
 %       o Section directory prefix {Section-} in increment mode
 %       o All same name to test the stack-pushing conditions and file in 
 %           subfolders.
-\RelativeDirectorySetup {
+\UWMadSetup { RelativeDirectory } {
     section-directory-prefix    = Section-,
     section-directory-name      = increment,
     subsection-directory-prefix = Subsection-,
@@ -106,7 +106,7 @@
 %       o Section    directory prefix {} and suffix {-Section}    in same mode
 %       o Subsection directory prefix {} and suffix {-Subsection} in same mode
 %       o All same name-mode and same file name to test the stack-pushing.
-\RelativeDirectorySetup {
+\UWMadSetup { RelativeDirectory } {
     chapter-directory-prefix    = {},
     chapter-directory-name      = same,
     chapter-directory-suffix    = {-Chapter},
@@ -133,7 +133,7 @@
 %   RelativeDirectory Test:
 %       o Chapter    directory is user-supplied: OptionalDirectoryName.
 %       o Section continues the name-mode from above (same) to test chaining.
-\RelativeDirectorySetup {
+\UWMadSetup { RelativeDirectory } {
     chapter-directory-prefix    = SingleSectionDirectoryTest,
     chapter-directory-name      = none,
     chapter-directory-suffix    = {},

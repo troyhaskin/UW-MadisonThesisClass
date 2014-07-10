@@ -221,8 +221,8 @@ For including graphics files (i.e., not text files), the system operates through
     The one difference in using these commands from the default behavior is that \textsc{the extension is required}.
     These commands will follow the defined naming conventions and search the directories (from the lowest to highest) for the graphics file and input the first extant graphic matching the \marg{graphic name}.
     
-    If a dedicated graphics file is desired at \textsc{multiple levels}, one can be defined through the \texttt{graphics-directory-name} option.
-    If a dedicated graphics file is desired at \textsc{a single level}, one can be defined through the \texttt{the-only-graphics-directory} option.
+    If a dedicated graphics directory is desired at \textsc{multiple levels}, one can be defined through the \texttt{graphics-directory-name} option.
+    If a dedicated graphics directory is desired at \textsc{a single level}, one can be defined through the \texttt{the-only-graphics-directory} option.
 \end{function}
 
 
@@ -252,8 +252,21 @@ The default can be changed by setting the \texttt{cycle-graphic-paths} to \textt
 %                            User Options                           %
 % ================================================================= %
 \UWSubFeature{User Options}
-Below is a table for all of the user options for this feature set.
+Options for this feature are set using  the \cs{UWMadSetup} command and \texttt{RelativeDirectory} module name.
+The input syntax has the form
 
+{
+\setstretch{1.0}
+\begin{verbatim}
+    \UWMadSetup { RelativeDirectory } {
+        key-one = value-one,
+        key-two = value-two,
+        ...
+        key-n   = value-n,
+    }
+\end{verbatim}
+}
+\Cref{Table:RelativeDirectoryKeyValue} lists all of the valid keys for this feature set.
 \begin{table}[H]
 \begin{center}
     \hspace{-0.80in}
@@ -307,53 +320,56 @@ Below is a table for all of the user options for this feature set.
 %   Variable declarations and default initializations for Chapter directories.
 %    \begin{macrocode}
 \int_new:N  \g__UWMad_RelativeDirectory_Chapter_Count_int
+\tl_new:N   \g__UWMad_RelativeDirectory_Chapter_Prefix_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Chapter_Suffix_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Chapter_CurrentName_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Chapter_ParentPath_tl
 \tl_gset:Nn \g__UWMad_RelativeDirectory_Chapter_ParentPath_tl {}
-\bool_new:N       \g__UWMad_RelativeDirectory_IsChapter_bool
-\bool_gset_true:N \g__UWMad_RelativeDirectory_IsChapter_bool
 %    \end{macrocode}
 %
 %   Variable declarations and default initializations for Section directories.
 %    \begin{macrocode}
 \int_new:N  \g__UWMad_RelativeDirectory_Section_Count_int
+\tl_new:N   \g__UWMad_RelativeDirectory_Section_Prefix_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Section_Suffix_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Section_CurrentPath_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Section_CurrentName_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Section_ParentPath_tl
 \tl_gset:Nn \g__UWMad_RelativeDirectory_Section_ParentPath_tl {
     \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl/
 }
-\bool_new:N        \g__UWMad_RelativeDirectory_IsSection_bool
-\bool_gset_false:N \g__UWMad_RelativeDirectory_IsSection_bool
 %    \end{macrocode}
 %
 %   Variable declarations and default initializations for Subsection
 %   directories.
 %    \begin{macrocode}
 \int_new:N  \g__UWMad_RelativeDirectory_Subsection_Count_int
+\tl_new:N   \g__UWMad_RelativeDirectory_Subsection_Prefix_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Subsection_Suffix_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Subsection_CurrentPath_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Subsection_ParentPath_tl
 \tl_gset:Nn \g__UWMad_RelativeDirectory_Subsection_ParentPath_tl {
     \g__UWMad_RelativeDirectory_Section_CurrentPath_tl/
 }
-\bool_new:N        \g__UWMad_RelativeDirectory_IsSubsection_bool
-\bool_gset_false:N \g__UWMad_RelativeDirectory_IsSubsection_bool
 %    \end{macrocode}
 %
 %   Variable declaration for graphics inclusion
 %    \begin{macrocode}
-\tl_new:N \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl
-\tl_new:N \g__UWMad_RelativeDirectory_Graphics_Extension_tl
-\tl_new:N \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Graphics_Extension_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
+%    \end{macrocode}
+%
+%   Variable declarations for search options.
+%    \begin{macrocode}
+\bool_new:N \g__UWMad_RelativeDirectory_CycleThrough_Graphics_bool
+\bool_new:N \g__UWMad_RelativeDirectory_CycleThrough_Files_bool
 %    \end{macrocode}
 %
 %   Miscellaneous variable initializations for the system
 %    \begin{macrocode}
-\tl_const:Nn \c__UWMad_RelativeDirectory_None_tl {none}
-\tl_const:Nn \c__UWMad_RelativeDirectory_Same_tl {same}
-\tl_const:Nn \c__UWMad_RelativeDirectory_Increment_tl {increment}
 \tl_new:N    \g__UWMad_RelativeDirectory_File_CurrentName_tl
 \tl_new:N    \g__UWMad_RelativeDirectory_OptionalPath_tl
 \seq_new:N   \g__UWMad_RelativeDirectory_PathStack_Files_seq
@@ -441,8 +457,9 @@ Below is a table for all of the user options for this feature set.
 %
 %
 %   The default push function pushes to both the file and graphics stacks.
-%   However, if the user defines a single (the only) graphics folder, a files-
-%   only push function is also defined.
+%   However, if the user defines a single (the only) graphics folder, a 
+%   files-only push function is also defined that will be used when that 
+%   option is set.
 %    \begin{macrocode}
 \cs_new:Nn \__UWMad_RelativeDirectory_StackPush_Default:n {
     \tl_gset_eq:Nc
@@ -493,12 +510,9 @@ Below is a table for all of the user options for this feature set.
 %   Chapters inclusions always clear the stacks.
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_RelativeDirectory_UpdateStack:n {
-    
     \use:c {UWMad_RelativeDirectory_UpdateStack_ #1 _PreHook:}
-    
     \UWMad_RelativeDirectory_SetNameAndPath:n{#1}
     \__UWMad_RelativeDirectory_StackPush:n{#1}
-    
 }
 %    \end{macrocode}
 %
@@ -531,8 +545,8 @@ Below is a table for all of the user options for this feature set.
             ./\g_tmpa_tl/
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
     }
-    \file_if_exist:nTF {g_tmpa_tl} {
-        \file_input:n{g_tmpa_tl}
+    \file_if_exist:nTF {\g_tmpa_tl} {
+        \file_input:n{\g_tmpa_tl}
         \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
     } { }
 }
@@ -892,52 +906,39 @@ Below is a table for all of the user options for this feature set.
 %
 %   \UWSubModule{User Front Ends}
 %    \begin{macrocode}
-\DeclareDocumentCommand \RelativeDirectorySetup { m } {
-    \keys_set:nn { UWMadThesis / RelativeDirectory } { #1 }
-}
-
 \DeclareDocumentCommand \IncludeChapter { o m } {
-
-    \IfNoValueTF { #1 } { } {
+    \IfValueTF { #1 } {
         \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    }
+    } { }
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-
     \UWMad_RelativeDirectory_UpdateStack:n{Chapter}
     \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
-
 \DeclareDocumentCommand \IncludeSection { o m } {
-
-    \IfNoValueTF { #1 } { } {
+    \IfValueTF { #1 } {
         \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    }
+    } { }
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-
     \UWMad_RelativeDirectory_UpdateStack:n{Section}
     \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
-
 \DeclareDocumentCommand \IncludeSubsection { o m } {
-
-    \IfNoValueTF { #1 } { } {
+    \IfValueTF { #1 } {
         \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    }
+    } { }
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-
     \UWMad_RelativeDirectory_UpdateStack:n{Subsection}
     \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
-
 \DeclareDocumentCommand \IncludeGraphics { o m } {
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \IfNoValueTF { #1 } {
-        \UWMad_RelativeDirectory_IncludeGraphics:n{}
-    } {
+    \IfValueTF { #1 } {
         \UWMad_RelativeDirectory_IncludeGraphics:n{#1}
+    } {
+        \UWMad_RelativeDirectory_IncludeGraphics:n{}
     }
 }
 \cs_new_eq:NN

@@ -103,7 +103,7 @@
 \DeclareDocumentCommand \UWMadShort { } {
     \c__UWMad_UniversityShort_tl
 }
-\DeclareDocumentCommand \UWMadSetup { >{ \TrimSpaces} m m } {
+\DeclareDocumentCommand \UWMadSetup { >{\TrimSpaces} m m } {
     \keys_set:nn
         { UWMadThesis / #1 }
         { #2 }
@@ -1446,7 +1446,7 @@
     \hbox_set:Nn \l_tmpa_box {#2}
     \dim_set:Nn  \l_tmpa_dim {\box_wd:N \l_tmpa_box}
     \dim_compare:nNnTF {#1} < {\l_tmpa_dim} {
-        \dim_set:Nn #1 {\l_tmpa_dim}
+        \dim_set_eq:NN #1 \l_tmpa_dim
     } { }
 }
 \cs_new:Nn \UWMad_Nomenclature_UpdateWidest_Symbol:n {
@@ -1464,13 +1464,9 @@
     \dim_set:Nn \l__UWMad_Nomenclature_WidestUnit_dim {0pt}
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths_NoUnits: {
-    %
-    % Define symbol width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthSymbol_dim {
         1.01\l__UWMad_Nomenclature_WidestSymbol_dim
     }
-    %
-    % Define description width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthDescription_dim {
         0.995\textwidth -
         \l__UWMad_Nomenclature_Entry_MarginLeft_dim  -
@@ -1479,18 +1475,12 @@
     }
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths_Units: {
-    %
-    % Define symbol width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthSymbol_dim {
         1.01\l__UWMad_Nomenclature_WidestSymbol_dim
     }
-    %
-    % Define unit width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthUnit_dim {
         1.01\l__UWMad_Nomenclature_WidestUnit_dim
     }
-    %
-    % Define description width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthDescription_dim {
         0.995\textwidth -
          \l__UWMad_Nomenclature_Entry_MarginLeft_dim  -
@@ -1548,16 +1538,6 @@
         \coffin_typeset:Nnnnn \l_tmpc_coffin {l}{t}{0pt}{0pt}
         \skip_vertical:n {\l__UWMad_Nomenclature_Entry_MarginBottom_dim}
     \group_end:
-}
-\cs_new:Nn \UWMad_Nomenclature_SetEntry: {
-    \bool_if:NTF \g__UWMad_Nomenclature_IncludeUnitsColumn_bool {
-        \UWMad_Nomenclature_SetEntry_Units:
-    } {
-        \UWMad_Nomenclature_SetEntry_NoUnits:
-    }
-}
-\DeclareDocumentCommand \NomenclatureSetup { m } {
-    \keys_set:nn { UWMadThesis / Nomenclature } { #1 }
 }
 \DeclareDocumentEnvironment {Nomenclature} { o g } {
     \UWMad_ListOf_Define:n {Nomenclature}
@@ -2335,36 +2315,35 @@
 
 }
 \int_new:N  \g__UWMad_RelativeDirectory_Chapter_Count_int
+\tl_new:N   \g__UWMad_RelativeDirectory_Chapter_Prefix_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Chapter_Suffix_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Chapter_CurrentName_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Chapter_ParentPath_tl
 \tl_gset:Nn \g__UWMad_RelativeDirectory_Chapter_ParentPath_tl {}
-\bool_new:N       \g__UWMad_RelativeDirectory_IsChapter_bool
-\bool_gset_true:N \g__UWMad_RelativeDirectory_IsChapter_bool
 \int_new:N  \g__UWMad_RelativeDirectory_Section_Count_int
+\tl_new:N   \g__UWMad_RelativeDirectory_Section_Prefix_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Section_Suffix_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Section_CurrentPath_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Section_CurrentName_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Section_ParentPath_tl
 \tl_gset:Nn \g__UWMad_RelativeDirectory_Section_ParentPath_tl {
     \g__UWMad_RelativeDirectory_Chapter_CurrentPath_tl/
 }
-\bool_new:N        \g__UWMad_RelativeDirectory_IsSection_bool
-\bool_gset_false:N \g__UWMad_RelativeDirectory_IsSection_bool
 \int_new:N  \g__UWMad_RelativeDirectory_Subsection_Count_int
+\tl_new:N   \g__UWMad_RelativeDirectory_Subsection_Prefix_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Subsection_Suffix_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Subsection_CurrentPath_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Subsection_CurrentName_tl
 \tl_new:N   \g__UWMad_RelativeDirectory_Subsection_ParentPath_tl
 \tl_gset:Nn \g__UWMad_RelativeDirectory_Subsection_ParentPath_tl {
     \g__UWMad_RelativeDirectory_Section_CurrentPath_tl/
 }
-\bool_new:N        \g__UWMad_RelativeDirectory_IsSubsection_bool
-\bool_gset_false:N \g__UWMad_RelativeDirectory_IsSubsection_bool
-\tl_new:N \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl
-\tl_new:N \g__UWMad_RelativeDirectory_Graphics_Extension_tl
-\tl_new:N \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
-\tl_const:Nn \c__UWMad_RelativeDirectory_None_tl {none}
-\tl_const:Nn \c__UWMad_RelativeDirectory_Same_tl {same}
-\tl_const:Nn \c__UWMad_RelativeDirectory_Increment_tl {increment}
+\tl_new:N   \g__UWMad_RelativeDirectory_Graphics_DirectoryName_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Graphics_Extension_tl
+\tl_new:N   \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
+\bool_new:N \g__UWMad_RelativeDirectory_CycleThrough_Graphics_bool
+\bool_new:N \g__UWMad_RelativeDirectory_CycleThrough_Files_bool
 \tl_new:N    \g__UWMad_RelativeDirectory_File_CurrentName_tl
 \tl_new:N    \g__UWMad_RelativeDirectory_OptionalPath_tl
 \seq_new:N   \g__UWMad_RelativeDirectory_PathStack_Files_seq
@@ -2455,12 +2434,9 @@
 \cs_new:Nn \UWMad_RelativeDirectory_UpdateStack_Section_PreHook: {}
 \cs_new:Nn \UWMad_RelativeDirectory_UpdateStack_Subsection_PreHook: {}
 \cs_new:Nn \UWMad_RelativeDirectory_UpdateStack:n {
-
     \use:c {UWMad_RelativeDirectory_UpdateStack_ #1 _PreHook:}
-
     \UWMad_RelativeDirectory_SetNameAndPath:n{#1}
     \__UWMad_RelativeDirectory_StackPush:n{#1}
-
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeFile_CycleThrough: {
     \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_Files_seq {
@@ -2486,8 +2462,8 @@
             ./\g_tmpa_tl/
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
     }
-    \file_if_exist:nTF {g_tmpa_tl} {
-        \file_input:n{g_tmpa_tl}
+    \file_if_exist:nTF {\g_tmpa_tl} {
+        \file_input:n{\g_tmpa_tl}
         \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
     } { }
 }
@@ -2730,52 +2706,39 @@
     cycle-file-paths,
     cycle-graphic-paths
 }
-\DeclareDocumentCommand \RelativeDirectorySetup { m } {
-    \keys_set:nn { UWMadThesis / RelativeDirectory } { #1 }
-}
-
 \DeclareDocumentCommand \IncludeChapter { o m } {
-
-    \IfNoValueTF { #1 } { } {
+    \IfValueTF { #1 } {
         \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    }
+    } { }
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-
     \UWMad_RelativeDirectory_UpdateStack:n{Chapter}
     \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
-
 \DeclareDocumentCommand \IncludeSection { o m } {
-
-    \IfNoValueTF { #1 } { } {
+    \IfValueTF { #1 } {
         \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    }
+    } { }
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-
     \UWMad_RelativeDirectory_UpdateStack:n{Section}
     \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
-
 \DeclareDocumentCommand \IncludeSubsection { o m } {
-
-    \IfNoValueTF { #1 } { } {
+    \IfValueTF { #1 } {
         \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    }
+    } { }
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-
     \UWMad_RelativeDirectory_UpdateStack:n{Subsection}
     \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
-
 \DeclareDocumentCommand \IncludeGraphics { o m } {
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \IfNoValueTF { #1 } {
-        \UWMad_RelativeDirectory_IncludeGraphics:n{}
-    } {
+    \IfValueTF { #1 } {
         \UWMad_RelativeDirectory_IncludeGraphics:n{#1}
+    } {
+        \UWMad_RelativeDirectory_IncludeGraphics:n{}
     }
 }
 \cs_new_eq:NN

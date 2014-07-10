@@ -302,15 +302,12 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_ListOf_Delete:n {
     \cs_undefine:c {c__UWMad_ListOf#1_IsDefined_tl}
-%
     \cs_undefine:c {g__UWMad_ListOf#1_Section_Main_tl}
     \cs_undefine:c {g__UWMad_ListOf#1_Section_Group_tl}
     \cs_undefine:c {g__UWMad_ListOf#1_Section_Subgroup_tl}
-%
     \cs_undefine:c {g__UWMad_ListOf#1_Title_Main_tl}
     \cs_undefine:c {g__UWMad_ListOf#1_Title_Group_tl}
     \cs_undefine:c {g__UWMad_ListOf#1_Title_Subgroup_tl}
-%
     \cs_undefine:c {g__UWMad_ListOf#1_ClearAfterPrint_bool}
     \cs_undefine:c {g__UWMad_ListOf#1_IsNumbered_bool}
     \cs_undefine:c {g__UWMad_ListOf#1_IncludeInTOC_bool}
@@ -843,7 +840,7 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %
 %
 %
-%   And the defaults for all keys are now set.
+%
 %   \begin{function} {
 %       \UWMad_Nomenclature_UpdateWidest:Nn,
 %       \UWMad_Nomenclature_UpdateWidest_Symbol:n,
@@ -860,7 +857,7 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
     \hbox_set:Nn \l_tmpa_box {#2}
     \dim_set:Nn  \l_tmpa_dim {\box_wd:N \l_tmpa_box}
     \dim_compare:nNnTF {#1} < {\l_tmpa_dim} {
-        \dim_set:Nn #1 {\l_tmpa_dim}
+        \dim_set_eq:NN #1 \l_tmpa_dim
     } { }
 }
 \cs_new:Nn \UWMad_Nomenclature_UpdateWidest_Symbol:n {
@@ -872,8 +869,20 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
     \UWMad_Nomenclature_UpdateWidest:Nn
         \l__UWMad_Nomenclature_WidestUnit_dim {#1}
 }
+%    \end{macrocode}
+%   \end{function}
 %
-%
+%   And the defaults for all keys are now set.
+%   \begin{function} {
+%       \UWMad_Nomenclature_ZeroWidest_Symbol:,
+%       \UWMad_Nomenclature_ZeroWidest_Unit:
+%       }
+%       \begin{syntax}    
+%           \cs{UWMad_Nomenclature_ZeroWidest_Symbol:}
+%           \cs{UWMad_Nomenclature_ZeroWidest_Symbol:}
+%       \end{syntax}
+%       These commands set the widest symbol and unit lengths to 0pt.
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Nomenclature_ZeroWidest_Symbol: {
     \dim_set:Nn \l__UWMad_Nomenclature_WidestSymbol_dim {0pt}
 }
@@ -882,20 +891,24 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 }
 %    \end{macrocode}
 %   \end{function}
+%
+%
+%   And the defaults for all keys are now set.
+%   \begin{function} {
+%       \UWMad_Nomenclature_SetEntryWidths_NoUnits:,
+%       \UWMad_Nomenclature_SetEntryWidths_Units:
+%       }
+%       \begin{syntax}    
+%           \cs{UWMad_Nomenclature_SetEntryWidths_NoUnits:}
+%           \cs{UWMad_Nomenclature_SetEntryWidths_Units:}
+%       \end{syntax}
+%       These commands sets the widths of the description, symbol, and (if 
+%       present) unit boxes for a particular entry.
 %    \begin{macrocode}
-%
-%
-% ======================================================================= %
-%                             Set Entry Widths                            %
-% ======================================================================= %
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths_NoUnits: {
-    %
-    % Define symbol width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthSymbol_dim {
         1.01\l__UWMad_Nomenclature_WidestSymbol_dim
     }
-    %
-    % Define description width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthDescription_dim {
         0.995\textwidth -
         \l__UWMad_Nomenclature_Entry_MarginLeft_dim  -
@@ -903,20 +916,13 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         \l__UWMad_Nomenclature_Entry_Padding_dim
     }
 }
-%
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths_Units: {
-    %
-    % Define symbol width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthSymbol_dim {
         1.01\l__UWMad_Nomenclature_WidestSymbol_dim
     }
-    %
-    % Define unit width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthUnit_dim {
         1.01\l__UWMad_Nomenclature_WidestUnit_dim
     }
-    %
-    % Define description width
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthDescription_dim {
         0.995\textwidth -
          \l__UWMad_Nomenclature_Entry_MarginLeft_dim  -
@@ -925,7 +931,19 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         2\l__UWMad_Nomenclature_Entry_Padding_dim
     }
 }
+%    \end{macrocode}
+%   \end{function}
 %
+%
+%   And the defaults for all keys are now set.
+%   \begin{function} {
+%       \UWMad_Nomenclature_SetEntryWidths:
+%       }
+%       \begin{syntax}    
+%           \cs{UWMad_Nomenclature_SetEntryWidths:}
+%       \end{syntax}
+%       This function calls one of the appropriate above setters.
+%    \begin{macrocode}
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths: {
     \bool_if:NTF \g__UWMad_Nomenclature_IncludeUnitsColumn_bool {
         \UWMad_Nomenclature_SetEntryWidths_Units:
@@ -933,18 +951,25 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         \UWMad_Nomenclature_SetEntryWidths_NoUnits:
     }
 }
+%    \end{macrocode}
+%   \end{function}
 %
 %
-%
-%
-% ======================================================================= %
-%                              Typeset Entry                              %
-% ======================================================================= %
-%
+%   And the defaults for all keys are now set.
+%   \begin{function} {
+%       \UWMad_Nomenclature_SetEntry_NoUnits:nn,
+%       \UWMad_Nomenclature_SetEntry_Units:nnn
+%       }
+%       \begin{syntax}
+%           \cs{UWMad_Nomenclature_SetEntry_NoUnits:}
+%               \Arg{symbol}\Arg{description}
+%           \cs{UWMad_Nomenclature_SetEntry_Units:}
+%               \Arg{symbol}\Arg{units}\Arg{description}
+%       \end{syntax}
+%       These functions typeset the contents passed into them.
+%    \begin{macrocode}
 \coffin_new:N \l_tmpc_coffin
-%
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_NoUnits:nn {
-% Set the entry material in the temporary coffins
     \vcoffin_set:Nnn
         \l_tmpa_coffin
         {\l__UWMad_Nomenclature_Entry_WidthSymbol_dim}
@@ -953,8 +978,6 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         \l_tmpb_coffin
         {\l__UWMad_Nomenclature_Entry_WidthDescription_dim}
         {#2}
-%
-% Typeset the material and skips
     \group_begin:
         \setstretch{1.1}
         \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_MarginLeft_dim}
@@ -964,9 +987,7 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         \skip_vertical:n {\l__UWMad_Nomenclature_Entry_MarginBottom_dim}
     \group_end:
 }
-%
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_Units:nnn {
-% Set the entry material in the temporary coffins
     \vcoffin_set:Nnn
         \l_tmpa_coffin
         {\l__UWMad_Nomenclature_Entry_WidthSymbol_dim}
@@ -979,8 +1000,6 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         \l_tmpc_coffin
         {\l__UWMad_Nomenclature_Entry_WidthDescription_dim}
         {#3}
-%
-% Typeset the material and skips
     \group_begin:
         \setstretch{1.1}
         \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_MarginLeft_dim}
@@ -992,27 +1011,12 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         \skip_vertical:n {\l__UWMad_Nomenclature_Entry_MarginBottom_dim}
     \group_end:
 }
-%
-\cs_new:Nn \UWMad_Nomenclature_SetEntry: {
-    \bool_if:NTF \g__UWMad_Nomenclature_IncludeUnitsColumn_bool {
-        \UWMad_Nomenclature_SetEntry_Units:
-    } {
-        \UWMad_Nomenclature_SetEntry_NoUnits:
-    }
-}
+%    \end{macrocode}
+%   \end{function}
 %
 %
 %
-%
-%
-% ======================================================================= %
-%                              User Front-Ends                            %
-% ======================================================================= %
-\DeclareDocumentCommand \NomenclatureSetup { m } {
-    \keys_set:nn { UWMadThesis / Nomenclature } { #1 }
-}
-%
-%
+%    \begin{macrocode}
 \DeclareDocumentEnvironment {Nomenclature} { o g } {
 %
 %   Create the ListOf
