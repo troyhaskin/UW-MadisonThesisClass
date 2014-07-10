@@ -1690,11 +1690,18 @@
     \end{Nomenclature}
 
 }
-
+\cs_new:Nn \UWMad_Acronym_CreateLink:n {
+    \hyperlink{Acronym:#1}{
+        \color{\g__UWMad_Acronym_LinkColor_tl}
+        \UWMad_Hash_Get:nn{Acronyms}{#1}
+    }
+}
 \DeclareDocumentCommand \Acro { m } {
     \UWMad_Hash_IfKeySet:nnTF {Acronyms} {#1} {
         \bool_if:cTF {g__UWMad_Acronym_WasSet_#1_bool} {
-            \hyperlink{Acronym:#1}{
+            \bool_if:NTF \g__UWMad_Acronym_UseLinks_bool {
+                \UWMad_Acronym_CreateLink:n{#1}
+            } {
                 \UWMad_Hash_Get:nn{Acronyms}{#1}
             }
         } {
@@ -1706,7 +1713,32 @@
         }
     } { }
 }
-\cs_new_eq:NN \AcronymSetup \NomenclatureSetup
+\exp_args:Nnf
+    \keys_define:nn
+    { UWMadThesis / Acronym }
+    {
+        \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
+    }
+\keys_define:nn { UWMadThesis / Acronym } {
+    use-links .bool_gset:N = \g__UWMad_Acronym_UseLinks_bool,
+    use-links .default:n = true,
+    link-color .tl_gset:N = \g__UWMad_Acronym_LinkColor_tl,
+    link-color .default:n = blue
+}
+\keys_set:nn { UWMadThesis / Acronym } {
+    title-skip          ,
+    print-skip          ,
+    entry-margin-left   ,
+    entry-margin-bottom ,
+    entry-padding       ,
+    numbered            ,
+    include-in-toc      ,
+    with-units          ,
+    main-section        ,
+    main-title          ,
+    use-links           ,
+    link-color
+}
 \clist_new:N \g__UWMad_MetaDataList_clist
 \cs_new:Nn \UWMad_MetaData_PushToList:nn {
    \clist_gput_right:Nn \g__UWMad_MetaDataList_clist {

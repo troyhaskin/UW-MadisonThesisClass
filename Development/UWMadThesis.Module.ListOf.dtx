@@ -165,7 +165,7 @@ The following input
 is typeset as
 
 \rule{\textwidth}{0.1em}
-    \AcronymSetup {
+    \UWMadSetup { Acronym } {
         main-section  = section,
         main-title = {Acronym Table},
         entry-padding = 1in
@@ -812,6 +812,11 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
     include-in-toc .default:n = true,
      with-units    .default:n = false
 }
+%    \end{macrocode}
+%
+%   Define the keys for the Nomenclature system by expanding the \texttt{clist}
+%   created above.
+%    \begin{macrocode}
 \exp_args:Nnf
     \keys_define:nn
     { UWMadThesis / Nomenclature }
@@ -1191,11 +1196,23 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
     \end{Nomenclature}
 
 }
-
+%
+%
+%
+\cs_new:Nn \UWMad_Acronym_CreateLink:n {
+    \hyperlink{Acronym:#1}{
+        \color{\g__UWMad_Acronym_LinkColor_tl}
+        \UWMad_Hash_Get:nn{Acronyms}{#1}
+    }
+}
+%
+%
 \DeclareDocumentCommand \Acro { m } {
     \UWMad_Hash_IfKeySet:nnTF {Acronyms} {#1} {
         \bool_if:cTF {g__UWMad_Acronym_WasSet_#1_bool} {
-            \hyperlink{Acronym:#1}{
+            \bool_if:NTF \g__UWMad_Acronym_UseLinks_bool {
+                \UWMad_Acronym_CreateLink:n{#1}
+            } {
                 \UWMad_Hash_Get:nn{Acronyms}{#1}
             }
         } {
@@ -1209,10 +1226,41 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 }
 %
 %
-\cs_new_eq:NN \AcronymSetup \NomenclatureSetup
+%    \end{macrocode}
 %
+%   Define the keys for the Acronym system by expanding the \texttt{clist}
+%   created for the Nomenclature system.
+%    \begin{macrocode}
+\exp_args:Nnf
+    \keys_define:nn
+    { UWMadThesis / Acronym }
+    {
+        \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
+    }
+\keys_define:nn { UWMadThesis / Acronym } {
+    use-links .bool_gset:N = \g__UWMad_Acronym_UseLinks_bool,
+    use-links .default:n = true,
+    link-color .tl_gset:N = \g__UWMad_Acronym_LinkColor_tl,
+    link-color .default:n = blue
+}
+%    \end{macrocode}
 %
-%
+%   And the defaults for all keys are now set.
+%    \begin{macrocode}
+\keys_set:nn { UWMadThesis / Acronym } {
+    title-skip          ,
+    print-skip          ,
+    entry-margin-left   ,
+    entry-margin-bottom ,
+    entry-padding       ,
+    numbered            ,
+    include-in-toc      ,
+    with-units          ,
+    main-section        ,
+    main-title          ,
+    use-links           ,
+    link-color
+}
 %    \end{macrocode}
 %
 %
