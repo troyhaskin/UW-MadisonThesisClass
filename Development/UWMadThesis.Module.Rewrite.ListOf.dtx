@@ -1,0 +1,106 @@
+%
+%
+%   \texttt{ListOf} variable declarations.
+%    \begin{macrocode}
+\tl_new:N   \l__UWMad_ListOf_Section_Main_tl
+\tl_new:N   \l__UWMad_ListOf_Section_Group_tl
+\tl_new:N   \l__UWMad_ListOf_Section_Subgroup_tl
+\tl_new:N   \l__UWMad_ListOf_Title_Main_tl
+\bool_new:N \l__UWMad_ListOf_MakeNumbered_Main_bool
+\bool_new:N \l__UWMad_ListOf_MakeNumbered_Group_bool
+\bool_new:N \l__UWMad_ListOf_MakeNumbered_Subgroup_bool
+\bool_new:N \l__UWMad_ListOf_IncludeInTOC_Main_bool
+\bool_new:N \l__UWMad_ListOf_IncludeInTOC_Group_bool
+\bool_new:N \l__UWMad_ListOf_IncludeInTOC_Subgroup_bool
+\bool_new:N \l__UWMad_ListOf_NotCleared_bool
+\UWMad_Queue_Define:n {l__ListOf_EntryQueue}
+\UWMad_Hash_Define:n  {l__ListOf_Hook}
+\cs_new:Nn \__UWMad_ListOf_SectioningCommand_Main:     {}
+\cs_new:Nn \__UWMad_ListOf_SectioningCommand_Group:    {}
+\cs_new:Nn \__UWMad_ListOf_SectioningCommand_Subgroup: {}
+\cs_new:Nn \__UWMad_ListOf_PrintTitle_Main:n     {}
+\cs_new:Nn \__UWMad_ListOf_PrintTitle_Group:n    {}
+\cs_new:Nn \__UWMad_ListOf_PrintTitle_Subgroup:n {}
+%    \end{macrocode}
+%
+%   These function initialize the sectioning commands for the associated
+%   \texttt{ListOf} level.
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommand:n {
+    \UWMad_IfSectionExists:nT {
+        \tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}
+    } {
+        \cs_set_eq:cc
+            {__UWMad_ListOf_SectioningCommand_ #1 :}
+            {\tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}}
+    }
+}
+\cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommands: {
+    \__UWMad_ListOf_Initialize_SectioningCommand:n {Main}
+    \__UWMad_ListOf_Initialize_SectioningCommand:n {Group}
+    \__UWMad_ListOf_Initialize_SectioningCommand:n {Subgroup}
+}
+%    \end{macrocode}
+%
+%   This function initializes the list of using the helper functions above.
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_ListOf_Initialize_TitlePrinter:n {
+    \cs_set:cn {__UWMad_ListOf_PrintTitle_ #1 :nn} {
+        \UWMad_Hash_Get:nn{l__ListOf_Hook}{PreTitle-#1}
+        \bool_if:cTF {l__UWMad_ListOf_MakeNumbered_ #1 _bool} {
+            \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
+                \__UWMad_ListOf_SectioningCommand_Main:[##1]{##2}
+            } {
+                \int_gset_eq:NN \l_tmpa_int \c@tocdepth
+                \int_gset:Nn \c@tocdepth {-1}
+                \__UWMad_ListOf_SectioningCommand_Main:{##2}
+                \int_gset:Nn \c@tocdepth {\l_tmpa_int}
+            }
+        } {
+            \__UWMad_ListOf_SectioningCommand_Main:*{##2}
+            \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
+                \addcontentsline
+                    {toc}
+                    {\l__UWMad_ListOf_Section_Main_tl}
+                    {##1}
+            } { }
+        }
+        \UWMad_Hash_Get:nn{l__ListOf_Hook}{PostTitle-#1}
+    }
+}
+\cs_new:Nn \__UWMad_ListOf_Initialize_TitlePrinters: {
+    \__UWMad_ListOf_Initialize_TitlePrinter:n {Main}
+    \__UWMad_ListOf_Initialize_TitlePrinter:n {Group}
+    \__UWMad_ListOf_Initialize_TitlePrinter:n {Subgroup}
+}
+%    \end{macrocode}
+%
+%   This function initializes the list of using the helper functions above.
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_Initialize: {
+    \__UWMad_ListOf_Initialize_SectioningCommands:
+    \__UWMad_ListOf_Initialize_TitlePrinters:
+}
+\cs_new:Nn \UWMad_ListOf_Clear: {
+    \UWMad_Queue_Clear:n   {l__ListOf_EntryQueue}
+    \UWMad_Hash_Clear:n    {l__ListOf_Hook}
+}
+%    \end{macrocode}
+%
+%   \begin{function}{\UWMad_ListOf_PrintEntries:n}
+%   \begin{syntax}
+%       \cs{UWMad_ListOf_PrintEntries:n}\Arg{ID}
+%   \end{syntax}
+%   Prints all entries currently in the \texttt{ListOf} queue with \marg{ID} and
+%   clears the queue.  The \texttt{PrePrint} and \texttt{PostPrint} hooks
+%   are also called here.
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_ListOf_PrintEntries:n {
+    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PrePrint-Entries}
+    \UWMad_Queue_Walk:nn {l__ListOf_EntryQueue}{##1}
+    \UWMad_Queue_Clear:n {l__ListOf_EntryQueue}
+    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PostPrint-Entries}
+}
+%    \end{macrocode}
+%   \end{function}
