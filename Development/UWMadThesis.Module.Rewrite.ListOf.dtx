@@ -25,17 +25,30 @@ All of these defaults can be changed by the \cs{NomenclatureSetup} command descr
 
 \UWSubSubFeature{Command Descriptions}
 
-A sketch of the \texttt{Nomenclature} implementation would be:              \vskip1em
-    \hspace{1em}\cs{begin}\{Nomenclature\}\cs{oarg}{section}\cs{marg}{title}  \vskip0em
-    \hspace{3em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
-    \hspace{3em}\cs{Group}\cs{marg}{group title}                            \vskip0em
-    \hspace{6em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
-    \hspace{6em}\cs{Subgroup}\cs{marg}{subgroup title}                      \vskip0em
-    \hspace{9em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
-    \hspace{1em}\cs{end{Nomenclature}}                                      \vskip1em
+A sketch of the \texttt{Nomenclature} implementation would be:
 
-The square brace-delimited \oarg{section} is \textsc{optional} and overrides the default Main group section.
-The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the default Main group title.
+\begin{Example}
+    \setlength{\parskip}{0pt}
+    \setstretch{1.5}
+    \hspace{1em}\cs{begin}\{Nomenclature\}\oarg{toc title}\oarg{title}
+    
+    \hspace{3em}\cs{Entry}\marg{symbol}\marg{description}
+    
+    \hspace{3em}\cs{Group}\oarg{toc group}\marg{group}
+    
+    \hspace{6em}\cs{Entry}\marg{symbol}\marg{description}
+    
+    \hspace{6em}\cs{Subgroup}\oarg{toc subgroup}\marg{subgroup}
+    
+    \hspace{9em}\cs{Entry}\marg{symbol}\marg{description}
+    
+    \hspace{1em}\cs{end}\{Nomenclature\}
+\end{Example}
+
+The square brace-delimited \oarg{toc title} is \textsc{optional} and the overrides \oarg{title} argument for insertion into the table of contents.
+The square brace-delimited \oarg{title} is \textsc{optional} and temporarily overrides the default title used for the nomenclature environment (Nomenclature).
+If only one optional argument is given, it is assumed that \oarg{title} was given and \oarg{toc title} is equal to the \oarg{title}.
+The curly brace-delimited \marg{group} and \marg{subgroup} are \textsc{required}; the optional these arguments will override the titles in the table of contents.
 
 \begin{function}{\Entry}
     \begin{syntax}
@@ -56,12 +69,10 @@ The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the d
     The default section can be changed by the user (see \hyperref[UG/Nomenclature/Customization]{Customization}).
 \end{function}
 
-
 \UWSubSubFeature{Examples}
 As an example, the following input
 \begin{verbatim}
     \begin{Nomenclature}[Symbol Table]
-        \Entry{$\rho$}{Density}
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
             text commonly used to demonstrate the graphic elements of a
@@ -69,6 +80,7 @@ As an example, the following input
             of meaningful content with filler text of scrambled Latin it
             allows viewers to focus on graphical elements such as font,
             typography, and layout.}
+        \Entry{$\rho$}{Density}
         \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
 \end{verbatim}
@@ -80,10 +92,8 @@ would be typeset as:
     main-section   = section,
     group-section  = subsection
 }
-
-\rule{\textwidth}{0.1em}
+\begin{Example}
     \begin{Nomenclature}[Symbol Table]
-        \Entry{$\rho$}{Density}
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
             text commonly used to demonstrate the graphic elements of a
@@ -91,18 +101,17 @@ would be typeset as:
             of meaningful content with filler text of scrambled Latin it
             allows viewers to focus on graphical elements such as font,
             typography, and layout.}
+        \Entry{$\rho$}{Density}
         \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
-\rule{\textwidth}{0.1em}
+\end{Example}
+
 As can be seen, the symbol column is as wide as the widest symbol (plus some padding) and lengthy text can be put into the description without penalty.
 Of course, this example is purposefully extreme.
-We can tweak the example a bit more by putting the second two items under a group:
+We can tweak the example a bit more by adding the line \verb|\Group{Greek Letters}| below the first entry:
 
-\rule{\textwidth}{0.1em}
+\begin{Example}
     \begin{Nomenclature}[Symbol Table]
-        \Entry{$\rho$}{Density}
-        
-        \Group{Group 1 Title}
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
             text commonly used to demonstrate the graphic elements of a
@@ -110,9 +119,12 @@ We can tweak the example a bit more by putting the second two items under a grou
             of meaningful content with filler text of scrambled Latin it
             allows viewers to focus on graphical elements such as font,
             typography, and layout.}
-        \Entry{$\mu$}{Viscosity}
+        \Group{Greek Letters}
+            \Entry{$\rho$}{Density}
+            \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
-\rule{\textwidth}{0.1em}
+\end{Example}
+
 By default, the section level used by \cs{Group} is one below that of the main nomenclature section; therefore, since the nomenclature's section level is defined as \texttt{subsection}, the \cs{Group} is a \texttt{subsubsection}.
 Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} in this example.
 
@@ -168,17 +180,17 @@ The following input
 \end{verbatim}
 is typeset as
 
-\rule{\textwidth}{0.1em}
     \UWMadSetup { Acronym } {
         main-section  = section,
         main-title = {Acronym Table},
         entry-column-padding = 1in
     }
+\begin{Example}
     \begin{Acronym}
         \Entry{RCCS}{Reactor Cavity Cooling System}
         \Entry{NRC}{Nuclear Regulatory Commission}
     \end{Acronym}
-\rule{\textwidth}{0.1em}
+\end{Example}
 
 The first usage of \cs{Acro}\{NRC\} is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
 
@@ -264,12 +276,11 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %
 %
 %
-%   \texttt{ListOf} variable declarations for section levels and main title.
+%   \texttt{ListOf} variable declarations for section levels.
 %    \begin{macrocode}
 \tl_new:N   \l__UWMad_ListOf_Section_Main_tl
 \tl_new:N   \l__UWMad_ListOf_Section_Group_tl
 \tl_new:N   \l__UWMad_ListOf_Section_Subgroup_tl
-\tl_new:N   \l__UWMad_ListOf_Title_Main_tl
 %    \end{macrocode}
 %
 %   Boolean declarations for numbering and Table of Contents-inclusions.
@@ -343,7 +354,6 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         \cs_set_eq:cc
             {__UWMad_ListOf_SectioningCommand_ #1 :}
             {\tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}}
-\cs_show:c {__UWMad_ListOf_SectioningCommand_ #1 :}
     }
 }
 \cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommands: {
@@ -476,6 +486,7 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %    \begin{macrocode}
 \bool_new:N \l__UWMad_Nomenclature_IncludeUnitsColumns_bool
 \tl_new:N   \l__UWMad_Nomenclature_Entry_LineStretch_tl
+\tl_new:N   \l__UWMad_Nomenclature_Title_Main_tl
 %    \end{macrocode}
 %
 %
@@ -608,24 +619,33 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %       \end{syntax}
 %       These functions typeset the contents passed into them.
 %    \begin{macrocode}
-\coffin_new:N \l_tmpc_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Entry_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Symbol_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Description_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Units_coffin
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_NoUnits:nn {
+    \coffin_clear:N \l__UWMad_Nomenclature_Entry_coffin
+    \coffin_clear:N \l_tmpa_coffin
     \vcoffin_set:Nnn
-        \l_tmpa_coffin
-        {\l__UWMad_Nomenclature_Entry_Symbol_Width_dim}
-        {#1}
+        \l__UWMad_Nomenclature_Symbol_coffin
+        {\l__UWMad_Nomenclature_Entry_Symbol_Width_dim} {#1}
     \vcoffin_set:Nnn
-        \l_tmpb_coffin
-        {\l__UWMad_Nomenclature_Entry_Description_Width_dim}
-        {#2}
+        \l__UWMad_Nomenclature_Description_coffin
+        {\l__UWMad_Nomenclature_Entry_Description_Width_dim} {#2}
+    \coffin_join:NnnNnnnn
+        \l__UWMad_Nomenclature_Entry_coffin       {l}{t}
+        \l__UWMad_Nomenclature_Symbol_coffin      {l}{t}
+        {\l_UWMad_Nomenclature_Entry_Margin_Left_dim}{0pt}
+    \coffin_join:NnnNnnnn
+        \l__UWMad_Nomenclature_Entry_coffin        {r}{t}
+        \l__UWMad_Nomenclature_Description_coffin  {l}{t}
+        {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}{0pt}
     \group_begin:
         \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
-        \skip_vertical:n   {\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
-        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Margin_Left_dim}
-        \coffin_typeset:Nnnnn \l_tmpa_coffin {l}{t}{0pt}{0pt}
-        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}
-        \coffin_typeset:Nnnnn \l_tmpb_coffin {l}{t}{0pt}{0pt}
-        \skip_vertical:n   {\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
+        \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
+        \coffin_typeset:Nnnnn
+            \l__UWMad_Nomenclature_Entry_coffin {l}{t}{0pt}{0pt}
+        \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
     \group_end:
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_Units:nnn {
@@ -658,33 +678,13 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %
 %
 %
-%   And the defaults for all keys are now set.
-%   \begin{function} {
-%       \UWMad_Nomenclature_SetEntry:
-%       }
-%       \begin{syntax}    
-%           \cs{UWMad_Nomenclature_SetEntry:}
-%       \end{syntax}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_Nomenclature_SetEntry: {
-    \bool_if:NTF \l__UWMad_Nomenclature_IncludeUnitsColumn_bool {
-        \UWMad_Nomenclature_SetEntry_Units:nnn
-    } {
-        \UWMad_Nomenclature_SetEntry_NoUnits:nn
-    }
-}
-%    \end{macrocode}
-%   \end{function}
-%
-%
-%
 %
 %    \begin{macrocode}
 \DeclareDocumentEnvironment {Nomenclature} { o o } {
 %
 %   Initialization
     \UWMad_ListOf_Initialize:
+    \setlength{\parskip}{0pt}
 %
 %
 %   Check for an optional section declaration and
@@ -747,17 +747,16 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
     }
 %
 %   User front-end for reseting the column width
-    \DeclareDocumentCommand  \ResetColumnWidth { } {
-        \UWMad_Nomenclature_ZeroWidest_Symbol:
-        \UWMad_Nomenclature_ZeroWidest_Units:
+    \DeclareDocumentCommand  \PrintEntries { } {
+        \UWMad_ListOf_PrintEntries:
     }
 %
 %
     \IfNoValueTF {#2} {
         \IfNoValueTF {#1} {
             \UWMad_ListOf_PrintTitle_Main:nn
-                {\l__UWMad_ListOf_Title_Main_tl}
-                {\l__UWMad_ListOf_Title_Main_tl}
+                {\l__UWMad_Nomenclature_Title_Main_tl}
+                {\l__UWMad_Nomenclature_Title_Main_tl}
         } {
             \UWMad_ListOf_PrintTitle_Main:nn{#1}{#1}
         }
@@ -779,7 +778,7 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %
 \clist_new:N   \g__UWMad_Nomenclature_KeyValuePairs_clist
 \clist_gset:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {
-    main-title .tl_set:N  = \l__UWMad_ListOf_Title_Main_tl,
+    main-title .tl_set:N  = \l__UWMad_Nomenclature_Title_Main_tl,
     main-title .default:n = Nomenclature,
     main-section     .tl_set:N = \l__UWMad_ListOf_Section_Main_tl,
     group-section    .tl_set:N = \l__UWMad_ListOf_Section_Group_tl,
@@ -828,10 +827,10 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         \l_UWMad_Nomenclature_Entry_Pad_Column_dim,
     print-skip           .default:n = 1em,
     entry-margin-top     .default:n = 0pt,
-    entry-margin-left    .default:n = 1em,
+    entry-margin-left    .default:n = 1.1em,
     entry-margin-right   .default:n = 0pt,
-    entry-margin-bottom  .default:n = 0.25em,
-    entry-column-padding .default:n = 0.75em,
+    entry-margin-bottom  .default:n = 0.80em,
+    entry-column-padding .default:n = 0.80em,
     entry-stretch .tl_set:N =
         \l__UWMad_Nomenclature_Entry_LineStretch_tl,
     entry-stretch .default:n = 1.1
@@ -872,11 +871,22 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %
 %
 %
-%
+\tl_new:N \l__UWMad_Acronym_Title_Main_tl
 %
 \DeclareDocumentEnvironment {Acronym} { o o } {
 
-    \begin{Nomenclature}[#1][#2]
+    \IfNoValueTF {#2} {
+        \IfNoValueTF {#1} {
+            \begin{Nomenclature}
+                [\l__UWMad_Acronym_Title_Main_tl]
+                [\l__UWMad_Acronym_Title_Main_tl]
+        } {
+            \begin{Nomenclature}[#1][#1]
+        }
+    } {
+        \begin{Nomenclature}[#1][#2]
+    }
+
 %
 %
     \UWMad_Hash_Define:n{Acronyms}
@@ -959,6 +969,8 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
     }
 \keys_define:nn { UWMadThesis / Acronym } {
+    main-title .tl_set:N  = \l__UWMad_Acronym_Title_Main_tl,
+    main-title .default:n = Acronyms,
     use-links .bool_gset:N = \g__UWMad_Acronym_UseLinks_bool,
     use-links .default:n = true,
     link-color .tl_gset:N = \g__UWMad_Acronym_LinkColor_tl,
@@ -969,7 +981,7 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %   And the defaults for all keys are now set.
 %    \begin{macrocode}
 \keys_set:nn { UWMadThesis / Acronym } {
-    main-title = Acroynms,
+    main-title           ,
     main-section         ,
     group-section        ,
     subgroup-section     ,

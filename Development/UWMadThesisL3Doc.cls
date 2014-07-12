@@ -405,11 +405,38 @@
 %
 %
 %
-\UWMad_Hook_Prepend:Nn \@verbatim {
+\UWMad_Hook_Prepend:Nn \verbatim {
+    \par
+    \group_begin:
     \setlength{\topsep}{0pt}
     \setlength{\partopsep}{0pt}
-    \setstretch{0.90}
+    \setlength{\parskip}{0pt}
+    \setstretch{1.1}
 }
-\UWMad_Hook_Prepend:Nn \macrocode {
-    \skip_vertical:n {1em}
+\UWMad_Hook_Append:Nn \endverbatim {
+    \group_end:
+}
+\cs_show:N \FV@Environment
+%\UWMad_Hook_Prepend:Nn \macrocode {
+%    \skip_vertical:n {0em}
+%}
+\definecolor{UWMadLightGray}{gray}{0.950}
+\DeclareDocumentEnvironment {Example} { } {
+    \skip_vertical:n{\prevdepth}
+    \group_begin:
+        \vbox_set:Nw \l_tmpa_box
+} {
+        \vbox_set_end:
+    \colorbox{UWMadLightGray} {
+        \begin{minipage}{\textwidth}
+            \tex_hbox:D{}
+            \skip_vertical:n{0.25em}
+            \begin{minipage}{\textwidth}
+                \vbox_unpack_clear:N \l_tmpa_box
+            \end{minipage}
+            \tex_hbox:D{}
+            \rule{0pt}{2em}
+        \end{minipage}
+    }
+    \group_end:
 }

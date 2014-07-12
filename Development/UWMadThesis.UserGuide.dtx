@@ -656,17 +656,30 @@ All of these defaults can be changed by the \cs{NomenclatureSetup} command descr
 
 \UWSubSubFeature{Command Descriptions}
 
-A sketch of the \texttt{Nomenclature} implementation would be:              \vskip1em
-    \hspace{1em}\cs{begin}\{Nomenclature\}\cs{oarg}{section}\cs{marg}{title}  \vskip0em
-    \hspace{3em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
-    \hspace{3em}\cs{Group}\cs{marg}{group title}                            \vskip0em
-    \hspace{6em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
-    \hspace{6em}\cs{Subgroup}\cs{marg}{subgroup title}                      \vskip0em
-    \hspace{9em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
-    \hspace{1em}\cs{end{Nomenclature}}                                      \vskip1em
+A sketch of the \texttt{Nomenclature} implementation would be:
 
-The square brace-delimited \oarg{section} is \textsc{optional} and overrides the default Main group section.
-The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the default Main group title.
+\begin{Example}
+    \setlength{\parskip}{0pt}
+    \setstretch{1.5}
+    \hspace{1em}\cs{begin}\{Nomenclature\}\oarg{toc title}\oarg{title}
+
+    \hspace{3em}\cs{Entry}\marg{symbol}\marg{description}
+
+    \hspace{3em}\cs{Group}\oarg{toc group}\marg{group}
+
+    \hspace{6em}\cs{Entry}\marg{symbol}\marg{description}
+
+    \hspace{6em}\cs{Subgroup}\oarg{toc subgroup}\marg{subgroup}
+
+    \hspace{9em}\cs{Entry}\marg{symbol}\marg{description}
+
+    \hspace{1em}\cs{end}\{Nomenclature\}
+\end{Example}
+
+The square brace-delimited \oarg{toc title} is \textsc{optional} and the overrides \oarg{title} argument for insertion into the table of contents.
+The square brace-delimited \oarg{title} is \textsc{optional} and temporarily overrides the default title used for the nomenclature environment (Nomenclature).
+If only one optional argument is given, it is assumed that \oarg{title} was given and \oarg{toc title} is equal to the \oarg{title}.
+The curly brace-delimited \marg{group} and \marg{subgroup} are \textsc{required}; the optional these arguments will override the titles in the table of contents.
 
 \begin{function}{\Entry}
     \begin{syntax}
@@ -691,7 +704,6 @@ The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the d
 As an example, the following input
 \begin{verbatim}
     \begin{Nomenclature}[Symbol Table]
-        \Entry{$\rho$}{Density}
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
             text commonly used to demonstrate the graphic elements of a
@@ -699,6 +711,7 @@ As an example, the following input
             of meaningful content with filler text of scrambled Latin it
             allows viewers to focus on graphical elements such as font,
             typography, and layout.}
+        \Entry{$\rho$}{Density}
         \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
 \end{verbatim}
@@ -710,10 +723,8 @@ would be typeset as:
     main-section   = section,
     group-section  = subsection
 }
-
-\rule{\textwidth}{0.1em}
+\begin{Example}
     \begin{Nomenclature}[Symbol Table]
-        \Entry{$\rho$}{Density}
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
             text commonly used to demonstrate the graphic elements of a
@@ -721,18 +732,17 @@ would be typeset as:
             of meaningful content with filler text of scrambled Latin it
             allows viewers to focus on graphical elements such as font,
             typography, and layout.}
+        \Entry{$\rho$}{Density}
         \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
-\rule{\textwidth}{0.1em}
+\end{Example}
+
 As can be seen, the symbol column is as wide as the widest symbol (plus some padding) and lengthy text can be put into the description without penalty.
 Of course, this example is purposefully extreme.
-We can tweak the example a bit more by putting the second two items under a group:
+We can tweak the example a bit more by adding the line \verb|\Group{Greek Letters}| below the first entry:
 
-\rule{\textwidth}{0.1em}
+\begin{Example}
     \begin{Nomenclature}[Symbol Table]
-        \Entry{$\rho$}{Density}
-
-        \Group{Group 1 Title}
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
             text commonly used to demonstrate the graphic elements of a
@@ -740,9 +750,12 @@ We can tweak the example a bit more by putting the second two items under a grou
             of meaningful content with filler text of scrambled Latin it
             allows viewers to focus on graphical elements such as font,
             typography, and layout.}
-        \Entry{$\mu$}{Viscosity}
+        \Group{Greek Letters}
+            \Entry{$\rho$}{Density}
+            \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
-\rule{\textwidth}{0.1em}
+\end{Example}
+
 By default, the section level used by \cs{Group} is one below that of the main nomenclature section; therefore, since the nomenclature's section level is defined as \texttt{subsection}, the \cs{Group} is a \texttt{subsubsection}.
 Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} in this example.
 
@@ -793,17 +806,17 @@ The following input
 \end{verbatim}
 is typeset as
 
-\rule{\textwidth}{0.1em}
     \UWMadSetup { Acronym } {
         main-section  = section,
         main-title = {Acronym Table},
         entry-column-padding = 1in
     }
+\begin{Example}
     \begin{Acronym}
         \Entry{RCCS}{Reactor Cavity Cooling System}
         \Entry{NRC}{Nuclear Regulatory Commission}
     \end{Acronym}
-\rule{\textwidth}{0.1em}
+\end{Example}
 
 The first usage of \cs{Acro}\{NRC\} is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
 
