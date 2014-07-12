@@ -1153,295 +1153,116 @@
 }
 \DeclareDocumentCommand \LessThan        { } {<}
 \DeclareDocumentCommand \GreaterThanThan { } {>}
-\cs_new:Nn \UWMad_ListOf_Define:n {
-    \tl_const:cn {c__UWMad_ListOf#1_IsDefined_tl}{}
-    \tl_new:c {g__UWMad_ListOf#1_Section_Main_tl}
-    \tl_new:c {g__UWMad_ListOf#1_Section_Group_tl}
-    \tl_new:c {g__UWMad_ListOf#1_Section_Subgroup_tl}
-    \tl_new:c {g__UWMad_ListOf#1_Title_Main_tl}
-    \tl_new:c {g__UWMad_ListOf#1_Title_Group_tl}
-    \tl_new:c {g__UWMad_ListOf#1_Title_Subgroup_tl}
-    \bool_new:c       {g__UWMad_ListOf#1_ClearAfterPrint_bool}
-    \bool_gset_true:c {g__UWMad_ListOf#1_ClearAfterPrint_bool}
-    \bool_new:c       {g__UWMad_ListOf#1_IsNumbered_bool}
-    \bool_gset_true:c {g__UWMad_ListOf#1_IsNumbered_bool}
-    \bool_new:c       {g__UWMad_ListOf#1_IncludeInTOC_bool}
-    \bool_gset_true:c {g__UWMad_ListOf#1_IncludeInTOC_bool}
-    \UWMad_Queue_Define:n               {g__ListOf#1_EntryQueue}
-    \UWMad_Hash_Define:n                {g__ListOf#1_Hook}
+\tl_new:N   \l__UWMad_ListOf_Section_Main_tl
+\tl_new:N   \l__UWMad_ListOf_Section_Group_tl
+\tl_new:N   \l__UWMad_ListOf_Section_Subgroup_tl
+\tl_new:N   \l__UWMad_ListOf_Title_Main_tl
+\bool_new:N \l__UWMad_ListOf_MakeNumbered_Main_bool
+\bool_new:N \l__UWMad_ListOf_MakeNumbered_Group_bool
+\bool_new:N \l__UWMad_ListOf_MakeNumbered_Subgroup_bool
+\bool_new:N \l__UWMad_ListOf_IncludeInTOC_Main_bool
+\bool_new:N \l__UWMad_ListOf_IncludeInTOC_Group_bool
+\bool_new:N \l__UWMad_ListOf_IncludeInTOC_Subgroup_bool
+\UWMad_Queue_Define:n {l__ListOf_EntryQueue}
+\UWMad_Hash_Define:n  {l__ListOf_Hook}
+\cs_new:Nn \__UWMad_Listof_SetHooks_Blank: {
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Main}       {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Main}      {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Group}      {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Group}     {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Subgroup}   {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Subgroup}  {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PrePush}             {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostPush}            {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PrePrint}            {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostPrint}           {}
 }
-\cs_new:Nn \UWMad_ListOf_Delete:n {
-    \cs_undefine:c {c__UWMad_ListOf#1_IsDefined_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Section_Main_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Section_Group_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Section_Subgroup_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Title_Main_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Title_Group_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Title_Subgroup_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_ClearAfterPrint_bool}
-    \cs_undefine:c {g__UWMad_ListOf#1_IsNumbered_bool}
-    \cs_undefine:c {g__UWMad_ListOf#1_IncludeInTOC_bool}
-    \UWMad_Queue_Delete:n   {g__ListOf#1_EntryQueue}
-    \UWMad_Hash_Delete:n    {g__ListOf#1_Hook}
+\cs_new:Nn \__UWMad_ListOf_SectioningCommand_Main:     {}
+\cs_new:Nn \__UWMad_ListOf_SectioningCommand_Group:    {}
+\cs_new:Nn \__UWMad_ListOf_SectioningCommand_Subgroup: {}
+\cs_new:Nn \UWMad_ListOf_PrintTitle_Main:nn     {}
+\cs_new:Nn \UWMad_ListOf_PrintTitle_Group:nn    {}
+\cs_new:Nn \UWMad_ListOf_PrintTitle_Subgroup:nn {}
+\cs_new:Nn \UWMad_ListOf_SetHook:nn {
+    \UWMad_Hash_Set:nnn{l__ListOf_Hook}{#1}{#2}
 }
-\cs_new:Nn \UWMad_ListOf_IfDefined:nT {
-    \__UWMad_IfDefined:nnnnT
-        {c__UWMad_ListOf}
-        {#1}
-        {_IsDefined_tl}
-        {ListOf}
-        {#2}
-}
-\cs_new:Nn \UWMad_ListOf_MakeNumbered:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_set_true:c {g__UWMad_ListOf#1_IsNumbered_bool}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_MakeNotNumbered:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_set_false:c {g__UWMad_ListOf#1_IsNumbered_bool}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_IfNumbered:nTF {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_if:cTF {g__UWMad_ListOf#1_IsNumbered_bool} {
-            #2
-        }{
-            #3
-        }
-    }
-}
-\cs_new:Nn \UWMad_ListOf_IncludeInTOC:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_set_true:c {c__UWMad_ListOf#1_IncludeInTOC_bool}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_DoNotIncludeInTOC:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_set_false:c {c__UWMad_ListOf#1_IncludeInTOC_bool}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_IfIncludeInTOC:nTF {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_if:cTF {c__UWMad_ListOf#1_IncludeInTOC_bool} {
-            #2
-        }{
-            #3
-        }
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetTitle_Main:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Title_Main_tl}{#2}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetTitle_Group:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Title_Group_tl}{#2}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetTitle_Subgroup:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Title_Subgroup_tl}{#2}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_GetTitle_Main:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Title_Main_tl}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_GetTitle_Group:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Title_Group_tl}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_GetTitle_Subgroup:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Title_Subgroup_tl}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetSection_Main:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Section_Main_tl}{#2}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetSection_Group:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Section_Group_tl}{#2}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetSection_Subgroup:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Section_Subgroup_tl}{#2}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_GetSection_Main:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Section_Main_tl}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_GetSection_Group:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Section_Group_tl}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_GetSection_Subgroup:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Section_Subgroup_tl}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetHook:nnn {
-    \UWMad_Hash_Set:nnn{g__ListOf#1_Hook}{#2}{#3}
-}
-\cs_new:Nn \UWMad_ListOf_PushEntry:nn {
-    \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PrePush}
-    \UWMad_Queue_Push:nn {g__ListOf#1_EntryQueue}{#2}
-    \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PostPush}
-}
-\cs_new:Nn \UWMad_ListOf_PrintEntries:n {
-    \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PrePrint}
-    \UWMad_Queue_Walk:nn {g__ListOf#1_EntryQueue}{##1}
-    \UWMad_Queue_Clear:n {g__ListOf#1_EntryQueue}
-    \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PostPrint}
-}
-\cs_new:Nn \__UWMad_ListOf_CurrentSectioningCommmand:n {}
-\cs_new:Nn \UWMad_ListOf_PrintTitle:nn {
-
-    \cs_set_eq:Nc
-        \__UWMad_ListOf_CurrentSectioningCommmand:n
-        {\tl_use:c{g__UWMad_ListOf#1_Section_#2_tl}}
-
-    \UWMad_ListOf_IfNumbered:nTF {#1} {
-
-        \tl_if_eq:nnTF {#2} {Main} {
-            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} { } {
-                \int_set_eq:NN \l_tmpa_int \c@tocdepth
-                \setcounter{tocdepth}{-1}
-            }
-        } {
-            \int_set_eq:NN \l_tmpa_int \c@tocdepth
-            \setcounter{tocdepth}{-1}
-        }
-
-        \__UWMad_ListOf_CurrentSectioningCommmand:n
-            {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
-
-        \tl_if_eq:nnTF #2 {Main} {
-            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} { } {
-                \setcounter{tocdepth}{\l_tmpa_int}
-            }
-        } {
-            \setcounter{tocdepth}{\l_tmpa_int}
-        }
-
+\cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommand:n {
+    \UWMad_IfSectionExists:nT {
+        \tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}
     } {
-
-        \cs_generate_variant:Nn \tl_if_eq:nnTF {onTF}
-        \tl_set:Nn \l_tmpa_tl {Main}
-
-        \phantomsection
-        \__UWMad_ListOf_CurrentSectioningCommmand:n*
-        {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
-        \tl_if_eq:onTF {#2} {Main} {
-            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
+        \cs_set_eq:cc
+            {__UWMad_ListOf_SectioningCommand_ #1 :}
+            {\tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}}
+\cs_show:c {__UWMad_ListOf_SectioningCommand_ #1 :}
+    }
+}
+\cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommands: {
+    \__UWMad_ListOf_Initialize_SectioningCommand:n {Main}
+    \__UWMad_ListOf_Initialize_SectioningCommand:n {Group}
+    \__UWMad_ListOf_Initialize_SectioningCommand:n {Subgroup}
+}
+\cs_new:Nn \__UWMad_ListOf_Initialize_TitlePrinter:n {
+    \cs_set:cn {UWMad_ListOf_PrintTitle_ #1 :nn} {
+        \UWMad_Hash_Get:nn{l__ListOf_Hook}{PreTitle-#1}
+        \bool_if:cTF {l__UWMad_ListOf_MakeNumbered_ #1 _bool} {
+            \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
+                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :}[##1]{##2}
+            } {
+                \int_gset_eq:NN \l_tmpa_int \c@tocdepth
+                \int_gset:Nn \c@tocdepth {-1}
+                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :}{##2}
+                \int_gset:Nn \c@tocdepth {\l_tmpa_int}
+            }
+        } {
+            \use:c{__UWMad_ListOf_SectioningCommand_ #1 :} * {##2}
+            \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
                 \addcontentsline
                     {toc}
-                    {\tl_use:c {g__UWMad_ListOf#1_Section_#2_tl}}
-                    {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
+                    {\tl_use:c{l__UWMad_ListOf_Section_ #1 _tl}}
+                    {##1}
             } { }
-        } { }
+        }
+        \UWMad_Hash_Get:nn{l__ListOf_Hook}{PostTitle-#1}
     }
-
 }
-\cs_new:Nn \UWMad_ListOf_StartGroup:nn {
-    \UWMad_ListOf_PrintEntries:n{#1}
-    \UWMad_ListOf_PrintTitle:nn {#1}{#2}
+\cs_new:Nn \__UWMad_ListOf_Initialize_TitlePrinters: {
+    \__UWMad_ListOf_Initialize_TitlePrinter:n {Main}
+    \__UWMad_ListOf_Initialize_TitlePrinter:n {Group}
+    \__UWMad_ListOf_Initialize_TitlePrinter:n {Subgroup}
+}
+\cs_new:Nn \__UWMad_ListOf_Clear: {
+    \UWMad_Queue_Clear:n   {l__ListOf_EntryQueue}
+    \__UWMad_Listof_SetHooks_Blank:
+}
+\cs_new:Nn \UWMad_ListOf_Initialize: {
+    \__UWMad_ListOf_Clear:
+    \__UWMad_ListOf_Initialize_SectioningCommands:
+    \__UWMad_ListOf_Initialize_TitlePrinters:
+}
+\cs_new:Nn \UWMad_ListOf_PushEntry:n {
+    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PrePush}
+    \UWMad_Queue_Push:nn {l__ListOf_EntryQueue}{#1}
+    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PostPush}
+}
+\cs_new:Nn \UWMad_ListOf_PrintEntries: {
+    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PrePrint}
+    \UWMad_Queue_Walk:nn {l__ListOf_EntryQueue}{##1}
+    \UWMad_Queue_Clear:n {l__ListOf_EntryQueue}
+    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PostPrint}
 }
 \dim_new:N \l__UWMad_Nomenclature_WidestSymbol_dim
 \dim_new:N \l__UWMad_Nomenclature_WidestUnit_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_WidthSymbol_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_WidthUnits_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_WidthDescription_dim
-\dim_new:N \l__UWMad_Nomenclature_TitleSkip_dim
-\dim_new:N \l__UWMad_Nomenclature_PrintSkip_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_MarginLeft_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_MarginBottom_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_Padding_dim
-\tl_new:N \l__UWMad_Nomenclature_Section_Main_tl
-\tl_new:N \l__UWMad_Nomenclature_Section_Group_tl
-\tl_new:N \l__UWMad_Nomenclature_Section_Subgroup_tl
-\tl_new:N \l__UWMad_Nomenclature_Title_Main_tl
-\tl_new:N \l__UWMad_Nomenclature_Title_Group_tl
-\tl_new:N \l__UWMad_Nomenclature_Title_Subgroup_tl
-\clist_new:N   \g__UWMad_Nomenclature_KeyValuePairs_clist
-\clist_gset:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {
-    title-skip .dim_set:N = \l__UWMad_Nomenclature_TitleSkip_dim,
-    print-skip .dim_set:N = \l__UWMad_Nomenclature_PrintSkip_dim,
-    entry-margin-left .dim_set:N =
-        \l__UWMad_Nomenclature_Entry_MarginLeft_dim,
-    entry-margin-bottom .dim_set:N =
-        \l__UWMad_Nomenclature_Entry_MarginBottom_dim,
-    entry-padding .dim_set:N =
-        \l__UWMad_Nomenclature_Entry_Padding_dim,
-    title-skip          .default:n  = {0.00pt},
-    print-skip          .default:n  = {1.00em},
-    entry-margin-left   .default:n  = {1.00em},
-    entry-margin-bottom .default:n  = {0.25em},
-    entry-padding       .default:n  = {0.75em},
-    main-section .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Section_Main_tl {#1}
-    },
-    group-section .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Section_Group_tl {#1}
-    },
-    subgroup-section .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Section_Subgroup_tl {#1}
-    },
-    main-section .default:n = chapter,
-    main-title .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Title_Main_tl {#1}
-    },
-    group-title .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Title_Group_tl {#1}
-    },
-    subgroup-title .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Title_Subgroup_tl {#1}
-    },
-    main-title .default:n = Nomenclature,
-    numbered       .bool_gset:N =
-        \g__UWMad_Nomenclature_IsNumbered_bool,
-    include-in-toc .bool_gset:N =
-        \g__UWMad_Nomenclature_IncludeInTOC_bool,
-    with-units .bool_gset:N =
-        \g__UWMad_Nomenclature_IncludeUnitsColumn_bool,
-      numbered     .default:n = false,
-    include-in-toc .default:n = true,
-     with-units    .default:n = false
-}
-\exp_args:Nnf
-    \keys_define:nn
-    { UWMadThesis / Nomenclature }
-    {
-        \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
-    }
-\keys_set:nn { UWMadThesis / Nomenclature } {
-    title-skip          ,
-    print-skip          ,
-    entry-margin-left   ,
-    entry-margin-bottom ,
-    entry-padding       ,
-    numbered            ,
-    include-in-toc      ,
-    with-units          ,
-    main-section        ,
-    main-title
-}
+\dim_new:N \l__UWMad_Nomenclature_Entry_Symbol_Width_dim
+\dim_new:N \l__UWMad_Nomenclature_Entry_Units_Width_dim
+\dim_new:N \l__UWMad_Nomenclature_Entry_Description_Width_dim
+\dim_new:N \l_UWMad_Nomenclature_Skip_EntryPrint_dim
+\dim_new:N \l_UWMad_Nomenclature_Entry_Margin_Left_dim
+\dim_new:N \l_UWMad_Nomenclature_Entry_Margin_Bottom_dim
+\dim_new:N \l_UWMad_Nomenclature_Entry_Margin_Right_dim
+\dim_new:N \l_UWMad_Nomenclature_Entry_Margin_Top_dim
+\dim_new:N \l_UWMad_Nomenclature_Entry_Pad_Column_dim
+\bool_new:N \l__UWMad_Nomenclature_IncludeUnitsColumns_bool
+\tl_new:N   \l__UWMad_Nomenclature_Entry_LineStretch_tl
 \cs_new:Nn \UWMad_Nomenclature_UpdateWidest:Nn {
     \hbox_set:Nn \l_tmpa_box {#2}
     \dim_set:Nn  \l_tmpa_dim {\box_wd:N \l_tmpa_box}
@@ -1460,37 +1281,39 @@
 \cs_new:Nn \UWMad_Nomenclature_ZeroWidest_Symbol: {
     \dim_set:Nn \l__UWMad_Nomenclature_WidestSymbol_dim {0pt}
 }
-\cs_new:Nn \UWMad_Nomenclature_ZeroWidest_Unit: {
+\cs_new:Nn \UWMad_Nomenclature_ZeroWidest_Units: {
     \dim_set:Nn \l__UWMad_Nomenclature_WidestUnit_dim {0pt}
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths_NoUnits: {
-    \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthSymbol_dim {
+    \dim_set:Nn \l__UWMad_Nomenclature_Entry_Symbol_Width_dim {
         1.01\l__UWMad_Nomenclature_WidestSymbol_dim
     }
-    \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthDescription_dim {
+    \dim_set:Nn \l__UWMad_Nomenclature_Entry_Description_Width_dim {
         0.995\textwidth -
-        \l__UWMad_Nomenclature_Entry_MarginLeft_dim  -
-        \l__UWMad_Nomenclature_Entry_WidthSymbol_dim -
-        \l__UWMad_Nomenclature_Entry_Padding_dim
+        \l_UWMad_Nomenclature_Entry_Margin_Left_dim   -
+        \l__UWMad_Nomenclature_Entry_Symbol_Width_dim -
+        \l_UWMad_Nomenclature_Entry_Pad_Column_dim      -
+        \l_UWMad_Nomenclature_Entry_Margin_Right_dim
     }
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths_Units: {
-    \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthSymbol_dim {
+    \dim_set:Nn \l__UWMad_Nomenclature_Entry_Symbol_Width_dim {
         1.01\l__UWMad_Nomenclature_WidestSymbol_dim
     }
-    \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthUnit_dim {
+    \dim_set:Nn \l__UWMad_Nomenclature_Entry_Units_Width_dim {
         1.01\l__UWMad_Nomenclature_WidestUnit_dim
     }
-    \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthDescription_dim {
+    \dim_set:Nn \l__UWMad_Nomenclature_Entry_Description_Width_dim {
         0.995\textwidth -
-         \l__UWMad_Nomenclature_Entry_MarginLeft_dim  -
-         \l__UWMad_Nomenclature_Entry_WidthSymbol_dim -
-         \l__UWMad_Nomenclature_Entry_WidthUnit_dim   -
-        2\l__UWMad_Nomenclature_Entry_Padding_dim
+         \l_UWMad_Nomenclature_Entry_Margin_Left_dim   -
+         \l__UWMad_Nomenclature_Entry_Symbol_Width_dim -
+         \l__UWMad_Nomenclature_Entry_Units_Width_dim  -
+        2\l_UWMad_Nomenclature_Entry_Pad_Column_dim       -
+         \l_UWMad_Nomenclature_Entry_Margin_Right_dim
     }
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths: {
-    \bool_if:NTF \g__UWMad_Nomenclature_IncludeUnitsColumn_bool {
+    \bool_if:NTF \l__UWMad_Nomenclature_IncludeUnitsColumn_bool {
         \UWMad_Nomenclature_SetEntryWidths_Units:
     } {
         \UWMad_Nomenclature_SetEntryWidths_NoUnits:
@@ -1500,122 +1323,95 @@
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_NoUnits:nn {
     \vcoffin_set:Nnn
         \l_tmpa_coffin
-        {\l__UWMad_Nomenclature_Entry_WidthSymbol_dim}
+        {\l__UWMad_Nomenclature_Entry_Symbol_Width_dim}
         {#1}
     \vcoffin_set:Nnn
         \l_tmpb_coffin
-        {\l__UWMad_Nomenclature_Entry_WidthDescription_dim}
+        {\l__UWMad_Nomenclature_Entry_Description_Width_dim}
         {#2}
     \group_begin:
-        \setstretch{1.1}
-        \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_MarginLeft_dim}
+        \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
+        \skip_vertical:n   {\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
+        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Margin_Left_dim}
         \coffin_typeset:Nnnnn \l_tmpa_coffin {l}{t}{0pt}{0pt}
-        \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_Padding_dim}
+        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}
         \coffin_typeset:Nnnnn \l_tmpb_coffin {l}{t}{0pt}{0pt}
-        \skip_vertical:n {\l__UWMad_Nomenclature_Entry_MarginBottom_dim}
+        \skip_vertical:n   {\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
     \group_end:
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_Units:nnn {
     \vcoffin_set:Nnn
         \l_tmpa_coffin
-        {\l__UWMad_Nomenclature_Entry_WidthSymbol_dim}
+        {\l__UWMad_Nomenclature_Entry_Symbol_Width_dim}
         {#1}
     \vcoffin_set:Nnn
         \l_tmpb_coffin
-        {\l__UWMad_Nomenclature_Entry_WidthUnit_dim}
+        {\l__UWMad_Nomenclature_Entry_Units_Width_dim}
         {#2}
     \vcoffin_set:Nnn
         \l_tmpc_coffin
-        {\l__UWMad_Nomenclature_Entry_WidthDescription_dim}
+        {\l__UWMad_Nomenclature_Entry_Description_Width_dim}
         {#3}
     \group_begin:
-        \setstretch{1.1}
-        \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_MarginLeft_dim}
+        \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
+        \skip_vertical:n   {\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
+        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Margin_Left_dim}
         \coffin_typeset:Nnnnn \l_tmpa_coffin {l}{t}{0pt}{0pt}
-        \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_Padding_dim}
+        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}
         \coffin_typeset:Nnnnn \l_tmpb_coffin {l}{t}{0pt}{0pt}
-        \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_Padding_dim}
+        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}
         \coffin_typeset:Nnnnn \l_tmpc_coffin {l}{t}{0pt}{0pt}
-        \skip_vertical:n {\l__UWMad_Nomenclature_Entry_MarginBottom_dim}
+        \skip_vertical:n {\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
     \group_end:
 }
-\DeclareDocumentEnvironment {Nomenclature} { o g } {
-    \UWMad_ListOf_Define:n {Nomenclature}
-    \IfNoValueTF {#1} { } {
-        \UWMad_IfSectionExists:nT {#1} { }
-        \tl_set:Nn \l__UWMad_Nomenclature_Section_Main_tl {#1}
-    }
-    \IfNoValueTF {#2} { } {
-        \tl_set:Nf
-            \l__UWMad_Nomenclature_Title_Main_tl {#2}
-    }
-    \UWMad_ListOf_SetTitle_Main:nn {Nomenclature}
-        {\l__UWMad_Nomenclature_Title_Main_tl}
-   \bool_if:NTF \g__UWMad_Nomenclature_IsNumbered_bool {
-        \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
-    }{
-        \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
-    }
-    \tl_if_empty:NTF \l__UWMad_Nomenclature_Section_Group_tl {
-        \tl_set:Nf \l__UWMad_Nomenclature_Section_Group_tl {
-            \UWMad_NextSection:n {
-                \l__UWMad_Nomenclature_Section_Main_tl
-            }
-        }
-    } { }
-    \tl_if_empty:NTF \l__UWMad_Nomenclature_Section_Subgroup_tl {
-        \tl_set:Nf \l__UWMad_Nomenclature_Section_Subgroup_tl {
-            \UWMad_NextSection:n {
-                \l__UWMad_Nomenclature_Section_Group_tl
-            }
-        }
-    } { }
-    \UWMad_ListOf_SetSection_Main:nn
-        {Nomenclature} {\l__UWMad_Nomenclature_Section_Main_tl}
-    \UWMad_ListOf_SetSection_Group:nn
-        {Nomenclature} {\l__UWMad_Nomenclature_Section_Group_tl}
-    \UWMad_ListOf_SetSection_Subgroup:nn
-        {Nomenclature} {\l__UWMad_Nomenclature_Section_Subgroup_tl}
-    \bool_if:NTF \g__UWMad_Nomenclature_IncludeInTOC_bool {
-        \UWMad_ListOf_IncludeInTOC:n {Nomenclature}
+\cs_new:Nn \UWMad_Nomenclature_SetEntry: {
+    \bool_if:NTF \l__UWMad_Nomenclature_IncludeUnitsColumn_bool {
+        \UWMad_Nomenclature_SetEntry_Units:nnn
     } {
-        \UWMad_ListOf_DoNotIncludeInTOC:n {Nomenclature}
+        \UWMad_Nomenclature_SetEntry_NoUnits:nn
     }
-    \UWMad_ListOf_SetHook:nnn {Nomenclature} {PrePrint} {
+}
+\DeclareDocumentEnvironment {Nomenclature} { o o } {
+    \UWMad_ListOf_Initialize:
+    \IfValueTF {#1} {
+        \tl_set:Nx \l__UWMad_ListOf_Title_Main_tl { #1 }
+    } { }
+    \UWMad_ListOf_SetHook:nn {PrePrint} {
         \UWMad_Nomenclature_SetEntryWidths:
     }
-    \UWMad_ListOf_SetHook:nnn {Nomenclature} {PostPrint} {
+    \UWMad_ListOf_SetHook:nn {PostPrint} {
         \UWMad_Nomenclature_ZeroWidest_Symbol:
+        \UWMad_Nomenclature_ZeroWidest_Units:
     }
-    \DeclareDocumentCommand \Group { G{} } {
-        \IfNoValueTF {##1} { } {
-            \tl_set:Nn
-                \l__UWMad_Nomenclature_Title_Group_tl {##1}
+    \DeclareDocumentCommand \Group { o m } {
+        \UWMad_ListOf_PrintEntries:
+        \IfNoValueTF {##1} {
+            \UWMad_ListOf_PrintTitle_Group:nn{##2}{##2}
+        } {
+            \UWMad_ListOf_PrintTitle_Group:nn{##1}{##2}
         }
-        \UWMad_ListOf_SetTitle_Group:nn {Nomenclature}
-            {\l__UWMad_Nomenclature_Title_Group_tl}
-        \UWMad_ListOf_StartGroup:nn{Nomenclature}{Group}
     }
-    \DeclareDocumentCommand \Subgroup { G{} } {
-        \IfNoValueTF {##1} { } {
-            \tl_set:Nn
-                \l__UWMad_Nomenclature_Title_Subgroup_tl {##1}
+    \DeclareDocumentCommand \Subgroup { o m } {
+        \UWMad_ListOf_PrintEntries:
+        \IfNoValueTF {##1} {
+            \UWMad_ListOf_PrintTitle_Subgroup:nn{##2}{##2}
+        } {
+            \UWMad_ListOf_PrintTitle_Subgroup:nn{##1}{##2}
         }
-        \UWMad_ListOf_SetTitle_Subgroup:nn {Nomenclature}
-            {\l__UWMad_Nomenclature_Title_Subgroup_tl}
-        \UWMad_ListOf_StartGroup:nn{Nomenclature}{Subgroup}
     }
-    \bool_if:NTF \g__UWMad_Nomenclature_IncludeUnitsColumn_bool {
+    \cs_undefine:N \Entry
+    \bool_if:NTF \l__UWMad_Nomenclature_IncludeUnitsColumn_bool {
         \DeclareDocumentCommand \Entry { m m m } {
-            \UWMad_ListOf_PushEntry:nn {Nomenclature} {
+            \UWMad_ListOf_PushEntry:n {
                 \UWMad_Nomenclature_SetEntry_Units:nnn
                     {##1} {##2} {##3}
             }
             \UWMad_Nomenclature_UpdateWidest_Symbol:n{##1}
+            \UWMad_Nomenclature_UpdateWidest_Units:n{##2}
         }
     } {
         \DeclareDocumentCommand \Entry { m m } {
-            \UWMad_ListOf_PushEntry:nn {Nomenclature} {
+            \UWMad_ListOf_PushEntry:n {
                 \UWMad_Nomenclature_SetEntry_NoUnits:nn
                     {##1} {##2}
             }
@@ -1624,16 +1420,106 @@
     }
     \DeclareDocumentCommand  \ResetColumnWidth { } {
         \UWMad_Nomenclature_ZeroWidest_Symbol:
-        \UWMad_Nomenclature_ZeroWidest_Unit:
+        \UWMad_Nomenclature_ZeroWidest_Units:
     }
-    \UWMad_ListOf_PrintTitle:nn {Nomenclature}{Main}
+    \IfNoValueTF {#2} {
+        \IfNoValueTF {#1} {
+            \UWMad_ListOf_PrintTitle_Main:nn
+                {\l__UWMad_ListOf_Title_Main_tl}
+                {\l__UWMad_ListOf_Title_Main_tl}
+        } {
+            \UWMad_ListOf_PrintTitle_Main:nn{#1}{#1}
+        }
+    } {
+        \UWMad_ListOf_PrintTitle_Main:nn{#1}{#2}
+    }
 } {
-    \UWMad_ListOf_PrintEntries:n {Nomenclature}
-    \UWMad_ListOf_Delete:n{Nomenclature}
+    \UWMad_ListOf_PrintEntries:
 }
-\DeclareDocumentEnvironment {Acronym} { o G{Acronym} } {
+\clist_new:N   \g__UWMad_Nomenclature_KeyValuePairs_clist
+\clist_gset:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {
+    main-title .tl_set:N  = \l__UWMad_ListOf_Title_Main_tl,
+    main-title .default:n = Nomenclature,
+    main-section     .tl_set:N = \l__UWMad_ListOf_Section_Main_tl,
+    group-section    .tl_set:N = \l__UWMad_ListOf_Section_Group_tl,
+    subgroup-section .tl_set:N = \l__UWMad_ListOf_Section_Subgroup_tl,
+    main-section     .default:n = chapter,
+    group-section    .default:n = section,
+    subgroup-section .default:n = subsection,
+    make-main-numbered     .bool_set:N =
+        \l__UWMad_ListOf_MakeNumbered_Main_bool,
+    make-group-numbered    .bool_set:N =
+        \l__UWMad_ListOf_MakeNumbered_Group_bool,
+    make-subgroup-numbered .bool_set:N =
+        \l__UWMad_ListOf_MakeNumbered_Subgroup_bool,
+    make-numbered .meta:n = {
+        make-main-numbered     = #1,
+        make-group-numbered    = #1,
+        make-subgroup-numbered = #1
+    },
+    make-numbered .default:n = false,
+    include-main-in-toc     .bool_set:N =
+        \l__UWMad_ListOf_IncludeInTOC_Main_bool,
+    include-group-in-toc    .bool_set:N =
+        \l__UWMad_ListOf_IncludeInTOC_Group_bool,
+    include-subgroup-in-toc .bool_set:N =
+        \l__UWMad_ListOf_IncludeInTOC_Subgroup_bool,
+    include-in-toc .meta:n = {
+        include-main-in-toc     = #1,
+        include-group-in-toc    = #1,
+        include-subgroup-in-toc = #1
+    },
+    include-in-toc .default:n = true,
+    include-units-column .bool_set:N =
+        \l__UWMad_Nomenclature_IncludeUnitsColumns_bool,
+    include-units-column .default:n = false,
+    print-skip           .dim_set:N =
+        \l_UWMad_Nomenclature_Skip_EntryPrint_dim,
+    entry-margin-top     .dim_set:N =
+        \l_UWMad_Nomenclature_Entry_Margin_Top_dim,
+    entry-margin-left    .dim_set:N =
+        \l_UWMad_Nomenclature_Entry_Margin_Left_dim,
+    entry-margin-right   .dim_set:N =
+        \l_UWMad_Nomenclature_Entry_Margin_Right_dim,
+    entry-margin-bottom  .dim_set:N =
+        \l_UWMad_Nomenclature_Entry_Margin_Bottom_dim,
+    entry-column-padding .dim_set:N =
+        \l_UWMad_Nomenclature_Entry_Pad_Column_dim,
+    print-skip           .default:n = 1em,
+    entry-margin-top     .default:n = 0pt,
+    entry-margin-left    .default:n = 1em,
+    entry-margin-right   .default:n = 0pt,
+    entry-margin-bottom  .default:n = 0.25em,
+    entry-column-padding .default:n = 0.75em,
+    entry-stretch .tl_set:N =
+        \l__UWMad_Nomenclature_Entry_LineStretch_tl,
+    entry-stretch .default:n = 1.1
+}
+\exp_args:Nnf
+    \keys_define:nn
+    { UWMadThesis / Nomenclature }
+    {
+        \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
+    }
+\keys_set:nn { UWMadThesis / Nomenclature } {
+    main-title ,
+    main-section     ,
+    group-section    ,
+    subgroup-section ,
+    make-numbered ,
+    include-in-toc ,
+    include-units-column ,
+    print-skip           ,
+    entry-margin-top     ,
+    entry-margin-left    ,
+    entry-margin-right   ,
+    entry-margin-bottom  ,
+    entry-column-padding ,
+    entry-stretch
+}
+\DeclareDocumentEnvironment {Acronym} { o o } {
 
-    \begin{Nomenclature}[#1]{#2}
+    \begin{Nomenclature}[#1][#2]
     \UWMad_Hash_Define:n{Acronyms}
     \UWMad_Hash_Define:n{AcronymMeanings}
     \cs_undefine:N \Entry
@@ -1644,7 +1530,7 @@
             \UWMad_Hash_Set:nnn{AcronymMeanings}{##2}{##3}
             \bool_new:c {g__UWMad_Acronym_WasSet_##2_bool}
             %
-            \UWMad_ListOf_PushEntry:nn {Nomenclature} {
+            \UWMad_ListOf_PushEntry:n {
                 \hypertarget{Acronym:##2}{}
                 \UWMad_Nomenclature_SetEntry_NoUnits:nn
                     {##2} {##3}
@@ -1706,17 +1592,21 @@
     link-color .default:n = blue
 }
 \keys_set:nn { UWMadThesis / Acronym } {
-    title-skip          ,
-    print-skip          ,
-    entry-margin-left   ,
-    entry-margin-bottom ,
-    entry-padding       ,
-    numbered            ,
-    include-in-toc      ,
-    with-units          ,
-    main-section        ,
-    main-title          ,
-    use-links           ,
+    main-title = Acroynms,
+    main-section         ,
+    group-section        ,
+    subgroup-section     ,
+    make-numbered        ,
+    include-in-toc       ,
+    include-units-column ,
+    print-skip           ,
+    entry-margin-top     ,
+    entry-margin-left    ,
+    entry-margin-right   ,
+    entry-margin-bottom  ,
+    entry-column-padding ,
+    entry-stretch        ,
+    use-links            ,
     link-color
 }
 \clist_new:N \g__UWMad_MetaDataList_clist
@@ -1914,10 +1804,10 @@
 \tl_new:N   \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
 \tl_gset:Nn \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl {,}
 \int_new:N \g__UWMad_ThesisInfo_CommitteeCount_int
-\UWMad_ListOf_Define:n {CommitteeList}
+\UWMad_Queue_Define:n {CommitteeList}
 \DeclareDocumentCommand \CommitteeMember { m m m } {
     \int_gincr:N \g__UWMad_ThesisInfo_CommitteeCount_int
-    \UWMad_ListOf_PushEntry:nn {CommitteeList} {
+    \UWMad_Queue_Push:n {CommitteeList} {
         \tex_hbox:D{}
         \skip_horizontal:n{2em}
         #1
@@ -1947,7 +1837,7 @@
         (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
         \skip_vertical:n{-1em}
     } { }
-    \UWMad_ListOf_PrintEntries:n {CommitteeList}
+    \UWMad_Queue_Walk:nn {CommitteeList}{##1}
     }
 }
 \tl_new:N \g__UWMad_PDFMetaData_Subject_tl

@@ -549,14 +549,14 @@ If, for any reason, the thesis information or metadata registered with the docum
 \tl_new:N   \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
 \tl_gset:Nn \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl {,}
 \int_new:N \g__UWMad_ThesisInfo_CommitteeCount_int
-\UWMad_ListOf_Define:n {CommitteeList}
+\UWMad_Queue_Define:n {CommitteeList}
 %    \end{macrocode}
 %
 %   Define user interface for adding a person to the committee list.
 %    \begin{macrocode}
 \DeclareDocumentCommand \CommitteeMember { m m m } {
     \int_gincr:N \g__UWMad_ThesisInfo_CommitteeCount_int
-    \UWMad_ListOf_PushEntry:nn {CommitteeList} {
+    \UWMad_Queue_Push:n {CommitteeList} {
         \tex_hbox:D{}
         \skip_horizontal:n{2em}
         #1
@@ -590,7 +590,7 @@ If, for any reason, the thesis information or metadata registered with the docum
         (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
         \skip_vertical:n{-1em}
     } { }
-    \UWMad_ListOf_PrintEntries:n {CommitteeList}
+    \UWMad_Queue_Walk:nn {CommitteeList}{##1}
     }
 }
 %    \end{macrocode}

@@ -657,7 +657,7 @@ All of these defaults can be changed by the \cs{NomenclatureSetup} command descr
 \UWSubSubFeature{Command Descriptions}
 
 A sketch of the \texttt{Nomenclature} implementation would be:              \vskip1em
-    \hspace{1em}\cs{begin{Nomenclature}}\cs{oarg}{section}\cs{marg}{title}  \vskip0em
+    \hspace{1em}\cs{begin}\{Nomenclature\}\cs{oarg}{section}\cs{marg}{title}  \vskip0em
     \hspace{3em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
     \hspace{3em}\cs{Group}\cs{marg}{group title}                            \vskip0em
     \hspace{6em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
@@ -690,7 +690,7 @@ The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the d
 \UWSubSubFeature{Examples}
 As an example, the following input
 \begin{verbatim}
-    \begin{Nomenclature}[subsubsection]{Symbol Table}
+    \begin{Nomenclature}[Symbol Table]
         \Entry{$\rho$}{Density}
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
@@ -705,10 +705,14 @@ As an example, the following input
 would be typeset as:
 
 \setcounter{section}{1}
-\UWMadSetup{ Nomenclature } {include-in-toc = false}
+\UWMadSetup{ Nomenclature } {
+    include-in-toc = false,
+    main-section   = section,
+    group-section  = subsection
+}
 
 \rule{\textwidth}{0.1em}
-    \begin{Nomenclature}[subsection]{Symbol Table}
+    \begin{Nomenclature}[Symbol Table]
         \Entry{$\rho$}{Density}
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
@@ -725,7 +729,7 @@ Of course, this example is purposefully extreme.
 We can tweak the example a bit more by putting the second two items under a group:
 
 \rule{\textwidth}{0.1em}
-    \begin{Nomenclature}[subsection]{Symbol Table}
+    \begin{Nomenclature}[Symbol Table]
         \Entry{$\rho$}{Density}
 
         \Group{Group 1 Title}
@@ -780,7 +784,7 @@ The following input
     \UWMadSetup { Acronym } {
         main-section  = section,
         main-title = {Acronym Table},
-        entry-padding = 1in
+        entry-column-padding = 1in
     }
     \begin{Acronym}
         \Entry{RCCS}{Reactor Cavity Cooling System}
@@ -793,7 +797,7 @@ is typeset as
     \UWMadSetup { Acronym } {
         main-section  = section,
         main-title = {Acronym Table},
-        entry-padding = 1in
+        entry-column-padding = 1in
     }
     \begin{Acronym}
         \Entry{RCCS}{Reactor Cavity Cooling System}
