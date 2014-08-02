@@ -87,10 +87,12 @@ As an example, the following input
 would be typeset as:
 
 \setcounter{section}{1}
-\UWMadSetup{ Nomenclature } {
-    include-in-toc = false,
-    main-section   = section,
-    group-section  = subsection
+\UWMadSetup{
+    Nomenclature / {
+        include-in-toc = false,
+        main-section   = section,
+        group-section  = subsection
+    }
 }
 \begin{Example}
     \begin{Nomenclature}[Symbol Table]
@@ -134,11 +136,13 @@ Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} i
 As mentioned, there are several options available to the user for customizing the nomenclature.
 These options are set by giving a comma-separate list of key-value pairs to the function \cs{UWMadSetup} with the module name \texttt{Nomenclature}:
     \begin{verbatim}
-        \UWMadSetup { Nomenclature } {
-            key-one = option,
-            key-two = {option two},
-            ...
-            key-n =  {option n},
+        \UWMadSetup {
+            Nomenclature / {
+                key-one = option,
+                key-two = {option two},
+                ...
+                key-n =  {option n},
+            }
         }
     \end{verbatim}
 A table of the keys, meaning, defaults, and allow value is given in \cref{Table:NomenclatureKeyValue}.
@@ -168,10 +172,12 @@ Lastly, it comes equipped with a new command: \cs{Acro}.
 \UWSubSubFeature{Example}
 The following input
 \begin{verbatim}
-    \UWMadSetup { Acronym } {
-        main-section  = section,
-        main-title = {Acronym Table},
-        entry-column-padding = 1in
+    \UWMadSetup {
+        Acronym / {
+            main-section  = section,
+            main-title = {Acronym Table},
+            entry-column-padding = 1in
+        }
     }
     \begin{Acronym}
         \Entry{RCCS}{Reactor Cavity Cooling System}
@@ -180,11 +186,13 @@ The following input
 \end{verbatim}
 is typeset as
 
-    \UWMadSetup { Acronym } {
+\UWMadSetup {
+    Acronym / {
         main-section  = section,
         main-title = {Acronym Table},
         entry-column-padding = 1in
     }
+}
 \begin{Example}
     \begin{Acronym}
         \Entry{RCCS}{Reactor Cavity Cooling System}

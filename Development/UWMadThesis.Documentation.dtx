@@ -220,6 +220,15 @@
 }
 %    \end{macrocode}
 %
+%
+%   These options change the default report class to the
+%   ones indicated.
+%    \begin{macrocode}
+\DeclareOption{article} {
+    \tl_gset:Nn \g_UWMad_ParentClass_tl {article}
+}
+%    \end{macrocode}
+%
 %   Catch the couple of default options that violate the requirements:
 %   8.5 by 11 paper for single-sided printing.
 %    \begin{macrocode}
@@ -228,14 +237,6 @@
 }
 \DeclareOption{twoside} {
     \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
-}
-%    \end{macrocode}
-%
-%   These options change the default report class to the
-%   ones indicated.
-%    \begin{macrocode}
-\DeclareOption{article} {
-    \tl_gset:Nn \g_UWMad_ParentClass_tl {article}
 }
 %    \end{macrocode}
 %
@@ -253,8 +254,11 @@
 %   Pass all remaining options to the base class.
 %    \begin{macrocode}
 \DeclareOption*{
-    \PassOptionsToClass
-        {\CurrentOption}{\g_UWMad_ParentClass_tl}
+    \PassOptionsToClass {
+        \CurrentOption
+    } {
+        \g_UWMad_ParentClass_tl
+    }
 }
 %    \end{macrocode}
 %
@@ -362,15 +366,31 @@
 %
 %   \begin{function}{\UWMadSetup}
 %       \begin{syntax}
-%           \cs{UWMadSetup}\Arg{module name}\Arg{key-value csv}
+%           \cs{UWMadSetup}\Arg{option list}
 %       \end{syntax}
 %   This simple command creates a user interface for the key-value system used
 %   for several feature set options.
 %    \begin{macrocode}
-\DeclareDocumentCommand \UWMadSetup { >{\TrimSpaces} m m } {
-    \keys_set:nn
-        { UWMadThesis / #1 }
-        { #2 }
+\cs_generate_variant:Nn \keys_set:nn {nf}
+\tl_new:N \l__UWMad_Setup_ModuleName_tl
+\clist_new:N \l__UWMad_Setup_OptionList_clist
+\cs_new:Nn \__UWMad_Setup_ProcessInput:n {
+    \seq_set_split:Nnn \l_tmpa_seq {,} {#1}
+    \seq_map_inline:Nn \l_tmpa_seq {
+        \seq_set_split:Nnn \l_tmpb_seq {/} {##1}
+        \seq_pop:NN \l_tmpb_seq \l__UWMad_Setup_ModuleName_tl
+        \seq_pop:NN \l_tmpb_seq \l__UWMad_Setup_OptionList_clist
+        \clist_map_inline:Nn \l__UWMad_Setup_OptionList_clist {
+            \tl_set:Nx \l_tmpa_tl {
+                \l__UWMad_Setup_ModuleName_tl / \tl_trim_spaces:n{####1}
+            }
+            \exp_args:Nnf
+                \keys_set:nn { UWMadThesis } { \l_tmpa_tl }
+        }
+    }
+}
+\DeclareDocumentCommand \UWMadSetup { m } {
+    \__UWMad_Setup_ProcessInput:n{#1}
 }
 %    \end{macrocode}
 %   \end{function}
@@ -3573,7 +3593,7 @@
 %    \begin{macrocode}
 \DeclareDocumentCommand \CommitteeMember { m m m } {
     \int_gincr:N \g__UWMad_ThesisInfo_CommitteeCount_int
-    \UWMad_Queue_Push:n {CommitteeList} {
+    \UWMad_Queue_Push:nn {CommitteeList} {
         \tex_hbox:D{}
         \skip_horizontal:n{2em}
         #1
@@ -3583,7 +3603,7 @@
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         \
         \textsl{#3}
-        \skip_vertical:n{-1em}
+        \skip_vertical:n{-1.75em}
     }
 }
 %    \end{macrocode}
@@ -3592,22 +3612,22 @@
 %    \begin{macrocode}
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     {
-    \setstretch{1}
-    \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
-        \tex_hbox:D{}
-        \skip_horizontal:n{2em}
-        \g__UWMad_ThesisInfo_AdvisorName_tl{}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        \
-        \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        \
-        \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
-        \
-        (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
-        \skip_vertical:n{-1em}
-    } { }
-    \UWMad_Queue_Walk:nn {CommitteeList}{##1}
+        \setstretch{1}
+        \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
+            \tex_hbox:D{}
+            \skip_horizontal:n{2em}
+            \g__UWMad_ThesisInfo_AdvisorName_tl{}
+            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
+            \
+            \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
+            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
+            \
+            \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
+            \
+            (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
+            \skip_vertical:n{-1.75em}
+        } { }
+        \UWMad_Queue_Walk:nn {CommitteeList}{##1}
     }
 }
 %    \end{macrocode}

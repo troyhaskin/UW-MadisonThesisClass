@@ -77,9 +77,11 @@
 %   RelativeDirectory Test:
 %       o Chapter directory prefix {Chapter-} in increment mode
 %       o Empty section *-fixes to test the stack-pushing conditions
-\UWMadSetup { RelativeDirectory } {
-    chapter-directory-prefix = Chapter-,
-    chapter-directory-name   = increment
+\UWMadSetup {
+    RelativeDirectory / {
+        chapter-directory-prefix = Chapter-,
+        chapter-directory-name   = increment
+    }
 }
 \IncludeChapter{Main}
     \IncludeSection{Section-1}
@@ -91,13 +93,13 @@
 %       o Section directory prefix {Section-} in increment mode
 %       o All same name to test the stack-pushing conditions and file in 
 %           subfolders.
-\UWMadSetup { RelativeDirectory } {
+\UWMadSetup { RelativeDirectory / {
     section-directory-prefix    = Section-,
     section-directory-name      = increment,
     subsection-directory-prefix = Subsection-,
     subsection-directory-name   = increment,
     graphics-directory-name     = Graphics
-}
+}}
 \IncludeChapter{Main}
 %
 %
@@ -106,7 +108,7 @@
 %       o Section    directory prefix {} and suffix {-Section}    in same mode
 %       o Subsection directory prefix {} and suffix {-Subsection} in same mode
 %       o All same name-mode and same file name to test the stack-pushing.
-\UWMadSetup { RelativeDirectory } {
+\UWMadSetup { RelativeDirectory / {
     chapter-directory-prefix    = {},
     chapter-directory-name      = same,
     chapter-directory-suffix    = {-Chapter},
@@ -117,7 +119,7 @@
     subsection-directory-name   = same,
     subsection-directory-suffix = {-Subsection},
     the-only-graphics-directory = Graphics
-}
+}}
 \IncludeChapter{SameNameTest}
     \IncludeSection{SameNameTest}
         \IncludeSubsection{SameNameTest}
@@ -133,7 +135,7 @@
 %   RelativeDirectory Test:
 %       o Chapter    directory is user-supplied: OptionalDirectoryName.
 %       o Section continues the name-mode from above (same) to test chaining.
-\UWMadSetup { RelativeDirectory } {
+\UWMadSetup { RelativeDirectory / {
     chapter-directory-prefix    = SingleSectionDirectoryTest,
     chapter-directory-name      = none,
     chapter-directory-suffix    = {},
@@ -143,7 +145,7 @@
     subsection-directory-prefix = {},
     subsection-directory-name   = none,
     subsection-directory-suffix = {}
-}
+}}
 \IncludeChapter{Chapter}
     \IncludeSection{Section}
         \IncludeSubsection{Subsection}

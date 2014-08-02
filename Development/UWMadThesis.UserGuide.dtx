@@ -718,10 +718,12 @@ As an example, the following input
 would be typeset as:
 
 \setcounter{section}{1}
-\UWMadSetup{ Nomenclature } {
-    include-in-toc = false,
-    main-section   = section,
-    group-section  = subsection
+\UWMadSetup{
+    Nomenclature / {
+        include-in-toc = false,
+        main-section   = section,
+        group-section  = subsection
+    }
 }
 \begin{Example}
     \begin{Nomenclature}[Symbol Table]
@@ -764,11 +766,13 @@ Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} i
 As mentioned, there are several options available to the user for customizing the nomenclature.
 These options are set by giving a comma-separate list of key-value pairs to the function \cs{UWMadSetup} with the module name \texttt{Nomenclature}:
     \begin{verbatim}
-        \UWMadSetup { Nomenclature } {
-            key-one = option,
-            key-two = {option two},
-            ...
-            key-n =  {option n},
+        \UWMadSetup {
+            Nomenclature / {
+                key-one = option,
+                key-two = {option two},
+                ...
+                key-n =  {option n},
+            }
         }
     \end{verbatim}
 A table of the keys, meaning, defaults, and allow value is given in \cref{Table:NomenclatureKeyValue}.
@@ -794,10 +798,12 @@ Lastly, it comes equipped with a new command: \cs{Acro}.
 \UWSubSubFeature{Example}
 The following input
 \begin{verbatim}
-    \UWMadSetup { Acronym } {
-        main-section  = section,
-        main-title = {Acronym Table},
-        entry-column-padding = 1in
+    \UWMadSetup {
+        Acronym / {
+            main-section  = section,
+            main-title = {Acronym Table},
+            entry-column-padding = 1in
+        }
     }
     \begin{Acronym}
         \Entry{RCCS}{Reactor Cavity Cooling System}
@@ -806,11 +812,13 @@ The following input
 \end{verbatim}
 is typeset as
 
-    \UWMadSetup { Acronym } {
+\UWMadSetup {
+    Acronym / {
         main-section  = section,
         main-title = {Acronym Table},
         entry-column-padding = 1in
     }
+}
 \begin{Example}
     \begin{Acronym}
         \Entry{RCCS}{Reactor Cavity Cooling System}
@@ -1321,17 +1329,18 @@ The user can easily tell the Relative Directory system of this convention using 
 {
 \setstretch{1.0}
 \begin{verbatim}
-    \UWMadSetup{ RelativeDirectory } {
-        chapter-directory-prefix = Chapter-,
-        chapter-directory-name   = increment,
-        section-directory-prefix = Section-,
-        section-directory-name   = increment
+    \UWMadSetup{
+        RelativeDirectory / {
+            chapter-directory-prefix = Chapter-,
+            chapter-directory-name   = increment,
+            section-directory-prefix = Section-,
+            section-directory-name   = increment
+        }
     }
 \end{verbatim}
 }
 Then, using the commands above, the user can include the files by adding the following input to \texttt{Main.tex}:
-{
-\setstretch{1.0}
+
 \begin{verbatim}
     \IncludeChapter{Chapter}
         \IncludeSection{Section-1}
@@ -1340,7 +1349,7 @@ Then, using the commands above, the user can include the files by adding the fol
         \IncludeSection{Section}
         \IncludeSection{Section}
 \end{verbatim}
-}
+
 Or, the user can choose to only add the chapters in \texttt{Main.tex} while putting the section includes in their respective \texttt{Chapter.tex} files.
 The \UWMadClass{} \meta{search stack} will handle either.
 
@@ -1350,20 +1359,20 @@ The user also has several chapters and and sections with the directory structure
 Each of the directory names is suffixed with \texttt{-Chapter} or \texttt{-Section} and begins with the file name of at least one of its files.
 This directory structure exemplifies the Same naming convention.
 The user can easily tell the Relative Directory system of this convention using the following input
-{
-\setstretch{1.0}
+
 \begin{verbatim}
-    \UWMadSetup{ RelativeDirectory } {
-        chapter-directory-name   = same,
-        chapter-directory-suffix = -Chapter,
-        section-directory-name   = same,
-        section-directory-suffix = -Section,
+    \UWMadSetup{
+        RelativeDirectory / {
+            chapter-directory-name   = same,
+            chapter-directory-suffix = -Chapter,
+            section-directory-name   = same,
+            section-directory-suffix = -Section,
+        }
     }
 \end{verbatim}
-}
+
 Then, using the commands above, the user can include the files by adding the following input to \texttt{Main.tex}:
-{
-\setstretch{1.0}
+
 \begin{verbatim}
     \IncludeChapter{Introduction}
         \IncludeSection{Motivation}
@@ -1372,7 +1381,7 @@ Then, using the commands above, the user can include the files by adding the fol
         \IncludeSection{LinearSystems}
         \IncludeSection{NewtonsMethod}
 \end{verbatim}
-}
+
 Or, the user can choose to only add the chapters in \texttt{Main.tex} while putting the section includes in their respective \texttt{Chapter.tex} files.
 The \UWMadClass{} \meta{search stack} will handle either.
 
@@ -1466,11 +1475,13 @@ The input syntax has the form
 {
 \setstretch{1.0}
 \begin{verbatim}
-    \UWMadSetup { RelativeDirectory } {
-        key-one = value-one,
-        key-two = value-two,
-        ...
-        key-n   = value-n,
+    \UWMadSetup {
+        RelativeDirectory / {
+            key-one = value-one,
+            key-two = value-two,
+            ...
+            key-n   = value-n,
+        }
     }
 \end{verbatim}
 }

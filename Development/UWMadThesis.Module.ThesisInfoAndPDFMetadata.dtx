@@ -556,7 +556,7 @@ If, for any reason, the thesis information or metadata registered with the docum
 %    \begin{macrocode}
 \DeclareDocumentCommand \CommitteeMember { m m m } {
     \int_gincr:N \g__UWMad_ThesisInfo_CommitteeCount_int
-    \UWMad_Queue_Push:n {CommitteeList} {
+    \UWMad_Queue_Push:nn {CommitteeList} {
         \tex_hbox:D{}
         \skip_horizontal:n{2em}
         #1
@@ -566,7 +566,7 @@ If, for any reason, the thesis information or metadata registered with the docum
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         \ 
         \textsl{#3}
-        \skip_vertical:n{-1em}
+        \skip_vertical:n{-1.75em}
     }
 }
 %    \end{macrocode}
@@ -575,22 +575,22 @@ If, for any reason, the thesis information or metadata registered with the docum
 %    \begin{macrocode}
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     {
-    \setstretch{1}
-    \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
-        \tex_hbox:D{}
-        \skip_horizontal:n{2em}
-        \g__UWMad_ThesisInfo_AdvisorName_tl{}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        \ 
-        \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        \ 
-        \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
-        \ 
-        (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
-        \skip_vertical:n{-1em}
-    } { }
-    \UWMad_Queue_Walk:nn {CommitteeList}{##1}
+        \setstretch{1}
+        \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
+            \tex_hbox:D{}
+            \skip_horizontal:n{2em}
+            \g__UWMad_ThesisInfo_AdvisorName_tl{}
+            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
+            \ 
+            \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
+            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
+            \ 
+            \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
+            \ 
+            (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
+            \skip_vertical:n{-1.75em}
+        } { }
+        \UWMad_Queue_Walk:nn {CommitteeList}{##1}
     }
 }
 %    \end{macrocode}

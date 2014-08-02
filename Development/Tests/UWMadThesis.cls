@@ -37,22 +37,25 @@
 \DeclareOption{Quiet} {
     \msg_redirect_module:nnn { UWMadThesis } { warning } { none }
 }
+\DeclareOption{article} {
+    \tl_gset:Nn \g_UWMad_ParentClass_tl {article}
+}
 \DeclareOption{a4paper} {
     \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
 }
 \DeclareOption{twoside} {
     \__UWMad_FrontMatter_StyleWarning:n {\CurrentOption}
 }
-\DeclareOption{article} {
-    \tl_gset:Nn \g_UWMad_ParentClass_tl {article}
-}
 \DeclareOption{l3doc} {
     \tl_gset:Nn \g_UWMad_ParentClass_tl {l3doc}
     \tl_const:cn {ver@thumbpdf.sty} {}
 }
 \DeclareOption*{
-    \PassOptionsToClass
-        {\CurrentOption}{\g_UWMad_ParentClass_tl}
+    \PassOptionsToClass {
+        \CurrentOption
+    } {
+        \g_UWMad_ParentClass_tl
+    }
 }
 \ExecuteOptions{oneside,12pt}
 \ProcessOptions\relax
@@ -103,10 +106,26 @@
 \DeclareDocumentCommand \UWMadShort { } {
     \c__UWMad_UniversityShort_tl
 }
-\DeclareDocumentCommand \UWMadSetup { >{\TrimSpaces} m m } {
-    \keys_set:nn
-        { UWMadThesis / #1 }
-        { #2 }
+\cs_generate_variant:Nn \keys_set:nn {nf}
+\tl_new:N \l__UWMad_Setup_ModuleName_tl
+\clist_new:N \l__UWMad_Setup_OptionList_clist
+\cs_new:Nn \__UWMad_Setup_ProcessInput:n {
+    \seq_set_split:Nnn \l_tmpa_seq {,} {#1}
+    \seq_map_inline:Nn \l_tmpa_seq {
+        \seq_set_split:Nnn \l_tmpb_seq {/} {##1}
+        \seq_pop:NN \l_tmpb_seq \l__UWMad_Setup_ModuleName_tl
+        \seq_pop:NN \l_tmpb_seq \l__UWMad_Setup_OptionList_clist
+        \clist_map_inline:Nn \l__UWMad_Setup_OptionList_clist {
+            \tl_set:Nx \l_tmpa_tl {
+                \l__UWMad_Setup_ModuleName_tl / \tl_trim_spaces:n{####1}
+            }
+            \exp_args:Nnf
+                \keys_set:nn { UWMadThesis } { \l_tmpa_tl }
+        }
+    }
+}
+\DeclareDocumentCommand \UWMadSetup { m } {
+    \__UWMad_Setup_ProcessInput:n{#1}
 }
 \msg_new:nnn {UWMadThesis} {Programming/UnregisteredVariable} {
     `#1'~is~not~a~registered~#2.~~The~#2~must~be~defined~
@@ -1822,7 +1841,7 @@
 \UWMad_Queue_Define:n {CommitteeList}
 \DeclareDocumentCommand \CommitteeMember { m m m } {
     \int_gincr:N \g__UWMad_ThesisInfo_CommitteeCount_int
-    \UWMad_Queue_Push:n {CommitteeList} {
+    \UWMad_Queue_Push:nn {CommitteeList} {
         \tex_hbox:D{}
         \skip_horizontal:n{2em}
         #1
@@ -1832,27 +1851,27 @@
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         \
         \textsl{#3}
-        \skip_vertical:n{-1em}
+        \skip_vertical:n{-1.75em}
     }
 }
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     {
-    \setstretch{1}
-    \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
-        \tex_hbox:D{}
-        \skip_horizontal:n{2em}
-        \g__UWMad_ThesisInfo_AdvisorName_tl{}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        \
-        \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        \
-        \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
-        \
-        (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
-        \skip_vertical:n{-1em}
-    } { }
-    \UWMad_Queue_Walk:nn {CommitteeList}{##1}
+        \setstretch{1}
+        \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
+            \tex_hbox:D{}
+            \skip_horizontal:n{2em}
+            \g__UWMad_ThesisInfo_AdvisorName_tl{}
+            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
+            \
+            \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
+            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
+            \
+            \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
+            \
+            (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
+            \skip_vertical:n{-1.75em}
+        } { }
+        \UWMad_Queue_Walk:nn {CommitteeList}{##1}
     }
 }
 \tl_new:N \g__UWMad_PDFMetaData_Subject_tl
