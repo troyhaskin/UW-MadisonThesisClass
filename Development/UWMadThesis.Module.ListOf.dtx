@@ -25,17 +25,30 @@ All of these defaults can be changed by the \cs{NomenclatureSetup} command descr
 
 \UWSubSubFeature{Command Descriptions}
 
-A sketch of the \texttt{Nomenclature} implementation would be:              \vskip1em
-    \hspace{1em}\cs{begin{Nomenclature}}\cs{oarg}{section}\cs{marg}{title}  \vskip0em
-    \hspace{3em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
-    \hspace{3em}\cs{Group}\cs{marg}{group title}                            \vskip0em
-    \hspace{6em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
-    \hspace{6em}\cs{Subgroup}\cs{marg}{subgroup title}                      \vskip0em
-    \hspace{9em}\cs{Entry}\cs{marg}{symbol}\cs{marg}{description}           \vskip0em
-    \hspace{1em}\cs{end{Nomenclature}}                                      \vskip1em
+A sketch of the \texttt{Nomenclature} implementation would be:
 
-The square brace-delimited \oarg{section} is \textsc{optional} and overrides the default Main group section.
-The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the default Main group title.
+\begin{Example}
+    \setlength{\parskip}{0pt}
+    \setstretch{1.5}
+    \hspace{1em}\cs{begin}\{Nomenclature\}\oarg{toc title}\oarg{title}
+    
+    \hspace{3em}\cs{Entry}\marg{symbol}\marg{description}
+    
+    \hspace{3em}\cs{Group}\oarg{toc group}\marg{group}
+    
+    \hspace{6em}\cs{Entry}\marg{symbol}\marg{description}
+    
+    \hspace{6em}\cs{Subgroup}\oarg{toc subgroup}\marg{subgroup}
+    
+    \hspace{9em}\cs{Entry}\marg{symbol}\marg{description}
+    
+    \hspace{1em}\cs{end}\{Nomenclature\}
+\end{Example}
+
+The square brace-delimited \oarg{toc title} is \textsc{optional} and the overrides \oarg{title} argument for insertion into the table of contents.
+The square brace-delimited \oarg{title} is \textsc{optional} and temporarily overrides the default title used for the nomenclature environment (Nomenclature).
+If only one optional argument is given, it is assumed that \oarg{title} was given and \oarg{toc title} is equal to the \oarg{title}.
+The curly brace-delimited \marg{group} and \marg{subgroup} are \textsc{required}; the optional these arguments will override the titles in the table of contents.
 
 \begin{function}{\Entry}
     \begin{syntax}
@@ -56,12 +69,10 @@ The curly brace-delimited  \marg{title} is \textsc{optional} and overrides the d
     The default section can be changed by the user (see \hyperref[UG/Nomenclature/Customization]{Customization}).
 \end{function}
 
-
 \UWSubSubFeature{Examples}
 As an example, the following input
 \begin{verbatim}
-    \begin{Nomenclature}[subsubsection]{Symbol Table}
-        \Entry{$\rho$}{Density}
+    \begin{Nomenclature}[Symbol Table]
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
             text commonly used to demonstrate the graphic elements of a
@@ -69,17 +80,22 @@ As an example, the following input
             of meaningful content with filler text of scrambled Latin it
             allows viewers to focus on graphical elements such as font,
             typography, and layout.}
+        \Entry{$\rho$}{Density}
         \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
 \end{verbatim}
 would be typeset as:
 
 \setcounter{section}{1}
-\UWMadSetup{ Nomenclature } {include-in-toc = false}
-
-\rule{\textwidth}{0.1em}
-    \begin{Nomenclature}[subsection]{Symbol Table}
-        \Entry{$\rho$}{Density}
+\UWMadSetup{
+    Nomenclature / {
+        include-in-toc = false,
+        main-section   = section,
+        group-section  = subsection
+    }
+}
+\begin{Example}
+    \begin{Nomenclature}[Symbol Table]
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
             text commonly used to demonstrate the graphic elements of a
@@ -87,18 +103,17 @@ would be typeset as:
             of meaningful content with filler text of scrambled Latin it
             allows viewers to focus on graphical elements such as font,
             typography, and layout.}
+        \Entry{$\rho$}{Density}
         \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
-\rule{\textwidth}{0.1em}
+\end{Example}
+
 As can be seen, the symbol column is as wide as the widest symbol (plus some padding) and lengthy text can be put into the description without penalty.
 Of course, this example is purposefully extreme.
-We can tweak the example a bit more by putting the second two items under a group:
+We can tweak the example a bit more by adding the line \verb|\Group{Greek Letters}| below the first entry:
 
-\rule{\textwidth}{0.1em}
-    \begin{Nomenclature}[subsection]{Symbol Table}
-        \Entry{$\rho$}{Density}
-        
-        \Group{Group 1 Title}
+\begin{Example}
+    \begin{Nomenclature}[Symbol Table]
         \Entry{LongNotRealSymbol}{
             In publishing and graphic design, lorem ipsum is a placeholder
             text commonly used to demonstrate the graphic elements of a
@@ -106,9 +121,12 @@ We can tweak the example a bit more by putting the second two items under a grou
             of meaningful content with filler text of scrambled Latin it
             allows viewers to focus on graphical elements such as font,
             typography, and layout.}
-        \Entry{$\mu$}{Viscosity}
+        \Group{Greek Letters}
+            \Entry{$\rho$}{Density}
+            \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
-\rule{\textwidth}{0.1em}
+\end{Example}
+
 By default, the section level used by \cs{Group} is one below that of the main nomenclature section; therefore, since the nomenclature's section level is defined as \texttt{subsection}, the \cs{Group} is a \texttt{subsubsection}.
 Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} in this example.
 
@@ -118,11 +136,13 @@ Not shown: using \cs{Subgroup} would typeset the title as a \texttt{paragraph} i
 As mentioned, there are several options available to the user for customizing the nomenclature.
 These options are set by giving a comma-separate list of key-value pairs to the function \cs{UWMadSetup} with the module name \texttt{Nomenclature}:
     \begin{verbatim}
-        \UWMadSetup { Nomenclature } {
-            key-one = option,
-            key-two = {option two},
-            ...
-            key-n =  {option n},
+        \UWMadSetup {
+            Nomenclature / {
+                key-one = option,
+                key-two = {option two},
+                ...
+                key-n =  {option n},
+            }
         }
     \end{verbatim}
 A table of the keys, meaning, defaults, and allow value is given in \cref{Table:NomenclatureKeyValue}.
@@ -152,10 +172,12 @@ Lastly, it comes equipped with a new command: \cs{Acro}.
 \UWSubSubFeature{Example}
 The following input
 \begin{verbatim}
-    \UWMadSetup { Acronym } {
-        main-section  = section,
-        main-title = {Acronym Table},
-        entry-padding = 1in
+    \UWMadSetup {
+        Acronym / {
+            main-section  = section,
+            main-title = {Acronym Table},
+            entry-column-padding = 1in
+        }
     }
     \begin{Acronym}
         \Entry{RCCS}{Reactor Cavity Cooling System}
@@ -164,17 +186,19 @@ The following input
 \end{verbatim}
 is typeset as
 
-\rule{\textwidth}{0.1em}
-    \UWMadSetup { Acronym } {
+\UWMadSetup {
+    Acronym / {
         main-section  = section,
         main-title = {Acronym Table},
-        entry-padding = 1in
+        entry-column-padding = 1in
     }
+}
+\begin{Example}
     \begin{Acronym}
         \Entry{RCCS}{Reactor Cavity Cooling System}
         \Entry{NRC}{Nuclear Regulatory Commission}
     \end{Acronym}
-\rule{\textwidth}{0.1em}
+\end{Example}
 
 The first usage of \cs{Acro}\{NRC\} is `\Acro{NRC}' while the second usage is `\Acro{NRC}'.
 
@@ -260,313 +284,138 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %
 %
 %
-%   \begin{macro}{\UWMad_ListOf_Define:n}
-%   Define a new \texttt{ListOf} with \marg{ID}. This command creates the
-%   commands to store the section commands and title for each group,
-%   the booleans to indicate if the sections should be numbered and
-%   if the sections should be included in the table of contentst
-%   (regardless of numbering), a hash to hold of the user-defined
-%   hooks for the \texttt{ListOf}, and a queue to store the entries for
-%   typesetting.
-%
+%   \texttt{ListOf} variable declarations for section levels.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_Define:n {
-    \tl_const:cn {c__UWMad_ListOf#1_IsDefined_tl}{}
+\tl_new:N   \l__UWMad_ListOf_Section_Main_tl
+\tl_new:N   \l__UWMad_ListOf_Section_Group_tl
+\tl_new:N   \l__UWMad_ListOf_Section_Subgroup_tl
+%    \end{macrocode}
 %
-    \tl_new:c {g__UWMad_ListOf#1_Section_Main_tl}
-    \tl_new:c {g__UWMad_ListOf#1_Section_Group_tl}
-    \tl_new:c {g__UWMad_ListOf#1_Section_Subgroup_tl}
+%   Boolean declarations for numbering and Table of Contents-inclusions.
+%    \begin{macrocode}
+\bool_new:N \l__UWMad_ListOf_MakeNumbered_Main_bool
+\bool_new:N \l__UWMad_ListOf_MakeNumbered_Group_bool
+\bool_new:N \l__UWMad_ListOf_MakeNumbered_Subgroup_bool
+\bool_new:N \l__UWMad_ListOf_IncludeInTOC_Main_bool
+\bool_new:N \l__UWMad_ListOf_IncludeInTOC_Group_bool
+\bool_new:N \l__UWMad_ListOf_IncludeInTOC_Subgroup_bool
+%    \end{macrocode}
 %
-    \tl_new:c {g__UWMad_ListOf#1_Title_Main_tl}
-    \tl_new:c {g__UWMad_ListOf#1_Title_Group_tl}
-    \tl_new:c {g__UWMad_ListOf#1_Title_Subgroup_tl}
-%
-    \bool_new:c       {g__UWMad_ListOf#1_ClearAfterPrint_bool}
-    \bool_gset_true:c {g__UWMad_ListOf#1_ClearAfterPrint_bool}
-    \bool_new:c       {g__UWMad_ListOf#1_IsNumbered_bool}
-    \bool_gset_true:c {g__UWMad_ListOf#1_IsNumbered_bool}
-    \bool_new:c       {g__UWMad_ListOf#1_IncludeInTOC_bool}
-    \bool_gset_true:c {g__UWMad_ListOf#1_IncludeInTOC_bool}
-    \UWMad_Queue_Define:n               {g__ListOf#1_EntryQueue}
-    \UWMad_Hash_Define:n                {g__ListOf#1_Hook}
+%   Entry queue and and Hook hash initialization
+%    \begin{macrocode}
+\UWMad_Queue_Define:n {l__ListOf_EntryQueue}
+\UWMad_Hash_Define:n  {l__ListOf_Hook}
+\cs_new:Nn \__UWMad_Listof_SetHooks_Blank: {
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Main}       {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Main}      {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Group}      {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Group}     {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Subgroup}   {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Subgroup}  {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PrePush}             {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostPush}            {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PrePrint}            {}
+    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostPrint}           {}
 }
 %    \end{macrocode}
-%   \end{macro}
+%
+%   Function initializations for sectioning and title print commands.
+%    \begin{macrocode}
+\cs_new:Nn \__UWMad_ListOf_SectioningCommand_Main:     {}
+\cs_new:Nn \__UWMad_ListOf_SectioningCommand_Group:    {}
+\cs_new:Nn \__UWMad_ListOf_SectioningCommand_Subgroup: {}
+\cs_new:Nn \UWMad_ListOf_PrintTitle_Main:nn     {}
+\cs_new:Nn \UWMad_ListOf_PrintTitle_Group:nn    {}
+\cs_new:Nn \UWMad_ListOf_PrintTitle_Subgroup:nn {}
+%    \end{macrocode}
 %
 %
-%
-%   \begin{macro}{\UWMad_ListOf_Delete:n}
-%   Simply undefines all of the commands created in the \texttt{Define} command
-%   above for the given \marg{ID}.
+%   \begin{function}{\UWMad_ListOf_SetHook:nn}
+%   \begin{syntax}
+%       \cs{UWMad_ListOf_SetHook:nn}\Arg{Hook name}\Arg{Hook code}
+%   \end{syntax}
+%   Sets \Arg{Hook name} to \Arg{Hook code} for the \texttt{ListOf}.
+%   There are hooks when pushing to the queue: \texttt{PrePush} and 
+%   \texttt{PostPush}.
+%   There are hooks when printing entires: \texttt{PrePrint} and
+%   \texttt{PostPrint}.
+%   There are also hooks for all section titles: \texttt{PreTitle-*} and
+%   \texttt{PostTitle-*}.
 %
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_Delete:n {
-    \cs_undefine:c {c__UWMad_ListOf#1_IsDefined_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Section_Main_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Section_Group_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Section_Subgroup_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Title_Main_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Title_Group_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_Title_Subgroup_tl}
-    \cs_undefine:c {g__UWMad_ListOf#1_ClearAfterPrint_bool}
-    \cs_undefine:c {g__UWMad_ListOf#1_IsNumbered_bool}
-    \cs_undefine:c {g__UWMad_ListOf#1_IncludeInTOC_bool}
-    \UWMad_Queue_Delete:n   {g__ListOf#1_EntryQueue}
-    \UWMad_Hash_Delete:n    {g__ListOf#1_Hook}
+\cs_new:Nn \UWMad_ListOf_SetHook:nn {
+    \UWMad_Hash_Set:nnn{l__ListOf_Hook}{#1}{#2}
 }
 %    \end{macrocode}
-%   \end{macro}
+%   \end{function}
 %
 %
 %
-%   \begin{macro}{\UWMad_ListOf_IfDefined:nT}
-%   Checks to see if a \texttt{ListOf} with \marg{ID} has been created and
-%   errors if not.
 %
+%   These function initialize the sectioning commands for the associated
+%   \texttt{ListOf} level.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_IfDefined:nT {
-    \__UWMad_IfDefined:nnnnT
-        {c__UWMad_ListOf}
-        {#1}
-        {_IsDefined_tl}
-        {ListOf}
-        {#2}
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{
-%   \UWMad_ListOf_MakeNumbered:n,\UWMad_ListOf_MakeNotNumbered:n}
-%   Makes the current section of the \texttt{ListOf} with \marg{ID} numbered
-%   or unnumbered (i.e., a star version).
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_MakeNumbered:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_set_true:c {g__UWMad_ListOf#1_IsNumbered_bool}
+\cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommand:n {
+    \UWMad_IfSectionExists:nT {
+        \tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}
+    } {
+        \cs_set_eq:cc
+            {__UWMad_ListOf_SectioningCommand_ #1 :}
+            {\tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}}
     }
 }
-\cs_new:Nn \UWMad_ListOf_MakeNotNumbered:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_set_false:c {g__UWMad_ListOf#1_IsNumbered_bool}
-    }
+\cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommands: {
+    \__UWMad_ListOf_Initialize_SectioningCommand:n {Main}
+    \__UWMad_ListOf_Initialize_SectioningCommand:n {Group}
+    \__UWMad_ListOf_Initialize_SectioningCommand:n {Subgroup}
 }
 %    \end{macrocode}
-%   \end{macro}
 %
-%
-%
-%   \begin{macro}{\UWMad_ListOf_IfNumbered:nTF}
-%   Branches to \marg{True Code} or \marg{False Code} depending on whether
-%   the \texttt{ListOf} with \marg{ID} is numbered or not.
-%
+%   This function initializes the list of using the helper functions above.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_IfNumbered:nTF {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_if:cTF {g__UWMad_ListOf#1_IsNumbered_bool} {
-            #2
-        }{
-            #3
+\cs_new:Nn \__UWMad_ListOf_Initialize_TitlePrinter:n {
+    \cs_set:cn {UWMad_ListOf_PrintTitle_ #1 :nn} {
+        \UWMad_Hash_Get:nn{l__ListOf_Hook}{PreTitle-#1}
+        \bool_if:cTF {l__UWMad_ListOf_MakeNumbered_ #1 _bool} {
+            \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
+                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :}[##1]{##2}
+            } {
+                \int_gset_eq:NN \l_tmpa_int \c@tocdepth
+                \int_gset:Nn \c@tocdepth {-1}
+                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :}{##2}
+                \int_gset:Nn \c@tocdepth {\l_tmpa_int}
+            }
+        } {
+            \use:c{__UWMad_ListOf_SectioningCommand_ #1 :} * {##2}
+            \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
+                \addcontentsline
+                    {toc}
+                    {\tl_use:c{l__UWMad_ListOf_Section_ #1 _tl}}
+                    {##1}
+            } { }
         }
+        \UWMad_Hash_Get:nn{l__ListOf_Hook}{PostTitle-#1}
     }
 }
+\cs_new:Nn \__UWMad_ListOf_Initialize_TitlePrinters: {
+    \__UWMad_ListOf_Initialize_TitlePrinter:n {Main}
+    \__UWMad_ListOf_Initialize_TitlePrinter:n {Group}
+    \__UWMad_ListOf_Initialize_TitlePrinter:n {Subgroup}
+}
 %    \end{macrocode}
-%   \end{macro}
 %
-%
-%
-%   \begin{macro}{
-%   \UWMad_ListOf_IncludeInTOC:n,\UWMad_ListOf_DoNotIncludeInTOC:n}
-%   Makes the current section of the \texttt{ListOf} with \marg{ID} appear in
-%   the Table of Contents (TOC)  or not, regardless of if it is
-%   numbered/unnumbered.
-%
+%   This function initializes the list of using the helper functions above.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_IncludeInTOC:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_set_true:c {c__UWMad_ListOf#1_IncludeInTOC_bool}
-    }
+\cs_new:Nn \__UWMad_ListOf_Clear: {
+    \UWMad_Queue_Clear:n   {l__ListOf_EntryQueue}
+    \__UWMad_Listof_SetHooks_Blank:
 }
-\cs_new:Nn \UWMad_ListOf_DoNotIncludeInTOC:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_set_false:c {c__UWMad_ListOf#1_IncludeInTOC_bool}
-    }
-}
-%    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{macro}{\UWMad_ListOf_IfIncludeInTOC:n}
-%   Branches to \marg{True Code} or \marg{False Code} depending on whether
-%   the \texttt{ListOf} with \marg{ID} is to be included or not.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_IfIncludeInTOC:nTF {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \bool_if:cTF {c__UWMad_ListOf#1_IncludeInTOC_bool} {
-            #2
-        }{
-            #3
-        }
-    }
+\cs_new:Nn \UWMad_ListOf_Initialize: {
+    \__UWMad_ListOf_Clear:
+    \__UWMad_ListOf_Initialize_SectioningCommands:
+    \__UWMad_ListOf_Initialize_TitlePrinters:
 }
 %    \end{macrocode}
-%   \end{macro}
-%
-%
-%
-%   \begin{function}{
-%       \UWMad_ListOf_SetTitle_Main:nn,
-%       \UWMad_ListOf_SetTitle_Group:nn,
-%       \UWMad_ListOf_SetTitle_Subgroup:nn}
-%   \begin{syntax}
-%       \cs{UWMad_ListOf_SetTitle_Main:nn}\Arg{ID}\Arg{Title}
-%       \cs{UWMad_ListOf_SetTitle_Group:nn}\Arg{ID}\Arg{Title}
-%       \cs{UWMad_ListOf_SetTitle_Subgroup:nn}\Arg{ID}\Arg{Title}
-%   \end{syntax}
-%   Sets the value of the title of the sections to \marg{Title} for the
-%   \texttt{ListOf} with \marg{ID}
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_SetTitle_Main:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Title_Main_tl}{#2}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetTitle_Group:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Title_Group_tl}{#2}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetTitle_Subgroup:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Title_Subgroup_tl}{#2}
-    }
-}
-%    \end{macrocode}
-%   \end{function}
-%
-%
-%
-%   \begin{function}{
-%       \UWMad_ListOf_GetTitle_Main:nn,
-%       \UWMad_ListOf_GetTitle_Group:nn,
-%       \UWMad_ListOf_GetTitle_Subgroup:nn}
-%   \begin{syntax}
-%       \cs{UWMad_ListOf_GetTitle_Main:n}    \Arg{ID}
-%       \cs{UWMad_ListOf_GetTitle_Group:n}   \Arg{ID}
-%       \cs{UWMad_ListOf_GetTitle_Subgroup:n}\Arg{ID}
-%   \end{syntax}
-%   Retrieces the value of the title of the section for the
-%   \texttt{ListOf} with \marg{ID}.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_GetTitle_Main:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Title_Main_tl}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_GetTitle_Group:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Title_Group_tl}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_GetTitle_Subgroup:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Title_Subgroup_tl}
-    }
-}
-%    \end{macrocode}
-%   \end{function}
-%
-%
-%
-%   \begin{function}{
-%       \UWMad_ListOf_SetSection_Main:nn,
-%       \UWMad_ListOf_SetSection_Group:nn,
-%       \UWMad_ListOf_SetSection_Subgroup:nn}
-%   \begin{syntax}
-%       \cs{UWMad_ListOf_SetSection_Main:nn}\Arg{ID}\Arg{Section}
-%       \cs{UWMad_ListOf_SetSection_Group:nn}\Arg{ID}\Arg{Section}
-%       \cs{UWMad_ListOf_SetSection_Subgroup:nn}\Arg{ID}\Arg{Section}
-%   \end{syntax}
-%   Sets the value of the section level and (currently) the sectioning
-%   command for a particular group to \Arg{Section} of the \texttt{ListOf}
-%   with \Arg{ID}.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_SetSection_Main:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Section_Main_tl}{#2}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetSection_Group:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Section_Group_tl}{#2}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_SetSection_Subgroup:nn {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_set:cn {g__UWMad_ListOf#1_Section_Subgroup_tl}{#2}
-    }
-}
-%    \end{macrocode}
-%   \end{function}
-%
-%
-%
-%   \begin{function}{
-%       \UWMad_ListOf_GetSection_Main:n,
-%       \UWMad_ListOf_GetSection_Group:n,
-%       \UWMad_ListOf_GetSection_Subgroup:n}
-%   \begin{syntax}
-%       \cs{UWMad_ListOf_GetSection_Main:n}\Arg{ID}
-%       \cs{UWMad_ListOf_GetSection_Group:n}\Arg{ID}
-%       \cs{UWMad_ListOf_GetSection_Subgroup:n}\Arg{ID}
-%   \end{syntax}
-%   Gets the value of the section level for a particular group of the
-%   \texttt{ListOf} with \Arg{ID}.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_GetSection_Main:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Section_Main_tl}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_GetSection_Group:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Section_Group_tl}
-    }
-}
-\cs_new:Nn \UWMad_ListOf_GetSection_Subgroup:n {
-    \UWMad_ListOf_IfDefined:nT {#1} {
-        \tl_use:c {g__UWMad_ListOf#1_Section_Subgroup_tl}
-    }
-}
-%    \end{macrocode}
-%   \end{function}
-%
-%
-%
-%   \begin{function}{\UWMad_ListOf_SetHook:nnn}
-%   \begin{syntax}
-%       \cs{UWMad_ListOf_SetHook:nnn}\Arg{ID}\Arg{Hook name}\Arg{Hook code}
-%   \end{syntax}
-%   Sets \Arg{Hook name} to \Arg{Hook code} for the \texttt{ListOf}
-%   with \Arg{ID}.
-%   The current hooks used are: \texttt{PrePush}, \texttt{PostPush},
-%   \texttt{PrePrint}, and \texttt{PostPrint}.
-%
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_SetHook:nnn {
-    \UWMad_Hash_Set:nnn{g__ListOf#1_Hook}{#2}{#3}
-}
-%    \end{macrocode}
-%   \end{function}
-%
 %
 %
 %   \begin{function}{\UWMad_ListOf_PushEntry:nn}
@@ -576,13 +425,14 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %   Pushes \Arg{Entry} on to the entry queue of the \texttt{ListOf} with \Arg{ID}.
 %
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_PushEntry:nn {
-    \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PrePush}
-    \UWMad_Queue_Push:nn {g__ListOf#1_EntryQueue}{#2}
-    \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PostPush}
+\cs_new:Nn \UWMad_ListOf_PushEntry:n {
+    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PrePush}
+    \UWMad_Queue_Push:nn {l__ListOf_EntryQueue}{#1}
+    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PostPush}
 }
 %    \end{macrocode}
 %   \end{function}
+%
 %
 %
 %
@@ -595,250 +445,57 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %   are also called here.
 %
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_PrintEntries:n {
-    \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PrePrint}
-    \UWMad_Queue_Walk:nn {g__ListOf#1_EntryQueue}{##1}
-    \UWMad_Queue_Clear:n {g__ListOf#1_EntryQueue}
-    \UWMad_Hash_Get:nn   {g__ListOf#1_Hook}{PostPrint}
+\cs_new:Nn \UWMad_ListOf_PrintEntries: {
+    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PrePrint}
+    \UWMad_Queue_Walk:nn {l__ListOf_EntryQueue}{##1}
+    \UWMad_Queue_Clear:n {l__ListOf_EntryQueue}
+    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PostPrint}
 }
 %    \end{macrocode}
 %   \end{function}
 %
 %
 %
-%   \begin{function}{\UWMad_ListOf_PrintTitle:nn}
-%   \begin{syntax}
-%       \cs{UWMad_ListOf_PrintTitle:nn}\Arg{ID}\Arg{Group}
-%   \end{syntax}
-%   Prints the title for the \Arg{Group} of the \texttt{ListOf} with
-%   \Arg{ID} at the section indicated by its associated token
-%   list.
-%   Numbering and table of contents adding is done according to the
-%   current values of their respective booleans.
-%
-%    \begin{macrocode}
-\cs_new:Nn \__UWMad_ListOf_CurrentSectioningCommmand:n {}
-\cs_new:Nn \UWMad_ListOf_PrintTitle:nn {
-
-    \cs_set_eq:Nc
-        \__UWMad_ListOf_CurrentSectioningCommmand:n
-        {\tl_use:c{g__UWMad_ListOf#1_Section_#2_tl}}
-
-    \UWMad_ListOf_IfNumbered:nTF {#1} {
-
-        \tl_if_eq:nnTF {#2} {Main} {
-            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} { } {
-                \int_set_eq:NN \l_tmpa_int \c@tocdepth
-                \setcounter{tocdepth}{-1}
-            }
-        } { 
-            \int_set_eq:NN \l_tmpa_int \c@tocdepth
-            \setcounter{tocdepth}{-1}
-        }
-
-
-        \__UWMad_ListOf_CurrentSectioningCommmand:n
-            {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
-
-
-        \tl_if_eq:nnTF #2 {Main} {
-            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} { } {
-                \setcounter{tocdepth}{\l_tmpa_int}
-            }
-        } { 
-            \setcounter{tocdepth}{\l_tmpa_int}
-        }
-
-    } {
-    
-        \cs_generate_variant:Nn \tl_if_eq:nnTF {onTF}
-        \tl_set:Nn \l_tmpa_tl {Main}
-    
-        \phantomsection
-        \__UWMad_ListOf_CurrentSectioningCommmand:n*
-        {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
-        \tl_if_eq:onTF {#2} {Main} {
-            \UWMad_ListOf_IfIncludeInTOC:nTF {#1} {
-                \addcontentsline
-                    {toc}
-                    {\tl_use:c {g__UWMad_ListOf#1_Section_#2_tl}}
-                    {\tl_use:c {g__UWMad_ListOf#1_Title_#2_tl}}
-            } { }
-        } { }
-    }
-
-}
-%    \end{macrocode}
-%   \end{function}
 %
 %
 %
-%   \begin{function}{\UWMad_ListOf_StartGroup:nn}
-%   \begin{syntax}
-%       \cs{UWMad_ListOf_StartGroup:n}\Arg{ID}\Arg{Group}
-%   \end{syntax}
-%   A shortcut command that prints the entires in the current queue
-%   and then starts the next section by printing the title.
 %
-%    \begin{macrocode}
-\cs_new:Nn \UWMad_ListOf_StartGroup:nn {
-    \UWMad_ListOf_PrintEntries:n{#1}
-    \UWMad_ListOf_PrintTitle:nn {#1}{#2}
-}
-%    \end{macrocode}
-%   \end{function}
+%
+%
+%
 %
 %
 %
 %
 %
 %   \UWSubModule{Nomenclature}
+%
 %   Dimensions that are calculated are declared first.
 %    \begin{macrocode}
 \dim_new:N \l__UWMad_Nomenclature_WidestSymbol_dim
 \dim_new:N \l__UWMad_Nomenclature_WidestUnit_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_WidthSymbol_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_WidthUnits_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_WidthDescription_dim
+\dim_new:N \l__UWMad_Nomenclature_Entry_Symbol_Width_dim
+\dim_new:N \l__UWMad_Nomenclature_Entry_Units_Width_dim
+\dim_new:N \l__UWMad_Nomenclature_Entry_Description_Width_dim
 %    \end{macrocode}
 %
 %   Then user-adjustable dimensions are declared.
 %    \begin{macrocode}
-\dim_new:N \l__UWMad_Nomenclature_TitleSkip_dim
-\dim_new:N \l__UWMad_Nomenclature_PrintSkip_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_MarginLeft_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_MarginBottom_dim
-\dim_new:N \l__UWMad_Nomenclature_Entry_Padding_dim
+\dim_new:N \l_UWMad_Nomenclature_Skip_EntryPrint_dim
+\dim_new:N \l_UWMad_Nomenclature_Entry_Margin_Left_dim
+\dim_new:N \l_UWMad_Nomenclature_Entry_Margin_Bottom_dim
+\dim_new:N \l_UWMad_Nomenclature_Entry_Margin_Right_dim
+\dim_new:N \l_UWMad_Nomenclature_Entry_Margin_Top_dim
+\dim_new:N \l_UWMad_Nomenclature_Entry_Pad_Column_dim
 %    \end{macrocode}
 %
-%   The token lists that hold the section and title of the
-%   groups are declared
+%
+%
 %    \begin{macrocode}
-\tl_new:N \l__UWMad_Nomenclature_Section_Main_tl
-\tl_new:N \l__UWMad_Nomenclature_Section_Group_tl
-\tl_new:N \l__UWMad_Nomenclature_Section_Subgroup_tl
-\tl_new:N \l__UWMad_Nomenclature_Title_Main_tl
-\tl_new:N \l__UWMad_Nomenclature_Title_Group_tl
-\tl_new:N \l__UWMad_Nomenclature_Title_Subgroup_tl
+\bool_new:N \l__UWMad_Nomenclature_IncludeUnitsColumns_bool
+\tl_new:N   \l__UWMad_Nomenclature_Entry_LineStretch_tl
+\tl_new:N   \l__UWMad_Nomenclature_Title_Main_tl
 %    \end{macrocode}
-%
-%   Now the keys for user-customization are defined:
-%    \begin{macrocode}
-\clist_new:N   \g__UWMad_Nomenclature_KeyValuePairs_clist
-\clist_gset:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {
-%    \end{macrocode}
-%
-%   Adjustable dimensions:
-%    \begin{macrocode}
-    title-skip .dim_set:N = \l__UWMad_Nomenclature_TitleSkip_dim,
-    print-skip .dim_set:N = \l__UWMad_Nomenclature_PrintSkip_dim,
-    entry-margin-left .dim_set:N =
-        \l__UWMad_Nomenclature_Entry_MarginLeft_dim,
-    entry-margin-bottom .dim_set:N =
-        \l__UWMad_Nomenclature_Entry_MarginBottom_dim,
-    entry-padding .dim_set:N =
-        \l__UWMad_Nomenclature_Entry_Padding_dim,
-%    \end{macrocode}
-%
-%   Adjustable dimension defaults:
-%    \begin{macrocode}
-    title-skip          .default:n  = {0.00pt},
-    print-skip          .default:n  = {1.00em},
-    entry-margin-left   .default:n  = {1.00em},
-    entry-margin-bottom .default:n  = {0.25em},
-    entry-padding       .default:n  = {0.75em},
-%    \end{macrocode}
-%
-%   Group section adjustments:
-%    \begin{macrocode}
-    main-section .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Section_Main_tl {#1}
-    },
-    group-section .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Section_Group_tl {#1}
-    },
-    subgroup-section .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Section_Subgroup_tl {#1}
-    },
-%    \end{macrocode}
-%
-%   The default nomenclature section is chapter.
-%   Since the other two groups of empty by default, the Nomenclature
-%   environment will handle them.
-%    \begin{macrocode}
-    main-section .default:n = chapter,
-%    \end{macrocode}
-%
-%   Group title adjustments:
-%    \begin{macrocode}
-    main-title .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Title_Main_tl {#1}
-    },
-    group-title .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Title_Group_tl {#1}
-    },
-    subgroup-title .code:n = {
-        \tl_set:Nn
-            \l__UWMad_Nomenclature_Title_Subgroup_tl {#1}
-    },
-%    \end{macrocode}
-%
-%   Group title default for main group only:
-%    \begin{macrocode}
-    main-title .default:n = Nomenclature,
-%    \end{macrocode}
-%
-%   Miscellaneous options:
-%    \begin{macrocode}
-    numbered       .bool_gset:N = 
-        \g__UWMad_Nomenclature_IsNumbered_bool,
-    include-in-toc .bool_gset:N =
-        \g__UWMad_Nomenclature_IncludeInTOC_bool,
-    with-units .bool_gset:N =
-        \g__UWMad_Nomenclature_IncludeUnitsColumn_bool,
-%    \end{macrocode}
-%
-%   Miscellaneous option defaults:
-%    \begin{macrocode}
-      numbered     .default:n = false,
-    include-in-toc .default:n = true,
-     with-units    .default:n = false
-}
-%    \end{macrocode}
-%
-%   Define the keys for the Nomenclature system by expanding the \texttt{clist}
-%   created above.
-%    \begin{macrocode}
-\exp_args:Nnf
-    \keys_define:nn
-    { UWMadThesis / Nomenclature }
-    {
-        \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
-    }
-%    \end{macrocode}
-%
-%   And the defaults for all keys are now set.
-%    \begin{macrocode}
-\keys_set:nn { UWMadThesis / Nomenclature } {
-    title-skip          ,
-    print-skip          ,
-    entry-margin-left   ,
-    entry-margin-bottom ,
-    entry-padding       ,
-    numbered            ,
-    include-in-toc      ,
-    with-units          ,
-    main-section        ,
-    main-title
-}
-%    \end{macrocode}
-%
-%
 %
 %
 %   \begin{function} {
@@ -886,7 +543,7 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 \cs_new:Nn \UWMad_Nomenclature_ZeroWidest_Symbol: {
     \dim_set:Nn \l__UWMad_Nomenclature_WidestSymbol_dim {0pt}
 }
-\cs_new:Nn \UWMad_Nomenclature_ZeroWidest_Unit: {
+\cs_new:Nn \UWMad_Nomenclature_ZeroWidest_Units: {
     \dim_set:Nn \l__UWMad_Nomenclature_WidestUnit_dim {0pt}
 }
 %    \end{macrocode}
@@ -906,29 +563,31 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %       present) unit boxes for a particular entry.
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths_NoUnits: {
-    \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthSymbol_dim {
+    \dim_set:Nn \l__UWMad_Nomenclature_Entry_Symbol_Width_dim {
         1.01\l__UWMad_Nomenclature_WidestSymbol_dim
     }
-    \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthDescription_dim {
+    \dim_set:Nn \l__UWMad_Nomenclature_Entry_Description_Width_dim {
         0.995\textwidth -
-        \l__UWMad_Nomenclature_Entry_MarginLeft_dim  -
-        \l__UWMad_Nomenclature_Entry_WidthSymbol_dim -
-        \l__UWMad_Nomenclature_Entry_Padding_dim
+        \l_UWMad_Nomenclature_Entry_Margin_Left_dim   -
+        \l__UWMad_Nomenclature_Entry_Symbol_Width_dim -
+        \l_UWMad_Nomenclature_Entry_Pad_Column_dim      -
+        \l_UWMad_Nomenclature_Entry_Margin_Right_dim
     }
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths_Units: {
-    \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthSymbol_dim {
+    \dim_set:Nn \l__UWMad_Nomenclature_Entry_Symbol_Width_dim {
         1.01\l__UWMad_Nomenclature_WidestSymbol_dim
     }
-    \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthUnit_dim {
+    \dim_set:Nn \l__UWMad_Nomenclature_Entry_Units_Width_dim {
         1.01\l__UWMad_Nomenclature_WidestUnit_dim
     }
-    \dim_set:Nn \l__UWMad_Nomenclature_Entry_WidthDescription_dim {
+    \dim_set:Nn \l__UWMad_Nomenclature_Entry_Description_Width_dim {
         0.995\textwidth -
-         \l__UWMad_Nomenclature_Entry_MarginLeft_dim  -
-         \l__UWMad_Nomenclature_Entry_WidthSymbol_dim -
-         \l__UWMad_Nomenclature_Entry_WidthUnit_dim   -
-        2\l__UWMad_Nomenclature_Entry_Padding_dim
+         \l_UWMad_Nomenclature_Entry_Margin_Left_dim   -
+         \l__UWMad_Nomenclature_Entry_Symbol_Width_dim -
+         \l__UWMad_Nomenclature_Entry_Units_Width_dim  -
+        2\l_UWMad_Nomenclature_Entry_Pad_Column_dim       -
+         \l_UWMad_Nomenclature_Entry_Margin_Right_dim
     }
 }
 %    \end{macrocode}
@@ -945,7 +604,7 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %       This function calls one of the appropriate above setters.
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths: {
-    \bool_if:NTF \g__UWMad_Nomenclature_IncludeUnitsColumn_bool {
+    \bool_if:NTF \l__UWMad_Nomenclature_IncludeUnitsColumn_bool {
         \UWMad_Nomenclature_SetEntryWidths_Units:
     } {
         \UWMad_Nomenclature_SetEntryWidths_NoUnits:
@@ -968,47 +627,58 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %       \end{syntax}
 %       These functions typeset the contents passed into them.
 %    \begin{macrocode}
-\coffin_new:N \l_tmpc_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Entry_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Symbol_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Description_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Units_coffin
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_NoUnits:nn {
+    \coffin_clear:N \l__UWMad_Nomenclature_Entry_coffin
+    \coffin_clear:N \l_tmpa_coffin
     \vcoffin_set:Nnn
-        \l_tmpa_coffin
-        {\l__UWMad_Nomenclature_Entry_WidthSymbol_dim}
-        {#1}
+        \l__UWMad_Nomenclature_Symbol_coffin
+        {\l__UWMad_Nomenclature_Entry_Symbol_Width_dim} {#1}
     \vcoffin_set:Nnn
-        \l_tmpb_coffin
-        {\l__UWMad_Nomenclature_Entry_WidthDescription_dim}
-        {#2}
+        \l__UWMad_Nomenclature_Description_coffin
+        {\l__UWMad_Nomenclature_Entry_Description_Width_dim} {#2}
+    \coffin_join:NnnNnnnn
+        \l__UWMad_Nomenclature_Entry_coffin       {l}{t}
+        \l__UWMad_Nomenclature_Symbol_coffin      {l}{t}
+        {\l_UWMad_Nomenclature_Entry_Margin_Left_dim}{0pt}
+    \coffin_join:NnnNnnnn
+        \l__UWMad_Nomenclature_Entry_coffin        {r}{t}
+        \l__UWMad_Nomenclature_Description_coffin  {l}{t}
+        {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}{0pt}
     \group_begin:
-        \setstretch{1.1}
-        \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_MarginLeft_dim}
-        \coffin_typeset:Nnnnn \l_tmpa_coffin {l}{t}{0pt}{0pt}
-        \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_Padding_dim}
-        \coffin_typeset:Nnnnn \l_tmpb_coffin {l}{t}{0pt}{0pt}
-        \skip_vertical:n {\l__UWMad_Nomenclature_Entry_MarginBottom_dim}
+        \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
+        \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
+        \coffin_typeset:Nnnnn
+            \l__UWMad_Nomenclature_Entry_coffin {l}{t}{0pt}{0pt}
+        \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
     \group_end:
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_Units:nnn {
     \vcoffin_set:Nnn
         \l_tmpa_coffin
-        {\l__UWMad_Nomenclature_Entry_WidthSymbol_dim}
+        {\l__UWMad_Nomenclature_Entry_Symbol_Width_dim}
         {#1}
     \vcoffin_set:Nnn
         \l_tmpb_coffin
-        {\l__UWMad_Nomenclature_Entry_WidthUnit_dim}
+        {\l__UWMad_Nomenclature_Entry_Units_Width_dim}
         {#2}
     \vcoffin_set:Nnn
         \l_tmpc_coffin
-        {\l__UWMad_Nomenclature_Entry_WidthDescription_dim}
+        {\l__UWMad_Nomenclature_Entry_Description_Width_dim}
         {#3}
     \group_begin:
-        \setstretch{1.1}
-        \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_MarginLeft_dim}
+        \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
+        \skip_vertical:n   {\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
+        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Margin_Left_dim}
         \coffin_typeset:Nnnnn \l_tmpa_coffin {l}{t}{0pt}{0pt}
-        \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_Padding_dim}
+        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}
         \coffin_typeset:Nnnnn \l_tmpb_coffin {l}{t}{0pt}{0pt}
-        \skip_horizontal:n {\l__UWMad_Nomenclature_Entry_Padding_dim}
+        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}
         \coffin_typeset:Nnnnn \l_tmpc_coffin {l}{t}{0pt}{0pt}
-        \skip_vertical:n {\l__UWMad_Nomenclature_Entry_MarginBottom_dim}
+        \skip_vertical:n {\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
     \group_end:
 }
 %    \end{macrocode}
@@ -1016,120 +686,67 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %
 %
 %
+%
 %    \begin{macrocode}
-\DeclareDocumentEnvironment {Nomenclature} { o g } {
+\DeclareDocumentEnvironment {Nomenclature} { o o } {
 %
-%   Create the ListOf
-    \UWMad_ListOf_Define:n {Nomenclature}
-%
-%
-%   Check for an optional section declaration and
-%   set Main section token list.
-    \IfNoValueTF {#1} { } {
-        \UWMad_IfSectionExists:nT {#1} { }
-        \tl_set:Nn \l__UWMad_Nomenclature_Section_Main_tl {#1}
-    }
+%   Initialization
+    \UWMad_ListOf_Initialize:
+    \setlength{\parskip}{0pt}
 %
 %
 %   Check for an optional section declaration and
 %   set Main section token list.
-    \IfNoValueTF {#2} { } {
-        \tl_set:Nf
-            \l__UWMad_Nomenclature_Title_Main_tl {#2}
-    }
-    \UWMad_ListOf_SetTitle_Main:nn {Nomenclature}
-        {\l__UWMad_Nomenclature_Title_Main_tl}
-%
-%
-   \bool_if:NTF \g__UWMad_Nomenclature_IsNumbered_bool {
-        \UWMad_ListOf_MakeNumbered:n    {Nomenclature}
-    }{
-        \UWMad_ListOf_MakeNotNumbered:n {Nomenclature}
-    }
-%
-%
-%
-%   If Group section token list is empty, set it to the following
-%   section after Main in the LaTeX sectioning hierarchy.
-%   Otherwise, take the value at its word.
-    \tl_if_empty:NTF \l__UWMad_Nomenclature_Section_Group_tl {
-        \tl_set:Nf \l__UWMad_Nomenclature_Section_Group_tl {
-            \UWMad_NextSection:n {
-                \l__UWMad_Nomenclature_Section_Main_tl
-            }
-        }
+    \IfValueTF {#1} {
+        \tl_set:Nx \l__UWMad_ListOf_Title_Main_tl { #1 }
     } { }
 %
-%   If Subgroup section token list is empty, set it to the following
-%   section after Group in the LaTeX sectioning hierarchy.
-%   Otherwise, take the value at its word.
-    \tl_if_empty:NTF \l__UWMad_Nomenclature_Section_Subgroup_tl {
-        \tl_set:Nf \l__UWMad_Nomenclature_Section_Subgroup_tl {
-            \UWMad_NextSection:n {
-                \l__UWMad_Nomenclature_Section_Group_tl
-            }
-        }
-    } { }
 %
-%   Set the sections with the Nomenclature ListOf instance
-    \UWMad_ListOf_SetSection_Main:nn
-        {Nomenclature} {\l__UWMad_Nomenclature_Section_Main_tl}
-    \UWMad_ListOf_SetSection_Group:nn
-        {Nomenclature} {\l__UWMad_Nomenclature_Section_Group_tl}
-    \UWMad_ListOf_SetSection_Subgroup:nn
-        {Nomenclature} {\l__UWMad_Nomenclature_Section_Subgroup_tl}
-%
-%
-%   Determine if this nomenclature should be in the Table of Contents
-    \bool_if:NTF \g__UWMad_Nomenclature_IncludeInTOC_bool {
-        \UWMad_ListOf_IncludeInTOC:n {Nomenclature}
-    } {
-        \UWMad_ListOf_DoNotIncludeInTOC:n {Nomenclature}
-    }
 %
 %   Set some hooks in the Nomenclature ListOf instance
-    \UWMad_ListOf_SetHook:nnn {Nomenclature} {PrePrint} {
+    \UWMad_ListOf_SetHook:nn {PrePrint} {
         \UWMad_Nomenclature_SetEntryWidths:
     }
-    \UWMad_ListOf_SetHook:nnn {Nomenclature} {PostPrint} {
+    \UWMad_ListOf_SetHook:nn {PostPrint} {
         \UWMad_Nomenclature_ZeroWidest_Symbol:
+        \UWMad_Nomenclature_ZeroWidest_Units:
     }
 %
 %
 %   User front-end for creating a Group
-    \DeclareDocumentCommand \Group { G{} } {
-        \IfNoValueTF {##1} { } {
-            \tl_set:Nn
-                \l__UWMad_Nomenclature_Title_Group_tl {##1}
+    \DeclareDocumentCommand \Group { o m } {
+        \UWMad_ListOf_PrintEntries:
+        \IfNoValueTF {##1} {
+            \UWMad_ListOf_PrintTitle_Group:nn{##2}{##2}
+        } {
+            \UWMad_ListOf_PrintTitle_Group:nn{##1}{##2}
         }
-        \UWMad_ListOf_SetTitle_Group:nn {Nomenclature}
-            {\l__UWMad_Nomenclature_Title_Group_tl}
-        \UWMad_ListOf_StartGroup:nn{Nomenclature}{Group}
     }
 %
 %   User front-end for creating a Subgroup
-    \DeclareDocumentCommand \Subgroup { G{} } {
-        \IfNoValueTF {##1} { } {
-            \tl_set:Nn
-                \l__UWMad_Nomenclature_Title_Subgroup_tl {##1}
+    \DeclareDocumentCommand \Subgroup { o m } {
+        \UWMad_ListOf_PrintEntries:
+        \IfNoValueTF {##1} {
+            \UWMad_ListOf_PrintTitle_Subgroup:nn{##2}{##2}
+        } {
+            \UWMad_ListOf_PrintTitle_Subgroup:nn{##1}{##2}
         }
-        \UWMad_ListOf_SetTitle_Subgroup:nn {Nomenclature}
-            {\l__UWMad_Nomenclature_Title_Subgroup_tl}
-        \UWMad_ListOf_StartGroup:nn{Nomenclature}{Subgroup}
     }
 %
 %   User front-end for creating an entry
-    \bool_if:NTF \g__UWMad_Nomenclature_IncludeUnitsColumn_bool {
+    \cs_undefine:N \Entry
+    \bool_if:NTF \l__UWMad_Nomenclature_IncludeUnitsColumn_bool {
         \DeclareDocumentCommand \Entry { m m m } {
-            \UWMad_ListOf_PushEntry:nn {Nomenclature} {
+            \UWMad_ListOf_PushEntry:n {
                 \UWMad_Nomenclature_SetEntry_Units:nnn
                     {##1} {##2} {##3}
             }
             \UWMad_Nomenclature_UpdateWidest_Symbol:n{##1}
+            \UWMad_Nomenclature_UpdateWidest_Units:n{##2}
         }
     } {
         \DeclareDocumentCommand \Entry { m m } {
-            \UWMad_ListOf_PushEntry:nn {Nomenclature} {
+            \UWMad_ListOf_PushEntry:n {
                 \UWMad_Nomenclature_SetEntry_NoUnits:nn
                     {##1} {##2}
             }
@@ -1138,28 +755,146 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
     }
 %
 %   User front-end for reseting the column width
-    \DeclareDocumentCommand  \ResetColumnWidth { } {
-        \UWMad_Nomenclature_ZeroWidest_Symbol:
-        \UWMad_Nomenclature_ZeroWidest_Unit:
+    \DeclareDocumentCommand  \PrintEntries { } {
+        \UWMad_ListOf_PrintEntries:
     }
 %
 %
-%   Print the main section title
-    \UWMad_ListOf_PrintTitle:nn {Nomenclature}{Main}
+    \IfNoValueTF {#2} {
+        \IfNoValueTF {#1} {
+            \UWMad_ListOf_PrintTitle_Main:nn
+                {\l__UWMad_Nomenclature_Title_Main_tl}
+                {\l__UWMad_Nomenclature_Title_Main_tl}
+        } {
+            \UWMad_ListOf_PrintTitle_Main:nn{#1}{#1}
+        }
+    } {
+        \UWMad_ListOf_PrintTitle_Main:nn{#1}{#2}
+    }
 %
 } {
-%   Flush the remaining entries from the ListOf queue and
-%   delete the Nomenclature ListOf instance.
-    \UWMad_ListOf_PrintEntries:n {Nomenclature}
-    \UWMad_ListOf_Delete:n{Nomenclature}
+%   Flush the remaining entries from the ListOf queue.
+    \UWMad_ListOf_PrintEntries:
 }
 %
 %
 %
 %
-\DeclareDocumentEnvironment {Acronym} { o G{Acronym} } {
+%
+%
+%
+%
+\clist_new:N   \g__UWMad_Nomenclature_KeyValuePairs_clist
+\clist_gset:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {
+    main-title .tl_set:N  = \l__UWMad_Nomenclature_Title_Main_tl,
+    main-title .default:n = Nomenclature,
+    main-section     .tl_set:N = \l__UWMad_ListOf_Section_Main_tl,
+    group-section    .tl_set:N = \l__UWMad_ListOf_Section_Group_tl,
+    subgroup-section .tl_set:N = \l__UWMad_ListOf_Section_Subgroup_tl,
+    main-section     .default:n = chapter,
+    group-section    .default:n = section,
+    subgroup-section .default:n = subsection,
+    make-main-numbered     .bool_set:N =
+        \l__UWMad_ListOf_MakeNumbered_Main_bool,
+    make-group-numbered    .bool_set:N =
+        \l__UWMad_ListOf_MakeNumbered_Group_bool,
+    make-subgroup-numbered .bool_set:N =
+        \l__UWMad_ListOf_MakeNumbered_Subgroup_bool,
+    make-numbered .meta:n = {
+        make-main-numbered     = #1,
+        make-group-numbered    = #1,
+        make-subgroup-numbered = #1
+    },
+    make-numbered .default:n = false,
+    include-main-in-toc     .bool_set:N =
+        \l__UWMad_ListOf_IncludeInTOC_Main_bool,
+    include-group-in-toc    .bool_set:N =
+        \l__UWMad_ListOf_IncludeInTOC_Group_bool,
+    include-subgroup-in-toc .bool_set:N =
+        \l__UWMad_ListOf_IncludeInTOC_Subgroup_bool,
+    include-in-toc .meta:n = {
+        include-main-in-toc     = #1,
+        include-group-in-toc    = #1,
+        include-subgroup-in-toc = #1
+    },
+    include-in-toc .default:n = true,
+    include-units-column .bool_set:N =
+        \l__UWMad_Nomenclature_IncludeUnitsColumns_bool,
+    include-units-column .default:n = false,
+    print-skip           .dim_set:N =
+        \l_UWMad_Nomenclature_Skip_EntryPrint_dim,
+    entry-margin-top     .dim_set:N =
+        \l_UWMad_Nomenclature_Entry_Margin_Top_dim,
+    entry-margin-left    .dim_set:N =
+        \l_UWMad_Nomenclature_Entry_Margin_Left_dim,
+    entry-margin-right   .dim_set:N =
+        \l_UWMad_Nomenclature_Entry_Margin_Right_dim,
+    entry-margin-bottom  .dim_set:N =
+        \l_UWMad_Nomenclature_Entry_Margin_Bottom_dim,
+    entry-column-padding .dim_set:N =
+        \l_UWMad_Nomenclature_Entry_Pad_Column_dim,
+    print-skip           .default:n = 1em,
+    entry-margin-top     .default:n = 0pt,
+    entry-margin-left    .default:n = 1.1em,
+    entry-margin-right   .default:n = 0pt,
+    entry-margin-bottom  .default:n = 0.80em,
+    entry-column-padding .default:n = 0.80em,
+    entry-stretch .tl_set:N =
+        \l__UWMad_Nomenclature_Entry_LineStretch_tl,
+    entry-stretch .default:n = 1.1
+}
+%
+%
+\exp_args:Nnf
+    \keys_define:nn
+    { UWMadThesis / Nomenclature }
+    {
+        \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
+    }
+%
+%
+%
+\keys_set:nn { UWMadThesis / Nomenclature } {
+    main-title ,
+    main-section     ,
+    group-section    ,
+    subgroup-section ,
+    make-numbered ,
+    include-in-toc ,
+    include-units-column ,
+    print-skip           ,
+    entry-margin-top     ,
+    entry-margin-left    ,
+    entry-margin-right   ,
+    entry-margin-bottom  ,
+    entry-column-padding ,
+    entry-stretch
+}
+%
+%
+%
+%
+%
+%
+%
+%
+%
+\tl_new:N \l__UWMad_Acronym_Title_Main_tl
+%
+\DeclareDocumentEnvironment {Acronym} { o o } {
 
-    \begin{Nomenclature}[#1]{#2}
+    \IfNoValueTF {#2} {
+        \IfNoValueTF {#1} {
+            \begin{Nomenclature}
+                [\l__UWMad_Acronym_Title_Main_tl]
+                [\l__UWMad_Acronym_Title_Main_tl]
+        } {
+            \begin{Nomenclature}[#1][#1]
+        }
+    } {
+        \begin{Nomenclature}[#1][#2]
+    }
+
 %
 %
     \UWMad_Hash_Define:n{Acronyms}
@@ -1174,7 +909,7 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
             \UWMad_Hash_Set:nnn{AcronymMeanings}{##2}{##3}
             \bool_new:c {g__UWMad_Acronym_WasSet_##2_bool}
             %
-            \UWMad_ListOf_PushEntry:nn {Nomenclature} {
+            \UWMad_ListOf_PushEntry:n {
                 \hypertarget{Acronym:##2}{}
                 \UWMad_Nomenclature_SetEntry_NoUnits:nn
                     {##2} {##3}
@@ -1242,6 +977,8 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
     }
 \keys_define:nn { UWMadThesis / Acronym } {
+    main-title .tl_set:N  = \l__UWMad_Acronym_Title_Main_tl,
+    main-title .default:n = Acronyms,
     use-links .bool_gset:N = \g__UWMad_Acronym_UseLinks_bool,
     use-links .default:n = true,
     link-color .tl_gset:N = \g__UWMad_Acronym_LinkColor_tl,
@@ -1252,20 +989,25 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
 %   And the defaults for all keys are now set.
 %    \begin{macrocode}
 \keys_set:nn { UWMadThesis / Acronym } {
-    title-skip          ,
-    print-skip          ,
-    entry-margin-left   ,
-    entry-margin-bottom ,
-    entry-padding       ,
-    numbered            ,
-    include-in-toc      ,
-    with-units          ,
-    main-section        ,
-    main-title          ,
-    use-links           ,
+    main-title           ,
+    main-section         ,
+    group-section        ,
+    subgroup-section     ,
+    make-numbered        ,
+    include-in-toc       ,
+    include-units-column ,
+    print-skip           ,
+    entry-margin-top     ,
+    entry-margin-left    ,
+    entry-margin-right   ,
+    entry-margin-bottom  ,
+    entry-column-padding ,
+    entry-stretch        ,
+    use-links            ,
     link-color
 }
 %    \end{macrocode}
+%
 %
 %
 %

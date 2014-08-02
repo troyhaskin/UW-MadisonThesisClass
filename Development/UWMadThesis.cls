@@ -1851,12 +1851,12 @@
         \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
         \
         \textsl{#3}
-        \skip_vertical:n{-1.75em}
+        \tex_par:D{}
     }
 }
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     {
-        \setstretch{1}
+        \setstretch{0.25}
         \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
             \tex_hbox:D{}
             \skip_horizontal:n{2em}
@@ -1869,7 +1869,7 @@
             \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
             \
             (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
-            \skip_vertical:n{-1.75em}
+            \tex_par:D
         } { }
         \UWMad_Queue_Walk:nn {CommitteeList}{##1}
     }
