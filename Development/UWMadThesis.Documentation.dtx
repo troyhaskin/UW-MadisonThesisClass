@@ -1625,7 +1625,7 @@
     format        = hang                ,
     labelsep      = colon               ,
     justification = justified           ,
-    labelfont     = sc                  ,
+    labelfont     = sl                  ,
     textfont      = sl                  ,
     font          = {normal,stretch=1.1},
     width         = 0.9\textwidth       ,
@@ -1706,14 +1706,65 @@
 %
 %   Define user interfaces to specialized color commands.
 %    \begin{macrocode}
+\keys_define:nn { UWMadThesis / LayoutStyle } {
+    link-color .code:n = {
+        \hypersetup {
+            colorlinks = true,
+            linkcolor  = #1,
+        }
+    },
+    cite-color .code:n = {
+        \hypersetup {
+            colorlinks = true,
+            citecolor  = #1,
+        }
+    },
+    url-color .code:n = {
+        \hypersetup {
+            colorlinks = true,
+            urlcolor  = #1,
+        }
+    },
+    link-color .default:n = blue,
+    cite-color .default:n = UWMadGreen,
+    url-color  .default:n  = blue,
+    all-link-color .code:n = {
+        \hypersetup {
+            colorlinks = true,
+            linkcolor  = #1,
+            citecolor  = #1,
+            urlcolor   = #1,
+        }
+    },
+    make-links-blue .meta:n = {
+        all-link-color = blue
+    },
+    make-links-black .meta:n = {
+        all-link-color = black
+    },
+    make-links-red .meta:n = {
+        all-link-color = red
+    }
+}
+\keys_set:nn { UWMadThesis / LayoutStyle } {
+    link-color,
+    cite-color,
+    url-color
+}
 \DeclareDocumentCommand \MakeLinksBlack { } {
-    \MakeLinksThisColor{black}
+    \keys_set:nn { UWMadThesis / LayoutStyle } {
+        make-links-black = true
+    }
 }
 \DeclareDocumentCommand \MakeLinksBlue { } {
-    \MakeLinksThisColor{blue}
+    \keys_set:nn { UWMadThesis / LayoutStyle } {
+        make-links-blue = true
+    }
 }
 \DeclareDocumentCommand \MakeLinksRed { } {
-    \MakeLinksThisColor{red}
+    \keys_set:nn { UWMadThesis / LayoutStyle } {
+        make-links-red = true
+    }
 }
 %    \end{macrocode}
 %
@@ -1758,21 +1809,28 @@
 %
 %   Define user interface for defining different indentation styles.
 %    \begin{macrocode}
-\DeclareDocumentCommand \IndentParagraphs { } {
-    \setlength{\parindent}{1.50em}
-    \setlength{\parskip}  {0pt}
-
+\keys_define:nn { UWMadThesis / LayoutStyle } {
+    indent-length .code:n = {
+        \setlength{\parindent}{#1}
+    },
+    skip-length   .code:n = {
+        \setlength{\parskip}{#1}
+    },
+    indent-length .default:n = 0pt,
+    skip-length .default:n   = 1em,
+    paragraph-style .choice:,
+    paragraph-style / indent .code:n = {
+        \setlength{\parindent}{1.50em}
+        \setlength{\parskip}{0pt}
+    },
+    paragraph-style / pad    .code:n = {
+        \setlength{\parindent}{0pt}
+        \setlength{\parskip}{1em}
+    }
 }
-\DeclareDocumentCommand \PadParagraphs { } {
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}  {1em}
+\keys_set:nn { UWMadThesis / LayoutStyle } {
+    paragraph-style = pad
 }
-%    \end{macrocode}
-%
-%   Declare the default style of the \UWMadClass{} from the author:
-%   no indentation with extra space between paragraphs.
-%    \begin{macrocode}
-\PadParagraphs
 %    \end{macrocode}
 %
 %
