@@ -2743,17 +2743,19 @@
 %
 %
 %
-%
-%
-%
-%
-%
-%
-%
+%^^A ======================================================================= %
+%^^A                                                                         %
+%^^A                                                                         %
+%^^A                                                                         %
+%^^A                              Nomeclature                                %
+%^^A                                                                         %
+%^^A                                                                         %
+%^^A                                                                         %
+%^^A ======================================================================= %
 %
 %   \UWSubModule{Nomenclature}
 %
-%   Dimensions that are calculated are declared first.
+%   Dimensions that are calculated and private.
 %    \begin{macrocode}
 \dim_new:N \l__UWMad_Nomenclature_WidestSymbol_dim
 \dim_new:N \l__UWMad_Nomenclature_WidestUnit_dim
@@ -2762,7 +2764,7 @@
 \dim_new:N \l__UWMad_Nomenclature_Entry_Description_Width_dim
 %    \end{macrocode}
 %
-%   Then user-adjustable dimensions are declared.
+%   User-adjustable dimensions that are public.
 %    \begin{macrocode}
 \dim_new:N \l_UWMad_Nomenclature_Skip_EntryPrint_dim
 \dim_new:N \l_UWMad_Nomenclature_Entry_Margin_Left_dim
@@ -2773,11 +2775,58 @@
 %    \end{macrocode}
 %
 %
-%
+%   Coffins used in typesetting an entry's contents.
 %    \begin{macrocode}
-\bool_new:N \l__UWMad_Nomenclature_IncludeUnitsColumns_bool
+\coffin_new:N \l__UWMad_Nomenclature_Entry_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Symbol_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Description_coffin
+\coffin_new:N \l__UWMad_Nomenclature_Units_coffin
+%    \end{macrocode}
+%
+%
+%   Options for the units column.
+%    \begin{macrocode}
+\bool_new:N \l_UWMad_Nomenclature_Units_IncludeColumn_bool
+\bool_new:N \l_UWMad_Nomenclature_Units_UseSIUnitx_bool
+\bool_new:N \l_UWMad_Nomenclature_Units_UseDelimiter_bool
+\tl_new:N   \l_UWMad_Nomenclature_Units_Delimiter_Left_tl
+\tl_new:N   \l_UWMad_Nomenclature_Units_Delimiter_Right_tl
+%    \end{macrocode}
+%
+%   Miscellaneous token lists.
+%    \begin{macrocode}
 \tl_new:N   \l__UWMad_Nomenclature_Entry_LineStretch_tl
 \tl_new:N   \l__UWMad_Nomenclature_Title_Main_tl
+%    \end{macrocode}
+%
+%
+%
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_Nomenclature_SetUnitsBox:n {
+    \bool_if:nTF {
+        \l_UWMad_Nomenclature_Units_UseDelimiter_bool &&
+        \l_UWMad_Nomenclature_Units_UseSIUnitx_bool
+    } {
+        $
+        \left\l_UWMad_Nomenclature_Units_Delimiter_Left_tl
+            \si{#1}
+        \right\l_UWMad_Nomenclature_Units_Delimiter_Right_tl
+        $
+    } {
+        \bool_if:nTF {
+            \l_UWMad_Nomenclature_Units_UseDelimiter_bool &&
+            !\l_UWMad_Nomenclature_Units_UseSIUnitx_bool
+        } {
+            $
+            \left\l_UWMad_Nomenclature_Units_Delimiter_Left_tl
+                #1
+            \right\l_UWMad_Nomenclature_Units_Delimiter_Right_tl
+            $
+        }{
+            \si{#1}
+        }
+    }
+}
 %    \end{macrocode}
 %
 %
@@ -2807,7 +2856,10 @@
 %
 \cs_new:Nn \UWMad_Nomenclature_UpdateWidest_Units:n {
     \UWMad_Nomenclature_UpdateWidest:Nn
-        \l__UWMad_Nomenclature_WidestUnit_dim {#1}
+        \l__UWMad_Nomenclature_WidestUnit_dim
+        {
+            \UWMad_Nomenclature_SetUnitsBox:n{#1}
+        }
 }
 %    \end{macrocode}
 %   \end{function}
@@ -2859,17 +2911,17 @@
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths_Units: {
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_Symbol_Width_dim {
-        1.01\l__UWMad_Nomenclature_WidestSymbol_dim
+        1.05\l__UWMad_Nomenclature_WidestSymbol_dim
     }
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_Units_Width_dim {
-        1.01\l__UWMad_Nomenclature_WidestUnit_dim
+        1.05\l__UWMad_Nomenclature_WidestUnit_dim
     }
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_Description_Width_dim {
         0.995\textwidth -
          \l_UWMad_Nomenclature_Entry_Margin_Left_dim   -
          \l__UWMad_Nomenclature_Entry_Symbol_Width_dim -
          \l__UWMad_Nomenclature_Entry_Units_Width_dim  -
-        2\l_UWMad_Nomenclature_Entry_Pad_Column_dim       -
+        2\l_UWMad_Nomenclature_Entry_Pad_Column_dim    -
          \l_UWMad_Nomenclature_Entry_Margin_Right_dim
     }
 }
@@ -2887,7 +2939,7 @@
 %       This function calls one of the appropriate above setters.
 %    \begin{macrocode}
 \cs_new:Nn \UWMad_Nomenclature_SetEntryWidths: {
-    \bool_if:NTF \l__UWMad_Nomenclature_IncludeUnitsColumn_bool {
+    \bool_if:NTF \l_UWMad_Nomenclature_Units_IncludeColumn_bool {
         \UWMad_Nomenclature_SetEntryWidths_Units:
     } {
         \UWMad_Nomenclature_SetEntryWidths_NoUnits:
@@ -2910,10 +2962,6 @@
 %       \end{syntax}
 %       These functions typeset the contents passed into them.
 %    \begin{macrocode}
-\coffin_new:N \l__UWMad_Nomenclature_Entry_coffin
-\coffin_new:N \l__UWMad_Nomenclature_Symbol_coffin
-\coffin_new:N \l__UWMad_Nomenclature_Description_coffin
-\coffin_new:N \l__UWMad_Nomenclature_Units_coffin
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_NoUnits:nn {
     \coffin_clear:N \l__UWMad_Nomenclature_Entry_coffin
     \coffin_clear:N \l_tmpa_coffin
@@ -2940,28 +2988,51 @@
     \group_end:
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_Units:nnn {
+    \coffin_clear:N \l__UWMad_Nomenclature_Entry_coffin
+%
+%   Set the information into their coffins
     \vcoffin_set:Nnn
-        \l_tmpa_coffin
-        {\l__UWMad_Nomenclature_Entry_Symbol_Width_dim}
-        {#1}
+        \l__UWMad_Nomenclature_Symbol_coffin
+        {\l__UWMad_Nomenclature_Entry_Symbol_Width_dim} {#1}
     \vcoffin_set:Nnn
-        \l_tmpb_coffin
-        {\l__UWMad_Nomenclature_Entry_Units_Width_dim}
-        {#2}
-    \vcoffin_set:Nnn
-        \l_tmpc_coffin
-        {\l__UWMad_Nomenclature_Entry_Description_Width_dim}
-        {#3}
+        \l__UWMad_Nomenclature_Description_coffin
+        {\l__UWMad_Nomenclature_Entry_Description_Width_dim} {#3}
+%
+%   Units setting: center using hfil and then handle bracing and siunitx
+%   embeding options.
+    \hcoffin_set:Nn
+        \l__UWMad_Nomenclature_Units_coffin
+        {
+            \UWMad_Nomenclature_SetUnitsBox:n{#2}
+        }
+%
+%   Set the information into their coffins
+    \coffin_join:NnnNnnnn
+        \l__UWMad_Nomenclature_Entry_coffin       {l}{T}
+        \l__UWMad_Nomenclature_Symbol_coffin      {l}{T}
+        {\l_UWMad_Nomenclature_Entry_Margin_Left_dim}{0pt}
+    \coffin_join:NnnNnnnn
+        \l__UWMad_Nomenclature_Entry_coffin       {r}{T}
+        \l__UWMad_Nomenclature_Units_coffin       {hc}{T}
+        {
+            \l_UWMad_Nomenclature_Entry_Pad_Column_dim +
+            0.5\l__UWMad_Nomenclature_Entry_Units_Width_dim
+        }{0pt}
+    \coffin_join:NnnNnnnn
+        \l__UWMad_Nomenclature_Entry_coffin        {l}{T}
+        \l__UWMad_Nomenclature_Description_coffin  {l}{T}
+        {
+            \l__UWMad_Nomenclature_Entry_Symbol_Width_dim   +
+            \l__UWMad_Nomenclature_Entry_Units_Width_dim    +
+            2.5\l_UWMad_Nomenclature_Entry_Pad_Column_dim
+        }{0pt}
     \group_begin:
         \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
-        \skip_vertical:n   {\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
-        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Margin_Left_dim}
-        \coffin_typeset:Nnnnn \l_tmpa_coffin {l}{t}{0pt}{0pt}
-        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}
-        \coffin_typeset:Nnnnn \l_tmpb_coffin {l}{t}{0pt}{0pt}
-        \skip_horizontal:n {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}
-        \coffin_typeset:Nnnnn \l_tmpc_coffin {l}{t}{0pt}{0pt}
-        \skip_vertical:n {\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
+        \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
+        \coffin_typeset:Nnnnn
+            \l__UWMad_Nomenclature_Entry_coffin {l}{t}{0pt}{0pt}
+        \tex_hbox:D{}
+        \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
     \group_end:
 }
 %    \end{macrocode}
@@ -3018,7 +3089,7 @@
 %
 %   User front-end for creating an entry
     \cs_undefine:N \Entry
-    \bool_if:NTF \l__UWMad_Nomenclature_IncludeUnitsColumn_bool {
+    \bool_if:NTF \l_UWMad_Nomenclature_Units_IncludeColumn_bool {
         \DeclareDocumentCommand \Entry { m m m } {
             \UWMad_ListOf_PushEntry:n {
                 \UWMad_Nomenclature_SetEntry_Units:nnn
@@ -3101,9 +3172,6 @@
         include-subgroup-in-toc = #1
     },
     include-in-toc .default:n = true,
-    include-units-column .bool_set:N =
-        \l__UWMad_Nomenclature_IncludeUnitsColumns_bool,
-    include-units-column .default:n = false,
     print-skip           .dim_set:N =
         \l_UWMad_Nomenclature_Skip_EntryPrint_dim,
     entry-margin-top     .dim_set:N =
@@ -3124,7 +3192,21 @@
     entry-column-padding .default:n = 0.80em,
     entry-stretch .tl_set:N =
         \l__UWMad_Nomenclature_Entry_LineStretch_tl,
-    entry-stretch .default:n = 1.1
+    entry-stretch .default:n = 1.1,
+    include-units-column .bool_set:N =
+        \l_UWMad_Nomenclature_Units_IncludeColumn_bool,
+    include-units-column .default:n = false,
+    units-embed-siunitx .bool_set:N =
+        \l_UWMad_Nomenclature_Units_UseSIUnitx_bool,
+    units-embed-siunitx .default:n = false,
+    units-left-delimiter .code:n = {
+        \tl_set:Nn \l_UWMad_Nomenclature_Units_Delimiter_Left_tl {#1}
+        \bool_set_true:N \l_UWMad_Nomenclature_Units_UseDelimiter_bool
+    },
+    units-right-delimiter .code:n = {
+        \tl_set:Nn \l_UWMad_Nomenclature_Units_Delimiter_Right_tl {#1}
+        \bool_set_true:N \l_UWMad_Nomenclature_Units_UseDelimiter_bool
+    }
 }
 %
 %
@@ -3145,6 +3227,7 @@
     make-numbered ,
     include-in-toc ,
     include-units-column ,
+    units-embed-siunitx  ,
     print-skip           ,
     entry-margin-top     ,
     entry-margin-left    ,
