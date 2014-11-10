@@ -179,8 +179,14 @@
 %
 %
 %   \UWSubModule{Package Loads}
-%   Load some packages that give nice features and are not
-%   hyperlink sensitive.
+%   Since the philosophy behind this class is to stand on the shoulders
+%   of giants, we now load packages that are either commonly loaded by others, 
+%   deemed useful for the class user, or needed for the class author.
+%
+%   \UWSubSubModule{Hyperref Prior}
+%
+%   Load some packages that give nice features and can be loaded before 
+%   \pkg{hyperref}.
 %    \begin{macrocode}
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
@@ -199,15 +205,6 @@
 \RequirePackage{amsfonts}
 \RequirePackage{amssymb}
 \RequirePackage{mathtools}
-%    \end{macrocode}
-%
-%   And now we load some packages that give nice features and are
-%   hyperlink sensitive.
-%    \begin{macrocode}
-\RequirePackage[noabbrev,nameinlink]{cleveref}
-\RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
-\RequirePackage{caption}
-\RequirePackage{subcaption}
 %    \end{macrocode}
 %
 %
@@ -232,15 +229,23 @@
 %    \end{macrocode}
 %
 %
-%   If links were not negated by the options, \pkg{bookmark} and 
-%   \pkg{hyperref} are loaded.
+%   \UWSubSubModule{Hyperref Now}
+%   Load \pkg{hyperref} and \pkg{bookmark}.
 %    \begin{macrocode}
 \RequirePackage{hyperref}
 \RequirePackage{bookmark}
 %    \end{macrocode}
 %
 %
-%
+%   \UWSubSubModule{Hyperref Forever}
+%   And now we load some packages that give nice features and are
+%   hyperlink sensitive.
+%    \begin{macrocode}
+\RequirePackage[noabbrev,nameinlink]{cleveref}
+\RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+%    \end{macrocode}
 %
 %   And since these identifications may be desired in typsetting more,
 %   where \LaTeXPL{}'s syntax will be turned off, we define some aliases.

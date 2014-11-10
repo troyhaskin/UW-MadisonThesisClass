@@ -72,10 +72,6 @@
 \RequirePackage{amsfonts}
 \RequirePackage{amssymb}
 \RequirePackage{mathtools}
-\RequirePackage[noabbrev,nameinlink]{cleveref}
-\RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
-\RequirePackage{caption}
-\RequirePackage{subcaption}
 \bool_if:nTF {\xetex_if_engine_p: || \luatex_if_engine_p:} {
     \RequirePackage{fontspec}
     \defaultfontfeatures{Ligatures={TeX}}
@@ -91,6 +87,10 @@
 }
 \RequirePackage{hyperref}
 \RequirePackage{bookmark}
+\RequirePackage[noabbrev,nameinlink]{cleveref}
+\RequirePackage[usenames,dvipsnames,svgnames,table,hyperref]{xcolor}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
 \DeclareDocumentCommand \UWMadClass { } {
     \texttt{\c__UWMad_Class_Name_tl}~class
 }
