@@ -1900,21 +1900,6 @@
 \DeclareDocumentCommand \Department { m } {
     \tl_gset:Nn \g__UWMad_ThesisInfo_Department_tl {#1}
 }
-\cs_new:Nn \UWMad_ThesisInfo_AdvisorInfo:nnn {
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
-}
-\DeclareDocumentCommand \Advisor { m m m } {
-    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
-    \UWMad_ThesisInfo_AdvisorInfo:nnn{#1}{#2}{#3}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl {Advisor}
- }
-\DeclareDocumentCommand \Adviser { m m m } {
-    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
-    \UWMad_ThesisInfo_AdvisorInfo:nnn{#1}{#2}{#3}
-    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl {Adviser}
-}
 \msg_new:nnn { UWMadThesis } { ThesisInfo / UnsetInformation } {
     The~required~information~for~the~#1~is~not~set.
 }
@@ -1960,40 +1945,72 @@
 \tl_new:N   \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
 \tl_gset:Nn \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl {,}
 \int_new:N \g__UWMad_ThesisInfo_CommitteeCount_int
-\UWMad_Queue_Define:n {CommitteeList}
+\coffin_new:N  \g__UWMad_ThesisInfo_Committee_coffin
+\vcoffin_set:Nnn \g__UWMad_ThesisInfo_Committee_coffin {\textwidth}{}
+\seq_new:N \g__UWMad_ThesisInfo_Committee_CoffinExpanders_seq
+\cs_new:Nn \__UWMad_ThesisInfo_Committee_AddMember:nnn {
+    \seq_gput_right:Nn \g__UWMad_ThesisInfo_Committee_CoffinExpanders_seq {
+        \vcoffin_set:Nnn \l_tmpa_coffin {\textwidth-1.01em} {
+            #1
+            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
+            \
+            \textsl{#2}
+            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
+            \
+            \textsl{#3}
+        }
+        \coffin_join:NnnNnnnn
+            \g__UWMad_ThesisInfo_Committee_coffin {l} {b}
+            \l_tmpa_coffin                        {l} {t}
+            {0pt}{-0.75em}
+    }
+}
+\cs_new:Nn \__UWMad_ThesisInfo_Committee_AddAdvisor:nnn {
+    \seq_gput_left:Nn \g__UWMad_ThesisInfo_Committee_CoffinExpanders_seq {
+        \vcoffin_set:Nnn \l_tmpa_coffin {\textwidth-1.01em} {
+            #1
+            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
+            \
+            \textsl{#2}
+            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
+            \
+            \textsl{#3}
+            \
+            (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
+        }
+        \coffin_join:NnnNnnnn
+            \g__UWMad_ThesisInfo_Committee_coffin {l} {b}
+            \l_tmpa_coffin                        {l} {t}
+            {0pt}{-0.75em}
+    }
+}
+\cs_new:Nn \UWMad_ThesisInfo_AdvisorInfo:nnn {
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorAssociation_tl {#3}
+    \__UWMad_ThesisInfo_Committee_AddAdvisor:nnn{#1}{#2}{#3}
+}
+\DeclareDocumentCommand \Advisor { m m m } {
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl {Advisor}
+    \UWMad_ThesisInfo_AdvisorInfo:nnn{#1}{#2}{#3}
+ }
+\DeclareDocumentCommand \Adviser { m m m } {
+    \bool_gset_true:N \g__UWMad_ThesisInfo_IsSet_Advisor_bool
+    \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorMarker_tl {Adviser}
+    \UWMad_ThesisInfo_AdvisorInfo:nnn{#1}{#2}{#3}
+}
 \DeclareDocumentCommand \CommitteeMember { m m m } {
     \int_gincr:N \g__UWMad_ThesisInfo_CommitteeCount_int
-    \UWMad_Queue_Push:nn {CommitteeList} {
-        \tex_hbox:D{}
-        \skip_horizontal:n{2em}
-        #1
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        \
-        \textsl{#2}
-        \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-        \
-        \textsl{#3}
-        \tex_par:D{}
-    }
+    \__UWMad_ThesisInfo_Committee_AddMember:nnn{#1}{#2}{#3}
 }
 \DeclareDocumentCommand \PrintCommitteeMemberList { } {
     {
-        \setstretch{0.25}
-        \bool_if:NTF \g__UWMad_ThesisInfo_IsSet_Advisor_bool {
-            \tex_hbox:D{}
-            \skip_horizontal:n{2em}
-            \g__UWMad_ThesisInfo_AdvisorName_tl{}
-            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-            \
-            \textsl{\g__UWMad_ThesisInfo_AdvisorPosition_tl{}}
-            \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
-            \
-            \textsl{\g__UWMad_ThesisInfo_AdvisorAssociation_tl{}}
-            \
-            (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
-            \tex_par:D
-        } { }
-        \UWMad_Queue_Walk:nn {CommitteeList}{##1}
+        \seq_map_inline:Nn \g__UWMad_ThesisInfo_Committee_CoffinExpanders_seq {
+            ##1
+        }
+        \coffin_typeset:Nnnnn \g__UWMad_ThesisInfo_Committee_coffin
+        {l}{t}{1em}{0pt}
     }
 }
 \tl_new:N \g__UWMad_PDFMetaData_Subject_tl
@@ -2111,7 +2128,7 @@
         \TitlePageInstitution{}
         \vfill
     \end{center}
-    \TitlePageDefenseDate{}\\[1.0em]
+    \TitlePageDefenseDate{}\\[-1em]
     \PrintCommitteeMemberList{}
     \cleardoublepage
 }
