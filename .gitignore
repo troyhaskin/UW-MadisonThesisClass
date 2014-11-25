@@ -23,6 +23,7 @@
 #  Ignore all PDFs by default   #
 # ============================= #
 *.pdf
+!CurrentBuild/*
 
 
 # ============================= #
