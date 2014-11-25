@@ -171,9 +171,8 @@
 %
 %   Process the options with some defaults and load the base class.
 %    \begin{macrocode}
-\ExecuteOptions{oneside,12pt}
 \ProcessOptions\relax
-\LoadClass{\g_UWMad_ParentClass_tl}[1995/12/01]
+\LoadClass[oneside,12pt]{\g_UWMad_ParentClass_tl}[1995/12/01]
 %    \end{macrocode}
 %
 %
@@ -265,6 +264,7 @@
 \DeclareDocumentCommand \UWMadShort { } {
     \c__UWMad_UniversityShort_tl
 }
+%
 %    \end{macrocode}
 %
 %

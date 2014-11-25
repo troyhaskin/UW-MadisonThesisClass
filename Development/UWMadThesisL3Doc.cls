@@ -9,6 +9,14 @@
 }%
 \ProvidesExplClass
     {UWMadThesisL3Doc}{2014/03/13}{1.0}{Documentation class for UWMadThesis}
+\DeclareOption*{
+    \typeout{******************** Passing~\CurrentOption~to~class}
+    \PassOptionsToClass {
+        \CurrentOption
+    } {
+        UWMadThesis
+    }
+}
 \ProcessOptions\relax
 \LoadClass[l3doc,full]{UWMadThesis}[2014/04/01]
 %
@@ -416,7 +424,6 @@
 \UWMad_Hook_Append:Nn \endverbatim {
     \group_end:
 }
-\cs_show:N \FV@Environment
 %\UWMad_Hook_Prepend:Nn \macrocode {
 %    \skip_vertical:n {0em}
 %}

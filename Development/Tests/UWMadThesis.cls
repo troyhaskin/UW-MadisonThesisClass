@@ -57,9 +57,8 @@
         \g_UWMad_ParentClass_tl
     }
 }
-\ExecuteOptions{oneside,12pt}
 \ProcessOptions\relax
-\LoadClass{\g_UWMad_ParentClass_tl}[1995/12/01]
+\LoadClass[oneside,12pt]{\g_UWMad_ParentClass_tl}[1995/12/01]
 \RequirePackage{xparse}
 \RequirePackage{fixltx2e}
 \RequirePackage{microtype}
