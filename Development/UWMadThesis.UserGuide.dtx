@@ -888,6 +888,7 @@ These command set deal with quick and easy typesetting of derivatives.
     \end{syntax}
     This function set is meant to typeset three different kinds of derivatives: ordinary, partial, and total (i.e., material or Lagragian).
     The only difference between them is the differential symbol: \cs{deriv} uses `$\derivSymbol$', \cs{pderiv} uses `$\pderivSymbol$', and \cs{tderiv} used `$\tderivSymbol$'.
+\end{function}
 
     These commands typeset the derivative of a given \Arg{function} with respect to \Arg{variable} of $n$-th \Arg{order} using Leibniz's notation.
     The \Arg{order} is optional and defaults to empty (first derivative).
@@ -905,7 +906,6 @@ These command set deal with quick and easy typesetting of derivatives.
             \pderiv{T}{t} - \alpha \pderiv{T}{z}{2}       &= 0    \\[0.50em]
             \tderiv{(\rho{u})}{t} + \pderiv{P}{z}  - \rho g &= 0
         \end{align}
-\end{function}
 
 \begin{function}{\derivbig,\pderivbig,\tderivbig}
     \begin{syntax}
@@ -914,6 +914,7 @@ These command set deal with quick and easy typesetting of derivatives.
         \cs{tderivbig}  \oarg{left delim} \Arg{function} \oarg{right delim} \Arg{variable} \Arg{order}
     \end{syntax}
     This function set is identical to the non- \texttt{big} versions above, except that \Arg{function} is placed to the right of the derivative operator and wrapped by \cs{left} and \cs{right}.
+\end{function}
     The default delimiters for the stretch commands are `[' and ']', and either can be individually overridden via the two optional arguments.
     For example, the input
     \begin{verbatim}
@@ -931,7 +932,6 @@ These command set deal with quick and easy typesetting of derivatives.
             \tderivbig{ \rho{i} + \frac{1}{2} \rho u^2 }[(]{t} -
                     \pderivbig[\lvert]{ \kappa \pderiv{T}{z} }{z} &= 0
         \end{align}
-\end{function}
 
 \begin{function}{\DerivativeGeneral,\DerivativeGeneralBig}
     \begin{syntax}
@@ -1052,12 +1052,14 @@ Some are new while others are simply in a camel-cased versions of the standard o
     The limit operator:
     \begin{verbatim}
         \begin{equation}
-            \Lim_{n \rightarrow \infty} \left(1 + \frac{1}{n}\right)^n = \mathrm{e}
+            \Lim_{n \rightarrow \infty} \left(1 + \frac{1}{n}\right)^n
+            = \mathrm{e}
         \end{equation}
     \end{verbatim}
     is typeset as
         \begin{equation}
-            \Lim_{n \rightarrow \infty} \left(1 + \frac{1}{n}\right)^n = \mathrm{e}
+            \Lim_{n \rightarrow \infty} \left(1 + \frac{1}{n}\right)^n
+            = \mathrm{e}
         \end{equation}
 \end{function}
 
