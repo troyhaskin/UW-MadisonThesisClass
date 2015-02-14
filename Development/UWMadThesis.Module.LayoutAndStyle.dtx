@@ -70,22 +70,7 @@ The user is referred to their respective manuals for more options and feature de
 \UWSubFeature{Paragraph Spacing}
 In general, there are two dominant methods for indicating separate paragraphs: no indentation with extra space between paragraphs (compared to between lines) and indentation with no extra space between paragraphs.
 The default of the \UWMadClass{} is the former but some may prefer the latter.
-To facilitate either, two commands have been created.
-
-\begin{function} {\PadParagraphs}
-    \begin{syntax}
-        \cs{PadParagraphs}
-    \end{syntax}
-    This command adds 1em of vertical space between paragraphs with no indentation.
-    This is the default style of this class.
-\end{function}
-
-\begin{function} {\IndentParagraphs}
-    \begin{syntax}
-        \cs{IndentParagraphs}
-    \end{syntax}
-    This command adds 1.5em of indent at the beginning of paragraphs (save those that follow section heads) with no extra vertical space.
-\end{function}
+To facilitate either, two options for the  have been created.
 
 %</UserGuide>
 %
@@ -281,7 +266,7 @@ To facilitate either, two commands have been created.
 %
 %   One inche magrins and letter (paper size) are set.
 %    \begin{macrocode}
-\geometry{
+\geometry {
     includehead = true,
     margin      = 1.0in,
     paper       = letterpaper,

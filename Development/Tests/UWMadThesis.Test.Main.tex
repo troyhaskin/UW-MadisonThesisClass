@@ -116,18 +116,20 @@
 %       o Section    directory prefix {} and suffix {-Section}    in same mode
 %       o Subsection directory prefix {} and suffix {-Subsection} in same mode
 %       o All same name-mode and same file name to test the stack-pushing.
-\UWMadSetup { RelativeDirectory / {
-    chapter-directory-prefix    = {},
-    chapter-directory-name      = same,
-    chapter-directory-suffix    = {-Chapter},
-    section-directory-prefix    = {},
-    section-directory-name      = same,
-    section-directory-suffix    = {-Section},
-    subsection-directory-prefix = {},
-    subsection-directory-name   = same,
-    subsection-directory-suffix = {-Subsection},
-    the-only-graphics-directory = Graphics
-}}
+\UWMadSetup{
+    RelativeDirectory / {
+        chapter-directory-prefix    = {},
+        chapter-directory-name      = same,
+        chapter-directory-suffix    = {-Chapter},
+        section-directory-prefix    = {},
+        section-directory-name      = same,
+        section-directory-suffix    = {-Section},
+        subsection-directory-prefix = {},
+        subsection-directory-name   = same,
+        subsection-directory-suffix = {-Subsection},
+        the-only-graphics-directory = Graphics
+    }
+}
 \IncludeChapter{SameNameTest}
     \IncludeSection{SameNameTest}
         \IncludeSubsection{SameNameTest}

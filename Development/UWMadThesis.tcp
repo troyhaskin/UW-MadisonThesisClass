@@ -6,7 +6,7 @@ Version=4
 MainFile=UWMadThesis.tex
 UseBibTeX=0
 UseMakeIndex=0
-ActiveProfile=UWMad_pdfLaTeX-Quick
+ActiveProfile=UWMad_pdfLaTeX
 ProjectLanguage=en
 ProjectDialect=US
 

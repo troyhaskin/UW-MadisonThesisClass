@@ -749,7 +749,7 @@
         make-links-red = true
     }
 }
-\geometry{
+\geometry {
     includehead = true,
     margin      = 1.0in,
     paper       = letterpaper,
