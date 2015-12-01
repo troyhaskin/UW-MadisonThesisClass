@@ -388,10 +388,13 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
         } {
             \use:c{__UWMad_ListOf_SectioningCommand_ #1 :} * {##2}
             \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
-                \addcontentsline
-                    {toc}
-                    {\tl_use:c{l__UWMad_ListOf_Section_ #1 _tl}}
-                    {##1}
+                \tl_if_in:cnTF
+                    {l__UWMad_ListOf_Section_ #1 _tl} {chapter} { } {
+                    \addcontentsline
+                        {toc}
+                        {\tl_use:c{l__UWMad_ListOf_Section_ #1 _tl}}
+                        {##1}
+                }
             } { }
         }
         \UWMad_Hash_Get:nn{l__ListOf_Hook}{PostTitle-#1}

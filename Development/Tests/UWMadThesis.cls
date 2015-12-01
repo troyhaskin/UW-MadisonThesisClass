@@ -178,63 +178,36 @@
 }
 \cs_generate_variant:Nn \UWMad_Definition_Swap:Nn {cn}
 \cs_generate_variant:Nn \UWMad_Definition_Reset:N {c}
-\tl_new:N   \g__UWMad_File_Path_tl
-\tl_new:N   \g__UWMad_File_Extension_tl
-\tl_new:N   \g__UWMad_File_Marker_Extension_tl
-\tl_new:N   \g__UWMad_File_Marker_Directory_tl
-\tl_gset:Nn \g__UWMad_File_Marker_Extension_tl {.}
-\tl_gset:Nn \g__UWMad_File_Marker_Directory_tl {/}
-\bool_new:N \g__UWMad_File_IsExtensionFound_bool
-\bool_new:N \g__UWMad_File_IsDirectoryFound_bool
-\cs_new:Nn \UWMad_File_GetExtension:nNN {
+\tl_gset:Nn \g__UWMad_File_ExtensionMarker_tl {.}
+\tl_gset:Nn \g__UWMad_File_DirectoryMarker_tl {/}
+\cs_new:Nn \UWMad_File_PathFileName:NNNn {
 
-    \tl_gclear:N \g__UWMad_File_Path_tl
-    \tl_gclear:N \g__UWMad_File_Extension_tl
-    \bool_set_false:N \g__UWMad_File_IsExtensionFound_bool
-    \bool_set_false:N \g__UWMad_File_IsDirectoryFound_bool
+    %   Break possible directory chain and pop file name from right
+    \seq_set_split:Nnn \l_tmpa_seq {g__UWMad_File_DirectoryMarker_tl} {#4}
+    \seq_pop_right:NN  \l_tmpa_seq #2
 
-    \tl_set:Nx \l_tmpa_tl {
-        \tl_reverse:V {#1}
-    }
-
-\tl_map_inline:Nn \l_tmpa_tl {
-
-    \tl_set:Nn {\l_tmpb_tl}{##1}
-
-    \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool {
-        \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
+    %   Check if a path was given
+    \int_compare:nNnTF {\seq_count:N \l_tmpa_seq} > {0} {
+        \tl_set:Nf #1 {
+            \seq_use:Nn \l_tmpa_seq {\g__UWMad_File_DirectoryMarker_tl}
+            \g__UWMad_File_DirectoryMarker_tl
+        }
     } {
-        \bool_if:NTF \g__UWMad_File_IsDirectoryFound_bool {
-            \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
-        } {
-            \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Extension_tl {
-                \bool_set_true:N \g__UWMad_File_IsExtensionFound_bool
-            } {
-                \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Directory_tl {
-                    \bool_gset_true:N \g__UWMad_File_IsDirectoryFound_bool
-                    \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
-                } {
-                    \tl_gput_left:Nn \g__UWMad_File_Extension_tl {##1}
-                }
-            }
-        }
-    }
-}
-
-    \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool { } {
-        \tl_gput_right:NV \g__UWMad_File_Path_tl {
-            \g__UWMad_File_Extension_tl
-        }
-        \tl_gclear:N \g__UWMad_File_Extension_tl
+        \tl_clear:N #1
     }
 
-    \tl_gset_eq:NN
-        #2
-        \g__UWMad_File_Path_tl
-    \tl_gset_eq:NN
-        #3
-        \g__UWMad_File_Extension_tl
+    %   Check if an extension was given
+    \tl_if_in:NnTF #2 {\g__UWMad_File_ExtensionMarker_tl} {
+        \seq_set_split:NnV \l_tmpa_seq {\g__UWMad_File_ExtensionMarker_tl} {#2}
+        \seq_get_right:NN  \l_tmpa_seq #3
+        \tl_set:Nf #2 {
+            \seq_use:Nn \l_tmpa_seq {\g__UWMad_File_DirectoryMarker_tl}
+        }
+    } {
+        \tl_clear:N #3
+    }
 }
+\cs_generate_variant:Nn \UWMad_File_PathFileName:NNNn {NNNx}
 \cs_new:Nn \__UWMad_IfDefined:nnnnT{
     \cs_if_exist:cTF {#1#2#3} {
         #5
@@ -791,6 +764,7 @@
 \keys_set:nn { UWMadThesis / LayoutStyle } {
     paragraph-style = pad
 }
+\setcounter{page}{-100}
 
 \UWMad_Hook_Prepend:Nn \@chapter {
     \thispagestyle{myheadings}
@@ -800,6 +774,15 @@
 }
 \UWMad_Hook_Prepend:Nn \@schapter {
     \thispagestyle{myheadings}
+    \int_compare:nNnTF {\g__UWMad_FrontMatter_Counter_int} = {0} {
+        \setcounter{page}{1}
+        \pagenumbering{roman}
+    } { }
+}
+\cs_new_eq:NN \StarredChapter \@schapter
+\DeclareDocumentCommand \@schapter { m } {
+    \StarredChapter{#1}
+    \__UWMad_FrontMatter_Register:nn{chapter}{#1}
 }
 \int_new:N  \g__UWMad_Appendix_Counter_int
 \int_set:Nn \g__UWMad_Appendix_Counter_int {0}
@@ -835,6 +818,8 @@
 \cs_new:Nn \__UWMad_FrontMatter_Register:nn {
 
     \int_compare:nNnTF {\g__UWMad_FrontMatter_Counter_int} = {0} {
+        \setcounter{page}{1}
+        \pagestyle{myheadings}
         \pagenumbering{roman}
     } { }
 
@@ -875,25 +860,42 @@
     }
 
     \chapter*{\l_tmpa_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \l_tmpa_tl
-    }
 
 }
 \DeclareDocumentCommand \dedications { g } {
-    \FrontMatterSetSection{#1}{Dedications}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Dedications}
+    } {
+       \FrontMatterSetSection{#1}{Dedications}
+    }
 }
 \DeclareDocumentCommand \acknowledgments { g } {
-    \FrontMatterSetSection{#1}{Acknowledgments}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Acknowledgments}
+    } {
+       \FrontMatterSetSection{#1}{Acknowledgments}
+    }
 }
 \DeclareDocumentCommand \abstract { g } {
-    \FrontMatterSetSection{#1}{Abstract}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Abstract}
+    } {
+       \FrontMatterSetSection{#1}{Abstract}
+    }
 }
 \DeclareDocumentCommand \umiabstract { g } {
-    \FrontMatterSetSection{#1}{Abstract}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Abstract}
+    } {
+       \FrontMatterSetSection{#1}{Abstract}
+    }
 }
 \DeclareDocumentCommand \preface { g } {
-    \FrontMatterSetSection{#1}{Preface}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Preface}
+    } {
+       \FrontMatterSetSection{#1}{Preface}
+    }
 }
 \cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
 \cs_gset_eq:NN \ListOfTablesDefault    \listoftables
@@ -913,14 +915,12 @@
 
     \group_begin:
         \setstretch{1.05}
+        \cleardoublepage
         \phantomsection
         \ExplSyntaxOff
             \TableOfContentsDefault
         \ExplSyntaxOn
-        \__UWMad_FrontMatter_Register:nn
-            {chapter}
-            {\contentsname}
-        \clearpage
+        \cleardoublepage
     \group_end:
 }
 \DeclareDocumentCommand \listoftables { } {
@@ -1295,10 +1295,13 @@
         } {
             \use:c{__UWMad_ListOf_SectioningCommand_ #1 :} * {##2}
             \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
-                \addcontentsline
-                    {toc}
-                    {\tl_use:c{l__UWMad_ListOf_Section_ #1 _tl}}
-                    {##1}
+                \tl_if_in:cnTF
+                    {l__UWMad_ListOf_Section_ #1 _tl} {chapter} { } {
+                    \addcontentsline
+                        {toc}
+                        {\tl_use:c{l__UWMad_ListOf_Section_ #1 _tl}}
+                        {##1}
+                }
             } { }
         }
         \UWMad_Hash_Get:nn{l__ListOf_Hook}{PostTitle-#1}
@@ -2140,6 +2143,9 @@
     \tex_vfill:D
     \phantomsection
 }
+\cs_new:Nn \__UWMad_LicensePage_FinishPage: {
+    \clearpage
+}
 \bool_new:N   \l__UWMad_Copyright_UseCopyright_bool
 \cs_set_eq:NN \CopyrightSymbol \copyright
 
@@ -2374,6 +2380,7 @@
         \vbox_to_ht:nn {0.3333\textheight} {
             \__UWMad_LicensePage_LicenseText:
         }
+        \__UWMad_LicensePage_FinishPage:
     } { }
 
 }
@@ -2536,6 +2543,7 @@
     \UWMad_RelativeDirectory_IncludeFile:
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nnn {
+
     \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#3}
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
     \UWMad_RelativeDirectory_UpdateStack:n{#1}
@@ -2590,10 +2598,11 @@
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics_CycleThrough:n {
 
-    \UWMad_File_GetExtension:nNN
-        {\g__UWMad_RelativeDirectory_File_CurrentName_tl}
+    \UWMad_File_PathFileName:NNNx
+        \l_tmpa_tl
         \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
         \g__UWMad_RelativeDirectory_Graphics_Extension_tl
+        {\g__UWMad_RelativeDirectory_File_CurrentName_tl}
 
     \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
 
@@ -2627,9 +2636,11 @@
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
     }
 
-    \UWMad_File_GetExtension:nNN {\g_tmpb_tl}
+    \UWMad_File_PathFileName:NNNx
+        \l_tmpa_tl
         \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
         \g__UWMad_RelativeDirectory_Graphics_Extension_tl
+        {\g_tmpb_tl}
 
     \file_if_exist:nTF { \g_tmpb_tl } {
         \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
@@ -2782,24 +2793,24 @@
     cycle-graphic-paths
 }
 \DeclareDocumentCommand \IncludeChapter { o m } {
-    \IfValueTF { #1 } {
-        \UWMad_RelativeDirectory_IncludeDriver:nnn{Chapter}{#2}{#1}
+    \IfNoValueTF { #1 } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Chapter}{#2}{}
     } {
-        \UWMad_RelativeDirectory_IncludeDriver:nn {Chapter}{#2}
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Chapter}{#2}{#1}
     }
 }
 \DeclareDocumentCommand \IncludeSection { o m } {
-    \IfValueTF { #1 } {
-        \UWMad_RelativeDirectory_IncludeDriver:nnn{Section}{#2}{#1}
+    \IfNoValueTF { #1 } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Section}{#2}{}
     } {
-        \UWMad_RelativeDirectory_IncludeDriver:nn {Section}{#2}
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Section}{#2}{#1}
     }
 }
 \DeclareDocumentCommand \IncludeSubsection { o m } {
-    \IfValueTF { #1 } {
-        \UWMad_RelativeDirectory_IncludeDriver:nnn{Subsection}{#2}{#1}
+    \IfNoValueTF { #1 } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Subsection}{#2}{}
     } {
-        \UWMad_RelativeDirectory_IncludeDriver:nn {Subsection}{#2}
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Subsection}{#2}{#1}
     }
 }
 \DeclareDocumentCommand \IncludeGraphics { o m } {

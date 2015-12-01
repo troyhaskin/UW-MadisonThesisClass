@@ -384,6 +384,9 @@ This input would generate the following text at the bottom of a new page (with a
     \tex_vfill:D
     \phantomsection
 }
+\cs_new:Nn \__UWMad_LicensePage_FinishPage: {
+    \clearpage
+}
 %
 %    \end{macrocode}
 %   \UWSubSubModule{Copyright}
@@ -699,6 +702,7 @@ This input would generate the following text at the bottom of a new page (with a
         \vbox_to_ht:nn {0.3333\textheight} {
             \__UWMad_LicensePage_LicenseText:
         }
+        \__UWMad_LicensePage_FinishPage:
     } { }
 
 

@@ -114,6 +114,15 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 }
 \UWMad_Hook_Prepend:Nn \@schapter {
     \thispagestyle{myheadings}
+    \int_compare:nNnTF {\g__UWMad_FrontMatter_Counter_int} = {0} {
+        \setcounter{page}{1}
+        \pagenumbering{roman}
+    } { }
+}
+\cs_new_eq:NN \StarredChapter \@schapter
+\DeclareDocumentCommand \@schapter { m } {
+    \StarredChapter{#1}
+    \__UWMad_FrontMatter_Register:nn{chapter}{#1}
 }
 %    \end{macrocode}
 %^^A  =========================================================================== %
@@ -191,6 +200,8 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 \cs_new:Nn \__UWMad_FrontMatter_Register:nn {
 
     \int_compare:nNnTF {\g__UWMad_FrontMatter_Counter_int} = {0} {
+        \setcounter{page}{1}
+        \pagestyle{myheadings}
         \pagenumbering{roman}
     } { }
 
@@ -243,25 +254,42 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
     }
 
     \chapter*{\l_tmpa_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \l_tmpa_tl
-    }
 
 }
 \DeclareDocumentCommand \dedications { g } {
-    \FrontMatterSetSection{#1}{Dedications}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Dedications}
+    } {
+       \FrontMatterSetSection{#1}{Dedications}
+    }
 }
 \DeclareDocumentCommand \acknowledgments { g } {
-    \FrontMatterSetSection{#1}{Acknowledgments}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Acknowledgments}
+    } {
+       \FrontMatterSetSection{#1}{Acknowledgments}
+    }
 }
 \DeclareDocumentCommand \abstract { g } {
-    \FrontMatterSetSection{#1}{Abstract}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Abstract}
+    } {
+       \FrontMatterSetSection{#1}{Abstract}
+    }
 }
 \DeclareDocumentCommand \umiabstract { g } {
-    \FrontMatterSetSection{#1}{Abstract}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Abstract}
+    } {
+       \FrontMatterSetSection{#1}{Abstract}
+    }
 }
 \DeclareDocumentCommand \preface { g } {
-    \FrontMatterSetSection{#1}{Preface}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Preface}
+    } {
+       \FrontMatterSetSection{#1}{Preface}
+    }
 }
 %    \end{macrocode}
 %
@@ -306,14 +334,12 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 
     \group_begin:
         \setstretch{1.05}
+        \cleardoublepage
         \phantomsection
         \ExplSyntaxOff
             \TableOfContentsDefault
         \ExplSyntaxOn
-        \__UWMad_FrontMatter_Register:nn
-            {chapter}
-            {\contentsname}
-        \clearpage
+        \cleardoublepage
     \group_end:
 }
 \DeclareDocumentCommand \listoftables { } {

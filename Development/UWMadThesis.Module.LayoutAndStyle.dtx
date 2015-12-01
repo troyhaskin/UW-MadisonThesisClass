@@ -325,6 +325,16 @@ To facilitate either, two options for the  have been created.
 }
 %    \end{macrocode}
 %
+%   \UWSubModule{Page Number}
+%
+%   To avoid identifier problems with \pkg{hyperref}, the page counter is 
+%   set to a large negative value here.
+%   It is reset to 1 after content begins.
+%
+%    \begin{macrocode}
+\setcounter{page}{-100}
+%    \end{macrocode}
+%
 %
 %   \iffalse
 %</Code>
