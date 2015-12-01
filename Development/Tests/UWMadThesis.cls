@@ -2769,32 +2769,38 @@
     cycle-file-paths,
     cycle-graphic-paths
 }
-\DeclareDocumentCommand \IncludeChapter { o m } {
-    \IfValueTF { #1 } {
-        \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    } { }
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nn {
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \UWMad_RelativeDirectory_UpdateStack:n{Chapter}
+    \UWMad_RelativeDirectory_UpdateStack:n{#1}
+    \UWMad_RelativeDirectory_IncludeFile:
+}
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nnn {
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#3}
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+    \UWMad_RelativeDirectory_UpdateStack:n{#1}
     \UWMad_RelativeDirectory_IncludeFile:
     \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
+}
+\DeclareDocumentCommand \IncludeChapter { o m } {
+    \IfValueTF { #1 } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Chapter}{#2}{#1}
+    } {
+        \UWMad_RelativeDirectory_IncludeDriver:nn {Chapter}{#2}
+    }
 }
 \DeclareDocumentCommand \IncludeSection { o m } {
     \IfValueTF { #1 } {
-        \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    } { }
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \UWMad_RelativeDirectory_UpdateStack:n{Section}
-    \UWMad_RelativeDirectory_IncludeFile:
-    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Section}{#2}{#1}
+    } {
+        \UWMad_RelativeDirectory_IncludeDriver:nn {Section}{#2}
+    }
 }
 \DeclareDocumentCommand \IncludeSubsection { o m } {
     \IfValueTF { #1 } {
-        \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    } { }
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \UWMad_RelativeDirectory_UpdateStack:n{Subsection}
-    \UWMad_RelativeDirectory_IncludeFile:
-    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Subsection}{#2}{#1}
+    } {
+        \UWMad_RelativeDirectory_IncludeDriver:nn {Subsection}{#2}
+    }
 }
 \DeclareDocumentCommand \IncludeGraphics { o m } {
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}

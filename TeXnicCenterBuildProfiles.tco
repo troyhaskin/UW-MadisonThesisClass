@@ -9,13 +9,13 @@
 				<processor name="RunMakeINS" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode Make.ins" inputFile="" outputFile=""/>
 			</preProcessors>
 			<postProcessors/>
-			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
+			<viewer path="FoxitReader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewProjectCommand>
 				<viewCurrentFileCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewCurrentFileCommand>
 				<viewCloseCommand type="commandLine">
@@ -74,37 +74,13 @@
 			<makeIndexCommand execute="true" path="makeindex.exe" arguments="&quot;%tm.idx&quot; -t &quot;%tm.ilg&quot; -o &quot;%tm.ind&quot;"/>
 			<preProcessors/>
 			<postProcessors/>
-			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
+			<viewer path="FoxitReader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments=" &quot;%bm.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments=" &quot;%bm.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewProjectCommand>
 				<viewCurrentFileCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="  &quot;%bm.pdf&quot;"/>
-					<ddeCommand path="" server="" topic="System" command=""/>
-				</viewCurrentFileCommand>
-				<viewCloseCommand type="commandLine">
-					<commandLineCommand path="" arguments=""/>
-					<ddeCommand path="" server="" topic="System" command=""/>
-				</viewCloseCommand>
-			</viewer>
-		</outputProfile>
-		<outputProfile name="LaTeX &#8680; PS &#8680; PDF" stopOnLatexError="false">
-			<texCommand execute="true" path="latex.exe" arguments="-max-print-line=120 -interaction=nonstopmode &quot;%wm&quot;"/>
-			<bibTexCommand execute="true" path="bibtex.exe" arguments="&quot;%tm&quot;"/>
-			<makeIndexCommand execute="true" path="makeindex.exe" arguments="&quot;%tm.idx&quot; -t &quot;%tm.ilg&quot; -o &quot;%tm.ind&quot;"/>
-			<preProcessors/>
-			<postProcessors>
-				<processor name="DviPs (PDF)" path="dvips.exe" arguments="-P pdf &quot;%Bm.dvi&quot;" inputFile="" outputFile=""/>
-				<processor name="Ghostscript (ps2pdf)" path="gswin64c.exe" arguments="-sPAPERSIZE=a4 -dSAFER -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile=&quot;%bm.pdf&quot; -c save pop -f &quot;%bm.ps&quot;" inputFile="" outputFile=""/>
-			</postProcessors>
-			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
-				<viewProjectCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments=" &quot;%bm.pdf&quot;"/>
-					<ddeCommand path="" server="" topic="System" command=""/>
-				</viewProjectCommand>
-				<viewCurrentFileCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="  &quot;%bm.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="  &quot;%bm.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewCurrentFileCommand>
 				<viewCloseCommand type="commandLine">
@@ -123,13 +99,37 @@
 			<postProcessors>
 				<processor name="LaTeXAgain" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx" inputFile="" outputFile=""/>
 			</postProcessors>
-			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
+			<viewer path="FoxitReader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewProjectCommand>
 				<viewCurrentFileCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewCurrentFileCommand>
+				<viewCloseCommand type="commandLine">
+					<commandLineCommand path="" arguments=""/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewCloseCommand>
+			</viewer>
+		</outputProfile>
+		<outputProfile name="LaTeX &#8680; PS &#8680; PDF" stopOnLatexError="false">
+			<texCommand execute="true" path="latex.exe" arguments="-max-print-line=120 -interaction=nonstopmode &quot;%wm&quot;"/>
+			<bibTexCommand execute="true" path="bibtex.exe" arguments="&quot;%tm&quot;"/>
+			<makeIndexCommand execute="true" path="makeindex.exe" arguments="&quot;%tm.idx&quot; -t &quot;%tm.ilg&quot; -o &quot;%tm.ind&quot;"/>
+			<preProcessors/>
+			<postProcessors>
+				<processor name="DviPs (PDF)" path="dvips.exe" arguments="-P pdf &quot;%Bm.dvi&quot;" inputFile="" outputFile=""/>
+				<processor name="Ghostscript (ps2pdf)" path="gswin64c.exe" arguments="-sPAPERSIZE=a4 -dSAFER -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -sOutputFile=&quot;%bm.pdf&quot; -c save pop -f &quot;%bm.ps&quot;" inputFile="" outputFile=""/>
+			</postProcessors>
+			<viewer path="FoxitReader.exe" closeBeforeCompilation="false">
+				<viewProjectCommand type="commandLine">
+					<commandLineCommand path="FoxitReader.exe" arguments=" &quot;%bm.pdf&quot;"/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewProjectCommand>
+				<viewCurrentFileCommand type="commandLine">
+					<commandLineCommand path="FoxitReader.exe" arguments="  &quot;%bm.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewCurrentFileCommand>
 				<viewCloseCommand type="commandLine">
@@ -162,16 +162,40 @@
 		<outputProfile name="LaTeX &#8680; PDF" stopOnLatexError="false">
 			<texCommand execute="true" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode &quot;%wm&quot;"/>
 			<bibTexCommand execute="true" path="bibtex.exe" arguments="&quot;%tm&quot;"/>
-			<makeIndexCommand execute="true" path="makeindex.exe" arguments="&quot;%tm.idx&quot; -t &quot;%tm.ilg&quot; -o &quot;%tm.ind&quot;"/>
+			<makeIndexCommand execute="false" path="makeindex.exe" arguments="&quot;%tm.idx&quot; -t &quot;%tm.ilg&quot; -o &quot;%tm.ind&quot;"/>
 			<preProcessors/>
 			<postProcessors/>
-			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
+			<viewer path="FoxitReader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments=" &quot;%bm.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments=" &quot;%bm.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewProjectCommand>
 				<viewCurrentFileCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="  &quot;%bm.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="  &quot;%bm.pdf&quot;"/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewCurrentFileCommand>
+				<viewCloseCommand type="commandLine">
+					<commandLineCommand path="" arguments=""/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewCloseCommand>
+			</viewer>
+		</outputProfile>
+		<outputProfile name="DoubleLaTeX" stopOnLatexError="false">
+			<texCommand execute="true" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode &quot;%wm&quot;"/>
+			<bibTexCommand execute="true" path="bibtex.exe" arguments="&quot;%tm&quot;"/>
+			<makeIndexCommand execute="false" path="makeindex.exe" arguments="&quot;%tm.idx&quot; -t &quot;%tm.ilg&quot; -o &quot;%tm.ind&quot;"/>
+			<preProcessors/>
+			<postProcessors>
+				<processor name="LaTeXAgain" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode &quot;%wm&quot;" inputFile="" outputFile=""/>
+				<processor name="LaTeXAgain" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode &quot;%wm&quot;" inputFile="" outputFile=""/>
+			</postProcessors>
+			<viewer path="FoxitReader.exe" closeBeforeCompilation="false">
+				<viewProjectCommand type="commandLine">
+					<commandLineCommand path="FoxitReader.exe" arguments=" &quot;%bm.pdf&quot;"/>
+					<ddeCommand path="" server="" topic="System" command=""/>
+				</viewProjectCommand>
+				<viewCurrentFileCommand type="commandLine">
+					<commandLineCommand path="FoxitReader.exe" arguments="  &quot;%bm.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewCurrentFileCommand>
 				<viewCloseCommand type="commandLine">
@@ -188,13 +212,13 @@
 				<processor name="RunMakeINS" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode Make.ins" inputFile="" outputFile=""/>
 			</preProcessors>
 			<postProcessors/>
-			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
+			<viewer path="FoxitReader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewProjectCommand>
 				<viewCurrentFileCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewCurrentFileCommand>
 				<viewCloseCommand type="commandLine">
@@ -215,13 +239,13 @@
 				<processor name="LaTeXAgain" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx" inputFile="" outputFile=""/>
 				<processor name="LaTeXAgain" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx" inputFile="" outputFile=""/>
 			</postProcessors>
-			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
+			<viewer path="FoxitReader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewProjectCommand>
 				<viewCurrentFileCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewCurrentFileCommand>
 				<viewCloseCommand type="commandLine">
@@ -237,16 +261,14 @@
 			<preProcessors>
 				<processor name="RunMakeINS" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode Make.ins" inputFile="" outputFile=""/>
 			</preProcessors>
-			<postProcessors>
-				<processor name="LaTeXAgain" path="pdflatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx" inputFile="" outputFile=""/>
-			</postProcessors>
-			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
+			<postProcessors/>
+			<viewer path="FoxitReader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewProjectCommand>
 				<viewCurrentFileCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewCurrentFileCommand>
 				<viewCloseCommand type="commandLine">
@@ -267,13 +289,13 @@
 				<processor name="LaTeXAgain" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx" inputFile="" outputFile=""/>
 				<processor name="LaTeXAgain" path="lualatex.exe" arguments="-max-print-line=120 -interaction=nonstopmode UWMadThesis.Documentation.dtx" inputFile="" outputFile=""/>
 			</postProcessors>
-			<viewer path="Foxit Reader.exe" closeBeforeCompilation="false">
+			<viewer path="FoxitReader.exe" closeBeforeCompilation="false">
 				<viewProjectCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewProjectCommand>
 				<viewCurrentFileCommand type="commandLine">
-					<commandLineCommand path="Foxit Reader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
+					<commandLineCommand path="FoxitReader.exe" arguments="&quot;%dm\UWMadThesis.Documentation.pdf&quot;"/>
 					<ddeCommand path="" server="" topic="System" command=""/>
 				</viewCurrentFileCommand>
 				<viewCloseCommand type="commandLine">
