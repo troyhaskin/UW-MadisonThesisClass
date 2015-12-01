@@ -555,6 +555,24 @@ The input syntax has the form
 }
 %    \end{macrocode}
 %
+%
+%   
+%   Driver functions used in the user-front end.
+%    \begin{macrocode}
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nn {
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+    \UWMad_RelativeDirectory_UpdateStack:n{#1}
+    \UWMad_RelativeDirectory_IncludeFile:
+}
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nnn {
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#3}
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+    \UWMad_RelativeDirectory_UpdateStack:n{#1}
+    \UWMad_RelativeDirectory_IncludeFile:
+    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
+}
+%    \end{macrocode}
+%
 %   This is a wrapper function for the above two functions with two additional
 %   behaviors: if the file is not found from the search stack, it will check
 %   the topmost \TeX{} directory for the file and issue a warning if it is not
@@ -909,18 +927,6 @@ The input syntax has the form
 %
 %   \UWSubModule{User Front Ends}
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nn {
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \UWMad_RelativeDirectory_UpdateStack:n{#1}
-    \UWMad_RelativeDirectory_IncludeFile:
-}
-\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nnn {
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#3}
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \UWMad_RelativeDirectory_UpdateStack:n{#1}
-    \UWMad_RelativeDirectory_IncludeFile:
-    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
-}
 \DeclareDocumentCommand \IncludeChapter { o m } {
     \IfValueTF { #1 } {
         \UWMad_RelativeDirectory_IncludeDriver:nnn{Chapter}{#2}{#1}

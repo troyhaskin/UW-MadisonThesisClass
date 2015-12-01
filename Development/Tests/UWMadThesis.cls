@@ -2530,6 +2530,18 @@
         \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
     } { }
 }
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nn {
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+    \UWMad_RelativeDirectory_UpdateStack:n{#1}
+    \UWMad_RelativeDirectory_IncludeFile:
+}
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nnn {
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#3}
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+    \UWMad_RelativeDirectory_UpdateStack:n{#1}
+    \UWMad_RelativeDirectory_IncludeFile:
+    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
+}
 \msg_new:nnn { UWMadThesis }{ RelativeDirectory / FileNotFound } {
     The~requested~file~'#1'~was~not~found~in~the~current~search~stack~nor~the~
     main~LaTeX~directory~for~the~job~'\c_job_name_tl'.
@@ -2768,18 +2780,6 @@
     subsection-directory-name,
     cycle-file-paths,
     cycle-graphic-paths
-}
-\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nn {
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \UWMad_RelativeDirectory_UpdateStack:n{#1}
-    \UWMad_RelativeDirectory_IncludeFile:
-}
-\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nnn {
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#3}
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \UWMad_RelativeDirectory_UpdateStack:n{#1}
-    \UWMad_RelativeDirectory_IncludeFile:
-    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
 }
 \DeclareDocumentCommand \IncludeChapter { o m } {
     \IfValueTF { #1 } {
