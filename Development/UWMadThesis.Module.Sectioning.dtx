@@ -464,36 +464,36 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %
 %   Given a section, acquire its level number.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_SectionToLevel:n {
+\cs_new:Nn \UWMad_SectionToLevel:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_SectionsLevel_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_SectionsLevel_ #1 _tl}
     }
 }
 %    \end{macrocode}
 %
 %   Given a level number, acquire its section.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_LevelToSection:n {
+\cs_new:Nn \UWMad_LevelToSection:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_LevelsSection_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_LevelsSection_ #1 _tl}
     }
 }
 %    \end{macrocode}
 %
 %   Given a section, acquire its next lower one.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_NextSection:n {
+\cs_new:Nn \UWMad_NextSection:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_NextSection_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_NextSection_ #1 _tl}
     }
 }
 %    \end{macrocode}
 %
 %   Given a section, acquire its next higher one.
 %    \begin{macrocode}
-\cs_new:Nn \UWMad_PreviousSection:n {
+\cs_new:Nn \UWMad_PreviousSection:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_PreviousSection_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_PreviousSection_ #1 _tl}
     }
 }
 %    \end{macrocode}

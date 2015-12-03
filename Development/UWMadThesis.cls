@@ -1004,24 +1004,24 @@
 \tl_const:Nn \c__UWMad_PreviousSection_subsubsection_tl   {subsection}
 \tl_const:Nn \c__UWMad_PreviousSection_paragraph_tl       {subsubsection}
 \tl_const:Nn \c__UWMad_PreviousSection_subparagraph_tl    {paragraph}
-\cs_new:Nn \UWMad_SectionToLevel:n {
+\cs_new:Nn \UWMad_SectionToLevel:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_SectionsLevel_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_SectionsLevel_ #1 _tl}
     }
 }
-\cs_new:Nn \UWMad_LevelToSection:n {
+\cs_new:Nn \UWMad_LevelToSection:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_LevelsSection_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_LevelsSection_ #1 _tl}
     }
 }
-\cs_new:Nn \UWMad_NextSection:n {
+\cs_new:Nn \UWMad_NextSection:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_NextSection_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_NextSection_ #1 _tl}
     }
 }
-\cs_new:Nn \UWMad_PreviousSection:n {
+\cs_new:Nn \UWMad_PreviousSection:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_PreviousSection_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_PreviousSection_ #1 _tl}
     }
 }
 \tex_everydisplay:D \exp_after:wN {
@@ -1234,6 +1234,7 @@
 }
 \DeclareDocumentCommand \LessThan        { } {<}
 \DeclareDocumentCommand \GreaterThanThan { } {>}
+
 \tl_new:N   \l__UWMad_ListOf_Section_Main_tl
 \tl_new:N   \l__UWMad_ListOf_Section_Group_tl
 \tl_new:N   \l__UWMad_ListOf_Section_Subgroup_tl
@@ -1243,19 +1244,19 @@
 \bool_new:N \l__UWMad_ListOf_IncludeInTOC_Main_bool
 \bool_new:N \l__UWMad_ListOf_IncludeInTOC_Group_bool
 \bool_new:N \l__UWMad_ListOf_IncludeInTOC_Subgroup_bool
-\UWMad_Queue_Define:n {l__ListOf_EntryQueue}
-\UWMad_Hash_Define:n  {l__ListOf_Hook}
+\seq_new:N \l__UWMad_ListOf_EntryQueue_seq
+\prop_new:N \l__UWMad_ListOf_Hooks_prop
 \cs_new:Nn \__UWMad_Listof_SetHooks_Blank: {
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Main}       {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Main}      {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Group}      {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Group}     {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Subgroup}   {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Subgroup}  {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PrePush}             {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostPush}            {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PrePrint}            {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostPrint}           {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PreTitle-Main}       {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PostTitle-Main}      {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PreTitle-Group}      {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PostTitle-Group}     {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PreTitle-Subgroup}   {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PostTitle-Subgroup}  {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PrePush}             {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PostPush}            {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PrePrint}            {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PostPrint}           {}
 }
 \cs_new:Nn \__UWMad_ListOf_SectioningCommand_Main:     {}
 \cs_new:Nn \__UWMad_ListOf_SectioningCommand_Group:    {}
@@ -1264,36 +1265,41 @@
 \cs_new:Nn \UWMad_ListOf_PrintTitle_Group:nn    {}
 \cs_new:Nn \UWMad_ListOf_PrintTitle_Subgroup:nn {}
 \cs_new:Nn \UWMad_ListOf_SetHook:nn {
-    \UWMad_Hash_Set:nnn{l__ListOf_Hook}{#1}{#2}
-}
-\cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommand:n {
-    \UWMad_IfSectionExists:nT {
-        \tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}
-    } {
-        \cs_set_eq:cc
-            {__UWMad_ListOf_SectioningCommand_ #1 :}
-            {\tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}}
-    }
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {#1} {#2}
 }
 \cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommands: {
-    \__UWMad_ListOf_Initialize_SectioningCommand:n {Main}
-    \__UWMad_ListOf_Initialize_SectioningCommand:n {Group}
-    \__UWMad_ListOf_Initialize_SectioningCommand:n {Subgroup}
+    \UWMad_IfSectionExists:nT {\l__UWMad_ListOf_Section_Main_tl} {
+        \cs_set_eq:cc
+            {__UWMad_ListOf_SectioningCommand_Main:w}
+            {\l__UWMad_ListOf_Section_Main_tl}
+
+        \UWMad_NextSection:nN{\l__UWMad_ListOf_Section_Main_tl} \l_tmpa_tl
+        \cs_set_eq:cc
+            {__UWMad_ListOf_SectioningCommand_Group:w}
+            {\l_tmpa_tl}
+
+        \UWMad_NextSection:nN{\l_tmpa_tl} \l_tmpb_tl
+        \cs_set_eq:cc
+            {__UWMad_ListOf_SectioningCommand_Subgroup:w}
+            {\l_tmpb_tl}
+    }
 }
 \cs_new:Nn \__UWMad_ListOf_Initialize_TitlePrinter:n {
     \cs_set:cn {UWMad_ListOf_PrintTitle_ #1 :nn} {
-        \UWMad_Hash_Get:nn{l__ListOf_Hook}{PreTitle-#1}
+
+        \prop_item:Nn \l__UWMad_ListOf_Hooks_prop {PreTitle-#1}
+
         \bool_if:cTF {l__UWMad_ListOf_MakeNumbered_ #1 _bool} {
             \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
-                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :}[##1]{##2}
+                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :w}[##1]{##2}
             } {
                 \int_gset_eq:NN \l_tmpa_int \c@tocdepth
                 \int_gset:Nn \c@tocdepth {-1}
-                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :}{##2}
+                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :w}{##2}
                 \int_gset:Nn \c@tocdepth {\l_tmpa_int}
             }
         } {
-            \use:c{__UWMad_ListOf_SectioningCommand_ #1 :} * {##2}
+            \use:c{__UWMad_ListOf_SectioningCommand_ #1 :w} * {##2}
             \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
                 \tl_if_in:cnTF
                     {l__UWMad_ListOf_Section_ #1 _tl} {chapter} { } {
@@ -1304,7 +1310,7 @@
                 }
             } { }
         }
-        \UWMad_Hash_Get:nn{l__ListOf_Hook}{PostTitle-#1}
+        \prop_item:Nn \l__UWMad_ListOf_Hooks_prop {PostTitle-#1}
     }
 }
 \cs_new:Nn \__UWMad_ListOf_Initialize_TitlePrinters: {
@@ -1313,7 +1319,7 @@
     \__UWMad_ListOf_Initialize_TitlePrinter:n {Subgroup}
 }
 \cs_new:Nn \__UWMad_ListOf_Clear: {
-    \UWMad_Queue_Clear:n   {l__ListOf_EntryQueue}
+    \seq_clear:N \l__UWMad_ListOf_EntryQueue_seq
     \__UWMad_Listof_SetHooks_Blank:
 }
 \cs_new:Nn \UWMad_ListOf_Initialize: {
@@ -1322,15 +1328,15 @@
     \__UWMad_ListOf_Initialize_TitlePrinters:
 }
 \cs_new:Nn \UWMad_ListOf_PushEntry:n {
-    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PrePush}
-    \UWMad_Queue_Push:nn {l__ListOf_EntryQueue}{#1}
-    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PostPush}
+    \prop_item:Nn     \l__UWMad_ListOf_Hooks_prop {PrePush}
+    \seq_put_right:Nn \l__UWMad_ListOf_EntryQueue_seq {#1}
+    \prop_item:Nn     \l__UWMad_ListOf_Hooks_prop {PostPush}
 }
 \cs_new:Nn \UWMad_ListOf_PrintEntries: {
-    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PrePrint}
-    \UWMad_Queue_Walk:nn {l__ListOf_EntryQueue}{##1}
-    \UWMad_Queue_Clear:n {l__ListOf_EntryQueue}
-    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PostPrint}
+    \prop_item:Nn      \l__UWMad_ListOf_Hooks_prop {PrePrint}
+    \seq_map_inline:Nn \l__UWMad_ListOf_EntryQueue_seq {##1}
+    \seq_clear:N       \l__UWMad_ListOf_EntryQueue_seq
+    \prop_item:Nn      \l__UWMad_ListOf_Hooks_prop {PostPrint}
 }
 \dim_new:N \l__UWMad_Nomenclature_WidestSymbol_dim
 \dim_new:N \l__UWMad_Nomenclature_WidestUnit_dim
@@ -1408,10 +1414,10 @@
         1.01\l__UWMad_Nomenclature_WidestSymbol_dim
     }
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_Description_Width_dim {
-        0.995\textwidth -
+        \columnwidth -
         \l_UWMad_Nomenclature_Entry_Margin_Left_dim   -
         \l__UWMad_Nomenclature_Entry_Symbol_Width_dim -
-        \l_UWMad_Nomenclature_Entry_Pad_Column_dim      -
+        \l_UWMad_Nomenclature_Entry_Pad_Column_dim    -
         \l_UWMad_Nomenclature_Entry_Margin_Right_dim
     }
 }
@@ -1423,7 +1429,7 @@
         1.05\l__UWMad_Nomenclature_WidestUnit_dim
     }
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_Description_Width_dim {
-        0.995\textwidth -
+        0.995\columnwidth -
          \l_UWMad_Nomenclature_Entry_Margin_Left_dim   -
          \l__UWMad_Nomenclature_Entry_Symbol_Width_dim -
          \l__UWMad_Nomenclature_Entry_Units_Width_dim  -
@@ -1440,28 +1446,35 @@
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_NoUnits:nn {
     \coffin_clear:N \l__UWMad_Nomenclature_Entry_coffin
-    \coffin_clear:N \l_tmpa_coffin
+    \coffin_clear:N \l__UWMad_Nomenclature_Symbol_coffin
+    \coffin_clear:N \l__UWMad_Nomenclature_Description_coffin
     \vcoffin_set:Nnn
-        \l__UWMad_Nomenclature_Symbol_coffin
+        \l__UWMad_Nomenclature_Entry_coffin
         {\l__UWMad_Nomenclature_Entry_Symbol_Width_dim} {#1}
     \vcoffin_set:Nnn
         \l__UWMad_Nomenclature_Description_coffin
         {\l__UWMad_Nomenclature_Entry_Description_Width_dim} {#2}
     \coffin_join:NnnNnnnn
-        \l__UWMad_Nomenclature_Entry_coffin       {l}{t}
-        \l__UWMad_Nomenclature_Symbol_coffin      {l}{t}
+        \l__UWMad_Nomenclature_Entry_coffin       {l}{T}
+        \l__UWMad_Nomenclature_Symbol_coffin      {l}{T}
         {\l_UWMad_Nomenclature_Entry_Margin_Left_dim}{0pt}
     \coffin_join:NnnNnnnn
-        \l__UWMad_Nomenclature_Entry_coffin        {r}{t}
-        \l__UWMad_Nomenclature_Description_coffin  {l}{t}
-        {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}{0pt}
-    \group_begin:
-        \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
-        \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
-        \coffin_typeset:Nnnnn
-            \l__UWMad_Nomenclature_Entry_coffin {l}{t}{0pt}{0pt}
-        \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
-    \group_end:
+        \l__UWMad_Nomenclature_Entry_coffin        {l}{T}
+        \l__UWMad_Nomenclature_Description_coffin  {l}{T}
+        {
+            \l_UWMad_Nomenclature_Entry_Margin_Left_dim   +
+            \l__UWMad_Nomenclature_Entry_Symbol_Width_dim +
+            \l_UWMad_Nomenclature_Entry_Pad_Column_dim
+        } {0pt}
+    \coffin_show_structure:N \l__UWMad_Nomenclature_Symbol_coffin
+    \coffin_show_structure:N \l__UWMad_Nomenclature_Description_coffin
+    \coffin_show_structure:N \l__UWMad_Nomenclature_Entry_coffin
+    \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
+    \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
+    \coffin_typeset:Nnnnn
+        \l__UWMad_Nomenclature_Entry_coffin {l}{t}{0pt}{0pt}
+    \tex_hfill:D
+    \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_Units:nnn {
     \coffin_clear:N \l__UWMad_Nomenclature_Entry_coffin
@@ -1507,6 +1520,7 @@
 \DeclareDocumentEnvironment {Nomenclature} { o o } {
     \UWMad_ListOf_Initialize:
     \setlength{\parskip}{0pt}
+    \setlength{\parindent}{0pt}
     \IfValueTF {#1} {
         \tl_set:Nx \l__UWMad_ListOf_Title_Main_tl { #1 }
     } { }
@@ -1646,14 +1660,12 @@
         \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
     }
 \keys_set:nn { UWMadThesis / Nomenclature } {
-    main-title ,
-    main-section     ,
-    group-section    ,
-    subgroup-section ,
-    make-numbered ,
-    include-in-toc ,
-    include-units-column ,
-    units-embed-siunitx  ,
+    main-title = Nomenclature ,
+    main-section = chapter,
+    make-numbered = true ,
+    include-in-toc = true ,
+    include-units-column = false,
+    units-embed-siunitx = false ,
     print-skip           ,
     entry-margin-top     ,
     entry-margin-left    ,
