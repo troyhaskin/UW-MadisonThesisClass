@@ -1466,9 +1466,6 @@
             \l__UWMad_Nomenclature_Entry_Symbol_Width_dim +
             \l_UWMad_Nomenclature_Entry_Pad_Column_dim
         } {0pt}
-    \coffin_show_structure:N \l__UWMad_Nomenclature_Symbol_coffin
-    \coffin_show_structure:N \l__UWMad_Nomenclature_Description_coffin
-    \coffin_show_structure:N \l__UWMad_Nomenclature_Entry_coffin
     \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
     \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
     \coffin_typeset:Nnnnn
@@ -2803,6 +2800,13 @@
     subsection-directory-name,
     cycle-file-paths,
     cycle-graphic-paths
+}
+\DeclareDocumentCommand \Include { m o m } {
+    \IfNoValueTF { #2 } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{#1}{#3}{}
+    } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{#1}{#3}{#2}
+    }
 }
 \DeclareDocumentCommand \IncludeChapter { o m } {
     \IfNoValueTF { #1 } {

@@ -97,13 +97,9 @@ would be typeset as:
 }
 \begin{Example}
     \begin{Nomenclature}[Symbol Table]
-        \Entry{LongNotRealSymbol}{
-            In publishing and graphic design, lorem ipsum is a placeholder
-            text commonly used to demonstrate the graphic elements of a
-            document or visual presentation. By replacing the distraction
-            of meaningful content with filler text of scrambled Latin it
-            allows viewers to focus on graphical elements such as font,
-            typography, and layout.}
+        \Entry
+            {LongNotRealSymbol}
+            {In publishing and graphic design, lorem ipsum is a placeholder text commonly used to demonstrate the graphic elements of a document or visual presentation. By replacing the distraction of meaningful content with filler text of scrambled Latin it allows viewers to focus on graphical elements such as font, typography, and layout.}
         \Entry{$\rho$}{Density}
         \Entry{$\mu$}{Viscosity}
     \end{Nomenclature}
@@ -147,7 +143,6 @@ These options are set by giving a comma-separate list of key-value pairs to the 
         }
     \end{verbatim}
 A table of the keys, meaning, defaults, and allow value is given in \cref{Table:NomenclatureKeyValue}.
-
 
 % ================================================================ %
 %                               Acronym                            %
@@ -710,9 +705,6 @@ It shares all of the same keys with some additional ones outline in \cref{Table:
             \l__UWMad_Nomenclature_Entry_Symbol_Width_dim +
             \l_UWMad_Nomenclature_Entry_Pad_Column_dim
         } {0pt}   
-    \coffin_show_structure:N \l__UWMad_Nomenclature_Symbol_coffin
-    \coffin_show_structure:N \l__UWMad_Nomenclature_Description_coffin
-    \coffin_show_structure:N \l__UWMad_Nomenclature_Entry_coffin
     \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
     \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
     \coffin_typeset:Nnnnn

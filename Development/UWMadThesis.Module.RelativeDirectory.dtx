@@ -930,6 +930,13 @@ The input syntax has the form
 %
 %   \UWSubModule{User Front Ends}
 %    \begin{macrocode}
+\DeclareDocumentCommand \Include { m o m } {
+    \IfNoValueTF { #2 } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{#1}{#3}{}
+    } { 
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{#1}{#3}{#2}
+    }
+}
 \DeclareDocumentCommand \IncludeChapter { o m } {
     \IfNoValueTF { #1 } {
         \UWMad_RelativeDirectory_IncludeDriver:nnn{Chapter}{#2}{}

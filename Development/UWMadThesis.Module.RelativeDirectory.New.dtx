@@ -1,0 +1,98 @@
+\DeclareDocumentCommand \Include { m o m } {
+    \UWMad_RelativeDirectory_Include:nnn{#1}{#2}{#3}
+}
+
+
+\cs_new:N \UWMad_RelativeDirectory_Include:nnn {
+
+    \tl_gset:Nx \g__UWMad_RelativeDirectory_IncludeLevel_tl  {#1}
+
+    \tl_gset:Nx \g__UWMad_RelativeDirectory_AlternatePath_tl {#2}
+    \UWMad_File_PathFileName:NNNx
+        \g__UWMad_RelativeDirectory_File_InlinePath_tl
+        \g__UWMad_RelativeDirectory_File_BaseName_tl
+        \g__UWMad_RelativeDirectory_File_Extension_tl
+        {#3}
+
+    \UWMad_RelativeDirectory_Include_Using_AlternatePath:
+}
+
+
+\cs_new:Nn \UWMad_RelativeDirectory_Include:nn {
+
+    \tl_gset:Nx \g__UWMad_RelativeDirectory_IncludeLevel_tl  {#1}
+
+    \UWMad_File_PathFileName:xNNN
+        {#2}
+        \g__UWMad_RelativeDirectory_File_InlinePath_tl
+        \g__UWMad_RelativeDirectory_File_BaseName_tl
+        \g__UWMad_RelativeDirectory_File_Extension_tl
+
+    \UWMad_RelativeDirectory_Include_Using_SearchStack:
+}
+
+\cs_new:Nn \UWMad_RelativeDirectory_Include_Using_SearchStack: {
+    \UWMad_RelativeDirectory_Update_SearchStack:
+    \UWMad_RelativeDirectory_FindFile:n
+        \g__UWMad_RelativeDirectory_FQFilename_tl
+    \file_input:n{\g__UWMad_RelativeDirectory_FQFilename_tl}
+}
+
+\cs_new:Nn \UWMad_RelativeDirectory_Update_SearchStack: {
+
+    \UWMad_RelativeDirectory_Get_UpdateHooks:N
+        \g__UWMad_RelativeDirectory_UpdateDateHooks_prop
+        
+    \UWMad_RelativeDirectory_Get_DirectoryName:N
+        \g__UWMad_RelativeDirectory_DirectoryName_tl
+
+    \prop_item:Nn
+        \g__UWMad_RelativeDirectory_UpdateDateHooks_prop
+        {Pre}
+
+
+
+
+
+    \prop_item:Nn
+        \g__UWMad_RelativeDirectory_UpdateDateHooks_prop
+        {Post}
+                
+    \UWMad_RelativeDirectory_MakeDirectoryName:n
+        \g__UWMad_RelativeDirectory_DirectoryName_tl
+    
+    \seq_gpush:Nn 
+        \g__UWMad_RelativeDirectory_SearchStack_seq
+        { }
+}
+
+\seq_new:N    \g__UWMad_RelativeDirectory_SearchStack_seq
+\seq_gpush:Nn \g__UWMad_RelativeDirectory_SearchStack_seq {.}
+%
+\prop_new:N \g_UWMad_RelativeDirectory_Include_Hooks_prop
+\prop_gput:Nnn
+    \g_UWMad_RelativeDirectory_Include_Hooks_prop
+    {PreUpdate-Chapter}
+    {
+        \seq_gclear:N \g__UWMad_RelativeDirectory_SearchStack_seq
+        \seq_gpush:Nn \g__UWMad_RelativeDirectory_SearchStack_seq {.}
+    }
+\prop_gput:Nnn
+    \g_UWMad_RelativeDirectory_Include_Hooks_prop 
+    {PreUpdate-Section} { }
+\prop_gput:Nnn
+    \g_UWMad_RelativeDirectory_Include_Hooks_prop
+    {PreUpdate-Subsection} { }
+
+\cs_new:Nn \UWMad_RelativeDirectory_Include_Using_AlternatePath: {
+    \tl_gset:Nx
+        \g__UWMad_RelativeDirectory_FQName_tl
+        {
+            \g__UWMad_RelativeDirectory_AlternatePath_tl   /
+            \g__UWMad_RelativeDirectory_File_InlinePath_tl /
+            \g__UWMad_RelativeDirectory_File_BaseName_tl
+        }
+    \file_if_exist:nTF {\g__UWMad_RelativeDirectory_FQName_tl} {
+        \file_input:n  {\g__UWMad_RelativeDirectory_FQName_tl}
+    } { }
+}
