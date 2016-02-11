@@ -393,8 +393,8 @@
 \cs_generate_variant:Nn \prop_gput:Nnn   { c x n   }
 \cs_generate_variant:Nn \prop_if_in:NnTF { c x TF  }
 \cs_generate_variant:Nn \prop_if_in:NnTF { c f TF  }
-\cs_generate_variant:Nn \prop_get:Nn     { c x     }
-\cs_generate_variant:Nn \prop_get:Nn     { c f     }
+\cs_generate_variant:Nn \prop_item:Nn    { c x     }
+\cs_generate_variant:Nn \prop_item:Nn    { c f     }
 \cs_generate_variant:Nn \prop_get:NnNTF  { c x N TF}
 \cs_generate_variant:Nn \prop_gremove:Nn { c x     }
 \cs_new:Nn \__UWMad_Hash_IfDefined:nT {
@@ -413,10 +413,10 @@
         \prop_gput:cxn {g__UWMad_Hash_#1}{#2}{#3}
     }
 }
-\cs_generate_variant:Nn \prop_get:cn {cf}
+\cs_generate_variant:Nn \prop_item:cn {cf}
 \cs_new:Nn \UWMad_Hash_Get:nn {
     \__UWMad_Hash_IfDefined:nT {#1} {
-        \prop_get:cf {g__UWMad_Hash_#1}{#2}
+        \prop_item:cf {g__UWMad_Hash_#1}{#2}
     }
 }
 \cs_new:Nn \UWMad_Hash_Unset:nn {
