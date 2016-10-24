@@ -1845,7 +1845,9 @@
 \UWMad_Hook_Prepend:Nn \@chapter {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {
-        \pagenumbering{arabic}
+        \bool_if:NTF \g__UWmad_Appendix_Active_bool { } {
+            \pagenumbering{arabic}
+        }
     } { }
 }
 \UWMad_Hook_Prepend:Nn \@schapter {
@@ -1871,10 +1873,12 @@
 %   Before, \cs{appendix} simply changed the \texttt{chaptername} to
 %   \enquote{Appendix}.
 %
-%   Define the appendix counter.
+%   Define the appendix counter and activation flag
 %    \begin{macrocode}
-\int_new:N  \g__UWMad_Appendix_Counter_int
-\int_set:Nn \g__UWMad_Appendix_Counter_int {0}
+\int_new:N          \g__UWMad_Appendix_Counter_int
+\int_set:Nn         \g__UWMad_Appendix_Counter_int {0}
+\bool_new:N         \g__UWmad_Appendix_Active_bool
+\bool_gset_false:N  \g__UWmad_Appendix_Active_bool
 %    \end{macrocode}
 %
 %   This command is used when the first \cs{appendix} command
@@ -1882,26 +1886,18 @@
 %   and sets the \cs{thechapter} to use the appendix counter
 %   above.
 %    \begin{macrocode}
-\cs_new:Nn \__UWMad_Appendix_Initialize:{
-    \par
-    \setcounter{section}{0}
-    \cs_gset_eq:NN \@chapapp \appendixname
-    \cs_gset:Npn \thechapter {
-        \int_to_Alph:n {
-            \g__UWMad_Appendix_Counter_int
-        }
-    }
-}
+\cs_new_eq:NN  \__UWMad_Appendix_Initialize: \appendix
+\cs_undefine:N \appendix
 %    \end{macrocode}
 %
 %   Now, \cs{appendix} is undefined (to avoide a warning from
 %   \pkg{xparse}) and redefined with standard \LaTeXe{}
 %   sectioning arguments.
 %    \begin{macrocode}
-\cs_undefine:N \appendix
 \DeclareDocumentCommand \appendix { s o m } {
 
     \int_compare:nNnTF {\g__UWMad_Appendix_Counter_int} = {0} {
+        \bool_gset_true:N \g__UWmad_Appendix_Active_bool
         \__UWMad_Appendix_Initialize:
     } { }
     \int_gincr:N \g__UWMad_Appendix_Counter_int
@@ -3690,34 +3686,34 @@
 %
 %   Define user accessors for thesis info.
 %    \begin{macrocode}
-\DeclareDocumentCommand \TheTitle { } {
+\DeclareExpandableDocumentCommand \TheTitle { } {
     \g__UWMad_ThesisInfo_Title_tl
 }
-\DeclareDocumentCommand \TheAuthor { } {
+\DeclareExpandableDocumentCommand \TheAuthor { } {
     \g__UWMad_ThesisInfo_Author_tl
 }
-\DeclareDocumentCommand \TheProgram { } {
+\DeclareExpandableDocumentCommand \TheProgram { } {
     \g__UWMad_ThesisInfo_Program_tl
 }
-\DeclareDocumentCommand \TheDegree { } {
+\DeclareExpandableDocumentCommand \TheDegree { } {
     \g__UWMad_ThesisInfo_Degree_tl
 }
-\DeclareDocumentCommand \TheDocumentType { } {
+\DeclareExpandableDocumentCommand \TheDocumentType { } {
     \g__UWMad_ThesisInfo_DocumentType_tl
 }
-\DeclareDocumentCommand \TheDefenseDate { } {
+\DeclareExpandableDocumentCommand \TheDefenseDate { } {
     \g__UWMad_ThesisInfo_DefenseDate_tl
 }
 \cs_gset_eq:NN \TheDefenceDate \TheDefenseDate
-\DeclareDocumentCommand \TheInstitution { } {
+\DeclareExpandableDocumentCommand \TheInstitution { } {
     \g__UWMad_ThesisInfo_Institution_tl
 }
 \cs_set_eq:NN \TheUniversity \TheInstitution
 %
-\DeclareDocumentCommand \TheDepartment { } {
+\DeclareExpandableDocumentCommand \TheDepartment { } {
     \g__UWMad_ThesisInfo_Department_tl
 }
-\DeclareDocumentCommand \TheAdvisor { } {
+\DeclareExpandableDocumentCommand \TheAdvisor { } {
     \g__UWMad_ThesisInfo_AdvisorName_tl
 }
 %    \end{macrocode}
@@ -3872,16 +3868,16 @@
 %
 %   Define user interface for accessing metadata.
 %    \begin{macrocode}
-\DeclareDocumentCommand \TheSubject { } {
+\DeclareExpandableDocumentCommand \TheSubject { } {
     \g__UWMad_PDFMetaData_Subject_tl
 }
-\DeclareDocumentCommand \TheKeywords { } {
+\DeclareExpandableDocumentCommand \TheKeywords { } {
     \g__UWMad_PDFMetaData_Keywords_tl
 }
-\DeclareDocumentCommand \TheProducer { } {
+\DeclareExpandableDocumentCommand \TheProducer { } {
     \g__UWMad_PDFMetaData_Producer_tl
 }
-\DeclareDocumentCommand \TheCreator { } {
+\DeclareExpandableDocumentCommand \TheCreator { } {
     \g__UWMad_PDFMetaData_Creator_tl
 }
 %

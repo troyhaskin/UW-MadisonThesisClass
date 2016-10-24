@@ -43,7 +43,7 @@ The \UWMadClass{} takes a different approach to encourage good semantic mark-up 
         \cs{appendix} \oarg{short title}\marg{title}
         \cs{appendix}*\oarg{short title}\marg{title}
     \end{syntax}
-    The appendix commands now acts like \cs{chapter} commands and are typeset in the Table of Contents as such.
+    The appendix commands now act like \cs{chapter} commands and are typeset in the Table of Contents as such.
     
     \textsc{Note}:
     The usage \cs{appendix} should be after all the chapter material is set since some of the \cs{chapter} internals are changed.
@@ -109,7 +109,9 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 \UWMad_Hook_Prepend:Nn \@chapter {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {
-        \pagenumbering{arabic}
+        \bool_if:NTF \g__UWmad_Appendix_Active_bool { } {
+            \pagenumbering{arabic}
+        }
     } { }
 }
 \UWMad_Hook_Prepend:Nn \@schapter {
@@ -135,10 +137,12 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %   Before, \cs{appendix} simply changed the \texttt{chaptername} to 
 %   \enquote{Appendix}.
 %
-%   Define the appendix counter.
+%   Define the appendix counter and activation flag
 %    \begin{macrocode}
-\int_new:N  \g__UWMad_Appendix_Counter_int
-\int_set:Nn \g__UWMad_Appendix_Counter_int {0}
+\int_new:N          \g__UWMad_Appendix_Counter_int
+\int_set:Nn         \g__UWMad_Appendix_Counter_int {0}
+\bool_new:N         \g__UWmad_Appendix_Active_bool
+\bool_gset_false:N  \g__UWmad_Appendix_Active_bool
 %    \end{macrocode}
 %
 %   This command is used when the first \cs{appendix} command
@@ -146,26 +150,18 @@ Invoking the Table of Contents, List of Tables, and List of Figures commands now
 %   and sets the \cs{thechapter} to use the appendix counter
 %   above.
 %    \begin{macrocode}
-\cs_new:Nn \__UWMad_Appendix_Initialize:{
-    \par
-    \setcounter{section}{0}
-    \cs_gset_eq:NN \@chapapp \appendixname
-    \cs_gset:Npn \thechapter {
-        \int_to_Alph:n {
-            \g__UWMad_Appendix_Counter_int
-        }
-    }
-}
+\cs_new_eq:NN  \__UWMad_Appendix_Initialize: \appendix
+\cs_undefine:N \appendix
 %    \end{macrocode}
 %
 %   Now, \cs{appendix} is undefined (to avoide a warning from
 %   \pkg{xparse}) and redefined with standard \LaTeXe{} 
 %   sectioning arguments.
 %    \begin{macrocode}
-\cs_undefine:N \appendix
 \DeclareDocumentCommand \appendix { s o m } {
 
     \int_compare:nNnTF {\g__UWMad_Appendix_Counter_int} = {0} {
+        \bool_gset_true:N \g__UWmad_Appendix_Active_bool
         \__UWMad_Appendix_Initialize:
     } { }
     \int_gincr:N \g__UWMad_Appendix_Counter_int

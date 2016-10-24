@@ -769,7 +769,9 @@
 \UWMad_Hook_Prepend:Nn \@chapter {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {
-        \pagenumbering{arabic}
+        \bool_if:NTF \g__UWmad_Appendix_Active_bool { } {
+            \pagenumbering{arabic}
+        }
     } { }
 }
 \UWMad_Hook_Prepend:Nn \@schapter {
@@ -784,22 +786,16 @@
     \StarredChapter{#1}
     \__UWMad_FrontMatter_Register:nn{chapter}{#1}
 }
-\int_new:N  \g__UWMad_Appendix_Counter_int
-\int_set:Nn \g__UWMad_Appendix_Counter_int {0}
-\cs_new:Nn \__UWMad_Appendix_Initialize:{
-    \par
-    \setcounter{section}{0}
-    \cs_gset_eq:NN \@chapapp \appendixname
-    \cs_gset:Npn \thechapter {
-        \int_to_Alph:n {
-            \g__UWMad_Appendix_Counter_int
-        }
-    }
-}
+\int_new:N          \g__UWMad_Appendix_Counter_int
+\int_set:Nn         \g__UWMad_Appendix_Counter_int {0}
+\bool_new:N         \g__UWmad_Appendix_Active_bool
+\bool_gset_false:N  \g__UWmad_Appendix_Active_bool
+\cs_new_eq:NN  \__UWMad_Appendix_Initialize: \appendix
 \cs_undefine:N \appendix
 \DeclareDocumentCommand \appendix { s o m } {
 
     \int_compare:nNnTF {\g__UWMad_Appendix_Counter_int} = {0} {
+        \bool_gset_true:N \g__UWmad_Appendix_Active_bool
         \__UWMad_Appendix_Initialize:
     } { }
     \int_gincr:N \g__UWMad_Appendix_Counter_int
@@ -1925,33 +1921,33 @@
             {#1}
     }
 }
-\DeclareDocumentCommand \TheTitle { } {
+\DeclareExpandableDocumentCommand \TheTitle { } {
     \g__UWMad_ThesisInfo_Title_tl
 }
-\DeclareDocumentCommand \TheAuthor { } {
+\DeclareExpandableDocumentCommand \TheAuthor { } {
     \g__UWMad_ThesisInfo_Author_tl
 }
-\DeclareDocumentCommand \TheProgram { } {
+\DeclareExpandableDocumentCommand \TheProgram { } {
     \g__UWMad_ThesisInfo_Program_tl
 }
-\DeclareDocumentCommand \TheDegree { } {
+\DeclareExpandableDocumentCommand \TheDegree { } {
     \g__UWMad_ThesisInfo_Degree_tl
 }
-\DeclareDocumentCommand \TheDocumentType { } {
+\DeclareExpandableDocumentCommand \TheDocumentType { } {
     \g__UWMad_ThesisInfo_DocumentType_tl
 }
-\DeclareDocumentCommand \TheDefenseDate { } {
+\DeclareExpandableDocumentCommand \TheDefenseDate { } {
     \g__UWMad_ThesisInfo_DefenseDate_tl
 }
 \cs_gset_eq:NN \TheDefenceDate \TheDefenseDate
-\DeclareDocumentCommand \TheInstitution { } {
+\DeclareExpandableDocumentCommand \TheInstitution { } {
     \g__UWMad_ThesisInfo_Institution_tl
 }
 \cs_set_eq:NN \TheUniversity \TheInstitution
-\DeclareDocumentCommand \TheDepartment { } {
+\DeclareExpandableDocumentCommand \TheDepartment { } {
     \g__UWMad_ThesisInfo_Department_tl
 }
-\DeclareDocumentCommand \TheAdvisor { } {
+\DeclareExpandableDocumentCommand \TheAdvisor { } {
     \g__UWMad_ThesisInfo_AdvisorName_tl
 }
 \tl_new:N   \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
@@ -2057,16 +2053,16 @@
         \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
     } { }
 }
-\DeclareDocumentCommand \TheSubject { } {
+\DeclareExpandableDocumentCommand \TheSubject { } {
     \g__UWMad_PDFMetaData_Subject_tl
 }
-\DeclareDocumentCommand \TheKeywords { } {
+\DeclareExpandableDocumentCommand \TheKeywords { } {
     \g__UWMad_PDFMetaData_Keywords_tl
 }
-\DeclareDocumentCommand \TheProducer { } {
+\DeclareExpandableDocumentCommand \TheProducer { } {
     \g__UWMad_PDFMetaData_Producer_tl
 }
-\DeclareDocumentCommand \TheCreator { } {
+\DeclareExpandableDocumentCommand \TheCreator { } {
     \g__UWMad_PDFMetaData_Creator_tl
 }
 \DeclareDocumentCommand \FulfillmentClause { } {
