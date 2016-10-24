@@ -1,5 +1,5 @@
-\RequirePackage{expl3}[2013/07/28]
-\@ifpackagelater{expl3}{2013/07/28} {} {%
+\RequirePackage{expl3}[2016/05/01]
+\@ifpackagelater{expl3}{2016/05/01} {} {%
     \PackageError{UWMadThesis}{Version of l3kernel is too old}
       {%
         Please install an up to date version of l3kernel\MessageBreak
@@ -10,7 +10,7 @@
 \ExplSyntaxOn
 \tl_const:Nn \c__UWMad_Class_Name_tl        {UWMadThesis}
 \tl_const:Nn \c__UWMad_Class_Version_tl     {1.0}
-\tl_const:Nn \c__UWMad_Class_Date_tl        {2014/04/01}
+\tl_const:Nn \c__UWMad_Class_Date_tl        {2016/10/01}
 \tl_const:Nn \c__UWMad_Class_Description_tl {
     LaTeX2e+~Thesis~Class~for~UW-Madison
 }
@@ -60,7 +60,6 @@
 \ProcessOptions\relax
 \LoadClass[oneside,12pt]{\g_UWMad_ParentClass_tl}[1995/12/01]
 \RequirePackage{xparse}
-\RequirePackage{fixltx2e}
 \RequirePackage{microtype}
 \RequirePackage{array}
 \RequirePackage{float}
