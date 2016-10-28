@@ -819,10 +819,15 @@
     } { }
 
     \int_gincr:N \g__UWMad_FrontMatter_Counter_int
-    \addcontentsline
-        {toc}
-        {#1}
-        {#2}
+    \bool_gset_true:N \g__UWMad_TOC_Registering_LOF_bool
+    %\bool_if:nTF {
+        %\g__UWMad_TOC_Registering_LOT_bool ||
+        %\g__UWMad_TOC_Registering_LOF_bool } { } {
+            \addcontentsline
+                {toc}
+                {#1}
+                {#2}
+        %}
 }
 \tl_new:N   \g__UWMad_FrontMatter_Title_Dedications_tl
 \tl_new:N   \g__UWMad_FrontMatter_Title_Acknowledgments_tl
@@ -892,9 +897,9 @@
        \FrontMatterSetSection{#1}{Preface}
     }
 }
-\cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
-\cs_gset_eq:NN \ListOfTablesDefault    \listoftables
-\cs_gset_eq:NN \ListOfFiguresDefault   \listoffigures
+\cs_new_eq:NN \TableOfContentsDefault \tableofcontents
+\cs_new_eq:NN \ListOfTablesDefault    \listoftables
+\cs_new_eq:NN \ListOfFiguresDefault   \listoffigures
 \cs_undefine:N \tableofcontents
 \cs_undefine:N \listoftables
 \cs_undefine:N \listoffigures
@@ -904,6 +909,10 @@
 \tl_gset:Nn \g__UWMad_TOC_Name_TOC_tl {Table~of~Contents}
 \tl_gset:Nn \g__UWMad_TOC_Name_LOT_tl {List~of~Tables}
 \tl_gset:Nn \g__UWMad_TOC_Name_LOF_tl {List~of~Figures}
+\bool_new:N \g__UWMad_TOC_Registering_LOT_bool
+\bool_new:N \g__UWMad_TOC_Registering_LOF_bool
+\bool_gset_false:N \g__UWMad_TOC_Registering_LOT_bool
+\bool_gset_false:N \g__UWMad_TOC_Registering_LOF_bool
 \DeclareDocumentCommand \tableofcontents { } {
 
     \tl_gset_eq:NN \contentsname \g__UWMad_TOC_Name_TOC_tl
@@ -927,9 +936,6 @@
         \ExplSyntaxOff
             \ListOfTablesDefault
         \ExplSyntaxOn
-        \__UWMad_FrontMatter_Register:nn
-            {chapter}
-            {\listtablename}
         \clearpage
     \group_end:
 }
@@ -942,9 +948,6 @@
         \ExplSyntaxOff
             \ListOfFiguresDefault
         \ExplSyntaxOn
-        \__UWMad_FrontMatter_Register:nn
-            {chapter}
-            {\listfigurename}
         \clearpage
     \group_end:
 }

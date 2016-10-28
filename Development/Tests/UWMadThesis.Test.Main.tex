@@ -1,6 +1,16 @@
 \documentclass{UWMadThesis}
 
+\usepackage{environ,xspace,booktabs,esint}
 \usepackage{lipsum}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.12}
+\usetikzlibrary{quotes,angles}
+\usepackage[linesnumbered,ruled]{algorithm2e}
+\usepackage[inline]{enumitem}
+\usepackage{siunitx,multirow}
+
+
 
 % ========================== %
 %     Thesis Information     %
@@ -54,10 +64,12 @@
 %                              Front Matter Tests                             %
 % =========================================================================== %
 
-\acknowledgments{}
-\lipsum[1]
+%\acknowledgments{}
+%\lipsum[1]
 
 \TableOfContents
+\ListOfFigures
+\ListOfTables
 
 \abstract
 \lipsum[2-3]
