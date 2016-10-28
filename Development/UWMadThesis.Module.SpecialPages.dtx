@@ -321,13 +321,13 @@ This input would generate the following text at the bottom of a new page (with a
 
 \DeclareDocumentCommand \TitlePageDegree { } {
     \IfInfoIsSetT {Degree} {
-        (\TheDegree{})
+        \TheDegree{}
     }
 }
 
 \DeclareDocumentCommand \TitlePageProgram { } {
     \IfInfoIsSetT {Program} {
-        \TheProgram{}
+        (\TheProgram{})
     }
 }
 

@@ -2097,13 +2097,13 @@
 
 \DeclareDocumentCommand \TitlePageDegree { } {
     \IfInfoIsSetT {Degree} {
-        (\TheDegree{})
+        \TheDegree{}
     }
 }
 
 \DeclareDocumentCommand \TitlePageProgram { } {
     \IfInfoIsSetT {Program} {
-        \TheProgram{}
+        (\TheProgram{})
     }
 }
 
