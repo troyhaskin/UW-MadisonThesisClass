@@ -1988,8 +1988,10 @@
             \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
             \
             \textsl{#3}
-            \
-            (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
+            \bool_if:NTF \g__UWMad_ThesisInfo_PrintAdvisorMarker_bool {
+                \
+                (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
+            } { }
         }
         \coffin_join:NnnNnnnn
             \g__UWMad_ThesisInfo_Committee_coffin {l} {b}
@@ -1997,6 +1999,8 @@
             {0pt}{-0.75em}
     }
 }
+\bool_new:N        \g__UWMad_ThesisInfo_PrintAdvisorMarker_bool
+\bool_gset_false:N \g__UWMad_ThesisInfo_PrintAdvisorMarker_bool
 \cs_new:Nn \UWMad_ThesisInfo_AdvisorInfo:nnn {
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
@@ -2127,6 +2131,10 @@
     }
 }
 
+\DeclareDocumentCommand \TitlePageCommitteLeadIn { } {
+    The~dissertation~is~approved~by~the~following~members~of~the~Final~Oral~Committee:
+}
+
 \DeclareDocumentCommand \MakeTitlePage { } {
     \clearpage
     \thispagestyle{empty}
@@ -2141,7 +2149,8 @@
         \TitlePageInstitution{}
         \vfill
     \end{center}
-    \TitlePageDefenseDate{}\\[-1em]
+    \TitlePageDefenseDate{}\\
+    \TitlePageCommitteLeadIn{} \\[-1.5em]
     \PrintCommitteeMemberList{}
     \cleardoublepage
 }

@@ -345,6 +345,10 @@ This input would generate the following text at the bottom of a new page (with a
     }
 }
 
+\DeclareDocumentCommand \TitlePageCommitteLeadIn { } {
+    The~dissertation~is~approved~by~the~following~members~of~the~Final~Oral~Committee:
+}
+
 
 \DeclareDocumentCommand \MakeTitlePage { } {
     \clearpage
@@ -360,7 +364,8 @@ This input would generate the following text at the bottom of a new page (with a
         \TitlePageInstitution{}
         \vfill
     \end{center}
-    \TitlePageDefenseDate{}\\[-1em]
+    \TitlePageDefenseDate{}\\
+    \TitlePageCommitteLeadIn{} \\[-1.5em]
     \PrintCommitteeMemberList{}
     \cleardoublepage
 }
