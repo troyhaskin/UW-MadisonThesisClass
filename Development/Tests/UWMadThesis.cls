@@ -918,11 +918,12 @@
     \tl_gset_eq:NN \contentsname \g__UWMad_TOC_Name_TOC_tl
 
     \group_begin:
-        \setstretch{1.05}
         \cleardoublepage
         \phantomsection
         \ExplSyntaxOff
-            \TableOfContentsDefault
+            \begin{spacing}{1.2}
+                \TableOfContentsDefault
+            \end{spacing}
         \ExplSyntaxOn
         \cleardoublepage
     \group_end:
@@ -932,9 +933,10 @@
     \cs_set_eq:NN \listtablename \g__UWMad_TOC_Name_LOT_tl
 
     \group_begin:
-        \setstretch{1.05}
         \ExplSyntaxOff
-            \ListOfTablesDefault
+            \begin{spacing}{1.2}
+                \ListOfTablesDefault
+            \end{spacing}
         \ExplSyntaxOn
         \clearpage
     \group_end:
@@ -944,9 +946,10 @@
     \cs_set_eq:NN \listfigurename \g__UWMad_TOC_Name_LOF_tl
 
     \group_begin:
-        \setstretch{1.05}
         \ExplSyntaxOff
-            \ListOfFiguresDefault
+            \begin{spacing}{1.2}
+                \ListOfFiguresDefault
+            \end{spacing}
         \ExplSyntaxOn
         \clearpage
     \group_end:
