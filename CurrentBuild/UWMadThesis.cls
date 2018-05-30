@@ -1,5 +1,5 @@
-\RequirePackage{expl3}[2013/07/28]
-\@ifpackagelater{expl3}{2013/07/28} {} {%
+\RequirePackage{expl3}[2018/05/13]
+\@ifpackagelater{expl3}{2018/05/13} {} {%
     \PackageError{UWMadThesis}{Version of l3kernel is too old}
       {%
         Please install an up to date version of l3kernel\MessageBreak
@@ -10,7 +10,7 @@
 \ExplSyntaxOn
 \tl_const:Nn \c__UWMad_Class_Name_tl        {UWMadThesis}
 \tl_const:Nn \c__UWMad_Class_Version_tl     {1.0}
-\tl_const:Nn \c__UWMad_Class_Date_tl        {2014/04/01}
+\tl_const:Nn \c__UWMad_Class_Date_tl        {2018/05/29}
 \tl_const:Nn \c__UWMad_Class_Description_tl {
     LaTeX2e+~Thesis~Class~for~UW-Madison
 }
@@ -60,7 +60,6 @@
 \ProcessOptions\relax
 \LoadClass[oneside,12pt]{\g_UWMad_ParentClass_tl}[1995/12/01]
 \RequirePackage{xparse}
-\RequirePackage{fixltx2e}
 \RequirePackage{microtype}
 \RequirePackage{array}
 \RequirePackage{float}
@@ -71,7 +70,7 @@
 \RequirePackage{amsfonts}
 \RequirePackage{amssymb}
 \RequirePackage{mathtools}
-\bool_if:nTF {\xetex_if_engine_p: || \luatex_if_engine_p:} {
+\bool_if:nTF {\sys_if_engine_xetex_p: || \sys_if_engine_luatex_p:} {
     \RequirePackage{fontspec}
     \defaultfontfeatures{Ligatures={TeX}}
     \setmainfont
@@ -138,30 +137,20 @@
 \msg_new:nnn {UWMadThesis} {Programming/Defined} {
     The~#2~`#1'~is~already~defined~and~will~not~altered.
 }
-\cs_new:Nn \UWMad_Hook_Prepend:cn {
-    \cs_new_eq:cc  {#1-Default:} {#1}
-    \cs_gset:cn    {#1:}         {#2 \cs:w #1-Default:\cs_end:}
-    \cs_undefine:c {#1}
-    \cs_new_eq:cc  {#1}          {#1:}
-}
 \cs_new:Nn \UWMad_Hook_Prepend:Nn {
     \cs_new_eq:cN  {\string#1-Default:} #1
     \cs_gset:cn    {\string#1:}         {#2 \cs:w\string#1-Default:\cs_end:}
     \cs_undefine:N  #1
     \cs_new_eq:Nc   #1          {\string#1:}
 }
-\cs_new:Nn \UWMad_Hook_Append:cn {
-    \cs_new_eq:cc  {#1-Default:} {#1}
-    \cs_gset:cn    {#1:}        {\cs:w #1-Default:\cs_end: #2}
-    \cs_undefine:c {#1}
-    \cs_new_eq:cc  {#1}          {#1:}
-}
+\cs_generate_variant:Nn \UWMad_Hook_Prepend:Nn { cn }
 \cs_new:Nn \UWMad_Hook_Append:Nn {
     \cs_new_eq:cN  {\string#1-Default:} #1
     \cs_gset:cn    {\string#1:}         {\cs:w\string#1-Default:\cs_end: #2}
     \cs_undefine:N  #1
     \cs_new_eq:Nc   #1          {\string#1:}
 }
+\cs_generate_variant:Nn \UWMad_Hook_Append:Nn { cn }
 \cs_new:Nn \UWMad_Definition_Swap:Nn {
     \cs_if_exist:NTF #1 {
         \cs_new_eq:cN  {\string#1-Default:}  #1
@@ -178,63 +167,36 @@
 }
 \cs_generate_variant:Nn \UWMad_Definition_Swap:Nn {cn}
 \cs_generate_variant:Nn \UWMad_Definition_Reset:N {c}
-\tl_new:N   \g__UWMad_File_Path_tl
-\tl_new:N   \g__UWMad_File_Extension_tl
-\tl_new:N   \g__UWMad_File_Marker_Extension_tl
-\tl_new:N   \g__UWMad_File_Marker_Directory_tl
-\tl_gset:Nn \g__UWMad_File_Marker_Extension_tl {.}
-\tl_gset:Nn \g__UWMad_File_Marker_Directory_tl {/}
-\bool_new:N \g__UWMad_File_IsExtensionFound_bool
-\bool_new:N \g__UWMad_File_IsDirectoryFound_bool
-\cs_new:Nn \UWMad_File_GetExtension:nNN {
+\tl_gset:Nn \g__UWMad_File_ExtensionMarker_tl {.}
+\tl_gset:Nn \g__UWMad_File_DirectoryMarker_tl {/}
+\cs_new:Nn \UWMad_File_PathFileName:NNNn {
 
-    \tl_gclear:N \g__UWMad_File_Path_tl
-    \tl_gclear:N \g__UWMad_File_Extension_tl
-    \bool_set_false:N \g__UWMad_File_IsExtensionFound_bool
-    \bool_set_false:N \g__UWMad_File_IsDirectoryFound_bool
+    %   Break possible directory chain and pop file name from right
+    \seq_set_split:Nnn \l_tmpa_seq {g__UWMad_File_DirectoryMarker_tl} {#4}
+    \seq_pop_right:NN  \l_tmpa_seq #2
 
-    \tl_set:Nx \l_tmpa_tl {
-        \tl_reverse:V {#1}
-    }
-
-\tl_map_inline:Nn \l_tmpa_tl {
-
-    \tl_set:Nn {\l_tmpb_tl}{##1}
-
-    \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool {
-        \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
+    %   Check if a path was given
+    \int_compare:nNnTF {\seq_count:N \l_tmpa_seq} > {0} {
+        \tl_set:Nf #1 {
+            \seq_use:Nn \l_tmpa_seq {\g__UWMad_File_DirectoryMarker_tl}
+            \g__UWMad_File_DirectoryMarker_tl
+        }
     } {
-        \bool_if:NTF \g__UWMad_File_IsDirectoryFound_bool {
-            \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
-        } {
-            \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Extension_tl {
-                \bool_set_true:N \g__UWMad_File_IsExtensionFound_bool
-            } {
-                \tl_if_eq:NNTF \l_tmpb_tl \g__UWMad_File_Marker_Directory_tl {
-                    \bool_gset_true:N \g__UWMad_File_IsDirectoryFound_bool
-                    \tl_gput_left:Nn \g__UWMad_File_Path_tl {##1}
-                } {
-                    \tl_gput_left:Nn \g__UWMad_File_Extension_tl {##1}
-                }
-            }
-        }
-    }
-}
-
-    \bool_if:NTF \g__UWMad_File_IsExtensionFound_bool { } {
-        \tl_gput_right:NV \g__UWMad_File_Path_tl {
-            \g__UWMad_File_Extension_tl
-        }
-        \tl_gclear:N \g__UWMad_File_Extension_tl
+        \tl_clear:N #1
     }
 
-    \tl_gset_eq:NN
-        #2
-        \g__UWMad_File_Path_tl
-    \tl_gset_eq:NN
-        #3
-        \g__UWMad_File_Extension_tl
+    %   Check if an extension was given
+    \tl_if_in:NnTF #2 {\g__UWMad_File_ExtensionMarker_tl} {
+        \seq_set_split:NnV \l_tmpa_seq {\g__UWMad_File_ExtensionMarker_tl} {#2}
+        \seq_get_right:NN  \l_tmpa_seq #3
+        \tl_set:Nf #2 {
+            \seq_use:Nn \l_tmpa_seq {\g__UWMad_File_DirectoryMarker_tl}
+        }
+    } {
+        \tl_clear:N #3
+    }
 }
+\cs_generate_variant:Nn \UWMad_File_PathFileName:NNNn {NNNx}
 \cs_new:Nn \__UWMad_IfDefined:nnnnT{
     \cs_if_exist:cTF {#1#2#3} {
         #5
@@ -420,8 +382,8 @@
 \cs_generate_variant:Nn \prop_gput:Nnn   { c x n   }
 \cs_generate_variant:Nn \prop_if_in:NnTF { c x TF  }
 \cs_generate_variant:Nn \prop_if_in:NnTF { c f TF  }
-\cs_generate_variant:Nn \prop_get:Nn     { c x     }
-\cs_generate_variant:Nn \prop_get:Nn     { c f     }
+\cs_generate_variant:Nn \prop_item:Nn    { c x     }
+\cs_generate_variant:Nn \prop_item:Nn    { c f     }
 \cs_generate_variant:Nn \prop_get:NnNTF  { c x N TF}
 \cs_generate_variant:Nn \prop_gremove:Nn { c x     }
 \cs_new:Nn \__UWMad_Hash_IfDefined:nT {
@@ -440,10 +402,10 @@
         \prop_gput:cxn {g__UWMad_Hash_#1}{#2}{#3}
     }
 }
-\cs_generate_variant:Nn \prop_get:cn {cf}
+\cs_generate_variant:Nn \prop_item:cn {cf}
 \cs_new:Nn \UWMad_Hash_Get:nn {
     \__UWMad_Hash_IfDefined:nT {#1} {
-        \prop_get:cf {g__UWMad_Hash_#1}{#2}
+        \prop_item:cf {g__UWMad_Hash_#1}{#2}
     }
 }
 \cs_new:Nn \UWMad_Hash_Unset:nn {
@@ -451,7 +413,6 @@
         \prop_gremove:cx {g__UWMad_Hash_#1} {#2}
     }
 }
-\cs_generate_variant:Nn \tl_to_lowercase:n {f}
 \cs_new:Nn \UWMad_Hash_IfKeySet:nnTF {
     \__UWMad_Hash_IfDefined:nT {#1} {
         \prop_if_in:cfTF {g__UWMad_Hash_#1} {\tl_trim_spaces:n{#2}} {
@@ -749,7 +710,7 @@
         make-links-red = true
     }
 }
-\geometry{
+\geometry {
     includehead = true,
     margin      = 1.0in,
     paper       = letterpaper,
@@ -791,32 +752,38 @@
 \keys_set:nn { UWMadThesis / LayoutStyle } {
     paragraph-style = pad
 }
+\setcounter{page}{-100}
 
 \UWMad_Hook_Prepend:Nn \@chapter {
     \thispagestyle{myheadings}
     \int_compare:nNnTF {\value{chapter}} = {0} {
-        \pagenumbering{arabic}
+        \bool_if:NTF \g__UWmad_Appendix_Active_bool { } {
+            \pagenumbering{arabic}
+        }
     } { }
 }
 \UWMad_Hook_Prepend:Nn \@schapter {
     \thispagestyle{myheadings}
+    \int_compare:nNnTF {\g__UWMad_FrontMatter_Counter_int} = {0} {
+        \setcounter{page}{1}
+        \pagenumbering{roman}
+    } { }
 }
-\int_new:N  \g__UWMad_Appendix_Counter_int
-\int_set:Nn \g__UWMad_Appendix_Counter_int {0}
-\cs_new:Nn \__UWMad_Appendix_Initialize:{
-    \par
-    \setcounter{section}{0}
-    \cs_gset_eq:NN \@chapapp \appendixname
-    \cs_gset:Npn \thechapter {
-        \int_to_Alph:n {
-            \g__UWMad_Appendix_Counter_int
-        }
-    }
+\cs_new_eq:NN \StarredChapter \@schapter
+\DeclareDocumentCommand \@schapter { m } {
+    \StarredChapter{#1}
+    \__UWMad_FrontMatter_Register:nn{chapter}{#1}
 }
+\int_new:N          \g__UWMad_Appendix_Counter_int
+\int_set:Nn         \g__UWMad_Appendix_Counter_int {0}
+\bool_new:N         \g__UWmad_Appendix_Active_bool
+\bool_gset_false:N  \g__UWmad_Appendix_Active_bool
+\cs_new_eq:NN  \__UWMad_Appendix_Initialize: \appendix
 \cs_undefine:N \appendix
 \DeclareDocumentCommand \appendix { s o m } {
 
     \int_compare:nNnTF {\g__UWMad_Appendix_Counter_int} = {0} {
+        \bool_gset_true:N \g__UWmad_Appendix_Active_bool
         \__UWMad_Appendix_Initialize:
     } { }
     \int_gincr:N \g__UWMad_Appendix_Counter_int
@@ -835,14 +802,21 @@
 \cs_new:Nn \__UWMad_FrontMatter_Register:nn {
 
     \int_compare:nNnTF {\g__UWMad_FrontMatter_Counter_int} = {0} {
+        \setcounter{page}{1}
+        \pagestyle{myheadings}
         \pagenumbering{roman}
     } { }
 
     \int_gincr:N \g__UWMad_FrontMatter_Counter_int
-    \addcontentsline
-        {toc}
-        {#1}
-        {#2}
+    \bool_gset_true:N \g__UWMad_TOC_Registering_LOF_bool
+    %\bool_if:nTF {
+        %\g__UWMad_TOC_Registering_LOT_bool ||
+        %\g__UWMad_TOC_Registering_LOF_bool } { } {
+            \addcontentsline
+                {toc}
+                {#1}
+                {#2}
+        %}
 }
 \tl_new:N   \g__UWMad_FrontMatter_Title_Dedications_tl
 \tl_new:N   \g__UWMad_FrontMatter_Title_Acknowledgments_tl
@@ -875,29 +849,46 @@
     }
 
     \chapter*{\l_tmpa_tl}
-    \__UWMad_FrontMatter_Register:nn {chapter} {
-        \l_tmpa_tl
-    }
 
 }
 \DeclareDocumentCommand \dedications { g } {
-    \FrontMatterSetSection{#1}{Dedications}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Dedications}
+    } {
+       \FrontMatterSetSection{#1}{Dedications}
+    }
 }
 \DeclareDocumentCommand \acknowledgments { g } {
-    \FrontMatterSetSection{#1}{Acknowledgments}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Acknowledgments}
+    } {
+       \FrontMatterSetSection{#1}{Acknowledgments}
+    }
 }
 \DeclareDocumentCommand \abstract { g } {
-    \FrontMatterSetSection{#1}{Abstract}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Abstract}
+    } {
+       \FrontMatterSetSection{#1}{Abstract}
+    }
 }
 \DeclareDocumentCommand \umiabstract { g } {
-    \FrontMatterSetSection{#1}{Abstract}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Abstract}
+    } {
+       \FrontMatterSetSection{#1}{Abstract}
+    }
 }
 \DeclareDocumentCommand \preface { g } {
-    \FrontMatterSetSection{#1}{Preface}
+    \IfNoValueTF{#1} {
+        \FrontMatterSetSection{}{Preface}
+    } {
+       \FrontMatterSetSection{#1}{Preface}
+    }
 }
-\cs_gset_eq:NN \TableOfContentsDefault \tableofcontents
-\cs_gset_eq:NN \ListOfTablesDefault    \listoftables
-\cs_gset_eq:NN \ListOfFiguresDefault   \listoffigures
+\cs_new_eq:NN \TableOfContentsDefault \tableofcontents
+\cs_new_eq:NN \ListOfTablesDefault    \listoftables
+\cs_new_eq:NN \ListOfFiguresDefault   \listoffigures
 \cs_undefine:N \tableofcontents
 \cs_undefine:N \listoftables
 \cs_undefine:N \listoffigures
@@ -907,20 +898,23 @@
 \tl_gset:Nn \g__UWMad_TOC_Name_TOC_tl {Table~of~Contents}
 \tl_gset:Nn \g__UWMad_TOC_Name_LOT_tl {List~of~Tables}
 \tl_gset:Nn \g__UWMad_TOC_Name_LOF_tl {List~of~Figures}
+\bool_new:N \g__UWMad_TOC_Registering_LOT_bool
+\bool_new:N \g__UWMad_TOC_Registering_LOF_bool
+\bool_gset_false:N \g__UWMad_TOC_Registering_LOT_bool
+\bool_gset_false:N \g__UWMad_TOC_Registering_LOF_bool
 \DeclareDocumentCommand \tableofcontents { } {
 
     \tl_gset_eq:NN \contentsname \g__UWMad_TOC_Name_TOC_tl
 
     \group_begin:
-        \setstretch{1.05}
+        \cleardoublepage
         \phantomsection
         \ExplSyntaxOff
-            \TableOfContentsDefault
+            \begin{spacing}{1.2}
+                \TableOfContentsDefault
+            \end{spacing}
         \ExplSyntaxOn
-        \__UWMad_FrontMatter_Register:nn
-            {chapter}
-            {\contentsname}
-        \clearpage
+        \cleardoublepage
     \group_end:
 }
 \DeclareDocumentCommand \listoftables { } {
@@ -928,13 +922,11 @@
     \cs_set_eq:NN \listtablename \g__UWMad_TOC_Name_LOT_tl
 
     \group_begin:
-        \setstretch{1.05}
         \ExplSyntaxOff
-            \ListOfTablesDefault
+            \begin{spacing}{1.2}
+                \ListOfTablesDefault
+            \end{spacing}
         \ExplSyntaxOn
-        \__UWMad_FrontMatter_Register:nn
-            {chapter}
-            {\listtablename}
         \clearpage
     \group_end:
 }
@@ -943,13 +935,11 @@
     \cs_set_eq:NN \listfigurename \g__UWMad_TOC_Name_LOF_tl
 
     \group_begin:
-        \setstretch{1.05}
         \ExplSyntaxOff
-            \ListOfFiguresDefault
+            \begin{spacing}{1.2}
+                \ListOfFiguresDefault
+            \end{spacing}
         \ExplSyntaxOn
-        \__UWMad_FrontMatter_Register:nn
-            {chapter}
-            {\listfigurename}
         \clearpage
     \group_end:
 }
@@ -1004,24 +994,24 @@
 \tl_const:Nn \c__UWMad_PreviousSection_subsubsection_tl   {subsection}
 \tl_const:Nn \c__UWMad_PreviousSection_paragraph_tl       {subsubsection}
 \tl_const:Nn \c__UWMad_PreviousSection_subparagraph_tl    {paragraph}
-\cs_new:Nn \UWMad_SectionToLevel:n {
+\cs_new:Nn \UWMad_SectionToLevel:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_SectionsLevel_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_SectionsLevel_ #1 _tl}
     }
 }
-\cs_new:Nn \UWMad_LevelToSection:n {
+\cs_new:Nn \UWMad_LevelToSection:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_LevelsSection_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_LevelsSection_ #1 _tl}
     }
 }
-\cs_new:Nn \UWMad_NextSection:n {
+\cs_new:Nn \UWMad_NextSection:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_NextSection_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_NextSection_ #1 _tl}
     }
 }
-\cs_new:Nn \UWMad_PreviousSection:n {
+\cs_new:Nn \UWMad_PreviousSection:nN {
     \UWMad_IfSectionExists:nT {#1} {
-        \tl_use:c {c__UWMad_PreviousSection_ #1 _tl}
+        \tl_set_eq:Nc #2 {c__UWMad_PreviousSection_ #1 _tl}
     }
 }
 \tex_everydisplay:D \exp_after:wN {
@@ -1234,6 +1224,7 @@
 }
 \DeclareDocumentCommand \LessThan        { } {<}
 \DeclareDocumentCommand \GreaterThanThan { } {>}
+
 \tl_new:N   \l__UWMad_ListOf_Section_Main_tl
 \tl_new:N   \l__UWMad_ListOf_Section_Group_tl
 \tl_new:N   \l__UWMad_ListOf_Section_Subgroup_tl
@@ -1243,19 +1234,19 @@
 \bool_new:N \l__UWMad_ListOf_IncludeInTOC_Main_bool
 \bool_new:N \l__UWMad_ListOf_IncludeInTOC_Group_bool
 \bool_new:N \l__UWMad_ListOf_IncludeInTOC_Subgroup_bool
-\UWMad_Queue_Define:n {l__ListOf_EntryQueue}
-\UWMad_Hash_Define:n  {l__ListOf_Hook}
+\seq_new:N \l__UWMad_ListOf_EntryQueue_seq
+\prop_new:N \l__UWMad_ListOf_Hooks_prop
 \cs_new:Nn \__UWMad_Listof_SetHooks_Blank: {
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Main}       {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Main}      {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Group}      {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Group}     {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PreTitle-Subgroup}   {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostTitle-Subgroup}  {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PrePush}             {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostPush}            {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PrePrint}            {}
-    \UWMad_Hash_Set:nnn   {l__ListOf_Hook}{PostPrint}           {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PreTitle-Main}       {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PostTitle-Main}      {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PreTitle-Group}      {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PostTitle-Group}     {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PreTitle-Subgroup}   {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PostTitle-Subgroup}  {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PrePush}             {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PostPush}            {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PrePrint}            {}
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {PostPrint}           {}
 }
 \cs_new:Nn \__UWMad_ListOf_SectioningCommand_Main:     {}
 \cs_new:Nn \__UWMad_ListOf_SectioningCommand_Group:    {}
@@ -1264,44 +1255,52 @@
 \cs_new:Nn \UWMad_ListOf_PrintTitle_Group:nn    {}
 \cs_new:Nn \UWMad_ListOf_PrintTitle_Subgroup:nn {}
 \cs_new:Nn \UWMad_ListOf_SetHook:nn {
-    \UWMad_Hash_Set:nnn{l__ListOf_Hook}{#1}{#2}
-}
-\cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommand:n {
-    \UWMad_IfSectionExists:nT {
-        \tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}
-    } {
-        \cs_set_eq:cc
-            {__UWMad_ListOf_SectioningCommand_ #1 :}
-            {\tl_use:c {l__UWMad_ListOf_Section_ #1 _tl}}
-    }
+    \prop_put:Nnn \l__UWMad_ListOf_Hooks_prop {#1} {#2}
 }
 \cs_new:Nn \__UWMad_ListOf_Initialize_SectioningCommands: {
-    \__UWMad_ListOf_Initialize_SectioningCommand:n {Main}
-    \__UWMad_ListOf_Initialize_SectioningCommand:n {Group}
-    \__UWMad_ListOf_Initialize_SectioningCommand:n {Subgroup}
+    \UWMad_IfSectionExists:nT {\l__UWMad_ListOf_Section_Main_tl} {
+        \cs_set_eq:cc
+            {__UWMad_ListOf_SectioningCommand_Main:w}
+            {\l__UWMad_ListOf_Section_Main_tl}
+
+        \UWMad_NextSection:nN{\l__UWMad_ListOf_Section_Main_tl} \l_tmpa_tl
+        \cs_set_eq:cc
+            {__UWMad_ListOf_SectioningCommand_Group:w}
+            {\l_tmpa_tl}
+
+        \UWMad_NextSection:nN{\l_tmpa_tl} \l_tmpb_tl
+        \cs_set_eq:cc
+            {__UWMad_ListOf_SectioningCommand_Subgroup:w}
+            {\l_tmpb_tl}
+    }
 }
 \cs_new:Nn \__UWMad_ListOf_Initialize_TitlePrinter:n {
     \cs_set:cn {UWMad_ListOf_PrintTitle_ #1 :nn} {
-        \UWMad_Hash_Get:nn{l__ListOf_Hook}{PreTitle-#1}
+
+        \prop_item:Nn \l__UWMad_ListOf_Hooks_prop {PreTitle-#1}
+
         \bool_if:cTF {l__UWMad_ListOf_MakeNumbered_ #1 _bool} {
             \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
-                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :}[##1]{##2}
+                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :w}[##1]{##2}
             } {
                 \int_gset_eq:NN \l_tmpa_int \c@tocdepth
                 \int_gset:Nn \c@tocdepth {-1}
-                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :}{##2}
+                \use:c{__UWMad_ListOf_SectioningCommand_ #1 :w}{##2}
                 \int_gset:Nn \c@tocdepth {\l_tmpa_int}
             }
         } {
-            \use:c{__UWMad_ListOf_SectioningCommand_ #1 :} * {##2}
+            \use:c{__UWMad_ListOf_SectioningCommand_ #1 :w} * {##2}
             \bool_if:cTF {l__UWMad_ListOf_IncludeInTOC_ #1 _bool} {
-                \addcontentsline
-                    {toc}
-                    {\tl_use:c{l__UWMad_ListOf_Section_ #1 _tl}}
-                    {##1}
+                \tl_if_in:cnTF
+                    {l__UWMad_ListOf_Section_ #1 _tl} {chapter} { } {
+                    \addcontentsline
+                        {toc}
+                        {\tl_use:c{l__UWMad_ListOf_Section_ #1 _tl}}
+                        {##1}
+                }
             } { }
         }
-        \UWMad_Hash_Get:nn{l__ListOf_Hook}{PostTitle-#1}
+        \prop_item:Nn \l__UWMad_ListOf_Hooks_prop {PostTitle-#1}
     }
 }
 \cs_new:Nn \__UWMad_ListOf_Initialize_TitlePrinters: {
@@ -1310,7 +1309,7 @@
     \__UWMad_ListOf_Initialize_TitlePrinter:n {Subgroup}
 }
 \cs_new:Nn \__UWMad_ListOf_Clear: {
-    \UWMad_Queue_Clear:n   {l__ListOf_EntryQueue}
+    \seq_clear:N \l__UWMad_ListOf_EntryQueue_seq
     \__UWMad_Listof_SetHooks_Blank:
 }
 \cs_new:Nn \UWMad_ListOf_Initialize: {
@@ -1319,15 +1318,15 @@
     \__UWMad_ListOf_Initialize_TitlePrinters:
 }
 \cs_new:Nn \UWMad_ListOf_PushEntry:n {
-    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PrePush}
-    \UWMad_Queue_Push:nn {l__ListOf_EntryQueue}{#1}
-    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PostPush}
+    \prop_item:Nn     \l__UWMad_ListOf_Hooks_prop {PrePush}
+    \seq_put_right:Nn \l__UWMad_ListOf_EntryQueue_seq {#1}
+    \prop_item:Nn     \l__UWMad_ListOf_Hooks_prop {PostPush}
 }
 \cs_new:Nn \UWMad_ListOf_PrintEntries: {
-    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PrePrint}
-    \UWMad_Queue_Walk:nn {l__ListOf_EntryQueue}{##1}
-    \UWMad_Queue_Clear:n {l__ListOf_EntryQueue}
-    \UWMad_Hash_Get:nn   {l__ListOf_Hook}{PostPrint}
+    \prop_item:Nn      \l__UWMad_ListOf_Hooks_prop {PrePrint}
+    \seq_map_inline:Nn \l__UWMad_ListOf_EntryQueue_seq {##1}
+    \seq_clear:N       \l__UWMad_ListOf_EntryQueue_seq
+    \prop_item:Nn      \l__UWMad_ListOf_Hooks_prop {PostPrint}
 }
 \dim_new:N \l__UWMad_Nomenclature_WidestSymbol_dim
 \dim_new:N \l__UWMad_Nomenclature_WidestUnit_dim
@@ -1405,10 +1404,10 @@
         1.01\l__UWMad_Nomenclature_WidestSymbol_dim
     }
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_Description_Width_dim {
-        0.995\textwidth -
+        \columnwidth -
         \l_UWMad_Nomenclature_Entry_Margin_Left_dim   -
         \l__UWMad_Nomenclature_Entry_Symbol_Width_dim -
-        \l_UWMad_Nomenclature_Entry_Pad_Column_dim      -
+        \l_UWMad_Nomenclature_Entry_Pad_Column_dim    -
         \l_UWMad_Nomenclature_Entry_Margin_Right_dim
     }
 }
@@ -1420,7 +1419,7 @@
         1.05\l__UWMad_Nomenclature_WidestUnit_dim
     }
     \dim_set:Nn \l__UWMad_Nomenclature_Entry_Description_Width_dim {
-        0.995\textwidth -
+        0.995\columnwidth -
          \l_UWMad_Nomenclature_Entry_Margin_Left_dim   -
          \l__UWMad_Nomenclature_Entry_Symbol_Width_dim -
          \l__UWMad_Nomenclature_Entry_Units_Width_dim  -
@@ -1437,28 +1436,32 @@
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_NoUnits:nn {
     \coffin_clear:N \l__UWMad_Nomenclature_Entry_coffin
-    \coffin_clear:N \l_tmpa_coffin
+    \coffin_clear:N \l__UWMad_Nomenclature_Symbol_coffin
+    \coffin_clear:N \l__UWMad_Nomenclature_Description_coffin
     \vcoffin_set:Nnn
-        \l__UWMad_Nomenclature_Symbol_coffin
+        \l__UWMad_Nomenclature_Entry_coffin
         {\l__UWMad_Nomenclature_Entry_Symbol_Width_dim} {#1}
     \vcoffin_set:Nnn
         \l__UWMad_Nomenclature_Description_coffin
         {\l__UWMad_Nomenclature_Entry_Description_Width_dim} {#2}
     \coffin_join:NnnNnnnn
-        \l__UWMad_Nomenclature_Entry_coffin       {l}{t}
-        \l__UWMad_Nomenclature_Symbol_coffin      {l}{t}
+        \l__UWMad_Nomenclature_Entry_coffin       {l}{T}
+        \l__UWMad_Nomenclature_Symbol_coffin      {l}{T}
         {\l_UWMad_Nomenclature_Entry_Margin_Left_dim}{0pt}
     \coffin_join:NnnNnnnn
-        \l__UWMad_Nomenclature_Entry_coffin        {r}{t}
-        \l__UWMad_Nomenclature_Description_coffin  {l}{t}
-        {\l_UWMad_Nomenclature_Entry_Pad_Column_dim}{0pt}
-    \group_begin:
-        \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
-        \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
-        \coffin_typeset:Nnnnn
-            \l__UWMad_Nomenclature_Entry_coffin {l}{t}{0pt}{0pt}
-        \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
-    \group_end:
+        \l__UWMad_Nomenclature_Entry_coffin        {l}{T}
+        \l__UWMad_Nomenclature_Description_coffin  {l}{T}
+        {
+            \l_UWMad_Nomenclature_Entry_Margin_Left_dim   +
+            \l__UWMad_Nomenclature_Entry_Symbol_Width_dim +
+            \l_UWMad_Nomenclature_Entry_Pad_Column_dim
+        } {0pt}
+    \setstretch{\l__UWMad_Nomenclature_Entry_LineStretch_tl}
+    \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Top_dim}
+    \coffin_typeset:Nnnnn
+        \l__UWMad_Nomenclature_Entry_coffin {l}{t}{0pt}{0pt}
+    \tex_hfill:D
+    \skip_vertical:n{\l_UWMad_Nomenclature_Entry_Margin_Bottom_dim}
 }
 \cs_new:Nn \UWMad_Nomenclature_SetEntry_Units:nnn {
     \coffin_clear:N \l__UWMad_Nomenclature_Entry_coffin
@@ -1504,6 +1507,7 @@
 \DeclareDocumentEnvironment {Nomenclature} { o o } {
     \UWMad_ListOf_Initialize:
     \setlength{\parskip}{0pt}
+    \setlength{\parindent}{0pt}
     \IfValueTF {#1} {
         \tl_set:Nx \l__UWMad_ListOf_Title_Main_tl { #1 }
     } { }
@@ -1643,14 +1647,12 @@
         \clist_use:Nn \g__UWMad_Nomenclature_KeyValuePairs_clist {,}
     }
 \keys_set:nn { UWMadThesis / Nomenclature } {
-    main-title ,
-    main-section     ,
-    group-section    ,
-    subgroup-section ,
-    make-numbered ,
-    include-in-toc ,
-    include-units-column ,
-    units-embed-siunitx  ,
+    main-title = Nomenclature ,
+    main-section = chapter,
+    make-numbered = true ,
+    include-in-toc = true ,
+    include-units-column = false,
+    units-embed-siunitx = false ,
     print-skip           ,
     entry-margin-top     ,
     entry-margin-left    ,
@@ -1773,8 +1775,8 @@
 }
 \bool_new:N \g__UWMad_MetaData_GenerateAux_bool
 \bool_new:N \g__UWMad_MetaData_IsDocument_bool
-\file_if_exist:nTF{\c_job_name_tl.UWMad.PDFMetaData.aux} {
-    \file_input:n {\c_job_name_tl.UWMad.PDFMetaData.aux}
+\file_if_exist:nTF{\c_sys_jobname_str.UWMad.PDFMetaData.aux} {
+    \file_input:n {\c_sys_jobname_str.UWMad.PDFMetaData.aux}
 }{}
 \AtBeginDocument{
     \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
@@ -1789,7 +1791,7 @@
         \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
             \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
             \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
-                \c_job_name_tl.UWMad.PDFMetaData.aux
+                \c_sys_jobname_str.UWMad.PDFMetaData.aux
             }
             \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
                 \noexpand\ExplSyntaxOff
@@ -1913,33 +1915,33 @@
             {#1}
     }
 }
-\DeclareDocumentCommand \TheTitle { } {
+\DeclareExpandableDocumentCommand \TheTitle { } {
     \g__UWMad_ThesisInfo_Title_tl
 }
-\DeclareDocumentCommand \TheAuthor { } {
+\DeclareExpandableDocumentCommand \TheAuthor { } {
     \g__UWMad_ThesisInfo_Author_tl
 }
-\DeclareDocumentCommand \TheProgram { } {
+\DeclareExpandableDocumentCommand \TheProgram { } {
     \g__UWMad_ThesisInfo_Program_tl
 }
-\DeclareDocumentCommand \TheDegree { } {
+\DeclareExpandableDocumentCommand \TheDegree { } {
     \g__UWMad_ThesisInfo_Degree_tl
 }
-\DeclareDocumentCommand \TheDocumentType { } {
+\DeclareExpandableDocumentCommand \TheDocumentType { } {
     \g__UWMad_ThesisInfo_DocumentType_tl
 }
-\DeclareDocumentCommand \TheDefenseDate { } {
+\DeclareExpandableDocumentCommand \TheDefenseDate { } {
     \g__UWMad_ThesisInfo_DefenseDate_tl
 }
 \cs_gset_eq:NN \TheDefenceDate \TheDefenseDate
-\DeclareDocumentCommand \TheInstitution { } {
+\DeclareExpandableDocumentCommand \TheInstitution { } {
     \g__UWMad_ThesisInfo_Institution_tl
 }
 \cs_set_eq:NN \TheUniversity \TheInstitution
-\DeclareDocumentCommand \TheDepartment { } {
+\DeclareExpandableDocumentCommand \TheDepartment { } {
     \g__UWMad_ThesisInfo_Department_tl
 }
-\DeclareDocumentCommand \TheAdvisor { } {
+\DeclareExpandableDocumentCommand \TheAdvisor { } {
     \g__UWMad_ThesisInfo_AdvisorName_tl
 }
 \tl_new:N   \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl
@@ -1975,8 +1977,10 @@
             \g__UWMad_ThesisInfo_Committee_InfoSeparator_tl{}
             \
             \textsl{#3}
-            \
-            (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
+            \bool_if:NTF \g__UWMad_ThesisInfo_PrintAdvisorMarker_bool {
+                \
+                (\g__UWMad_ThesisInfo_AdvisorMarker_tl{})
+            } { }
         }
         \coffin_join:NnnNnnnn
             \g__UWMad_ThesisInfo_Committee_coffin {l} {b}
@@ -1984,6 +1988,8 @@
             {0pt}{-0.75em}
     }
 }
+\bool_new:N        \g__UWMad_ThesisInfo_PrintAdvisorMarker_bool
+\bool_gset_false:N \g__UWMad_ThesisInfo_PrintAdvisorMarker_bool
 \cs_new:Nn \UWMad_ThesisInfo_AdvisorInfo:nnn {
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorName_tl        {#1}
     \tl_gset:Nn \g__UWMad_ThesisInfo_AdvisorPosition_tl    {#2}
@@ -2045,16 +2051,16 @@
         \bool_gset_true:N \g__UWMad_MetaData_GenerateAux_bool
     } { }
 }
-\DeclareDocumentCommand \TheSubject { } {
+\DeclareExpandableDocumentCommand \TheSubject { } {
     \g__UWMad_PDFMetaData_Subject_tl
 }
-\DeclareDocumentCommand \TheKeywords { } {
+\DeclareExpandableDocumentCommand \TheKeywords { } {
     \g__UWMad_PDFMetaData_Keywords_tl
 }
-\DeclareDocumentCommand \TheProducer { } {
+\DeclareExpandableDocumentCommand \TheProducer { } {
     \g__UWMad_PDFMetaData_Producer_tl
 }
-\DeclareDocumentCommand \TheCreator { } {
+\DeclareExpandableDocumentCommand \TheCreator { } {
     \g__UWMad_PDFMetaData_Creator_tl
 }
 \DeclareDocumentCommand \FulfillmentClause { } {
@@ -2090,13 +2096,13 @@
 
 \DeclareDocumentCommand \TitlePageDegree { } {
     \IfInfoIsSetT {Degree} {
-        (\TheDegree{})
+        \TheDegree{}
     }
 }
 
 \DeclareDocumentCommand \TitlePageProgram { } {
     \IfInfoIsSetT {Program} {
-        \TheProgram{}
+        (\TheProgram{})
     }
 }
 
@@ -2114,6 +2120,10 @@
     }
 }
 
+\DeclareDocumentCommand \TitlePageCommitteLeadIn { } {
+    The~dissertation~is~approved~by~the~following~members~of~the~Final~Oral~Committee:
+}
+
 \DeclareDocumentCommand \MakeTitlePage { } {
     \clearpage
     \thispagestyle{empty}
@@ -2128,7 +2138,8 @@
         \TitlePageInstitution{}
         \vfill
     \end{center}
-    \TitlePageDefenseDate{}\\[-1em]
+    \TitlePageDefenseDate{}\\
+    \TitlePageCommitteLeadIn{} \\[-1.5em]
     \PrintCommitteeMemberList{}
     \cleardoublepage
 }
@@ -2139,6 +2150,9 @@
     \tex_hbox:D{}
     \tex_vfill:D
     \phantomsection
+}
+\cs_new:Nn \__UWMad_LicensePage_FinishPage: {
+    \clearpage
 }
 \bool_new:N   \l__UWMad_Copyright_UseCopyright_bool
 \cs_set_eq:NN \CopyrightSymbol \copyright
@@ -2374,6 +2388,7 @@
         \vbox_to_ht:nn {0.3333\textheight} {
             \__UWMad_LicensePage_LicenseText:
         }
+        \__UWMad_LicensePage_FinishPage:
     } { }
 
 }
@@ -2530,9 +2545,22 @@
         \bool_gset_true:N \g__UWMad_RelativeDirectory_IsFileFound_bool
     } { }
 }
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nn {
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+    \UWMad_RelativeDirectory_UpdateStack:n{#1}
+    \UWMad_RelativeDirectory_IncludeFile:
+}
+\cs_new:Nn \UWMad_RelativeDirectory_IncludeDriver:nnn {
+
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#3}
+    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
+    \UWMad_RelativeDirectory_UpdateStack:n{#1}
+    \UWMad_RelativeDirectory_IncludeFile:
+    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
+}
 \msg_new:nnn { UWMadThesis }{ RelativeDirectory / FileNotFound } {
     The~requested~file~'#1'~was~not~found~in~the~current~search~stack~nor~the~
-    main~LaTeX~directory~for~the~job~'\c_job_name_tl'.
+    main~LaTeX~directory~for~the~job~'\c_sys_jobname_str'.
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeFile: {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
@@ -2578,10 +2606,11 @@
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics_CycleThrough:n {
 
-    \UWMad_File_GetExtension:nNN
-        {\g__UWMad_RelativeDirectory_File_CurrentName_tl}
+    \UWMad_File_PathFileName:NNNx
+        \l_tmpa_tl
         \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
         \g__UWMad_RelativeDirectory_Graphics_Extension_tl
+        {\g__UWMad_RelativeDirectory_File_CurrentName_tl}
 
     \seq_map_inline:Nn \g__UWMad_RelativeDirectory_PathStack_Graphics_seq {
 
@@ -2615,9 +2644,11 @@
             \g__UWMad_RelativeDirectory_File_CurrentName_tl
     }
 
-    \UWMad_File_GetExtension:nNN {\g_tmpb_tl}
+    \UWMad_File_PathFileName:NNNx
+        \l_tmpa_tl
         \g__UWMad_RelativeDirectory_Graphics_BaseName_tl
         \g__UWMad_RelativeDirectory_Graphics_Extension_tl
+        {\g_tmpb_tl}
 
     \file_if_exist:nTF { \g_tmpb_tl } {
         \__UWMad_RelativeDirectory_IncludeGraphics_Original:nn
@@ -2628,7 +2659,7 @@
 }
 \msg_new:nnn { UWMadThesis }{ RelativeDirectory / GraphicNotFound } {
     The~requested~graphic~'#1'~was~not~found~in~the~current~search~stack~nor~
-    the~main~LaTeX~directory~for~the~job~'\c_job_name_tl'.
+    the~main~LaTeX~directory~for~the~job~'\c_sys_jobname_str'.
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics:n {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
@@ -2769,32 +2800,33 @@
     cycle-file-paths,
     cycle-graphic-paths
 }
+\DeclareDocumentCommand \Include { m o m } {
+    \IfNoValueTF { #2 } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{#1}{#3}{}
+    } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{#1}{#3}{#2}
+    }
+}
 \DeclareDocumentCommand \IncludeChapter { o m } {
-    \IfValueTF { #1 } {
-        \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    } { }
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \UWMad_RelativeDirectory_UpdateStack:n{Chapter}
-    \UWMad_RelativeDirectory_IncludeFile:
-    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
+    \IfNoValueTF { #1 } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Chapter}{#2}{}
+    } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Chapter}{#2}{#1}
+    }
 }
 \DeclareDocumentCommand \IncludeSection { o m } {
-    \IfValueTF { #1 } {
-        \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    } { }
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \UWMad_RelativeDirectory_UpdateStack:n{Section}
-    \UWMad_RelativeDirectory_IncludeFile:
-    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
+    \IfNoValueTF { #1 } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Section}{#2}{}
+    } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Section}{#2}{#1}
+    }
 }
 \DeclareDocumentCommand \IncludeSubsection { o m } {
-    \IfValueTF { #1 } {
-        \tl_gset:Nn \g__UWMad_RelativeDirectory_OptionalPath_tl {#1}
-    } { }
-    \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}
-    \UWMad_RelativeDirectory_UpdateStack:n{Subsection}
-    \UWMad_RelativeDirectory_IncludeFile:
-    \tl_gclear:N \g__UWMad_RelativeDirectory_OptionalPath_tl
+    \IfNoValueTF { #1 } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Subsection}{#2}{}
+    } {
+        \UWMad_RelativeDirectory_IncludeDriver:nnn{Subsection}{#2}{#1}
+    }
 }
 \DeclareDocumentCommand \IncludeGraphics { o m } {
     \tl_gset:Nn \g__UWMad_RelativeDirectory_File_CurrentName_tl {#2}

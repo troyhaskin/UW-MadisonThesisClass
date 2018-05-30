@@ -247,8 +247,8 @@ If, for any reason, the thesis information or metadata registered with the docum
 %
 %   Look for a auxilary file and load it if it exists.
 %    \begin{macrocode}
-\file_if_exist:nTF{\c_job_name_tl.UWMad.PDFMetaData.aux} {
-    \file_input:n {\c_job_name_tl.UWMad.PDFMetaData.aux}
+\file_if_exist:nTF{\c_sys_jobname_str.UWMad.PDFMetaData.aux} {
+    \file_input:n {\c_sys_jobname_str.UWMad.PDFMetaData.aux}
 }{}
 %    \end{macrocode}
 %
@@ -274,7 +274,7 @@ If, for any reason, the thesis information or metadata registered with the docum
         \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
             \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
             \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
-                \c_job_name_tl.UWMad.PDFMetaData.aux
+                \c_sys_jobname_str.UWMad.PDFMetaData.aux
             }
             \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
                 \noexpand\ExplSyntaxOff

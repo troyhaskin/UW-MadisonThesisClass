@@ -580,7 +580,7 @@ The input syntax has the form
 %    \begin{macrocode}
 \msg_new:nnn { UWMadThesis }{ RelativeDirectory / FileNotFound } {
     The~requested~file~'#1'~was~not~found~in~the~current~search~stack~nor~the~
-    main~LaTeX~directory~for~the~job~'\c_job_name_tl'.
+    main~LaTeX~directory~for~the~job~'\c_sys_jobname_str'.
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeFile: {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
@@ -721,7 +721,7 @@ The input syntax has the form
 %    \begin{macrocode}
 \msg_new:nnn { UWMadThesis }{ RelativeDirectory / GraphicNotFound } {
     The~requested~graphic~'#1'~was~not~found~in~the~current~search~stack~nor~
-    the~main~LaTeX~directory~for~the~job~'\c_job_name_tl'.
+    the~main~LaTeX~directory~for~the~job~'\c_sys_jobname_str'.
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics:n {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool

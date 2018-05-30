@@ -1,5 +1,5 @@
-\RequirePackage{expl3}[2016/05/01]
-\@ifpackagelater{expl3}{2016/05/01} {} {%
+\RequirePackage{expl3}[2018/05/13]
+\@ifpackagelater{expl3}{2018/05/13} {} {%
     \PackageError{UWMadThesis}{Version of l3kernel is too old}
       {%
         Please install an up to date version of l3kernel\MessageBreak
@@ -10,7 +10,7 @@
 \ExplSyntaxOn
 \tl_const:Nn \c__UWMad_Class_Name_tl        {UWMadThesis}
 \tl_const:Nn \c__UWMad_Class_Version_tl     {1.0}
-\tl_const:Nn \c__UWMad_Class_Date_tl        {2016/10/01}
+\tl_const:Nn \c__UWMad_Class_Date_tl        {2018/05/29}
 \tl_const:Nn \c__UWMad_Class_Description_tl {
     LaTeX2e+~Thesis~Class~for~UW-Madison
 }
@@ -70,7 +70,7 @@
 \RequirePackage{amsfonts}
 \RequirePackage{amssymb}
 \RequirePackage{mathtools}
-\bool_if:nTF {\xetex_if_engine_p: || \luatex_if_engine_p:} {
+\bool_if:nTF {\sys_if_engine_xetex_p: || \sys_if_engine_luatex_p:} {
     \RequirePackage{fontspec}
     \defaultfontfeatures{Ligatures={TeX}}
     \setmainfont
@@ -137,30 +137,20 @@
 \msg_new:nnn {UWMadThesis} {Programming/Defined} {
     The~#2~`#1'~is~already~defined~and~will~not~altered.
 }
-\cs_new:Nn \UWMad_Hook_Prepend:cn {
-    \cs_new_eq:cc  {#1-Default:} {#1}
-    \cs_gset:cn    {#1:}         {#2 \cs:w #1-Default:\cs_end:}
-    \cs_undefine:c {#1}
-    \cs_new_eq:cc  {#1}          {#1:}
-}
 \cs_new:Nn \UWMad_Hook_Prepend:Nn {
     \cs_new_eq:cN  {\string#1-Default:} #1
     \cs_gset:cn    {\string#1:}         {#2 \cs:w\string#1-Default:\cs_end:}
     \cs_undefine:N  #1
     \cs_new_eq:Nc   #1          {\string#1:}
 }
-\cs_new:Nn \UWMad_Hook_Append:cn {
-    \cs_new_eq:cc  {#1-Default:} {#1}
-    \cs_gset:cn    {#1:}        {\cs:w #1-Default:\cs_end: #2}
-    \cs_undefine:c {#1}
-    \cs_new_eq:cc  {#1}          {#1:}
-}
+\cs_generate_variant:Nn \UWMad_Hook_Prepend:Nn { cn }
 \cs_new:Nn \UWMad_Hook_Append:Nn {
     \cs_new_eq:cN  {\string#1-Default:} #1
     \cs_gset:cn    {\string#1:}         {\cs:w\string#1-Default:\cs_end: #2}
     \cs_undefine:N  #1
     \cs_new_eq:Nc   #1          {\string#1:}
 }
+\cs_generate_variant:Nn \UWMad_Hook_Append:Nn { cn }
 \cs_new:Nn \UWMad_Definition_Swap:Nn {
     \cs_if_exist:NTF #1 {
         \cs_new_eq:cN  {\string#1-Default:}  #1
@@ -423,7 +413,6 @@
         \prop_gremove:cx {g__UWMad_Hash_#1} {#2}
     }
 }
-\cs_generate_variant:Nn \tl_to_lowercase:n {f}
 \cs_new:Nn \UWMad_Hash_IfKeySet:nnTF {
     \__UWMad_Hash_IfDefined:nT {#1} {
         \prop_if_in:cfTF {g__UWMad_Hash_#1} {\tl_trim_spaces:n{#2}} {
@@ -1786,8 +1775,8 @@
 }
 \bool_new:N \g__UWMad_MetaData_GenerateAux_bool
 \bool_new:N \g__UWMad_MetaData_IsDocument_bool
-\file_if_exist:nTF{\c_job_name_tl.UWMad.PDFMetaData.aux} {
-    \file_input:n {\c_job_name_tl.UWMad.PDFMetaData.aux}
+\file_if_exist:nTF{\c_sys_jobname_str.UWMad.PDFMetaData.aux} {
+    \file_input:n {\c_sys_jobname_str.UWMad.PDFMetaData.aux}
 }{}
 \AtBeginDocument{
     \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
@@ -1802,7 +1791,7 @@
         \clist_if_empty:NTF \g__UWMad_MetaDataList_clist { } {
             \iow_new:N   \g__UWMad_PDFMetaData_HyperSetup_io
             \iow_open:Nn \g__UWMad_PDFMetaData_HyperSetup_io {
-                \c_job_name_tl.UWMad.PDFMetaData.aux
+                \c_sys_jobname_str.UWMad.PDFMetaData.aux
             }
             \iow_now:Nx  \g__UWMad_PDFMetaData_HyperSetup_io {
                 \noexpand\ExplSyntaxOff
@@ -2571,7 +2560,7 @@
 }
 \msg_new:nnn { UWMadThesis }{ RelativeDirectory / FileNotFound } {
     The~requested~file~'#1'~was~not~found~in~the~current~search~stack~nor~the~
-    main~LaTeX~directory~for~the~job~'\c_job_name_tl'.
+    main~LaTeX~directory~for~the~job~'\c_sys_jobname_str'.
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeFile: {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
@@ -2670,7 +2659,7 @@
 }
 \msg_new:nnn { UWMadThesis }{ RelativeDirectory / GraphicNotFound } {
     The~requested~graphic~'#1'~was~not~found~in~the~current~search~stack~nor~
-    the~main~LaTeX~directory~for~the~job~'\c_job_name_tl'.
+    the~main~LaTeX~directory~for~the~job~'\c_sys_jobname_str'.
 }
 \cs_new:Nn \UWMad_RelativeDirectory_IncludeGraphics:n {
     \bool_gset_false:N \g__UWMad_RelativeDirectory_IsFileFound_bool
